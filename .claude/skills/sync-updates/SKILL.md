@@ -9,10 +9,12 @@ You help users who previously cloned the AlpacApps template repo adopt new featu
 
 ## How It Works
 
-1. **Detect what the user already has** — check their project for existing features.
-2. **Show what's available** — present the feature list with descriptions.
-3. **Let the user choose** — ask which features they want to adopt.
-4. **Set up each feature** — one at a time, commit after each.
+1. **Fetch the manifest** — read `https://alpacaplayhouse.com/infra/updates.json` (or `infra/updates.json` locally) for the authoritative feature list with dates.
+2. **Detect what the user already has** — check their project for existing features using the `detects` paths in the manifest.
+3. **Show what's available** — present only features the user is missing, with descriptions and dates.
+4. **Let the user choose** — ask which features they want to adopt.
+5. **Set up each feature** — one at a time, commit after each.
+6. **Update localStorage** — after adoption, set `alpacapps_last_update_check` to today so the admin banner resets.
 
 ## Step 1: Detect Current State
 

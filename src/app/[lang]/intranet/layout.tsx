@@ -4,6 +4,7 @@ import { AuthGuard } from "@/components/auth-guard";
 import { IntranetHeader } from "@/components/intranet/intranet-header";
 import { SectionTabs } from "@/components/intranet/section-tabs";
 import { SubTabs } from "@/components/intranet/sub-tabs";
+import { UpdateBanner } from "@/components/intranet/update-banner";
 import type { ReactNode } from "react";
 
 export default function IntranetLayout({ children }: { children: ReactNode }) {
@@ -14,6 +15,7 @@ export default function IntranetLayout({ children }: { children: ReactNode }) {
         <SectionTabs />
         <SubTabs />
         <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
+          <UpdateBanner />
           {children}
         </div>
       </div>

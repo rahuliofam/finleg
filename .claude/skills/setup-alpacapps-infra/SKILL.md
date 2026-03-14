@@ -163,6 +163,17 @@ Options:
 
 Write updated file and confirm what was added.
 
+### Step 12b: Set Up Update Checker
+
+**Silently (no user action):**
+1. Set `alpacapps_last_update_check` in the user's browser localStorage to today's date (this happens automatically when they first use the intranet)
+2. The `UpdateBanner` component in `src/components/intranet/update-banner.tsx` is already wired into the intranet layout
+3. It fetches `https://alpacaplayhouse.com/infra/updates.json` every 30 days
+4. When new features are available, a banner appears at the top of the admin dashboard with a link to the updates page
+
+**Tell the user:**
+> Your admin dashboard will automatically check for new template features once a month. When updates are available, you'll see a banner at the top of the intranet. You can also check manually anytime at: https://alpacaplayhouse.com/infra/updates.html
+
 ### Step 13: Final Validation & Summary
 
 See `references/validation-checklist.md` for the full checklist and summary template.

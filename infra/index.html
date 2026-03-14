@@ -951,6 +951,18 @@ Start by getting Claude Code, GitHub Pages, and Supabase set up. After that, ask
     </div>
   </div>
 
+  <!-- Stay Updated -->
+  <div class="setup-step" style="border-color: var(--claude-border); border-width: 2px; background: var(--claude-bg);">
+    <h2 style="color: #5a4a7a;">Already set up? Stay updated</h2>
+    <p>We add new features to the template regularly &mdash; session logging, AI transparency dashboards, smart polling, and more. If you cloned the repo a while ago, check what's new and adopt features with one prompt.</p>
+    <p style="font-size: 0.88rem; color: var(--text-muted);">We recommend checking once a month, or whenever Claude Code mentions a feature you don't have yet.</p>
+
+    <div class="prompt-block" id="update-prompt" style="border-color: #5a4a7a;">
+      <button class="copy-btn" onclick="copyUpdatePrompt()">Copy</button>Read https://alpacaplayhouse.com/infra/updates.html and help me adopt any new features that have been added since I last set up my project. Check what I already have and only offer what's new.</div>
+
+    <p style="margin-top: 1rem; font-size: 0.9rem;">Or browse the updates yourself: <a href="/infra/updates.html"><strong>View available updates &rarr;</strong></a></p>
+  </div>
+
   <!-- Footer links -->
   <div class="footer-links">
     <a href="/infra/updates.html">Sync new features</a>
@@ -965,6 +977,17 @@ Start by getting Claude Code, GitHub Pages, and Supabase set up. After that, ask
 // Copy setup prompt
 function copyPrompt() {
   var el = document.getElementById('setup-prompt');
+  var text = el.textContent.replace(/^\s*Copy\s*/, '').trim();
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = el.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
+// Copy update prompt
+function copyUpdatePrompt() {
+  var el = document.getElementById('update-prompt');
   var text = el.textContent.replace(/^\s*Copy\s*/, '').trim();
   navigator.clipboard.writeText(text).then(function() {
     var btn = el.querySelector('.copy-btn');
