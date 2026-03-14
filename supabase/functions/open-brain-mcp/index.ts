@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.47.10";
 
 const MCP_ACCESS_KEY = Deno.env.get("MCP_ACCESS_KEY")!;
 const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY")!;
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -15,19 +16,19 @@ function authenticate(req: Request): boolean {
 }
 
 async function generateEmbedding(text: string): Promise<number[]> {
-  const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: { parts: [{ text }] },
+        outputDimensionality: 768,
+      }),
     },
-    body: JSON.stringify({
-      model: "openai/text-embedding-3-small",
-      input: text,
-    }),
-  });
+  );
   const data = await res.json();
-  return data.data[0].embedding;
+  return data.embedding.values;
 }
 
 async function extractMetadata(text: string): Promise<Record<string, unknown>> {
