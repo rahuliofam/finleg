@@ -5,21 +5,57 @@
 
 ## Core Tables
 
-<!-- The setup wizard populates this section based on your domain -->
+```sql
+app_users (
+  id UUID PK,
+  auth_id UUID UNIQUE,        -- links to Supabase auth.users
+  email TEXT,
+  display_name TEXT,
+  role TEXT ('admin'|'user'|'viewer'),
+  avatar_url TEXT,
+  is_active BOOLEAN,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
+)
 
-```
-(tables will be listed here after setup)
+ai_sessions (
+  id UUID PK,
+  user_id UUID FK→app_users,
+  title TEXT,
+  model TEXT DEFAULT 'gemini-2.5-flash',
+  system_prompt TEXT,
+  metadata JSONB,
+  is_archived BOOLEAN,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
+)
+
+ai_messages (
+  id UUID PK,
+  session_id UUID FK→ai_sessions ON DELETE CASCADE,
+  role TEXT ('user'|'assistant'|'system'),
+  content TEXT,
+  tokens_used INT,
+  model TEXT,
+  metadata JSONB,
+  created_at TIMESTAMPTZ
+)
+
+app_config (
+  id INT PK DEFAULT 1 (singleton),
+  site_name TEXT DEFAULT 'FinLeg',
+  features JSONB,
+  is_active BOOLEAN,
+  updated_at TIMESTAMPTZ
+)
 ```
 
 ## Service Config Tables
 
-These are created when optional services are enabled:
+Created when optional services are enabled:
 
 ```
-telnyx_config    - SMS configuration (single row, id=1)
-resend_config    - Email configuration
-square_config    - Payment processing configuration
-signwell_config  - E-signature configuration
+(added as services are configured)
 ```
 
 ## Common Patterns
