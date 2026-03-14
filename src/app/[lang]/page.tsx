@@ -1,5 +1,6 @@
 import { getDictionary } from "@/i18n/get-dictionary";
 import type { Locale } from "@/i18n/config";
+import Image from "next/image";
 import Link from "next/link";
 
 export default async function HomePage({
@@ -15,9 +16,19 @@ export default async function HomePage({
     <>
       <section className="relative py-24 px-6 text-center bg-gradient-to-b from-slate-900 to-slate-800 text-white">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-            {dict.home.hero.title}
-          </h1>
+          <div className="flex items-center justify-center gap-5 mb-8">
+            <Image
+              src="/finleg-logo.png"
+              alt="Finleg logo"
+              width={80}
+              height={80}
+              className="h-16 sm:h-20 w-auto brightness-0 invert"
+              priority
+            />
+            <span className="font-[family-name:var(--font-playfair)] text-5xl sm:text-6xl font-semibold tracking-tight">
+              Finleg
+            </span>
+          </div>
           <p className="text-lg sm:text-xl text-slate-300 mb-8">
             {dict.home.hero.subtitle}
           </p>
