@@ -14,8 +14,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "AlpacApps",
-  description: "Community management platform",
+  title: "Finleg",
+  description: "Financial and legal hassles — now united in a single AI platform.",
 };
 
 export default function RootLayout({

@@ -1,65 +1,65 @@
 {
   "metadata": {
-    "title": "My Organization",
-    "description": "Community management platform"
+    "title": "Finleg",
+    "description": "Les tracas financiers et juridiques — désormais réunis en une seule plateforme IA."
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "programs": "Programs",
+    "home": "Accueil",
+    "about": "À propos",
+    "programs": "Solutions",
     "contact": "Contact",
-    "signIn": "Sign In",
-    "intranet": "Intranet"
+    "signIn": "Connexion",
+    "intranet": "Tableau de bord"
   },
   "home": {
     "hero": {
-      "title": "Welcome",
-      "subtitle": "Building community, empowering futures",
-      "cta": "Learn More"
+      "title": "Finleg",
+      "subtitle": "Les tracas financiers et juridiques — désormais réunis en une seule plateforme IA.",
+      "cta": "Commencer"
     },
     "mission": {
-      "title": "Our Mission",
-      "description": "We are dedicated to serving our community, supporting education, and strengthening bonds across generations."
+      "title": "L'avenir de la finance et du droit est ici.",
+      "description": "Finleg rassemble les mondes de la gestion financière et de la conformité juridique en une seule plateforme intelligente — pour que vous puissiez vous concentrer sur la croissance de votre entreprise."
     }
   },
   "about": {
-    "title": "About Us",
-    "description": "Learn about our history, mission, and the community we serve.",
+    "title": "À propos de Finleg",
+    "description": "Découvrez notre mission de simplifier l'intersection entre finance et droit.",
     "history": {
-      "title": "Our History",
-      "content": "Our organization has a rich history of community service. We work to maintain traditions while embracing the future."
+      "title": "Notre Histoire",
+      "content": "Finleg est né d'une observation simple : les processus financiers et juridiques sont profondément liés, mais les outils qui les servent sont fragmentés. Nous avons décidé de changer cela."
     }
   },
   "programs": {
-    "title": "Our Programs",
-    "description": "Explore the programs and initiatives we offer to our community.",
+    "title": "Solutions",
+    "description": "Découvrez les outils et services proposés par Finleg.",
     "list": [
       {
-        "title": "Community Programs",
-        "description": "Programs dedicated to serving and strengthening our community."
+        "title": "Automatisation de la Conformité",
+        "description": "Automatisez la conformité réglementaire dans toutes les juridictions avec une surveillance pilotée par l'IA."
       },
       {
-        "title": "Education",
-        "description": "Educational initiatives supporting youth and lifelong learning."
+        "title": "Intelligence Contractuelle",
+        "description": "Analyse, rédaction et évaluation des risques des contrats pilotées par l'IA."
       },
       {
-        "title": "Community Support",
-        "description": "Resources and services that strengthen our community bonds."
+        "title": "Analyses Financières",
+        "description": "Informations financières en temps réel et rapports avec contexte juridique intégré."
       }
     ]
   },
   "contact": {
-    "title": "Contact Us",
-    "description": "Get in touch with us. We'd love to hear from you.",
+    "title": "Contactez-nous",
+    "description": "Contactez l'équipe Finleg.",
     "form": {
-      "name": "Your Name",
-      "email": "Your Email",
-      "message": "Your Message",
-      "submit": "Send Message"
+      "name": "Votre Nom",
+      "email": "Votre Email",
+      "message": "Votre Message",
+      "submit": "Envoyer"
     }
   },
   "footer": {
-    "rights": "All rights reserved.",
-    "language": "Language"
+    "rights": "Tous droits réservés.",
+    "language": "Langue"
   }
 }

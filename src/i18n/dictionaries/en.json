@@ -1,56 +1,73 @@
 {
   "metadata": {
-    "title": "My Organization",
-    "description": "Community management platform"
+    "title": "Finleg",
+    "description": "Financial and legal hassles — now united in a single AI platform."
   },
   "nav": {
     "home": "Home",
     "about": "About",
-    "programs": "Programs",
+    "programs": "Solutions",
     "contact": "Contact",
     "signIn": "Sign In",
-    "intranet": "Intranet"
+    "intranet": "Dashboard"
   },
   "home": {
     "hero": {
-      "title": "Welcome",
-      "subtitle": "Building community, empowering futures",
-      "cta": "Learn More"
+      "title": "Finleg",
+      "subtitle": "Financial and legal hassles — now united in a single AI platform.",
+      "cta": "Get Started"
+    },
+    "features": {
+      "title": "Why Finleg?",
+      "list": [
+        {
+          "title": "AI-Powered Insights",
+          "description": "Leverage cutting-edge AI to navigate complex financial regulations and legal requirements with confidence."
+        },
+        {
+          "title": "Unified Platform",
+          "description": "No more juggling between finance and legal tools. Everything you need, streamlined in one place."
+        },
+        {
+          "title": "Built for Speed",
+          "description": "What used to take days now takes minutes. Automate compliance checks, contract reviews, and financial analysis."
+        }
+      ]
     },
     "mission": {
-      "title": "Our Mission",
-      "description": "We are dedicated to serving our community, supporting education, and strengthening bonds across generations."
+      "title": "The future of finance and law is here.",
+      "description": "Finleg brings together the worlds of financial management and legal compliance into a single, intelligent platform — so you can focus on growing your business."
     }
   },
   "about": {
-    "title": "About Us",
-    "description": "Learn about our history, mission, and the community we serve.",
+    "title": "About Finleg",
+    "description": "Learn about our mission to simplify the intersection of finance and law.",
     "history": {
-      "title": "Our History",
-      "content": "Our organization has a rich history of community service. We work to maintain traditions while embracing the future."
+      "title": "Our Story",
+      "content": "Finleg was born from a simple observation: financial and legal processes are deeply intertwined, yet the tools that serve them are fragmented. We set out to change that."
     }
   },
   "programs": {
-    "title": "Our Programs",
-    "description": "Explore the programs and initiatives we offer to our community.",
+    "title": "Solutions",
+    "description": "Explore the tools and services Finleg offers.",
     "list": [
       {
-        "title": "Community Programs",
-        "description": "Programs dedicated to serving and strengthening our community."
+        "title": "Compliance Automation",
+        "description": "Automate regulatory compliance across jurisdictions with AI-driven monitoring."
       },
       {
-        "title": "Education",
-        "description": "Educational initiatives supporting youth and lifelong learning."
+        "title": "Contract Intelligence",
+        "description": "AI-powered contract analysis, drafting, and risk assessment."
       },
       {
-        "title": "Community Support",
-        "description": "Resources and services that strengthen our community bonds."
+        "title": "Financial Analytics",
+        "description": "Real-time financial insights and reporting with built-in legal context."
       }
     ]
   },
   "contact": {
     "title": "Contact Us",
-    "description": "Get in touch with us. We'd love to hear from you.",
+    "description": "Get in touch with the Finleg team.",
     "form": {
       "name": "Your Name",
       "email": "Your Email",
