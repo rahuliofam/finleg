@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "css:build": "echo 'No-op: Next.js builds Tailwind via PostCSS automatically. This script exists so the bump-version CI workflow and CLAUDE.md instructions work for both Next.js and vanilla HTML setups.'",
     "lint": "eslint"
   },
   "dependencies": {
