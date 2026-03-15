@@ -1,12 +1,12 @@
 {
-  "version": "v260315.18 5:32a",
-  "release": 53,
-  "sha": "7fb1969",
-  "fullSha": "7fb1969d54e981da096b7b09ab60ea93c2b8f6a7",
+  "version": "v260315.19 5:41a",
+  "release": 54,
+  "sha": "a2da188",
+  "fullSha": "a2da18863dd5525d966e633f7c47addd9fd9b329",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 10:32:16+00",
-  "commits": [{"sha":"7fb1969","message":"Upload 1,880 accounting files to R2 + Supabase search index; rewrite File Vault with metadata filters","author":"Rahul"}]
+  "pushedAt": "2026-03-15 10:41:42+00",
+  "commits": [{"sha":"a2da188","message":"Refactor File Vault to columnar table with sortable headers","author":"Rahul"}]
 }
