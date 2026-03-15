@@ -60,7 +60,7 @@ const FALLBACK_CONFIG = {
     weights: { light: 300, regular: 400, medium: 500, semibold: 600, bold: 700 },
   },
   logos: {
-    base_url: 'https://aphrrfprbixmhissnjfn.supabase.co/storage/v1/object/public/housephotos/logos',
+    base_url: 'https://gjdvzzxsrzuorguwkaih.supabase.co/storage/v1/object/public/housephotos/logos',
     icon_dark: 'alpaca-head-black-transparent.png',
     icon_light: 'alpaca-head-white-transparent.png',
     wordmark_dark: 'wordmark-black-transparent.png',
