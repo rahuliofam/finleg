@@ -297,7 +297,7 @@ export default function FileVaultPage() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && doSearch(0)}
           placeholder="Search files by name..."
-          className="flex-1 min-w-[200px] px-4 py-2.5 border border-slate-300 rounded-lg bg-white text-sm outline-none focus:border-amber-600"
+          className="flex-1 min-w-[200px] px-4 py-2.5 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:border-amber-600"
         />
         <button
           onClick={() => doSearch(0)}
@@ -312,7 +312,7 @@ export default function FileVaultPage() {
         <select
           value={extFilter}
           onChange={(e) => { setExtFilter(e.target.value); }}
-          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm outline-none"
+          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none"
         >
           <option value="">All types</option>
           <option value="jpg,jpeg,png,gif,bmp,tiff,webp,heic">Photos</option>
@@ -325,7 +325,7 @@ export default function FileVaultPage() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm outline-none"
+          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none"
         >
           <option value="">Relevance</option>
           <option value="size">Size</option>
@@ -335,7 +335,7 @@ export default function FileVaultPage() {
         <select
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
-          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm outline-none"
+          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none"
         >
           <option value="desc">Descending</option>
           <option value="asc">Ascending</option>
