@@ -1,5 +1,8 @@
+"use client";
+
+import { AuthGuard } from "@/components/auth-guard";
 import type { ReactNode } from "react";
 
 export default function SessionsLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  return <AuthGuard>{children}</AuthGuard>;
 }
