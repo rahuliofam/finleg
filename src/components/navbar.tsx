@@ -19,8 +19,8 @@ export function Navbar() {
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-12 w-auto" />
-            <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-[6.75rem] w-auto" />
+            <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-8 w-auto" />
+            <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-6 w-auto" />
           </Link>
           <span className="text-lg text-slate-500 font-mono hidden sm:inline">
             {versionData.version}
