@@ -11,11 +11,12 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-white/5 blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 lg:py-36 w-full">
-          <div className="flex flex-col lg:flex-row items-stretch gap-12 lg:gap-20">
-            {/* Left: Wordmark + Text */}
-            <div className="flex-1 flex flex-col items-center lg:items-start justify-center">
-              <div className="mb-2 lg:mb-3">
+        <div className="relative max-w-6xl mx-auto px-6 py-10 sm:py-16 lg:py-20 w-full">
+          <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
+            {/* Left: Wordmark + Text + Buttons — top-aligned with logo box */}
+            <div className="flex-1 flex flex-col items-center lg:items-start">
+              {/* Wordmark — pushed up */}
+              <div className="-mt-[200px] mb-4">
                 <Image
                   src="/finleg-wordmark-white.png"
                   alt="Finleg"
@@ -25,10 +26,11 @@ export default function HomePage() {
                   priority
                 />
               </div>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed mt-2 mb-5 max-w-xl text-center lg:text-left">
+              {/* Text directly under wordmark, center-aligned with it */}
+              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed mb-4 max-w-xl text-center lg:text-left">
                 Financial and legal hassles — now united in a single AI platform.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center lg:items-start gap-4 mt-auto">
                 <Link
                   href="/signin"
                   className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-[#1B6B3A] rounded-full font-semibold text-lg hover:bg-white/90 transition-all hover:shadow-lg hover:shadow-white/20"
@@ -50,9 +52,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Logo prominently displayed — stretches to match left column height */}
+            {/* Right: Logo box — top-aligned with wordmark */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <div className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] scale-[1.25] origin-center">
+              <div className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] scale-[1.25] origin-top">
                 <div className="absolute inset-0 rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 rotate-6" />
                 <div className="absolute inset-0 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/15 -rotate-3" />
                 <div className="absolute inset-4 rounded-2xl bg-white/90 flex items-center justify-center shadow-2xl">
