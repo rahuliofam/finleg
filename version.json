@@ -1,12 +1,12 @@
 {
-  "version": "v260314.14 9:48p",
-  "release": 14,
-  "sha": "3a81983",
-  "fullSha": "3a81983db9558d5d9cd9ace9c2ae53f02ea6bb3d",
+  "version": "v260314.15 10:18p",
+  "release": 15,
+  "sha": "9b67d74",
+  "fullSha": "9b67d74619542361d897198796c9119a43e3c1e4",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:48:26+00",
-  "commits": [{"sha":"3a81983","message":"Fix low contrast text in File Vault dropdowns and search input","author":"Rahul"}]
+  "pushedAt": "2026-03-15 03:18:52+00",
+  "commits": [{"sha":"5055924","message":"Fix hero layout alignment — remove hacks, center content properly","author":"Rahul"},{"sha":"9b67d74","message":"Split File Vault into 3 tabs: Photos, General Files, Financial & Legal","author":"Rahul"}]
 }
