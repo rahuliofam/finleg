@@ -1,12 +1,12 @@
 {
-  "version": "v260315.29 2:21p",
-  "release": 64,
-  "sha": "cc37352",
-  "fullSha": "cc37352dca57a4a36b48263503c7a8baaccfad4b",
+  "version": "v260315.30 2:33p",
+  "release": 65,
+  "sha": "fdd0374",
+  "fullSha": "fdd0374715b04a947e64092f84962ea20d7935a8",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 19:21:28+00",
-  "commits": [{"sha":"cc37352","message":"Remove hardcoded secrets from all scripts, use dotenv + process.env","author":"Rahul"}]
+  "pushedAt": "2026-03-15 19:33:28+00",
+  "commits": [{"sha":"fdd0374","message":"Add email sign-in option for automated testing browsers","author":"Rahul"}]
 }
