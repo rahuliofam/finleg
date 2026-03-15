@@ -1,16 +1,6 @@
-import { getDictionary } from "@/i18n/get-dictionary";
-import type { Locale } from "@/i18n/config";
 import Image from "next/image";
 
-export default async function AboutPage({
-  params,
-}: {
-  params: Promise<{ lang: string }>;
-}) {
-  const { lang: rawLang } = await params;
-  const lang = rawLang as Locale;
-  const dict = await getDictionary(lang);
-
+export default function AboutPage() {
   return (
     <>
       {/* Hero banner */}
@@ -27,10 +17,10 @@ export default async function AboutPage({
             className="w-48 sm:w-64 mx-auto mb-8"
           />
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-            {dict.about.title}
+            About Finleg
           </h1>
           <p className="text-xl sm:text-2xl font-light text-white/85 max-w-2xl mx-auto">
-            {dict.about.description}
+            Our goal is to take the hassle out of legal and financial planning and management for a few select people.
           </p>
         </div>
         <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 60" preserveAspectRatio="none">
@@ -53,10 +43,10 @@ export default async function AboutPage({
             </div>
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-                {dict.about.history.title}
+                Our Story
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed">
-                {dict.about.history.content}
+                Finleg was born from a simple observation: AI is cool, and financial and legal stuff is never fun.
               </p>
             </div>
           </div>

@@ -1,17 +1,15 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth-context";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function IntranetHeader() {
   const { user, signOut } = useAuth();
   const router = useRouter();
-  const params = useParams();
-  const lang = (params.lang as string) || "en";
 
   const handleSignOut = async () => {
     await signOut();
-    router.replace(`/${lang}`);
+    router.replace("/");
   };
 
   return (

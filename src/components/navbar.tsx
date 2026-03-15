@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { Dictionary } from "@/i18n/types";
-import { type Locale, INTRANET_LOCALES } from "@/i18n/config";
 import { useAuth } from "@/contexts/auth-context";
 
-export function Navbar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
+export function Navbar() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-
-  const intranetLang = INTRANET_LOCALES.includes(lang) ? lang : "en";
 
   // Hide public navbar on intranet pages (intranet has its own header)
   if (pathname.includes("/intranet")) {
@@ -20,14 +16,14 @@ export function Navbar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        <Link href={`/${lang}`} className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-10 w-auto" />
           <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-9 w-auto" />
         </Link>
 
         <div className="flex items-center gap-4">
           <Link
-            href={`/${lang}/about`}
+            href="/about"
             className={`text-sm font-medium transition-colors hover:text-[#1B6B3A] ${
               pathname.includes("/about") ? "text-[#1B6B3A]" : "text-slate-700"
             }`}
@@ -37,17 +33,17 @@ export function Navbar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
           {!loading && (
             user ? (
               <Link
-                href={`/${intranetLang}/intranet`}
+                href="/intranet"
                 className="text-sm font-medium px-5 py-2 bg-[#1B6B3A] hover:bg-[#145530] text-white rounded-full transition-colors"
               >
-                {dict.nav.intranet}
+                Dashboard
               </Link>
             ) : (
               <Link
-                href={`/${intranetLang}/signin`}
+                href="/signin"
                 className="text-sm font-medium px-5 py-2 bg-[#1B6B3A] hover:bg-[#145530] text-white rounded-full transition-colors"
               >
-                {dict.nav.signIn}
+                Sign In
               </Link>
             )
           )}

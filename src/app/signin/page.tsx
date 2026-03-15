@@ -1,14 +1,11 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth-context";
-import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function SignInPage() {
   const { signInWithGoogle } = useAuth();
-  const params = useParams();
-  const lang = (params.lang as string) || "en";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-6">
@@ -16,14 +13,14 @@ export default function SignInPage() {
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-6">
             <Image
-              src="/finleg-logo.png"
+              src="/finleg-logo-transparent.png"
               alt="Finleg"
               width={48}
               height={48}
               className="h-10 w-auto"
             />
             <Image
-              src="/finleg-wordmark.png"
+              src="/finleg-wordmark-transparent.png"
               alt="Finleg"
               width={120}
               height={36}
@@ -50,7 +47,7 @@ export default function SignInPage() {
 
         <div className="mt-8 text-center">
           <Link
-            href={`/${lang}`}
+            href="/"
             className="text-sm text-slate-500 hover:text-[#1B6B3A] transition-colors"
           >
             Back to home

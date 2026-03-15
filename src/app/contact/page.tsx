@@ -1,21 +1,10 @@
-import { getDictionary } from "@/i18n/get-dictionary";
-import type { Locale } from "@/i18n/config";
-
-export default async function ContactPage({
-  params,
-}: {
-  params: Promise<{ lang: string }>;
-}) {
-  const { lang: rawLang } = await params;
-  const lang = rawLang as Locale;
-  const dict = await getDictionary(lang);
-
+export default function ContactPage() {
   return (
     <div className="py-20 px-6">
       <div className="max-w-xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">{dict.contact.title}</h1>
+        <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
         <p className="text-lg text-slate-600 mb-10">
-          {dict.contact.description}
+          Get in touch with the Finleg team.
         </p>
 
         <form className="space-y-6">
@@ -24,7 +13,7 @@ export default async function ContactPage({
               htmlFor="name"
               className="block text-sm font-medium text-slate-700 mb-1"
             >
-              {dict.contact.form.name}
+              Your Name
             </label>
             <input
               id="name"
@@ -38,7 +27,7 @@ export default async function ContactPage({
               htmlFor="email"
               className="block text-sm font-medium text-slate-700 mb-1"
             >
-              {dict.contact.form.email}
+              Your Email
             </label>
             <input
               id="email"
@@ -52,7 +41,7 @@ export default async function ContactPage({
               htmlFor="message"
               className="block text-sm font-medium text-slate-700 mb-1"
             >
-              {dict.contact.form.message}
+              Your Message
             </label>
             <textarea
               id="message"
@@ -65,7 +54,7 @@ export default async function ContactPage({
             type="submit"
             className="w-full px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition-colors"
           >
-            {dict.contact.form.submit}
+            Send Message
           </button>
         </form>
       </div>

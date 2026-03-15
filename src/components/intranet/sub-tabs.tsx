@@ -8,7 +8,6 @@ import { usePageDisplayConfig } from "@/hooks/use-page-display-config";
 export function SubTabs() {
   const pathname = usePathname();
   const params = useParams();
-  const lang = (params.lang as string) || "en";
   const { getVisibleTabs, loading } = usePageDisplayConfig();
 
   const getActiveSection = () => {
@@ -52,7 +51,7 @@ export function SubTabs() {
           {visibleTabs.map((tab) => (
             <Link
               key={tab.tab_key}
-              href={`/${lang}/intranet/${activeSection}/${tab.tab_key}`}
+              href={`/intranet/${activeSection}/${tab.tab_key}`}
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.tab_key
                   ? "text-amber-700 border-b-2 border-amber-600"
@@ -64,7 +63,7 @@ export function SubTabs() {
           ))}
           {activeSection === "admin" && (
             <Link
-              href={`/${lang}/intranet/admin/page-display`}
+              href="/intranet/admin/page-display"
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
                 isPageDisplayActive
                   ? "text-amber-700 border-b-2 border-amber-600"

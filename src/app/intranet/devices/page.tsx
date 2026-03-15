@@ -1,11 +1,8 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { usePageDisplayConfig } from "@/hooks/use-page-display-config";
 
 export default function DevicesPage() {
-  const params = useParams();
-  const lang = (params.lang as string) || "en";
   const { getVisibleTabs, loading } = usePageDisplayConfig();
 
   if (loading) return null;

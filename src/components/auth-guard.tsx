@@ -1,20 +1,18 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth-context";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
 export function AuthGuard({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const params = useParams();
-  const lang = (params.lang as string) || "en";
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace(`/${lang}/signin`);
+      router.replace("/signin");
     }
-  }, [user, loading, router, lang]);
+  }, [user, loading, router]);
 
   if (loading) {
     return (
