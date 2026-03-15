@@ -1,12 +1,12 @@
 {
-  "version": "v260315.24 1:24p",
-  "release": 59,
-  "sha": "445b59f",
-  "fullSha": "445b59fb4af9c96e0329da7acf89916efecc2755",
+  "version": "v260315.25 1:28p",
+  "release": 60,
+  "sha": "d6073c3",
+  "fullSha": "d6073c36354320d726af0dadbee3870818a2f81d",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 18:24:09+00",
-  "commits": [{"sha":"445b59f","message":"Add family docs to R2 document library — legal, taxes, investments, other (#13)","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 18:28:39+00",
+  "commits": [{"sha":"d6073c3","message":"Add R2 file key + source file name to all statement summary tables","author":"Rahul"}]
 }
