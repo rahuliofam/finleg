@@ -29,17 +29,28 @@ import { pipeline } from 'stream/promises';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import { config } from 'dotenv';
+
+config(); // Load .env
 
 const execAsync = promisify(exec);
 
 // ── Config ──
-const SUPABASE_URL = 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzQzMTk1NywiZXhwIjoyMDg5MDA3OTU3fQ.iYlTfc9IhMpOphSLUjBCTEto2Mq_1dD1-gVIEo4LUrc';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_SERVICE_KEY) {
+  console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env');
+  process.exit(1);
+}
 
 // Cloudflare R2 via S3 API
-const R2_ACCOUNT_ID = '9cd3a280a54ce2a5b382602f0247b577';
-const R2_ACCESS_KEY = 'e096a89017992c90daf23b7be0b5da0a';
-const R2_SECRET_KEY = 'fc4716d54e00d0e7f936e442dfc7b6240d3e5163c721237f24936ed95be3764f';
+const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
+const R2_ACCESS_KEY = process.env.R2_ACCESS_KEY_ID;
+const R2_SECRET_KEY = process.env.R2_SECRET_ACCESS_KEY;
+if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY || !R2_SECRET_KEY) {
+  console.error('Missing R2 credentials in .env (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)');
+  process.exit(1);
+}
 
 const s3 = new S3Client({
   region: 'auto',

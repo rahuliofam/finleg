@@ -15,6 +15,9 @@ import { exec } from 'child_process';
 import { readdirSync, statSync } from 'fs';
 import { join, basename, extname, relative } from 'path';
 import { promisify } from 'util';
+import { config } from 'dotenv';
+
+config(); // Load .env
 
 const execAsync = promisify(exec);
 
@@ -23,8 +26,12 @@ const DRY_RUN = process.argv.includes('--dry-run');
 const SKIP_EXISTING = process.argv.includes('--skip-existing');
 const PARALLEL = 10;
 
-const SUPABASE_URL = 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzQzMTk1NywiZXhwIjoyMDg5MDA3OTU3fQ.iYlTfc9IhMpOphSLUjBCTEto2Mq_1dD1-gVIEo4LUrc';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_SERVICE_KEY) {
+  console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
