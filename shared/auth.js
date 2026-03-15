@@ -429,47 +429,11 @@ async function handleAuthChange(session) {
         currentUser.displayName = session.user.user_metadata?.full_name || session.user.email;
       }
     } else {
-      // No invitation found — auto-create as collaborator
-      authLog.info('No invitation found — auto-creating as collaborator', { email: userEmail });
-      const displayName = session.user.user_metadata?.full_name || userEmail.split('@')[0];
-
-      let newUser = null;
-      let createErr = null;
-      try {
-        const result = await withTimeout(
-          supabase
-            .from('app_users')
-            .insert({
-              auth_user_id: session.user.id,
-              email: userEmail,
-              display_name: displayName,
-              ...splitDisplayName(displayName),
-              role: 'collaborator',
-            })
-            .select()
-            .single(),
-          AUTH_TIMEOUT_MS,
-          'User creation timed out'
-        );
-        newUser = result.data;
-        createErr = result.error;
-      } catch (timeoutError) {
-        authLog.warn('User creation timed out', timeoutError.message);
-        createErr = timeoutError;
-      }
-
-      if (!createErr && newUser) {
-        authLog.info('Created collaborator app_user', { email: userEmail });
-        currentAppUser = newUser;
-        currentRole = 'collaborator';
-        currentUser.displayName = displayName;
-        cacheAuthState(currentUser, newUser, 'collaborator');
-      } else {
-        authLog.error('Error creating app_user', createErr);
-        currentAppUser = null;
-        currentRole = 'unauthorized';
-        currentUser.displayName = session.user.user_metadata?.full_name || session.user.email;
-      }
+      // No invitation found — deny access
+      authLog.info('No invitation found — access denied', { email: userEmail });
+      currentAppUser = null;
+      currentRole = 'unauthorized';
+      currentUser.displayName = session.user.user_metadata?.full_name || session.user.email;
     }
   }
 
