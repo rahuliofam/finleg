@@ -137,17 +137,22 @@ export default function LedgerNotesTab() {
     },
   ];
 
-  const topVendors = [
-    { name: "Chase Bank (CC payments)", total: "$278,732" },
-    { name: "Robinhood", total: "$77,835" },
-    { name: "US Treasury (taxes)", total: "$59,590" },
-    { name: "Genesis Structures", total: "$55,663" },
-    { name: "US Bank Loan", total: "$46,502" },
-    { name: "PNC Mortgage", total: "$37,500" },
-    { name: "Decentralnet", total: "$25,000" },
-    { name: "Swan", total: "$25,000" },
-    { name: "Kathy Sonnad", total: "$21,983" },
-    { name: "US Bank", total: "$20,603" },
+  const topCategories = [
+    { name: "Household Equipment", total: "$24,670" },
+    { name: "Trailer Repair (AAP)", total: "$19,610" },
+    { name: "Repairs & Maintenance (WA)", total: "$15,564" },
+    { name: "ATM Travel Cash", total: "$14,398" },
+    { name: "Utilities (AAP)", total: "$14,091" },
+    { name: "Repairs & Maintenance (AAP)", total: "$13,012" },
+    { name: "Groceries", total: "$10,951" },
+    { name: "Household Furnishing", total: "$9,724" },
+    { name: "Hotel & Lodging (Rahul)", total: "$9,452" },
+    { name: "Health Insurance", total: "$8,601" },
+    { name: "Accounting Expenses", total: "$8,118" },
+    { name: "Airfare (Rahul)", total: "$7,108" },
+    { name: "Meals - Travel (Rahul)", total: "$6,773" },
+    { name: "Cleaning (AAP)", total: "$5,870" },
+    { name: "Property Insurance (WA)", total: "$5,431" },
   ];
 
   const severityStyles = {
@@ -198,11 +203,15 @@ export default function LedgerNotesTab() {
         </div>
       </div>
 
-      {/* Monthly Trend */}
+      {/* Monthly Spending */}
       <div className="rounded-xl border border-slate-200 p-5">
-        <h2 className="text-lg font-semibold text-slate-900 mb-3">
-          Monthly Overview
+        <h2 className="text-lg font-semibold text-slate-900 mb-1">
+          Monthly Spending
         </h2>
+        <p className="text-xs text-slate-500 mb-3">
+          Excludes transfers, CC payments, vehicle purchases, CapEx, loans,
+          taxes, investments, and payroll
+        </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -214,133 +223,61 @@ export default function LedgerNotesTab() {
                   Transactions
                 </th>
                 <th className="text-right py-2 px-3 font-medium text-slate-600">
-                  Income
-                </th>
-                <th className="text-right py-2 px-3 font-medium text-slate-600">
-                  Expenses
-                </th>
-                <th className="text-right py-2 px-3 font-medium text-slate-600">
-                  Net
+                  Spending
                 </th>
               </tr>
             </thead>
             <tbody>
               {[
-                {
-                  m: "Jan 2025",
-                  t: 567,
-                  i: 127829,
-                  e: -89541,
-                },
-                { m: "Feb 2025", t: 556, i: 88359, e: -72207 },
-                {
-                  m: "Mar 2025",
-                  t: 537,
-                  i: 144986,
-                  e: -100360,
-                },
-                {
-                  m: "Apr 2025",
-                  t: 683,
-                  i: 326642,
-                  e: -134159,
-                },
-                {
-                  m: "May 2025",
-                  t: 623,
-                  i: 122813,
-                  e: -99222,
-                },
-                {
-                  m: "Jun 2025",
-                  t: 596,
-                  i: 104724,
-                  e: -103328,
-                },
-                {
-                  m: "Jul 2025",
-                  t: 721,
-                  i: 276650,
-                  e: -129305,
-                },
-                {
-                  m: "Aug 2025",
-                  t: 639,
-                  i: 178225,
-                  e: -108293,
-                },
-                {
-                  m: "Sep 2025",
-                  t: 697,
-                  i: 152936,
-                  e: -134178,
-                },
-                {
-                  m: "Oct 2025",
-                  t: 756,
-                  i: 255419,
-                  e: -118287,
-                },
-                {
-                  m: "Nov 2025",
-                  t: 696,
-                  i: 135354,
-                  e: -72662,
-                },
-                {
-                  m: "Dec 2025",
-                  t: 698,
-                  i: 239934,
-                  e: -138693,
-                },
-                {
-                  m: "Jan 2026",
-                  t: 832,
-                  i: 170660,
-                  e: -91741,
-                },
-                {
-                  m: "Feb 2026",
-                  t: 569,
-                  i: 137549,
-                  e: -76760,
-                },
-                { m: "Mar 2026*", t: 40, i: 2087, e: -1281 },
+                { m: "Jan 2025", t: 209, s: 24731 },
+                { m: "Feb 2025", t: 213, s: 25318 },
+                { m: "Mar 2025", t: 196, s: 21882 },
+                { m: "Apr 2025", t: 239, s: 24073 },
+                { m: "May 2025", t: 222, s: 26892 },
+                { m: "Jun 2025", t: 208, s: 23372 },
+                { m: "Jul 2025", t: 239, s: 23308 },
+                { m: "Aug 2025", t: 220, s: 21175 },
+                { m: "Sep 2025", t: 212, s: 25698 },
+                { m: "Oct 2025", t: 246, s: 25273 },
+                { m: "Nov 2025", t: 231, s: 26742 },
+                { m: "Dec 2025", t: 202, s: 37426 },
+                { m: "Jan 2026", t: 300, s: 24945 },
+                { m: "Feb 2026", t: 213, s: 27012 },
+                { m: "Mar 2026*", t: 18, s: 459 },
               ].map((row) => (
                 <tr key={row.m} className="border-b border-slate-100">
                   <td className="py-2 px-3 text-slate-700">{row.m}</td>
                   <td className="py-2 px-3 text-right text-slate-600">
                     {row.t}
                   </td>
-                  <td className="py-2 px-3 text-right text-green-700">
-                    ${row.i.toLocaleString()}
-                  </td>
-                  <td className="py-2 px-3 text-right text-red-600">
-                    -${Math.abs(row.e).toLocaleString()}
-                  </td>
-                  <td
-                    className={`py-2 px-3 text-right font-medium ${
-                      row.i + row.e >= 0 ? "text-green-700" : "text-red-600"
-                    }`}
-                  >
-                    {row.i + row.e >= 0 ? "$" : "-$"}
-                    {Math.abs(row.i + row.e).toLocaleString()}
+                  <td className="py-2 px-3 text-right text-red-600 font-medium">
+                    ${row.s.toLocaleString()}
                   </td>
                 </tr>
               ))}
+              <tr className="border-t-2 border-slate-300 font-semibold">
+                <td className="py-2 px-3 text-slate-900">
+                  Avg/month (full months)
+                </td>
+                <td className="py-2 px-3 text-right text-slate-600">224</td>
+                <td className="py-2 px-3 text-right text-red-700">$25,489</td>
+              </tr>
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-slate-400 mt-2">* Partial month</p>
+        <p className="text-xs text-slate-400 mt-2">
+          * Partial month. Includes household, property maintenance, travel,
+          food, subscriptions, insurance, medical, and other day-to-day expenses.
+        </p>
       </div>
 
-      {/* Top Vendors */}
+      {/* Top Spending Categories */}
       <div className="rounded-xl border border-slate-200 p-5">
         <h2 className="text-lg font-semibold text-slate-900 mb-3">
-          Top 10 Vendors by Spend
+          Top Spending Categories (15 months)
         </h2>
         <div className="grid grid-cols-2 gap-2">
-          {topVendors.map((v, i) => (
+          {topCategories.map((v, i) => (
             <div
               key={v.name}
               className="flex justify-between items-center py-1.5 px-3 rounded-lg bg-slate-50"
