@@ -60,10 +60,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect") || "/intranet";
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin + "/intranet",
+        redirectTo: window.location.origin + redirect,
       },
     });
   };

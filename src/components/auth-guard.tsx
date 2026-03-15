@@ -10,7 +10,8 @@ export function AuthGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/signin");
+      const returnTo = encodeURIComponent(window.location.pathname);
+      router.replace(`/signin?redirect=${returnTo}`);
     }
   }, [user, loading, router]);
 
