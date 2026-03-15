@@ -1,12 +1,12 @@
 {
-  "version": "v260315.02 12:01a",
-  "release": 37,
-  "sha": "5d65bb8",
-  "fullSha": "5d65bb828070633002d8b57fef83e22c70c08062",
+  "version": "v260315.03 12:14a",
+  "release": 38,
+  "sha": "ef8693e",
+  "fullSha": "ef8693e350348d33e169841900ab0d69ba1a3396",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 05:01:21+00",
-  "commits": [{"sha":"5d65bb8","message":"Restore sessions page features: transcript, copy, share (#7)","author":"Rahul"}]
+  "pushedAt": "2026-03-15 05:14:51+00",
+  "commits": [{"sha":"ef8693e","message":"Redirect authenticated users away from signin page","author":"Rahul"}]
 }
