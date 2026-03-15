@@ -11,23 +11,23 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="flex flex-col items-center gap-4 mb-8">
             <Image
               src="/finleg-logo-transparent.png"
               alt="Finleg"
-              width={48}
-              height={48}
-              className="h-10 w-auto"
+              width={200}
+              height={200}
+              className="w-48 h-auto"
             />
             <Image
               src="/finleg-wordmark-transparent.png"
               alt="Finleg"
-              width={120}
-              height={36}
-              className="h-8 w-auto"
+              width={200}
+              height={60}
+              className="w-48 h-auto"
             />
           </div>
-          <p className="text-sm text-slate-500">
+          <p className="text-2xl text-slate-500">
             Sign in to access your dashboard
           </p>
         </div>
