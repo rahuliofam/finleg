@@ -1,11 +1,27 @@
 "use client";
 
+import { Suspense } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
 import CenteredBrandLayout from "@/components/centered-brand-layout";
 
-export default function SignInPage() {
-  const { signInWithGoogle } = useAuth();
+function SignInContent() {
+  const { user, loading, signInWithGoogle } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (!loading && user) {
+      const redirect = searchParams.get("redirect") || "/intranet";
+      router.replace(redirect);
+    }
+  }, [user, loading, router, searchParams]);
+
+  if (loading || user) {
+    return null;
+  }
 
   return (
     <CenteredBrandLayout>
@@ -35,5 +51,13 @@ export default function SignInPage() {
         </Link>
       </div>
     </CenteredBrandLayout>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInContent />
+    </Suspense>
   );
 }
