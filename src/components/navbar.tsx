@@ -29,6 +29,14 @@ export function Navbar() {
 
         <div className="flex items-center gap-4">
           <Link
+            href="/sessions"
+            className={`text-sm font-medium transition-colors hover:text-[#1B6B3A] ${
+              pathname.includes("/sessions") ? "text-[#1B6B3A]" : "text-slate-700"
+            }`}
+          >
+            Sessions
+          </Link>
+          <Link
             href="/about"
             className={`text-sm font-medium transition-colors hover:text-[#1B6B3A] ${
               pathname.includes("/about") ? "text-[#1B6B3A]" : "text-slate-700"
