@@ -25,11 +25,11 @@ export default async function HomePage({
             <div className="flex-1 text-center lg:text-left">
               <div className="mb-6 lg:mb-8">
                 <Image
-                  src="/finleg-wordmark.png"
+                  src="/finleg-wordmark-white.png"
                   alt="Finleg"
                   width={600}
                   height={180}
-                  className="h-44 sm:h-56 lg:h-72 w-auto mx-auto lg:mx-0 -my-8 sm:-my-12 lg:-my-16 invert contrast-200 mix-blend-screen drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                  className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto lg:mx-0"
                   priority
                 />
               </div>
@@ -65,7 +65,7 @@ export default async function HomePage({
                 <div className="absolute inset-0 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/15 -rotate-3" />
                 <div className="absolute inset-4 rounded-2xl bg-white/90 flex items-center justify-center shadow-2xl">
                   <Image
-                    src="/finleg-logo.png"
+                    src="/finleg-logo-transparent.png"
                     alt="Finleg Logo"
                     width={400}
                     height={300}
