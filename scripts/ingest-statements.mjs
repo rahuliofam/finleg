@@ -412,6 +412,8 @@ async function parsePdfWithClaude(pdfPath, accountType) {
 async function insertCcStatement(doc, parsed) {
   const summaryRow = {
     document_id: doc.id,
+    r2_key: doc.r2_key,
+    source_file_name: doc.filename,
     institution: doc.institution,
     account_name: doc.account_name,
     account_number: doc.account_number,
@@ -481,6 +483,8 @@ async function insertCcStatement(doc, parsed) {
 async function insertCheckingStatement(doc, parsed) {
   const summaryRow = {
     document_id: doc.id,
+    r2_key: doc.r2_key,
+    source_file_name: doc.filename,
     institution: doc.institution,
     account_name: doc.account_name,
     account_number: doc.account_number,
@@ -544,6 +548,8 @@ async function insertCheckingStatement(doc, parsed) {
 async function insertInvestmentStatement(doc, parsed) {
   const summaryRow = {
     document_id: doc.id,
+    r2_key: doc.r2_key,
+    source_file_name: doc.filename,
     institution: doc.institution,
     account_name: doc.account_name,
     account_number: doc.account_number,
@@ -693,6 +699,8 @@ async function insertInvestmentStatement(doc, parsed) {
 async function insertLoanStatement(doc, parsed) {
   const summaryRow = {
     document_id: doc.id,
+    r2_key: doc.r2_key,
+    source_file_name: doc.filename,
     institution: doc.institution,
     account_name: doc.account_name,
     account_number: doc.account_number,
