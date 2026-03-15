@@ -36,7 +36,7 @@
     // CSS applies .aap-header__icon { height: 30px }.
     var header = document.getElementById('siteHeader');
     if (header && !header.children.length) {
-      var logoBase = 'https://aphrrfprbixmhissnjfn.supabase.co/storage/v1/object/public/housephotos/logos';
+      var logoBase = 'https://gjdvzzxsrzuorguwkaih.supabase.co/storage/v1/object/public/housephotos/logos';
       header.innerHTML =
         '<header class="aap-header aap-header--solid aap-header--dark" id="aap-header">' +
           '<div class="aap-header__inner">' +
