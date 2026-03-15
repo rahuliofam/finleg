@@ -1,12 +1,12 @@
 {
-  "version": "v260315.22 6:09a",
-  "release": 57,
-  "sha": "577f07d",
-  "fullSha": "577f07d875eab4ec0a5c7ec70f90b463e2fee6c9",
+  "version": "v260315.23 1:20p",
+  "release": 58,
+  "sha": "3d95832",
+  "fullSha": "3d95832fd414071604a1ed694b82c8da7ddebb15",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 11:09:00+00",
-  "commits": [{"sha":"577f07d","message":"Add Statements tab to Bookkeeping + statement ingestion plan doc (#11)","author":"Rahul"}]
+  "pushedAt": "2026-03-15 18:20:28+00",
+  "commits": [{"sha":"3d95832","message":"Add statement ingestion pipeline + Phase 2 tables","author":"Rahul"}]
 }
