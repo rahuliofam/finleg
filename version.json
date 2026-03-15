@@ -1,12 +1,12 @@
 {
-  "version": "v260314.31 11:26p",
-  "release": 31,
-  "sha": "d15844f",
-  "fullSha": "d15844f1a761d8d7bd454c9b9e209e5fc380bad2",
+  "version": "v260314.32 11:30p",
+  "release": 32,
+  "sha": "deaabc1",
+  "fullSha": "deaabc1d590ff075807fedcc67cfa5071c1a55f6",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 04:26:58+00",
-  "commits": [{"sha":"eace924","message":"Update homepage tagline to include 'Not for public consumption'","author":"Rahul"},{"sha":"d15844f","message":"Merge: update homepage tagline","author":"Rahul"}]
+  "pushedAt": "2026-03-15 04:30:48+00",
+  "commits": [{"sha":"1a390e7","message":"Use dark green (#0f3d1e) navbar color matching brand scheme","author":"Rahul"},{"sha":"deaabc1","message":"Merge: dark green navbar color","author":"Rahul"}]
 }
