@@ -15,14 +15,14 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-16">
             {/* Left: Wordmark + Text + Buttons — top-aligned with logo box */}
             <div className="flex-1 flex flex-col items-center lg:items-start">
-              {/* Wordmark — pushed up */}
-              <div className="-mt-[200px] mb-4">
+              {/* Wordmark — positioned up */}
+              <div className="-mt-[130px] mb-4">
                 <Image
                   src="/finleg-wordmark-white.png"
                   alt="Finleg"
                   width={720}
                   height={216}
-                  className="w-full scale-[1.2] origin-left mx-auto lg:mx-0"
+                  className="w-full max-w-md sm:max-w-lg lg:max-w-xl"
                   priority
                 />
               </div>
