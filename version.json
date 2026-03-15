@@ -1,12 +1,12 @@
 {
-  "version": "v260315.17 5:28a",
-  "release": 52,
-  "sha": "45d5aeb",
-  "fullSha": "45d5aebd78d4155f25f69e39cf8e4fa8c201ec23",
+  "version": "v260315.18 5:32a",
+  "release": 53,
+  "sha": "7fb1969",
+  "fullSha": "7fb1969d54e981da096b7b09ab60ea93c2b8f6a7",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 10:28:57+00",
-  "commits": [{"sha":"beb3458","message":"Fix: redirect authenticated users from landing page to dashboard","author":"Rahul"},{"sha":"45d5aeb","message":"Merge pull request #10 from rahuliofam/optimistic-kare","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 10:32:16+00",
+  "commits": [{"sha":"7fb1969","message":"Upload 1,880 accounting files to R2 + Supabase search index; rewrite File Vault with metadata filters","author":"Rahul"}]
 }
