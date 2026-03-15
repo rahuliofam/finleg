@@ -31,7 +31,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-slate-900 text-white">
+    <nav className="sticky top-0 z-50 bg-[#0f3d1e] text-white">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
