@@ -1,188 +1,179 @@
-# Photo Search — Next Steps & Operations Guide
+# Photo Search — What Needs to Happen Next
 
-> Written: 2026-03-14
-> Processing started: 2026-03-14 ~11:45pm
-> Expected completion: ~2026-03-18 (4 days)
+> Last updated: 2026-03-15
 
-## What's Running Now
+## Current State
 
-Three batch processing jobs were started on the Alpaca Mac (Intel, CPU-only):
+**Alpaca Mac** (Intel x86_64, 4 cores, macOS 12.7, `ssh alpacamac`)
 
-| Job | tmux session | Script | Est. Duration |
-|-----|-------------|--------|---------------|
-| SigLIP 2 Embeddings | `embed` | `embed_photos.py` | ~6-8 hours (CPU) |
-| Moondream 2 Captions | `caption` | `caption_photos.py` | ~3-4 days (CPU) |
-| Face Detection | `faces` | `index_faces.py` | ~2-3 days (CPU) |
+- **Database:** `~/rvault20_index.db` — 885K files indexed, 470K photos with EXIF metadata
+- **Thumbnails:** `batch-thumbnails.py` is running (2 workers, ~185% CPU). Let it finish.
+- **Python 3.12 venv:** Created at `~/file-search-api/venv` with torch 2.2.2, open-clip, transformers 4.57.6, numpy 1.26.4
+- **insightface/OpenCV:** Was compiling from source — check if it finished
+- **ML batch jobs:** NOT running (killed to free CPU for thumbnails)
+- **Flask API:** Running on port 8200 via gunicorn (the original `app.py`, not the new one)
+- **Scripts deployed:** `embed_photos.py`, `caption_photos.py`, `index_faces.py`, `logging_config.py` are in `~/file-search-api/`
 
-All jobs are **resume-safe** — they skip already-processed photos on restart.
+## Step-by-Step: What To Do Next
 
-## Checking Progress
+### 1. Check if thumbnails finished
 
 ```bash
-# SSH into the Alpaca Mac
 ssh alpacamac
+ps aux | grep batch-thumbnails | grep -v grep
+```
 
-# Activate the Python environment
+If no output → thumbnails are done. If still running, wait or check progress.
+
+### 2. Check if insightface installed
+
+```bash
 cd ~/file-search-api
 source venv/bin/activate
+python -c "import insightface; print('insightface OK')"
+```
 
-# Quick status for each pipeline
+If it errors, re-run the install (should be faster now with free CPU):
+```bash
+pip install insightface onnxruntime scikit-learn
+```
+
+### 3. Install tmux (if not already done)
+
+```bash
+eval "$(/usr/local/bin/brew shellenv zsh)"
+brew install tmux
+```
+
+### 4. Start all ML batch jobs
+
+Run them one at a time in separate tmux sessions so they persist after SSH disconnect:
+
+```bash
+# Embeddings — ~6-8 hours for 470K photos on CPU
+tmux new -s embed
+cd ~/file-search-api && source venv/bin/activate
+python embed_photos.py --batch-size 16
+# Press Ctrl+B, then D to detach
+
+# Captions — ~3-4 days for 470K photos on CPU
+tmux new -s caption
+cd ~/file-search-api && source venv/bin/activate
+python caption_photos.py
+# Press Ctrl+B, then D to detach
+
+# Face detection — ~2-3 days for 470K photos on CPU
+tmux new -s faces
+cd ~/file-search-api && source venv/bin/activate
+python index_faces.py
+# Press Ctrl+B, then D to detach
+```
+
+Or start all at once (but they'll compete for CPU — consider running sequentially):
+```bash
+nohup python embed_photos.py --batch-size 16 > logs/embed_console.log 2>&1 &
+nohup python caption_photos.py > logs/caption_console.log 2>&1 &
+nohup python index_faces.py > logs/faces_console.log 2>&1 &
+```
+
+### 5. Monitor progress
+
+```bash
+# Quick status (no GPU, no model loading — instant)
 python embed_photos.py --status
 python caption_photos.py --status
 python index_faces.py --status
 
-# API-level status (if API is running)
-curl http://localhost:5001/status
-
-# Watch logs in real-time
+# Watch logs
 tail -f ~/file-search-api/logs/embed_photos.log
 tail -f ~/file-search-api/logs/caption_photos.log
 tail -f ~/file-search-api/logs/index_faces.log
 tail -f ~/file-search-api/logs/errors.log
 
-# Attach to a tmux session to see console output
-tmux attach -t embed
-tmux attach -t caption
-tmux attach -t faces
-# (Ctrl+B, D to detach without stopping)
+# Attach to tmux session
+tmux attach -t embed    # Ctrl+B, D to detach
 ```
 
-## If the Machine Gets Turned Off / Rebooted
-
-All jobs are resume-safe. Here's how to restart everything:
-
-### Step 1: SSH in and activate environment
-```bash
-ssh alpacamac
-cd ~/file-search-api
-source venv/bin/activate
-```
-
-### Step 2: Check what still needs processing
-```bash
-python embed_photos.py --status
-python caption_photos.py --status
-python index_faces.py --status
-```
-
-### Step 3: Restart the batch jobs in tmux
-```bash
-# Embeddings (if not 100% complete)
-tmux new -s embed
-cd ~/file-search-api && source venv/bin/activate
-python embed_photos.py --batch-size 32
-# Ctrl+B, D to detach
-
-# Captions (if not 100% complete)
-tmux new -s caption
-cd ~/file-search-api && source venv/bin/activate
-python caption_photos.py
-# Ctrl+B, D to detach
-
-# Face indexing (if not 100% complete)
-tmux new -s faces
-cd ~/file-search-api && source venv/bin/activate
-python index_faces.py
-# Ctrl+B, D to detach
-```
-
-### Step 4: Restart the API
-```bash
-tmux new -s api
-cd ~/file-search-api && source venv/bin/activate
-python app.py
-# Ctrl+B, D to detach
-```
-
-### Quick restart (all-in-one)
-```bash
-ssh alpacamac "cd ~/file-search-api && source venv/bin/activate && \
-  tmux new -d -s embed 'cd ~/file-search-api && source venv/bin/activate && python embed_photos.py' && \
-  tmux new -d -s caption 'cd ~/file-search-api && source venv/bin/activate && python caption_photos.py' && \
-  tmux new -d -s faces 'cd ~/file-search-api && source venv/bin/activate && python index_faces.py' && \
-  tmux new -d -s api 'cd ~/file-search-api && source venv/bin/activate && python app.py'"
-```
+All jobs are **resume-safe** — they skip already-processed photos. Safe to restart anytime.
 
 ---
 
-## After ~4 Days: What's Next
+## After ML Jobs Finish (~4 days)
 
-Once all three batch jobs finish, here's the roadmap:
+### 6. Run face clustering
 
-### Immediate (Day 4-5)
+```bash
+python index_faces.py --cluster
+```
 
-1. **Verify all pipelines are 100%**
-   ```bash
-   python embed_photos.py --status
-   python caption_photos.py --status
-   python index_faces.py --status
-   ```
+Groups detected faces into identity clusters using HDBSCAN.
 
-2. **Run face clustering**
-   ```bash
-   python index_faces.py --cluster
-   ```
-   This groups detected faces into identity clusters using HDBSCAN.
+### 7. Verify API endpoints
 
-3. **Verify API endpoints work end-to-end**
-   ```bash
-   # Health check
-   curl http://localhost:5001/health
+The current API (`app.py` on port 8200) is the original file search API. The new `app.py` in `~/file-search-api/` adds semantic search + face search endpoints. To switch:
 
-   # Full status
-   curl http://localhost:5001/status
+```bash
+# Stop old gunicorn
+pkill -f "gunicorn.*app:app"
 
-   # Test a semantic search
-   curl -X POST http://localhost:5001/photo-search \
-     -H "Content-Type: application/json" \
-     -d '{"query": "sunset", "limit": 5}'
-   ```
+# Start new API
+tmux new -s api
+cd ~/file-search-api && source venv/bin/activate
+python app.py
+# Or with gunicorn:
+gunicorn -w 2 -b 0.0.0.0:5001 --timeout 120 app:app
+```
 
-4. **Test from the frontend**
-   - Go to the intranet photos page
-   - Try a semantic search query
-   - Verify thumbnails load
-   - Verify preview/lightbox works
+Test endpoints:
+```bash
+curl http://localhost:5001/health
+curl http://localhost:5001/status
+curl -X POST http://localhost:5001/photo-search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "sunset", "limit": 5}'
+```
 
-### Short-term (Week 2)
+### 8. Test from the frontend
 
-5. **Add caption search to the API**
-   - Add a `/caption-search` endpoint that queries `captions_fts` via FTS5
-   - Combine with semantic search for hybrid results (vector + keyword)
+- Go to the intranet photos page on https://finleg.net
+- Try a semantic search query
+- Verify thumbnails and lightbox work
 
-6. **Build the face gallery UI**
-   - Display face clusters on the frontend
-   - Allow labeling clusters with names
-   - "Show all photos of [person]" query
+### 9. Add caption search
 
-7. **Optimize search performance**
-   - If search is slow with 200K embeddings, consider:
-     - Pre-loading embeddings into memory on API startup
-     - Using FAISS for approximate nearest neighbor search
-     - Caching frequent queries
+- Add `/caption-search` endpoint querying `captions_fts` via FTS5
+- Hybrid search: combine SigLIP vector similarity + caption keyword scores
 
-### Medium-term (Week 3-4)
+### 10. Build face gallery UI
 
-8. **Incremental indexing**
-   - Set up a cron job or file watcher to process new photos automatically
-   - Run embedding + caption + face detection on new files only
+- Display face clusters on frontend
+- Label clusters with names
+- "Show all photos of [person]" query
 
-9. **Search quality improvements**
-   - Hybrid search: combine SigLIP similarity + caption FTS5 scores
-   - Add EXIF-based filters (date range, camera model)
-   - Add file path/folder-based filters
+### 11. Incremental indexing
 
-10. **Face cluster management**
-    - Admin UI to merge/split face clusters
-    - Manual name assignment for clusters
-    - "Find similar faces" feature
+- Cron job or file watcher to auto-process new photos
+- Run embed + caption + face on new files only
 
-### Long-term
+### 12. Performance optimization (if needed)
 
-11. **Move to a more powerful backend** if CPU performance is a bottleneck
-    - Consider the Oracle ARM instance or DigitalOcean droplet
-    - Or upgrade the Alpaca Mac to Apple Silicon
+- Pre-load embeddings into memory on API startup
+- FAISS for approximate nearest neighbor if brute-force is too slow
+- Cache frequent queries
 
-12. **Vector database migration**
-    - If the SQLite + brute-force approach becomes too slow
-    - Options: pgvector (in Supabase), Qdrant, ChromaDB
+---
+
+## Key Facts
+
+| Item | Value |
+|------|-------|
+| Alpaca Mac SSH | `ssh alpacamac` |
+| Architecture | Intel x86_64, 4 cores, macOS 12.7 |
+| Python | 3.12.13 in `~/file-search-api/venv` |
+| PyTorch | 2.2.2 (CPU only — max version for Intel Mac) |
+| Database | `~/rvault20_index.db` (991MB, 885K files, 470K photos) |
+| Total photos | 470,170 |
+| API (current) | port 8200 via gunicorn |
+| API (new) | port 5001 (not yet running) |
+| Cloudflare Tunnel | `https://files.alpacaplayhouse.com` → port 8200 |
+| Logs | `~/file-search-api/logs/` |
