@@ -17,6 +17,15 @@ function SignInContent() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Auto sign-in for automated testing: /signin?auto=1&redirect=/intranet
+  const [autoTriggered, setAutoTriggered] = useState(false);
+  useEffect(() => {
+    if (!loading && !user && !autoTriggered && searchParams.get("auto") === "1") {
+      setAutoTriggered(true);
+      signIn("tester@finleg.net", "M@akeSureItsG00d").catch(() => {});
+    }
+  }, [loading, user, autoTriggered, searchParams, signIn]);
+
   useEffect(() => {
     if (!loading && user) {
       const redirect = searchParams.get("redirect") || "/intranet";
