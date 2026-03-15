@@ -58,7 +58,16 @@ export function usePageDisplayConfig(): UsePageDisplayConfigReturn {
 
         if (data && data.length > 0) {
           const grouped: Record<string, TabConfig[]> = {};
+          // Build valid tab keys per section to filter out stale DB rows
+          const validKeys: Record<string, Set<string>> = {};
+          for (const [section, tabs] of Object.entries(DEFAULT_TABS)) {
+            validKeys[section] = new Set(tabs.map((t) => t.key));
+          }
           for (const row of data) {
+            // Skip tabs that no longer exist in DEFAULT_TABS
+            if (validKeys[row.section] && !validKeys[row.section].has(row.tab_key)) {
+              continue;
+            }
             if (!grouped[row.section]) {
               grouped[row.section] = [];
             }
