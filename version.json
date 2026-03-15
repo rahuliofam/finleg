@@ -1,12 +1,12 @@
 {
-  "version": "v260314.21 10:46p",
-  "release": 21,
-  "sha": "c903fad",
-  "fullSha": "c903fad3f81aabb8cdbb9f572e3692c9a895ed4b",
+  "version": "v260314.22 10:48p",
+  "release": 22,
+  "sha": "d88e1c3",
+  "fullSha": "d88e1c34820b70ca6f631bfe79c134cb326d4e6f",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 03:46:22+00",
-  "commits": [{"sha":"c903fad","message":"Fix sessions page: stats, project colors, dropdown, contrast, auth guard","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 03:48:58+00",
+  "commits": [{"sha":"d88e1c3","message":"Add Sessions link to navbar, visible on all public pages","author":"Rahul"}]
 }
