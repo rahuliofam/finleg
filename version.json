@@ -1,12 +1,12 @@
 {
-  "version": "v260315.36 5:10p",
-  "release": 71,
-  "sha": "c641a4d",
-  "fullSha": "c641a4d18e791f8d478fa2dfb2047584be822b4a",
+  "version": "v260315.37 5:44p",
+  "release": 72,
+  "sha": "fbe4208",
+  "fullSha": "fbe42080435235dc464dd5e1631cc1239db5266a",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 22:10:52+00",
-  "commits": [{"sha":"c641a4d","message":"Add Uploads summary tab to admin panel","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 22:44:59+00",
+  "commits": [{"sha":"e6da824","message":"Add active/archived account sections, date ranges, and fix Tesloop spelling","author":"Rahul"},{"sha":"fbe4208","message":"Merge branch 'admiring-noether'","author":"Rahul"}]
 }
