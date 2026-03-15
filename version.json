@@ -1,12 +1,12 @@
 {
-  "version": "v260314.08 9:33p",
-  "release": 8,
-  "sha": "86ef67d",
-  "fullSha": "86ef67da780e29ccb21359bae04df1854fe039cf",
+  "version": "v260314.09 9:37p",
+  "release": 9,
+  "sha": "49792ec",
+  "fullSha": "49792ec6494c9ae89b9a61fa48e48cb6d29ceddf",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:33:00+00",
-  "commits": [{"sha":"86ef67d","message":"Add Claude sessions viewer at finleg.net/sessions","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:37:56+00",
+  "commits": [{"sha":"49792ec","message":"Adjust layout: wordmark down 70px, align left, nav wordmark/version 50% bigger, hover","author":"Rahul"}]
 }
