@@ -11,22 +11,22 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-white/5 blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-6 py-16 sm:py-20 lg:py-24 w-full">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-24 lg:py-28 w-full">
+          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
             {/* Left: Wordmark + Text + Buttons */}
-            <div className="flex-1 flex flex-col items-center lg:items-start gap-6">
+            <div className="flex-1 flex flex-col items-center lg:items-start">
               <Image
                 src="/finleg-wordmark-white.png"
                 alt="Finleg"
-                width={720}
-                height={216}
-                className="w-full max-w-sm sm:max-w-md lg:max-w-lg"
+                width={654}
+                height={301}
+                className="w-full max-w-[16rem] sm:max-w-xs lg:max-w-sm mb-6"
                 priority
               />
-              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed max-w-xl text-center lg:text-left">
+              <p className="text-lg sm:text-xl lg:text-2xl font-light text-white/90 leading-relaxed max-w-lg text-center lg:text-left mb-6">
                 Financial and legal hassles — now united in a single AI platform.
               </p>
-              <div className="flex flex-col sm:flex-row items-center lg:items-start gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-center lg:items-start gap-4">
                 <Link
                   href="/signin"
                   className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-[#1B6B3A] rounded-full font-semibold text-lg hover:bg-white/90 transition-all hover:shadow-lg hover:shadow-white/20"
@@ -49,16 +49,16 @@ export default function HomePage() {
             </div>
 
             {/* Right: Logo card */}
-            <div className="flex-1 flex justify-center lg:justify-end">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+            <div className="shrink-0 flex justify-center lg:justify-end">
+              <div className="relative w-56 h-56 sm:w-72 sm:h-72 lg:w-80 lg:h-80">
                 <div className="absolute inset-0 rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 rotate-6" />
                 <div className="absolute inset-0 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/15 -rotate-3" />
                 <div className="absolute inset-4 rounded-2xl bg-white/90 flex items-center justify-center shadow-2xl">
                   <Image
                     src="/finleg-logo-transparent.png"
                     alt="Finleg Logo"
-                    width={500}
-                    height={375}
+                    width={1092}
+                    height={598}
                     className="w-[80%] h-auto drop-shadow-lg"
                     priority
                   />
