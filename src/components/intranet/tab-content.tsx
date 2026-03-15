@@ -4,9 +4,11 @@ import { useParams } from "next/navigation";
 import { DEFAULT_TABS, type IntranetSection } from "@/types/intranet";
 import { UsersTab } from "@/components/intranet/admin/users-tab";
 import { BrandTab } from "@/components/intranet/admin/brand-tab";
+import { UploadsTab } from "@/components/intranet/admin/uploads-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
   admin: {
+    uploads: UploadsTab,
     users: UsersTab,
     brand: BrandTab,
   },
