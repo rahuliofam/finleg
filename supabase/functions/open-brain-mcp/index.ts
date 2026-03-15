@@ -1,3 +1,5 @@
+// Open Brain — MCP Server Edge Function
+// Reference: https://natesnewsletter.substack.com/p/every-ai-you-use-forgets-you-heres
 import { createClient } from "npm:@supabase/supabase-js@2.47.10";
 
 const MCP_ACCESS_KEY = Deno.env.get("MCP_ACCESS_KEY")!;

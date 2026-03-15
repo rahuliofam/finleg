@@ -37,7 +37,7 @@ Show only the features the user does NOT already have. For each one, provide a b
 |---------|-------------|----------|
 | **D1 Session Logging** | Auto-save Claude Code transcripts to Cloudflare D1 | Cloudflare account |
 | **On-Demand Context System** | Split CLAUDE.md into slim index + on-demand docs/ files | Nothing |
-| **Open Brain Dashboard** | View session history, search transcripts, track costs | D1 Session Logging |
+| **Open Brain Dashboard** | View session history, search transcripts, track costs ([reference](https://natesnewsletter.substack.com/p/every-ai-you-use-forgets-you-heres)) | D1 Session Logging |
 | **Smart Polling (Circuit Breaker)** | PollManager with backoff, visibility API, auto-recovery | Supabase |
 | **Tab Visibility Config** | Database-driven intranet tab show/hide | Supabase |
 | **Centralized Error Logger** | Standardized error capture utility | Nothing |

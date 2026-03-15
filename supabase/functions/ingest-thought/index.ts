@@ -1,3 +1,5 @@
+// Open Brain — Ingest Thought Edge Function
+// Reference: https://natesnewsletter.substack.com/p/every-ai-you-use-forgets-you-heres
 import { createClient } from "npm:@supabase/supabase-js@2.47.10";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;

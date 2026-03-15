@@ -1,4 +1,5 @@
 -- Open Brain: Semantic AI memory system
+-- Reference: https://natesnewsletter.substack.com/p/every-ai-you-use-forgets-you-heres
 -- Requires: Supabase with pgvector extension
 
 -- 1. Enable pgvector
