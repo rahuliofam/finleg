@@ -1,12 +1,12 @@
 {
-  "version": "v260315.34 3:28p",
-  "release": 69,
-  "sha": "36dee6d",
-  "fullSha": "36dee6d9063cdaf273c83bd9ffa77a192d647409",
+  "version": "v260315.35 5:06p",
+  "release": 70,
+  "sha": "b7a8d89",
+  "fullSha": "b7a8d8967897eab16d3129dccd0488d08504a6a5",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 20:28:20+00",
-  "commits": [{"sha":"36dee6d","message":"Add auto sign-in query param for automated testing","author":"Rahul"}]
+  "pushedAt": "2026-03-15 22:06:51+00",
+  "commits": [{"sha":"b7a8d89","message":"Move releases page from /intranet/admin to /clauded/releases","author":"Rahul"}]
 }
