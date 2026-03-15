@@ -29,7 +29,7 @@ export default async function HomePage({
                   alt="Finleg"
                   width={600}
                   height={180}
-                  className="h-44 sm:h-56 lg:h-72 w-auto mx-auto lg:mx-0 -my-8 sm:-my-12 lg:-my-16 brightness-0 invert drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                  className="h-44 sm:h-56 lg:h-72 w-auto mx-auto lg:mx-0 -my-8 sm:-my-12 lg:-my-16 invert contrast-200 mix-blend-screen drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
                   priority
                 />
               </div>
