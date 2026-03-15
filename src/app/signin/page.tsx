@@ -15,16 +15,16 @@ export default function SignInPage() {
             <Image
               src="/finleg-logo-transparent.png"
               alt="Finleg"
-              width={200}
-              height={200}
-              className="w-48 h-auto"
+              width={400}
+              height={400}
+              className="w-96 h-auto"
             />
             <Image
               src="/finleg-wordmark-transparent.png"
               alt="Finleg"
-              width={200}
-              height={60}
-              className="w-48 h-auto"
+              width={400}
+              height={120}
+              className="w-96 h-auto"
             />
           </div>
           <p className="text-2xl text-slate-500">
