@@ -1,12 +1,12 @@
 {
-  "version": "v260314.20 10:43p",
-  "release": 20,
-  "sha": "f72714f",
-  "fullSha": "f72714fab578d99cbcaf9787f192b2282773c076",
+  "version": "v260314.21 10:46p",
+  "release": 21,
+  "sha": "c903fad",
+  "fullSha": "c903fad3f81aabb8cdbb9f572e3692c9a895ed4b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 03:43:02+00",
-  "commits": [{"sha":"f72714f","message":"Fix hero alignment: crop padded PNGs, reduce gap, shrink wordmark","author":"Rahul"}]
+  "pushedAt": "2026-03-15 03:46:22+00",
+  "commits": [{"sha":"c903fad","message":"Fix sessions page: stats, project colors, dropdown, contrast, auth guard","author":"Rahul"}]
 }
