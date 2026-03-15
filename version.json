@@ -1,12 +1,12 @@
 {
-  "version": "v260315.20 5:55a",
-  "release": 55,
-  "sha": "76cac97",
-  "fullSha": "76cac976845baf8e071d50ed2cf33fa9d0cd65cf",
+  "version": "v260315.21 6:08a",
+  "release": 56,
+  "sha": "260b352",
+  "fullSha": "260b3522b8c4f74bdd7ee2d5ac27c9688a5da48f",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 10:55:34+00",
-  "commits": [{"sha":"76cac97","message":"Fix: deploy after version bump so version number is correct","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 11:08:16+00",
+  "commits": [{"sha":"260b352","message":"Fix unreadable file detail modal — improve text contrast","author":"Rahul"}]
 }
