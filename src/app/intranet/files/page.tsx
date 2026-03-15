@@ -7,7 +7,7 @@ export default function FilesPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/intranet/files/photos");
+    router.replace("/intranet/files/financial-legal");
   }, [router]);
 
   return null;

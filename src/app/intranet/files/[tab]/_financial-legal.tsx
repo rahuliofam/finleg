@@ -3,7 +3,7 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  API_BASE, PAGE_SIZE, fileIcon, formatSize,
+  API_BASE, PAGE_SIZE, fileIcon, formatSize, USER_OPTIONS,
   type FileResult, type Stats,
 } from "../_shared";
 
@@ -25,6 +25,7 @@ export default function FinancialLegalTab() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [driveOnline, setDriveOnline] = useState(true);
   const [query, setQuery] = useState("");
+  const [userFilter, setUserFilter] = useState("");
   const [category, setCategory] = useState("");
   const [extFilter, setExtFilter] = useState("");
   const [sortBy, setSortBy] = useState("mtime");
@@ -80,6 +81,7 @@ export default function FinancialLegalTab() {
         const data = await apiFetch("/search", {
           q: searchQuery,
           ext: extFilter || FINLEG_EXTS,
+          dir: userFilter,
           sort: sortBy,
           order: sortOrder,
           limit: PAGE_SIZE,
@@ -95,7 +97,7 @@ export default function FinancialLegalTab() {
         setSearching(false);
       }
     },
-    [apiFetch, query, category, extFilter, sortBy, sortOrder]
+    [apiFetch, query, userFilter, category, extFilter, sortBy, sortOrder]
   );
 
   const openFile = (index: number) => {
@@ -190,6 +192,15 @@ export default function FinancialLegalTab() {
 
       {/* Filters */}
       <div className="flex gap-2 mb-6 flex-wrap items-center">
+        <select
+          value={userFilter}
+          onChange={(e) => setUserFilter(e.target.value)}
+          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none"
+        >
+          {USER_OPTIONS.map((u) => (
+            <option key={u.value} value={u.value}>{u.label}</option>
+          ))}
+        </select>
         <select
           value={extFilter}
           onChange={(e) => setExtFilter(e.target.value)}

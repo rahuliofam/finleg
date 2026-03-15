@@ -3,7 +3,7 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  API_BASE, PAGE_SIZE, IMG_EXTS, formatSize,
+  API_BASE, PAGE_SIZE, IMG_EXTS, formatSize, USER_OPTIONS,
   type FileResult, type ExifData, type Stats,
 } from "../_shared";
 
@@ -12,6 +12,7 @@ export default function PhotosTab() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [driveOnline, setDriveOnline] = useState(true);
   const [query, setQuery] = useState("");
+  const [userFilter, setUserFilter] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
   const [results, setResults] = useState<FileResult[]>([]);
@@ -64,6 +65,7 @@ export default function PhotosTab() {
         const data = await apiFetch("/search", {
           q: query,
           ext: "jpg,jpeg,png,gif,bmp,tiff,tif,webp,heic",
+          dir: userFilter,
           sort: sortBy,
           order: sortOrder,
           exif: "1",
@@ -80,7 +82,7 @@ export default function PhotosTab() {
         setSearching(false);
       }
     },
-    [apiFetch, query, sortBy, sortOrder]
+    [apiFetch, query, userFilter, sortBy, sortOrder]
   );
 
   const openPhoto = (index: number) => {
@@ -203,6 +205,15 @@ export default function PhotosTab() {
 
       {/* Filters */}
       <div className="flex gap-2 mb-6 flex-wrap items-center">
+        <select
+          value={userFilter}
+          onChange={(e) => setUserFilter(e.target.value)}
+          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none"
+        >
+          {USER_OPTIONS.map((u) => (
+            <option key={u.value} value={u.value}>{u.label}</option>
+          ))}
+        </select>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}

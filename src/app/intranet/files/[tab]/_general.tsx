@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   API_BASE, PAGE_SIZE, IMG_EXTS, VIDEO_EXTS, AUDIO_EXTS,
-  fileIcon, formatSize,
+  fileIcon, formatSize, USER_OPTIONS,
   type FileResult, type ExifData, type Stats,
 } from "../_shared";
 
@@ -13,6 +13,7 @@ export default function GeneralFilesTab() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [driveOnline, setDriveOnline] = useState(true);
   const [query, setQuery] = useState("");
+  const [userFilter, setUserFilter] = useState("");
   const [extFilter, setExtFilter] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -68,6 +69,7 @@ export default function GeneralFilesTab() {
         const data = await apiFetch("/search", {
           q: query,
           ext: extFilter,
+          dir: userFilter,
           sort: sortBy,
           order: sortOrder,
           exif: includeExif ? "1" : "",
@@ -84,7 +86,7 @@ export default function GeneralFilesTab() {
         setSearching(false);
       }
     },
-    [apiFetch, query, extFilter, sortBy, sortOrder, includeExif]
+    [apiFetch, query, userFilter, extFilter, sortBy, sortOrder, includeExif]
   );
 
   const openFile = (index: number) => {
@@ -221,6 +223,15 @@ export default function GeneralFilesTab() {
 
       {/* Filters */}
       <div className="flex gap-2 mb-6 flex-wrap items-center">
+        <select
+          value={userFilter}
+          onChange={(e) => setUserFilter(e.target.value)}
+          className="px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none"
+        >
+          {USER_OPTIONS.map((u) => (
+            <option key={u.value} value={u.value}>{u.label}</option>
+          ))}
+        </select>
         <select
           value={extFilter}
           onChange={(e) => setExtFilter(e.target.value)}

@@ -55,3 +55,17 @@ export interface Stats {
   photos_with_gps?: number;
   indexed_at?: string;
 }
+
+export interface UserOption {
+  value: string;
+  label: string;
+}
+
+export const USER_OPTIONS: UserOption[] = [
+  { value: "", label: "All Users" },
+  { value: "rahulioson", label: "Rahul" },
+  { value: "kssonnad", label: "Keshav" },
+  { value: "essonnad", label: "Erin" },
+  { value: "hrsonnad", label: "Hari" },
+  { value: "sonnad.phoebe", label: "Phoebe" },
+];

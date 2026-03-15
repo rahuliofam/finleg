@@ -65,9 +65,9 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "life-of-pai", label: "Life of PAI", defaultVisible: false },
   ],
   files: [
-    { key: "photos", label: "Photos", defaultVisible: true },
-    { key: "general", label: "General Files", defaultVisible: true },
     { key: "financial-legal", label: "Financial & Legal", defaultVisible: true },
+    { key: "general", label: "General Files", defaultVisible: true },
+    { key: "photos", label: "Photos", defaultVisible: true },
   ],
 };
 
