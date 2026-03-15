@@ -1,12 +1,12 @@
 {
-  "version": "v260314.13 9:46p",
-  "release": 13,
-  "sha": "3af52f0",
-  "fullSha": "3af52f01a7e63e41b2bafce9219d53f634f904b5",
+  "version": "v260314.14 9:48p",
+  "release": 14,
+  "sha": "3a81983",
+  "fullSha": "3a81983db9558d5d9cd9ace9c2ae53f02ea6bb3d",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:46:17+00",
-  "commits": [{"sha":"3af52f0","message":"Double size of logo and wordmark on signin page","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:48:26+00",
+  "commits": [{"sha":"3a81983","message":"Fix low contrast text in File Vault dropdowns and search input","author":"Rahul"}]
 }
