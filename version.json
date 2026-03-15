@@ -1,12 +1,12 @@
 {
-  "version": "v260314.11 9:44p",
-  "release": 11,
-  "sha": "8a4f7dc",
-  "fullSha": "8a4f7dce6d1d79c32807c04834f1c964c97e2b44",
+  "version": "v260314.12 9:45p",
+  "release": 12,
+  "sha": "f69a457",
+  "fullSha": "f69a457835300e3b7d928298d8572409553a1cdc",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:44:41+00",
-  "commits": [{"sha":"8a4f7dc","message":"Update signin page: stack logo/wordmark vertically, enlarge text","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:45:42+00",
+  "commits": [{"sha":"f69a457","message":"Show only File Vault and Admin tabs in nav","author":"Rahul"}]
 }
