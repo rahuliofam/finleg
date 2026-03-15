@@ -73,6 +73,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
   ],
   bookkeeping: [
     { key: "ledger-notes", label: "Ledger Notes", defaultVisible: true },
+    { key: "statements", label: "Statements", defaultVisible: true },
   ],
 };
 

@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import LedgerNotesTab from "./_ledger-notes";
+import StatementsTab from "./_statements";
 
 export default function BookkeepingTabContent() {
   const params = useParams();
@@ -10,6 +11,8 @@ export default function BookkeepingTabContent() {
   switch (tab) {
     case "ledger-notes":
       return <LedgerNotesTab />;
+    case "statements":
+      return <StatementsTab />;
     default:
       return (
         <div className="text-center py-12 text-slate-400">
