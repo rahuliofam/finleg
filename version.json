@@ -1,12 +1,12 @@
 {
-  "version": "v260315.28 2:08p",
-  "release": 63,
-  "sha": "ea11a6a",
-  "fullSha": "ea11a6af018d3bdfddc8f770b262b6792288aaf5",
+  "version": "v260315.29 2:21p",
+  "release": 64,
+  "sha": "cc37352",
+  "fullSha": "cc37352dca57a4a36b48263503c7a8baaccfad4b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 19:08:06+00",
-  "commits": [{"sha":"ea11a6a","message":"Rewrite Releases tab as live changelog from GitHub PRs (#16)","author":"Rahul"}]
+  "pushedAt": "2026-03-15 19:21:28+00",
+  "commits": [{"sha":"cc37352","message":"Remove hardcoded secrets from all scripts, use dotenv + process.env","author":"Rahul"}]
 }
