@@ -118,6 +118,27 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
   );
 }
 
+function ShareButton({ sessionId }: { sessionId: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}${window.location.pathname}?session=${sessionId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  return (
+    <button
+      onClick={handleShare}
+      className={`text-lg flex-shrink-0 transition ${copied ? "text-green-500" : "text-slate-400 hover:text-slate-600"}`}
+      title="Copy session link"
+    >
+      {copied ? "✓" : "⤴"}
+    </button>
+  );
+}
+
 export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -327,53 +348,45 @@ export default function SessionsPage() {
                   className="border rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition"
                 >
                   {/* Session header row */}
-                  <div className="flex items-center px-5 py-4">
-                    <div
-                      className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => toggleSession(s.id)}
-                    >
-                      {/* Top line: date + badges + right-aligned share */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm text-slate-600 font-medium">
+                  <div
+                    className="px-5 py-4 cursor-pointer"
+                    onClick={() => toggleSession(s.id)}
+                  >
+                    {/* Top line: project + session name on left, date/badges/share on right */}
+                    <div className="flex items-center gap-2">
+                      {/* Left: project badge + session name */}
+                      <span
+                        className={`inline-block ${color.bg} ${color.text} text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0`}
+                      >
+                        {displayName}
+                      </span>
+                      <span className="text-sm font-semibold text-slate-900 truncate">
+                        {s.summary || "No summary"}
+                      </span>
+
+                      {/* Right: date + badges + share */}
+                      <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+                        <span className="text-xs text-slate-500">
                           {formatDate(s.started_at)}
                         </span>
-                        <span
-                          className={`inline-block ${color.bg} ${color.text} text-xs font-medium px-2 py-0.5 rounded-full`}
-                        >
-                          {displayName}
-                        </span>
                         {model && (
-                          <span className="inline-block bg-slate-100 text-slate-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="hidden sm:inline-block bg-slate-100 text-slate-600 text-xs font-medium px-2 py-0.5 rounded-full">
                             {model}
                           </span>
                         )}
                         {s.duration_mins > 0 && (
-                          <span className="inline-block bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="hidden sm:inline-block bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
                             {s.duration_mins}m
                           </span>
                         )}
                         {tokens && (
-                          <span className="inline-block bg-green-50 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="hidden sm:inline-block bg-green-50 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">
                             {tokens}
                           </span>
                         )}
+                        <ShareButton sessionId={s.id} />
                       </div>
-                      {/* Summary line */}
-                      <p className="text-sm text-slate-700 mt-1 truncate">
-                        {s.summary || "No summary"}
-                      </p>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const url = `${window.location.origin}${window.location.pathname}?session=${s.id}`;
-                        navigator.clipboard.writeText(url);
-                      }}
-                      className="ml-3 text-slate-400 hover:text-slate-600 text-lg flex-shrink-0"
-                      title="Copy session link"
-                    >
-                      ⤴
-                    </button>
                   </div>
 
                   {/* Expanded transcript */}
