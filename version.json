@@ -1,12 +1,12 @@
 {
-  "version": "v260315.12 2:19a",
-  "release": 47,
-  "sha": "397e380",
-  "fullSha": "397e380506b3ff6e42ff652abfcda94684562a70",
+  "version": "v260315.13 2:28a",
+  "release": 48,
+  "sha": "f366979",
+  "fullSha": "f3669791c7bcafb03a4547e22d492710a302b717",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 07:19:50+00",
-  "commits": [{"sha":"397e380","message":"Add QuickBooks General Ledger ingestion script for Supabase","author":"Rahul"}]
+  "pushedAt": "2026-03-15 07:28:32+00",
+  "commits": [{"sha":"d013db7","message":"Add Bookkeeping tab with Ledger Notes analysis page; fix Supabase project reference","author":"Rahul"},{"sha":"f366979","message":"Merge branch 'zen-dhawan'","author":"Rahul"}]
 }
