@@ -1,12 +1,12 @@
 {
-  "version": "v260314.26 11:08p",
-  "release": 26,
-  "sha": "3fab5fb",
-  "fullSha": "3fab5fb9f63e711f1f17eebde9c1ed50d818bf5f",
+  "version": "v260314.27 11:10p",
+  "release": 27,
+  "sha": "a861b56",
+  "fullSha": "a861b568eee32b44482dcad4cac2644ef908ef52",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 04:08:39+00",
-  "commits": [{"sha":"3fab5fb","message":"Fix sessions auth: OAuth redirect returns to original page","author":"Rahul"}]
+  "pushedAt": "2026-03-15 04:10:13+00",
+  "commits": [{"sha":"a861b56","message":"Show navbar on all pages including intranet for consistent navigation","author":"Rahul"}]
 }
