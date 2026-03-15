@@ -15,17 +15,17 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row items-stretch gap-12 lg:gap-20">
             {/* Left: Wordmark + Text */}
             <div className="flex-1 flex flex-col items-center lg:items-start justify-center">
-              <div className="mb-4 lg:mb-6">
+              <div className="mb-2 lg:mb-3">
                 <Image
                   src="/finleg-wordmark-white.png"
                   alt="Finleg"
                   width={720}
                   height={216}
-                  className="w-full max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto lg:mx-0"
+                  className="w-full scale-[1.2] origin-left mx-auto lg:mx-0"
                   priority
                 />
               </div>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed mt-0 mb-6 max-w-xl text-center lg:text-left">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed mt-2 mb-5 max-w-xl text-center lg:text-left">
                 Financial and legal hassles — now united in a single AI platform.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -52,7 +52,7 @@ export default function HomePage() {
 
             {/* Right: Logo prominently displayed — stretches to match left column height */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <div className="relative w-80 sm:w-[26rem] lg:w-[26rem] aspect-square lg:aspect-auto lg:self-stretch">
+              <div className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] scale-[1.25] origin-center">
                 <div className="absolute inset-0 rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 rotate-6" />
                 <div className="absolute inset-0 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/15 -rotate-3" />
                 <div className="absolute inset-4 rounded-2xl bg-white/90 flex items-center justify-center shadow-2xl">

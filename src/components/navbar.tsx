@@ -17,9 +17,9 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-[3.25rem] w-auto" />
-          <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-[2.925rem] w-auto" />
+        <Link href="/" className="flex items-center gap-2 scale-[1.3] origin-left">
+          <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-10 w-auto" />
+          <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-9 w-auto" />
         </Link>
 
         <div className="flex items-center gap-4">
