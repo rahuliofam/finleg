@@ -1,12 +1,12 @@
 {
-  "version": "v260315.09 2:05a",
-  "release": 44,
-  "sha": "6176eea",
-  "fullSha": "6176eeae3b5eb1329de9363c530c2c9893f50395",
+  "version": "v260315.10 2:14a",
+  "release": 45,
+  "sha": "195b3bd",
+  "fullSha": "195b3bdf3accefde1f10427dc15bf13e4cb01437",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 07:05:18+00",
-  "commits": [{"sha":"36270be","message":"Add Users, Releases, and Brand admin tab pages","author":"Rahul"},{"sha":"0529512","message":"Increase navbar wordmark size from h-[6.75rem] to h-40","author":"Rahul"},{"sha":"08b4b39","message":"Stack navbar logo vertically with wordmark centered below","author":"Rahul"},{"sha":"436b55f","message":"Add user management with roles, invitations, and access control","author":"Rahul"},{"sha":"6176eea","message":"Add user management with roles, invitations, and access control","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 07:14:23+00",
+  "commits": [{"sha":"469d6bb","message":"Simplify roles to Admin, Family, Accountant, Collaborator","author":"Rahul"},{"sha":"195b3bd","message":"Merge branch 'fervent-brattain'","author":"Rahul"}]
 }
