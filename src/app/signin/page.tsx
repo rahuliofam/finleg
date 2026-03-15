@@ -3,14 +3,19 @@
 import { Suspense } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import CenteredBrandLayout from "@/components/centered-brand-layout";
 
 function SignInContent() {
-  const { user, loading, signInWithGoogle } = useAuth();
+  const { user, loading, signInWithGoogle, signIn } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [showEmail, setShowEmail] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -22,6 +27,20 @@ function SignInContent() {
   if (loading || user) {
     return null;
   }
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      const { error: authError } = await signIn(email, password);
+      if (authError) setError(authError.message);
+    } catch {
+      setError("Sign in failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <CenteredBrandLayout>
@@ -41,6 +60,43 @@ function SignInContent() {
         </svg>
         Sign in with Google
       </button>
+
+      {/* Subtle email sign-in for automated testing */}
+      {!showEmail ? (
+        <button
+          onClick={() => setShowEmail(true)}
+          className="mt-6 text-xs text-slate-400 hover:text-slate-500 transition-colors cursor-pointer"
+        >
+          Use email instead
+        </button>
+      ) : (
+        <form onSubmit={handleEmailSignIn} className="mt-6 w-full space-y-3">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A]"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A]"
+          />
+          {error && <p className="text-xs text-red-500">{error}</p>}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full px-4 py-2.5 text-sm bg-slate-700 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            {submitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      )}
 
       <div className="mt-8 text-center">
         <Link
