@@ -1,12 +1,12 @@
 {
-  "version": "v260315.05 12:42a",
-  "release": 40,
-  "sha": "9f198b2",
-  "fullSha": "9f198b2544c2b2d70876264e80afee2dec33be2b",
+  "version": "v260315.06 1:02a",
+  "release": 41,
+  "sha": "8ef79c2",
+  "fullSha": "8ef79c2da8be2455c973d27da75bf0932253c170",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 05:42:42+00",
-  "commits": [{"sha":"9f198b2","message":"Fix session arrow button: open session detail in new tab","author":"Rahul"}]
+  "pushedAt": "2026-03-15 06:02:18+00",
+  "commits": [{"sha":"8ef79c2","message":"Add Open Graph and Twitter Card meta tags","author":"Rahul"}]
 }
