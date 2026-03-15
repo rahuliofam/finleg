@@ -144,7 +144,7 @@ const HOLDERS = [
   { value: "Subhash", label: "Subhash" },
   { value: "Family", label: "Family" },
   { value: "Trust", label: "Trust" },
-  { value: "Tesaloop", label: "Tesaloop" },
+  { value: "Tesloop", label: "Tesloop" },
 ];
 
 export default function FinancialLegalTab() {

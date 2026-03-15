@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS document_index (
   institution TEXT,               -- amex, chase, charles-schwab, us-bank, robinhood, coinbase, pnc, sba, etc.
   account_name TEXT,              -- human-readable account name
   account_number TEXT,            -- last 4 or full account number
-  account_holder TEXT,            -- Rahul, Subhash, Trust, Family, Tesaloop, various
+  account_holder TEXT,            -- Rahul, Subhash, Trust, Family, Tesloop, various
 
   -- Date metadata
   year INTEGER,
