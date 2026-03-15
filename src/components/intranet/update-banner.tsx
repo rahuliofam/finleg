@@ -11,6 +11,7 @@ interface Feature {
   name: string;
   date: string;
   description: string;
+  detects?: string[];
 }
 
 interface UpdateState {
@@ -33,12 +34,29 @@ export function UpdateBanner() {
 
     fetch(MANIFEST_URL, { cache: "no-cache" })
       .then((res) => (res.ok ? res.json() : null))
-      .then((manifest) => {
+      .then(async (manifest) => {
         if (!manifest) return;
         const lastDate = lastChecked ? new Date(lastChecked) : new Date(0);
-        const newFeatures = manifest.features.filter(
+        const recentFeatures = manifest.features.filter(
           (f: Feature) => new Date(f.date) > lastDate
         );
+
+        // Filter out features already synced (detected by file existence)
+        const detectionChecks = await Promise.all(
+          recentFeatures.map(async (f: Feature) => {
+            if (!f.detects || f.detects.length === 0) return false;
+            try {
+              const resp = await fetch("/" + f.detects[0], { method: "HEAD" });
+              return resp.ok;
+            } catch {
+              return false;
+            }
+          })
+        );
+        const newFeatures = recentFeatures.filter(
+          (_: Feature, i: number) => !detectionChecks[i]
+        );
+
         if (newFeatures.length > 0) {
           setState({
             hasUpdates: true,

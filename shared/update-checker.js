@@ -20,7 +20,19 @@ export async function checkForUpdates() {
     if (!res.ok) return { hasUpdates: false, newFeatures: [], lastChecked, error: 'fetch-failed' };
 
     const manifest = await res.json();
-    const newFeatures = manifest.features.filter(f => new Date(f.date) > lastDate);
+    const recentFeatures = manifest.features.filter(f => new Date(f.date) > lastDate);
+
+    // Filter out features already synced (detected by file existence)
+    const detectionChecks = await Promise.all(
+      recentFeatures.map(async f => {
+        if (!f.detects || f.detects.length === 0) return false;
+        try {
+          const resp = await fetch('/' + f.detects[0], { method: 'HEAD' });
+          return resp.ok;
+        } catch { return false; }
+      })
+    );
+    const newFeatures = recentFeatures.filter((_, i) => !detectionChecks[i]);
 
     return {
       hasUpdates: newFeatures.length > 0,
@@ -100,12 +112,17 @@ export function renderUpdateBanner(container, result) {
       </div>
       <div class="update-banner__actions">
         <a href="${result.updatesPage}" class="update-banner__btn update-banner__btn--primary">View Updates</a>
-        <button class="update-banner__btn update-banner__btn--dismiss" onclick="this.closest('.update-banner').remove()">Dismiss</button>
+        <button class="update-banner__btn update-banner__btn--dismiss" id="update-banner-dismiss">Dismiss</button>
       </div>
     </div>
   `;
 
   container.prepend(banner);
+
+  banner.querySelector('#update-banner-dismiss').addEventListener('click', () => {
+    markUpdatesChecked();
+    banner.remove();
+  });
 }
 
 /**
