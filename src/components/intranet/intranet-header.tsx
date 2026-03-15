@@ -18,7 +18,7 @@ export function IntranetHeader() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
         <div className="flex items-center gap-4">
           <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-7 w-auto" />
-          <img src="/finleg-wordmark-white.png" alt="Finleg" className="h-5 w-auto" />
+          <img src="/finleg-wordmark-white.png" alt="Finleg" className="h-[1.875rem] w-auto" />
           <span className="text-lg font-bold">Intranet</span>
           <span className="text-xs text-green-300/60 font-mono">
             {versionData.version}
