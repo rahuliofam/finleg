@@ -138,8 +138,24 @@ function extractDate(filename, relpath) {
       statementDate = `${m[3]}-${m[1]}-${m[2]}`;
     }
   }
+  // Pattern 4: MM-YY (2-digit year) at end of filename, e.g. "CS Trust 2028 - 01-22.pdf"
+  if (!statementDate) {
+    m = filename.match(/(\d{2})-(\d{2})\.pdf$/i);
+    if (m) {
+      const mm = parseInt(m[1]);
+      const yy = parseInt(m[2]);
+      if (mm >= 1 && mm <= 12 && yy >= 0 && yy <= 99) {
+        month = mm;
+        year = 2000 + yy;
+        const lastDay = new Date(year, month, 0).getDate();
+        statementDate = `${year}-${m[1]}-${String(lastDay).padStart(2, '0')}`;
+      }
+    }
+  }
   if (!year) {
-    m = relpath.match(/(20\d{2})/);
+    // Only match years in directory components of the path, not the filename
+    const dirPath = relpath.replace(/[^/]+$/, '');
+    m = dirPath.match(/(20\d{2})/);
     if (m) year = parseInt(m[1]);
   }
 
