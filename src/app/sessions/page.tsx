@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 
 const API_BASE = "https://claude-sessions.alpacapps.workers.dev";
 const API_TOKEN = "alpaca-sessions-2026";
@@ -139,7 +140,141 @@ function ShareButton({ sessionId }: { sessionId: string }) {
   );
 }
 
+/* ─── Detail view for a single session ─── */
+function SessionDetail({ sessionId }: { sessionId: string }) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(`${API_BASE}/sessions/${sessionId}`, {
+      headers: { Authorization: `Bearer ${API_TOKEN}` },
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error("Session not found");
+        return r.json();
+      })
+      .then(setSession)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [sessionId]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-16 text-center text-slate-400">
+        Loading…
+      </div>
+    );
+  }
+
+  if (error || !session) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+        <p className="text-slate-400">{error || "Session not found"}</p>
+        <a
+          href="/sessions"
+          className="text-sm text-emerald-600 hover:underline mt-4 inline-block"
+        >
+          ← Back to sessions
+        </a>
+      </div>
+    );
+  }
+
+  const messages = parseTranscript(session.transcript);
+
+  return (
+    <>
+      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="max-w-4xl mx-auto px-6 py-10">
+          <a
+            href="/sessions"
+            className="text-sm text-white/50 hover:text-white/80 transition mb-4 inline-block"
+          >
+            ← Back to sessions
+          </a>
+          <h1 className="text-2xl font-bold mb-2">
+            {session.summary || "Session Details"}
+          </h1>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-white/60">
+            <span>{formatDate(session.started_at)}</span>
+            {session.model && (
+              <>
+                <span>·</span>
+                <span>{session.model}</span>
+              </>
+            )}
+            {session.duration_mins > 0 && (
+              <>
+                <span>·</span>
+                <span>{session.duration_mins}m</span>
+              </>
+            )}
+            {session.token_count > 0 && (
+              <>
+                <span>·</span>
+                <span>{formatNumber(session.token_count)} tokens</span>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-4xl mx-auto px-6 py-8">
+        <div className="bg-white border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs text-slate-400">
+              Project: {session.project || "—"} · ID: {session.id}
+            </div>
+            <CopyButton
+              text={messages.map((m) => `### ${m.role}\n\n${m.content}`).join("\n\n---\n\n")}
+              label="Copy Full Session"
+            />
+          </div>
+          <div className="space-y-3 max-h-[80vh] overflow-y-auto">
+            {messages.length > 0 ? (
+              messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`rounded-lg p-4 ${
+                    msg.role === "USER"
+                      ? "bg-blue-50 border border-blue-100"
+                      : "bg-white border border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span
+                      className={`text-xs font-bold tracking-wide ${
+                        msg.role === "USER"
+                          ? "text-blue-600"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {msg.role}
+                    </span>
+                    <CopyButton text={msg.content} />
+                  </div>
+                  <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800 font-sans">
+                    {msg.content}
+                  </pre>
+                </div>
+              ))
+            ) : (
+              <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border">
+                {session.transcript || "No transcript available"}
+              </pre>
+            )}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
 export default function SessionsPage() {
+  const searchParams = useSearchParams();
+  const detailId = searchParams.get("id");
+
   const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [projects, setProjects] = useState<string[]>([]);
@@ -220,6 +355,7 @@ export default function SessionsPage() {
   };
 
   useEffect(() => {
+    if (detailId) return;
     // Fetch stats
     fetch(`${API_BASE}/stats`, { headers })
       .then((r) => r.json())
@@ -236,11 +372,17 @@ export default function SessionsPage() {
         setProjects(clean);
       })
       .catch(() => {});
-  }, []);
+  }, [detailId]);
 
   useEffect(() => {
+    if (detailId) return;
     fetchSessions();
-  }, [fetchSessions]);
+  }, [fetchSessions, detailId]);
+
+  /* Show detail view when ?id= is present */
+  if (detailId) {
+    return <SessionDetail sessionId={detailId} />;
+  }
 
   return (
     <>
@@ -345,11 +487,11 @@ export default function SessionsPage() {
               return (
                 <div
                   key={s.id}
-                  className="border rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition"
+                  className="relative border rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition"
                 >
                   {/* Session header row */}
                   <div
-                    className="px-5 py-4 cursor-pointer"
+                    className="px-5 py-4 pr-12 cursor-pointer"
                     onClick={() => toggleSession(s.id)}
                   >
                     {/* Top line: project + session name on left, date/badges/share on right */}
@@ -388,6 +530,17 @@ export default function SessionsPage() {
                       </div>
                     </div>
                   </div>
+                  {/* Open in new tab */}
+                  <a
+                    href={`/sessions?id=${s.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute top-4 right-4 text-slate-300 hover:text-emerald-600 transition text-lg"
+                    title="Open in new tab"
+                  >
+                    ↗
+                  </a>
 
                   {/* Expanded transcript */}
                   {isExpanded && (
