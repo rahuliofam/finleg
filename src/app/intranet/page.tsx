@@ -7,7 +7,7 @@ export default function IntranetPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/intranet/admin");
+    router.replace("/intranet/files");
   }, [router]);
 
   return null;
