@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "Finleg",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image-v2.png",
         width: 1200,
         height: 630,
         alt: "Finleg",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Finleg",
     description: "Financial and legal hassles — now united in a single AI platform.",
-    images: ["/og-image.png"],
+    images: ["/og-image-v2.png"],
   },
 };
 
