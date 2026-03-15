@@ -1,12 +1,12 @@
 {
-  "version": "v260314.05 9:11p",
-  "release": 5,
-  "sha": "18030f8",
-  "fullSha": "18030f81a1a1446502ce20f7251fd0d3e5e3ad2b",
+  "version": "v260314.06 9:16p",
+  "release": 6,
+  "sha": "7f433a9",
+  "fullSha": "7f433a9d66f83b56f405735bc4ab0f1d5474e567",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:11:30+00",
-  "commits": [{"sha":"18030f8","message":"Resize homepage hero: bigger wordmark/logo, tighter layout, version in navbar","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:16:36+00",
+  "commits": [{"sha":"7f433a9","message":"Use CSS scale for visible 20%/25%/30% size increases on homepage","author":"Rahul"}]
 }
