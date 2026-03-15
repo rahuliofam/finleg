@@ -41,7 +41,7 @@ export default function HomePage() {
 
             {/* Tagline */}
             <p className="text-lg sm:text-xl lg:text-2xl font-light text-white/90 leading-relaxed max-w-lg">
-              Financial and legal hassles — now united in a single AI platform.
+              Financial and legal hassles — now united in a single AI platform. Not for public consumption.
             </p>
 
             {/* Buttons */}
