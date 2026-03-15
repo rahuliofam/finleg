@@ -1,12 +1,12 @@
 {
-  "version": "v260314.12 9:45p",
-  "release": 12,
-  "sha": "f69a457",
-  "fullSha": "f69a457835300e3b7d928298d8572409553a1cdc",
+  "version": "v260314.13 9:46p",
+  "release": 13,
+  "sha": "3af52f0",
+  "fullSha": "3af52f01a7e63e41b2bafce9219d53f634f904b5",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:45:42+00",
-  "commits": [{"sha":"f69a457","message":"Show only File Vault and Admin tabs in nav","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:46:17+00",
+  "commits": [{"sha":"3af52f0","message":"Double size of logo and wordmark on signin page","author":"Rahul"}]
 }
