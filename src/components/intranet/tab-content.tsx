@@ -3,13 +3,11 @@
 import { useParams } from "next/navigation";
 import { DEFAULT_TABS, type IntranetSection } from "@/types/intranet";
 import { UsersTab } from "@/components/intranet/admin/users-tab";
-import { ReleasesTab } from "@/components/intranet/admin/releases-tab";
 import { BrandTab } from "@/components/intranet/admin/brand-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
   admin: {
     users: UsersTab,
-    releases: ReleasesTab,
     brand: BrandTab,
   },
 };

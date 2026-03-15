@@ -4,8 +4,8 @@ import Link from "next/link";
 
 const NAV_ITEMS = [
   {
-    href: "/clauded/changelog",
-    label: "Changelog",
+    href: "/clauded/releases",
+    label: "Releases",
     description: "Every PR shipped, with version numbers and line counts",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

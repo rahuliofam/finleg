@@ -3,7 +3,7 @@
 import { ReleasesTab } from "@/components/intranet/admin/releases-tab";
 import Link from "next/link";
 
-export default function ChangelogPage() {
+export default function ReleasesPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
       <div className="mb-4">
