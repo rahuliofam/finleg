@@ -1,12 +1,12 @@
 {
-  "version": "v260315.13 2:28a",
-  "release": 48,
-  "sha": "f366979",
-  "fullSha": "f3669791c7bcafb03a4547e22d492710a302b717",
+  "version": "v260315.14 2:47a",
+  "release": 49,
+  "sha": "32be5cf",
+  "fullSha": "32be5cf8457d7da9354ed38b2780c401b41cc8ce",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 07:28:32+00",
-  "commits": [{"sha":"d013db7","message":"Add Bookkeeping tab with Ledger Notes analysis page; fix Supabase project reference","author":"Rahul"},{"sha":"f366979","message":"Merge branch 'zen-dhawan'","author":"Rahul"}]
+  "pushedAt": "2026-03-15 07:47:02+00",
+  "commits": [{"sha":"39f3479","message":"Fix Ledger Notes: show actual spending, not double-entry totals","author":"Rahul"},{"sha":"32be5cf","message":"Merge branch 'zen-dhawan'","author":"Rahul"}]
 }
