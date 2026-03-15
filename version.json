@@ -1,12 +1,12 @@
 {
-  "version": "v260314.04 8:19p",
-  "release": 4,
-  "sha": "330f652",
-  "fullSha": "330f652305fe68cf5dc293ac0aed5ac69d0dd79c",
+  "version": "v260314.05 9:11p",
+  "release": 5,
+  "sha": "18030f8",
+  "fullSha": "18030f81a1a1446502ce20f7251fd0d3e5e3ad2b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 01:19:35+00",
-  "commits": [{"sha":"330f652","message":"refactor: remove i18n system, flatten routes to drop /en/ prefix","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:11:30+00",
+  "commits": [{"sha":"18030f8","message":"Resize homepage hero: bigger wordmark/logo, tighter layout, version in navbar","author":"Rahul"}]
 }
