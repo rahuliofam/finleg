@@ -1,12 +1,12 @@
 {
-  "version": "v260315.22 6:09a",
-  "release": 57,
-  "sha": "577f07d",
-  "fullSha": "577f07d875eab4ec0a5c7ec70f90b463e2fee6c9",
+  "version": "v260315.25 1:28p",
+  "release": 60,
+  "sha": "d6073c3",
+  "fullSha": "d6073c36354320d726af0dadbee3870818a2f81d",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 11:09:00+00",
-  "commits": [{"sha":"577f07d","message":"Add Statements tab to Bookkeeping + statement ingestion plan doc (#11)","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 18:28:39+00",
+  "commits": [{"sha":"d6073c3","message":"Add R2 file key + source file name to all statement summary tables","author":"Rahul"}]
 }
