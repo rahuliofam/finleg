@@ -19,7 +19,7 @@ export function SectionTabs() {
   const activeSection = getActiveSection();
 
   return (
-    <div className="bg-slate-800">
+    <div className="bg-[#145530]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center gap-1 overflow-x-auto">
           {SECTIONS.map((section) => (
@@ -28,8 +28,8 @@ export function SectionTabs() {
               href={`/intranet/${section.key}`}
               className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
                 activeSection === section.key
-                  ? "text-white bg-slate-700 rounded-t-lg"
-                  : "text-slate-400 hover:text-white"
+                  ? "text-white bg-[#1B6B3A] rounded-t-lg"
+                  : "text-green-200/60 hover:text-white"
               }`}
             >
               {section.label}
