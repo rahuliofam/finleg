@@ -1,12 +1,12 @@
 {
-  "version": "v260315.35 5:06p",
-  "release": 70,
-  "sha": "b7a8d89",
-  "fullSha": "b7a8d8967897eab16d3129dccd0488d08504a6a5",
+  "version": "v260315.36 5:10p",
+  "release": 71,
+  "sha": "c641a4d",
+  "fullSha": "c641a4d18e791f8d478fa2dfb2047584be822b4a",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 22:06:51+00",
-  "commits": [{"sha":"b7a8d89","message":"Move releases page from /intranet/admin to /clauded/releases","author":"Rahul"}]
+  "pushedAt": "2026-03-15 22:10:52+00",
+  "commits": [{"sha":"c641a4d","message":"Add Uploads summary tab to admin panel","author":"Rahul"}]
 }
