@@ -62,10 +62,7 @@ export interface UserOption {
 }
 
 export const USER_OPTIONS: UserOption[] = [
-  { value: "", label: "All Users" },
-  { value: "rahulioson", label: "Rahul" },
-  { value: "kssonnad", label: "Keshav" },
-  { value: "essonnad", label: "Erin" },
-  { value: "hrsonnad", label: "Hari" },
-  { value: "sonnad.phoebe", label: "Phoebe" },
+  { value: "", label: "All Drives" },
+  { value: "tesloop", label: "Tesloop" },
+  { value: "rahulioson", label: "Rahulioson" },
 ];
