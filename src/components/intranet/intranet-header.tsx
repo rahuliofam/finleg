@@ -14,7 +14,7 @@ export function IntranetHeader() {
   };
 
   return (
-    <header className="bg-[#0d3d1f] text-white">
+    <header className="bg-[#0f3d1e] text-white">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
         <div className="flex items-center gap-4">
           <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-7 w-auto" />

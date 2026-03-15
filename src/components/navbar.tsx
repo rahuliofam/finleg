@@ -36,9 +36,9 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-9 w-auto" />
-            <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-10 w-auto" />
+            <img src="/finleg-wordmark-white.png" alt="Finleg" className="h-10 w-auto" />
           </Link>
-          <span className="text-sm text-slate-400 font-mono hidden sm:inline">
+          <span className="text-sm text-green-300/60 font-mono hidden sm:inline">
             {versionData.version}
           </span>
         </div>
@@ -55,7 +55,7 @@ export function Navbar() {
           <Link
             href="/sessions"
             className={`text-sm font-medium transition-colors hover:text-white ${
-              pathname.includes("/sessions") ? "text-white" : "text-slate-300"
+              pathname.includes("/sessions") ? "text-white" : "text-green-100/70"
             }`}
           >
             Sessions
@@ -63,7 +63,7 @@ export function Navbar() {
           <Link
             href="/about"
             className={`text-sm font-medium transition-colors hover:text-white ${
-              pathname.includes("/about") ? "text-white" : "text-slate-300"
+              pathname.includes("/about") ? "text-white" : "text-green-100/70"
             }`}
           >
             About
@@ -73,13 +73,13 @@ export function Navbar() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="text-sm text-slate-300 hover:text-white transition-colors hidden sm:inline"
+                  className="text-sm text-green-100/70 hover:text-white transition-colors hidden sm:inline"
                 >
                   {user.email} ▾
                 </button>
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="text-sm text-slate-300 hover:text-white transition-colors sm:hidden"
+                  className="text-sm text-green-100/70 hover:text-white transition-colors sm:hidden"
                 >
                   Account ▾
                 </button>
