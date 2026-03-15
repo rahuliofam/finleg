@@ -19,6 +19,28 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Finleg",
   description: "Financial and legal hassles — now united in a single AI platform.",
+  metadataBase: new URL("https://finleg.net"),
+  openGraph: {
+    title: "Finleg",
+    description: "Financial and legal hassles — now united in a single AI platform.",
+    url: "https://finleg.net",
+    siteName: "Finleg",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Finleg",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Finleg",
+    description: "Financial and legal hassles — now united in a single AI platform.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
