@@ -1,12 +1,12 @@
 {
-  "version": "v260315.31 2:47p",
-  "release": 66,
-  "sha": "f13b724",
-  "fullSha": "f13b72453d28945798a598be45117a42efb856aa",
+  "version": "v260315.32 3:05p",
+  "release": 67,
+  "sha": "81aa4a8",
+  "fullSha": "81aa4a8eb6811f26df46483372ba56bacc75fe5e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 19:47:30+00",
-  "commits": [{"sha":"f13b724","message":"Add /clauded hub with enhanced changelog + sessions (#17)","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 20:05:40+00",
+  "commits": [{"sha":"81aa4a8","message":"Redesign Statements view — hierarchical grouping, sortable columns, document links","author":"Rahul"}]
 }
