@@ -1,12 +1,12 @@
 {
-  "version": "v260314.24 11:01p",
-  "release": 24,
-  "sha": "28f2543",
-  "fullSha": "28f254318ec087bf11ed6c32672492f19092328a",
+  "version": "v260314.25 11:03p",
+  "release": 25,
+  "sha": "0a44b6c",
+  "fullSha": "0a44b6cbc37bda1132edc2961f652933e14794e9",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 04:01:01+00",
-  "commits": [{"sha":"28f2543","message":"Increase intranet nav wordmark size by 50%","author":"Rahul"}]
+  "pushedAt": "2026-03-15 04:03:08+00",
+  "commits": [{"sha":"a4dbcd5","message":"Add Users, Releases, and Brand admin tab pages","author":"Rahul"},{"sha":"0a44b6c","message":"Stack navbar logo vertically with wordmark centered below","author":"Rahul"}]
 }
