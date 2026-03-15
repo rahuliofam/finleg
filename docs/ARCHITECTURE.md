@@ -16,7 +16,7 @@
 ```
 
 **Frontend:** Next.js 16 static export hosted on GitHub Pages at finleg.net
-**Backend:** Flask API on the Alpaca Mac (M-series), exposed via Cloudflare Tunnel
+**Backend:** Flask API on the Alpaca Mac (Intel x86_64, macOS 12.7), exposed via Cloudflare Tunnel
 **Database:** SQLite at `~/file-search-api/file_index.db`
 **ML Runtime:** CPU (Intel x86_64 Mac, macOS 12.7) — no GPU acceleration
 

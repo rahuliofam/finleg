@@ -31,15 +31,46 @@ logger = get_logger("api")
 
 DB_PATH = os.path.expanduser("~/rvault20_index.db")
 THUMBNAIL_SIZE = (300, 300)
+API_TOKEN = os.environ.get("API_TOKEN", "")
 ALLOWED_ORIGINS = [
     "https://finleg.net",
     "https://www.finleg.net",
     "http://localhost:3000",
     "http://localhost:5173",
 ]
+ALLOWED_PATH_PREFIXES = [
+    "/Volumes/RVAULT20/",
+    os.path.expanduser("~/"),
+]
 
 app = Flask(__name__)
 CORS(app, origins=ALLOWED_ORIGINS)
+
+# ---------------------------------------------------------------------------
+# Auth + path validation
+# ---------------------------------------------------------------------------
+
+PUBLIC_PATHS = {"/health"}
+
+
+@app.before_request
+def check_auth():
+    """Require Bearer token for all endpoints except health check."""
+    if request.path in PUBLIC_PATHS or request.method == "OPTIONS":
+        return
+    if not API_TOKEN:
+        return  # Auth disabled if no token configured
+    auth = request.headers.get("Authorization", "")
+    if auth != f"Bearer {API_TOKEN}":
+        logger.warning("Unauthorized request: %s %s ip=%s", request.method, request.path, request.remote_addr)
+        return jsonify({"error": "unauthorized"}), 401
+
+
+def validate_path(path: str) -> bool:
+    """Check that a file path is within allowed directories."""
+    resolved = os.path.realpath(path)
+    return any(resolved.startswith(prefix) for prefix in ALLOWED_PATH_PREFIXES)
+
 
 # ---------------------------------------------------------------------------
 # Request logging middleware
@@ -319,6 +350,9 @@ def photo_exif(file_id: int):
     if not os.path.exists(path):
         logger.error("EXIF: file_id=%d path does not exist: %s", file_id, path)
         return jsonify({"error": "File not found on disk"}), 404
+    if not validate_path(path):
+        logger.error("EXIF: file_id=%d path outside allowed dirs: %s", file_id, path)
+        return jsonify({"error": "Access denied"}), 403
 
     try:
         from PIL.ExifTags import TAGS
@@ -356,6 +390,9 @@ def thumbnail(file_id: int):
     if not os.path.exists(path):
         logger.error("Thumbnail: file_id=%d path does not exist: %s", file_id, path)
         return jsonify({"error": "File not found on disk"}), 404
+    if not validate_path(path):
+        logger.error("Thumbnail: file_id=%d path outside allowed dirs: %s", file_id, path)
+        return jsonify({"error": "Access denied"}), 403
 
     try:
         start = time.time()
@@ -392,6 +429,9 @@ def preview(file_id: int):
     if not os.path.exists(path):
         logger.error("Preview: file_id=%d path does not exist: %s", file_id, path)
         return jsonify({"error": "File not found on disk"}), 404
+    if not validate_path(path):
+        logger.error("Preview: file_id=%d path outside allowed dirs: %s", file_id, path)
+        return jsonify({"error": "Access denied"}), 403
 
     ext = row["ext"].lower()
     mime_map = {
