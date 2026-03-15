@@ -1,12 +1,12 @@
 {
-  "version": "v260315.07 1:05a",
-  "release": 42,
-  "sha": "14adf99",
-  "fullSha": "14adf998c2c17694d376debcf58c25223f239cc4",
+  "version": "v260315.08 1:07a",
+  "release": 43,
+  "sha": "a1f3d65",
+  "fullSha": "a1f3d6543491f2892c0d096d06e423ccb6b7c3e0",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 06:05:11+00",
-  "commits": [{"sha":"14adf99","message":"Enlarge logo and wordmark in OG image for better visibility","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 06:07:40+00",
+  "commits": [{"sha":"a1f3d65","message":"Make OG image larger and rename for cache busting","author":"Rahul"}]
 }
