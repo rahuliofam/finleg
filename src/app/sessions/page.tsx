@@ -54,6 +54,11 @@ interface Stats {
   avg_duration: number; // seconds
 }
 
+interface TranscriptMessage {
+  role: string;
+  content: string;
+}
+
 function formatDate(iso: string) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -73,13 +78,56 @@ function formatNumber(n: number) {
   return n.toLocaleString();
 }
 
+function formatTokens(n: number) {
+  if (!n) return "";
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}k tokens`;
+  return `${n} tokens`;
+}
+
+function parseTranscript(text: string): TranscriptMessage[] {
+  if (!text) return [];
+  const parts = text.split(/\n---\n/);
+  return parts
+    .map((part) => {
+      part = part.trim();
+      if (!part) return null;
+      const isUser = part.startsWith("## User");
+      const role = isUser ? "USER" : "ASSISTANT";
+      const content = part.replace(/^## (User|Assistant)\n?/, "").trim();
+      return { role, content };
+    })
+    .filter(Boolean) as TranscriptMessage[];
+}
+
+function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="px-3 py-1 text-xs border border-slate-300 rounded-md hover:bg-slate-100 transition text-slate-600"
+    >
+      {copied ? "Copied!" : label}
+    </button>
+  );
+}
+
 export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [projects, setProjects] = useState<string[]>([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [transcriptCache, setTranscriptCache] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const headers = {
@@ -92,6 +140,8 @@ export default function SessionsPage() {
       const params = new URLSearchParams({ limit: "50" });
       if (selectedProject) params.set("project", selectedProject);
       if (search) params.set("search", search);
+      if (dateFrom) params.set("from", dateFrom);
+      if (dateTo) params.set("to", dateTo);
       const res = await fetch(`${API_BASE}/sessions?${params}`, { headers });
       if (res.ok) {
         const data = await res.json();
@@ -101,7 +151,52 @@ export default function SessionsPage() {
       console.error("Failed to fetch sessions:", e);
     }
     setLoading(false);
-  }, [selectedProject, search]);
+  }, [selectedProject, search, dateFrom, dateTo]);
+
+  const fetchFullSession = useCallback(
+    async (id: string) => {
+      if (transcriptCache[id]) return;
+      try {
+        const res = await fetch(`${API_BASE}/sessions/${id}`, { headers });
+        if (res.ok) {
+          const data = await res.json();
+          setTranscriptCache((prev) => ({
+            ...prev,
+            [id]: data.transcript || "",
+          }));
+        }
+      } catch (e) {
+        console.error("Failed to fetch transcript:", e);
+      }
+    },
+    [transcriptCache]
+  );
+
+  const toggleSession = (id: string) => {
+    if (expandedId === id) {
+      setExpandedId(null);
+    } else {
+      setExpandedId(id);
+      fetchFullSession(id);
+    }
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setDateFrom("");
+    setDateTo("");
+    setSelectedProject("");
+  };
+
+  const copyFullSession = (id: string) => {
+    const text = transcriptCache[id];
+    if (!text) return;
+    const messages = parseTranscript(text);
+    const full = messages
+      .map((m) => `### ${m.role}\n\n${m.content}`)
+      .join("\n\n---\n\n");
+    return full;
+  };
 
   useEffect(() => {
     // Fetch stats
@@ -166,21 +261,9 @@ export default function SessionsPage() {
         </div>
       </section>
 
-      {/* Filters — light background with good contrast */}
+      {/* Filters */}
       <section className="bg-slate-100 border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row gap-3">
-          <select
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-            className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-900"
-          >
-            <option value="">All Projects</option>
-            {projects.map((p) => (
-              <option key={p} value={p}>
-                {getProjectDisplay(p)}
-              </option>
-            ))}
-          </select>
           <input
             type="text"
             placeholder="Search sessions…"
@@ -189,11 +272,29 @@ export default function SessionsPage() {
             onKeyDown={(e) => e.key === "Enter" && fetchSessions()}
             className="border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 bg-white text-slate-900 placeholder:text-slate-400"
           />
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-900"
+          />
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-900"
+          />
           <button
             onClick={fetchSessions}
             className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-slate-700 transition"
           >
             Search
+          </button>
+          <button
+            onClick={clearFilters}
+            className="border border-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm hover:bg-slate-200 transition"
+          >
+            Clear
           </button>
         </div>
       </section>
@@ -211,60 +312,118 @@ export default function SessionsPage() {
             {sessions.map((s) => {
               const color = getProjectColor(s.project);
               const displayName = getProjectDisplay(s.project);
+              const model = s.model
+                ? s.model.replace("claude-", "").split("-202")[0]
+                : "";
+              const tokens = formatTokens(s.token_count);
+              const isExpanded = expandedId === s.id;
+              const messages = isExpanded
+                ? parseTranscript(transcriptCache[s.id] || s.transcript || "")
+                : [];
+
               return (
                 <div
                   key={s.id}
                   className="border rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition"
                 >
-                  {/* Session header */}
-                  <button
-                    onClick={() =>
-                      setExpandedId(expandedId === s.id ? null : s.id)
-                    }
-                    className="w-full text-left px-5 py-4 flex items-start gap-4"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                  {/* Session header row */}
+                  <div className="flex items-center px-5 py-4">
+                    <div
+                      className="flex-1 min-w-0 cursor-pointer"
+                      onClick={() => toggleSession(s.id)}
+                    >
+                      {/* Top line: date + badges + right-aligned share */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm text-slate-600 font-medium">
+                          {formatDate(s.started_at)}
+                        </span>
                         <span
                           className={`inline-block ${color.bg} ${color.text} text-xs font-medium px-2 py-0.5 rounded-full`}
                         >
                           {displayName}
                         </span>
-                        <span className="text-xs text-slate-400">
-                          {formatDate(s.started_at)}
-                        </span>
-                        {s.duration_mins && (
-                          <span className="text-xs text-slate-400">
-                            · {s.duration_mins}m
+                        {model && (
+                          <span className="inline-block bg-slate-100 text-slate-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                            {model}
                           </span>
                         )}
-                        {s.token_count > 0 && (
-                          <span className="text-xs text-slate-400">
-                            · {formatNumber(s.token_count)} tokens
+                        {s.duration_mins > 0 && (
+                          <span className="inline-block bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                            {s.duration_mins}m
+                          </span>
+                        )}
+                        {tokens && (
+                          <span className="inline-block bg-green-50 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                            {tokens}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-slate-700 truncate">
+                      {/* Summary line */}
+                      <p className="text-sm text-slate-700 mt-1 truncate">
                         {s.summary || "No summary"}
                       </p>
                     </div>
-                    <span className="text-slate-400 text-lg mt-1">
-                      {expandedId === s.id ? "▲" : "▼"}
-                    </span>
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = `${window.location.origin}${window.location.pathname}?session=${s.id}`;
+                        navigator.clipboard.writeText(url);
+                      }}
+                      className="ml-3 text-slate-400 hover:text-slate-600 text-lg flex-shrink-0"
+                      title="Copy session link"
+                    >
+                      ⤴
+                    </button>
+                  </div>
 
                   {/* Expanded transcript */}
-                  {expandedId === s.id && (
+                  {isExpanded && (
                     <div className="border-t px-5 py-4 bg-slate-50">
-                      <div className="flex items-center gap-2 mb-3 text-xs text-slate-400">
-                        <span>Model: {s.model || "—"}</span>
-                        <span>·</span>
-                        <span>ID: {s.id.slice(0, 8)}…</span>
+                      {/* Actions bar */}
+                      <div className="flex items-center gap-2 mb-4">
+                        <CopyButton
+                          text={copyFullSession(s.id) || s.transcript || ""}
+                          label="Copy Full Session"
+                        />
                       </div>
-                      <div className="prose prose-sm max-w-none max-h-[500px] overflow-y-auto">
-                        <pre className="whitespace-pre-wrap text-xs leading-relaxed bg-white p-4 rounded-lg border">
-                          {s.transcript || "No transcript available"}
-                        </pre>
+
+                      {/* Transcript messages */}
+                      <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                        {messages.length > 0 ? (
+                          messages.map((msg, idx) => (
+                            <div
+                              key={idx}
+                              className={`rounded-lg p-4 ${
+                                msg.role === "USER"
+                                  ? "bg-blue-50 border border-blue-100"
+                                  : "bg-white border border-slate-200"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <span
+                                  className={`text-xs font-bold tracking-wide ${
+                                    msg.role === "USER"
+                                      ? "text-blue-600"
+                                      : "text-slate-500"
+                                  }`}
+                                >
+                                  {msg.role}
+                                </span>
+                                <CopyButton text={msg.content} />
+                              </div>
+                              <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800 font-sans">
+                                {msg.content.length > 3000
+                                  ? msg.content.substring(0, 3000) +
+                                    "\n\n... [truncated]"
+                                  : msg.content}
+                              </pre>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-sm text-slate-400">
+                            No transcript available
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
