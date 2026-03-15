@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { Dictionary } from "@/i18n/types";
 import { type Locale, INTRANET_LOCALES } from "@/i18n/config";
 import { useAuth } from "@/contexts/auth-context";
+import versionData from "@/../version.json";
 
 export function Navbar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   const pathname = usePathname();
@@ -26,6 +27,9 @@ export function Navbar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
         </Link>
 
         <div className="flex items-center gap-4">
+          <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+            {versionData.version}
+          </span>
           <Link
             href={`/${lang}/about`}
             className={`text-sm font-medium transition-colors hover:text-[#1B6B3A] ${
