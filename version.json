@@ -1,12 +1,12 @@
 {
-  "version": "v260314.07 9:27p",
-  "release": 7,
-  "sha": "7899509",
-  "fullSha": "78995096b3b4df78e0808f2a4fbdeff2fd56da73",
+  "version": "v260314.08 9:33p",
+  "release": 8,
+  "sha": "86ef67d",
+  "fullSha": "86ef67da780e29ccb21359bae04df1854fe039cf",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:27:42+00",
-  "commits": [{"sha":"7899509","message":"Rework homepage layout: wordmark up 200px, logo box top-aligned, nav adjustments","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:33:00+00",
+  "commits": [{"sha":"86ef67d","message":"Add Claude sessions viewer at finleg.net/sessions","author":"Rahul"}]
 }
