@@ -159,11 +159,12 @@ async function processDocument(doc) {
     return { id, skipped: true };
   }
 
-  // Download from R2
-  const tmpPath = await downloadFromR2(bucket, r2_key);
-  if (!tmpPath) return { id, error: 'download failed' };
-
+  let tmpPath;
   try {
+    // Download from R2
+    tmpPath = await downloadFromR2(bucket, r2_key);
+    if (!tmpPath) return { id, error: 'download failed' };
+
     // Extract with Claude CLI headless
     const metadata = await extractWithClaude(tmpPath, file_type, filename, { category, account_type, institution, original_path });
 
@@ -206,9 +207,12 @@ async function processDocument(doc) {
     }
 
     return { id, success: true, metadata };
+  } catch (e) {
+    console.error(`  Error processing ${filename}: ${e.message?.slice(0, 120)}`);
+    return { id, error: e.message?.slice(0, 80) || 'unknown error' };
   } finally {
     // Cleanup temp file
-    try { unlinkSync(tmpPath); } catch {}
+    if (tmpPath) try { unlinkSync(tmpPath); } catch {}
   }
 }
 
