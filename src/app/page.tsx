@@ -12,23 +12,23 @@ export default function HomePage() {
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 lg:py-36 w-full">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-            {/* Left: Logo + Text */}
-            <div className="flex-1 text-center lg:text-left">
-              <div className="mb-6 lg:mb-8">
+          <div className="flex flex-col lg:flex-row items-stretch gap-12 lg:gap-20">
+            {/* Left: Wordmark + Text */}
+            <div className="flex-1 flex flex-col items-center lg:items-start justify-center">
+              <div className="mb-4 lg:mb-6">
                 <Image
                   src="/finleg-wordmark-white.png"
                   alt="Finleg"
-                  width={600}
-                  height={180}
-                  className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto lg:mx-0"
+                  width={720}
+                  height={216}
+                  className="w-full max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto lg:mx-0"
                   priority
                 />
               </div>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white/90 leading-relaxed mt-0 mb-6 max-w-xl text-center lg:text-left">
                 Financial and legal hassles — now united in a single AI platform.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Link
                   href="/signin"
                   className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-[#1B6B3A] rounded-full font-semibold text-lg hover:bg-white/90 transition-all hover:shadow-lg hover:shadow-white/20"
@@ -50,18 +50,18 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Logo prominently displayed */}
+            {/* Right: Logo prominently displayed — stretches to match left column height */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <div className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem]">
+              <div className="relative w-80 sm:w-[26rem] lg:w-[26rem] aspect-square lg:aspect-auto lg:self-stretch">
                 <div className="absolute inset-0 rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 rotate-6" />
                 <div className="absolute inset-0 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/15 -rotate-3" />
                 <div className="absolute inset-4 rounded-2xl bg-white/90 flex items-center justify-center shadow-2xl">
                   <Image
                     src="/finleg-logo-transparent.png"
                     alt="Finleg Logo"
-                    width={400}
-                    height={300}
-                    className="w-4/5 h-auto drop-shadow-lg"
+                    width={500}
+                    height={375}
+                    className="w-[85%] h-auto drop-shadow-lg"
                     priority
                   />
                 </div>
