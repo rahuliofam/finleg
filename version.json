@@ -1,12 +1,12 @@
 {
-  "version": "v260315.27 2:03p",
-  "release": 62,
-  "sha": "59da853",
-  "fullSha": "59da853213d1284099e85c4eafe5e0fc11811097",
+  "version": "v260315.28 2:08p",
+  "release": 63,
+  "sha": "ea11a6a",
+  "fullSha": "ea11a6af018d3bdfddc8f770b262b6792288aaf5",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 19:03:55+00",
-  "commits": [{"sha":"f9da65f","message":"Fix extraction script crash on timeout — add error handling per document","author":"Rahul"},{"sha":"59da853","message":"Merge pull request #15 from rahuliofam/xenodochial-tharp","author":"Rahul"}]
+  "pushedAt": "2026-03-15 19:08:06+00",
+  "commits": [{"sha":"ea11a6a","message":"Rewrite Releases tab as live changelog from GitHub PRs (#16)","author":"Rahul"}]
 }
