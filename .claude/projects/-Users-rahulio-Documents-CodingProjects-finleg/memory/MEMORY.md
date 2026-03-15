@@ -1,0 +1,1 @@
+- [feedback_version_on_push.md](feedback_version_on_push.md) — Always report version string and public URL (finleg.net) after pushing

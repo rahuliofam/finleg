@@ -160,7 +160,7 @@ get_routing() {
     "SBA Loan 9663307809"*)
       R2_PREFIX="loans/sba-9663307809-covid-injury"
       CATEGORY="statement"; ACCOUNT_TYPE="sba-loan"; INSTITUTION="sba"
-      ACCOUNT_NAME="SBA COVID-19 Economic Injury Loan"; ACCOUNT_NUMBER="9663307809"; ACCOUNT_HOLDER="Tesaloop"
+      ACCOUNT_NAME="SBA COVID-19 Economic Injury Loan"; ACCOUNT_NUMBER="9663307809"; ACCOUNT_HOLDER="Tesloop"
       ;;
     "Taxes"*)
       R2_PREFIX="taxes"

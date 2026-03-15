@@ -20,6 +20,8 @@ interface Statement {
   year: number | null;
   month: number | null;
   statement_date: string | null;
+  period_start: string | null;
+  period_end: string | null;
   is_closed: boolean;
   property: string | null;
 }
@@ -90,7 +92,7 @@ const HOLDERS = [
   { value: "Subhash", label: "Subhash" },
   { value: "Family", label: "Family" },
   { value: "Trust", label: "Trust" },
-  { value: "Tesaloop", label: "Tesaloop" },
+  { value: "Tesloop", label: "Tesloop" },
 ];
 
 const YEARS = [
@@ -380,6 +382,31 @@ export default function StatementsTab() {
       .sort((a, b) => a.label.localeCompare(b.label));
   })();
 
+  // Determine active vs archived institution groups
+  // Active = has at least one statement from current calendar year or last 6 months
+  const isActiveGroup = (group: InstitutionGroup): boolean => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const sixMonthsAgo = new Date(now);
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const cutoffYear = sixMonthsAgo.getFullYear();
+    const cutoffMonth = sixMonthsAgo.getMonth() + 1; // 1-indexed
+
+    return group.accounts.some((acct) =>
+      acct.statements.some((s) => {
+        if (!s.year) return false;
+        // Current calendar year
+        if (s.year >= currentYear) return true;
+        // Within last 6 months
+        if (s.year === cutoffYear && s.month && s.month >= cutoffMonth) return true;
+        return false;
+      })
+    );
+  };
+
+  const activeGroups = institutionGroups.filter(isActiveGroup);
+  const archivedGroups = institutionGroups.filter((g) => !isActiveGroup(g));
+
   const allAccountKeys = institutionGroups.flatMap((g) => g.accounts.map((a) => a.key));
   const allInstitutionKeys = institutionGroups.map((g) => g.institution);
   const totalAccounts = institutionGroups.reduce((sum, g) => sum + g.accounts.length, 0);
@@ -525,8 +552,9 @@ export default function StatementsTab() {
             </button>
           </div>
 
-          <div className="space-y-2">
-            {institutionGroups.map((instGroup) => {
+          {/* Render institution group card */}
+          {(() => {
+            const renderInstGroup = (instGroup: InstitutionGroup) => {
               const instExpanded = expandedInstitutions.has(instGroup.institution);
 
               return (
@@ -684,9 +712,9 @@ export default function StatementsTab() {
                             <table className="w-full text-sm">
                               <thead>
                                 <tr className="text-[0.6rem] text-slate-400 uppercase tracking-wider">
-                                  <th className="text-left py-1 pr-3 font-medium">Period</th>
+                                  <th className="text-left py-1 pr-3 font-medium">Starting</th>
+                                  <th className="text-left py-1 pr-3 font-medium">Ending</th>
                                   <th className="text-left py-1 pr-3 font-medium">Filename</th>
-                                  <th className="text-left py-1 pr-3 font-medium">Date</th>
                                   <th className="text-right py-1 pr-3 font-medium">Size</th>
                                   <th className="text-center py-1 font-medium w-16">View</th>
                                   <th className="text-center py-1 font-medium w-16">Data</th>
@@ -695,6 +723,19 @@ export default function StatementsTab() {
                               <tbody>
                                 {acct.statements.map((s) => {
                                   const hasParsed = parsedDocIds.has(s.id);
+                                  const fmtDate = (d: string | null) => {
+                                    if (!d) return null;
+                                    const dt = new Date(d + "T00:00:00");
+                                    return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                                  };
+                                  const startDate = fmtDate(s.period_start);
+                                  const endDate = fmtDate(s.period_end);
+                                  // Fallback: if no period dates, use month/year
+                                  const fallbackPeriod = s.month
+                                    ? `${MONTH_NAMES[s.month]} ${s.year}`
+                                    : s.year
+                                      ? String(s.year)
+                                      : null;
                                   return (
                                     <tr
                                       key={s.id}
@@ -702,17 +743,13 @@ export default function StatementsTab() {
                                       className="hover:bg-emerald-50 cursor-pointer transition-colors border-t border-slate-50"
                                     >
                                       <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
-                                        {s.month
-                                          ? `${MONTH_NAMES[s.month]} ${s.year}`
-                                          : s.year
-                                            ? String(s.year)
-                                            : "\u2014"}
+                                        {startDate || fallbackPeriod || "\u2014"}
+                                      </td>
+                                      <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
+                                        {endDate || "\u2014"}
                                       </td>
                                       <td className="py-1.5 pr-3 text-slate-500 truncate max-w-[300px]">
                                         {s.filename}
-                                      </td>
-                                      <td className="py-1.5 pr-3 text-slate-400 whitespace-nowrap text-xs">
-                                        {s.statement_date || "\u2014"}
                                       </td>
                                       <td className="py-1.5 pr-3 text-slate-400 text-right whitespace-nowrap text-xs">
                                         {formatSize(s.file_size)}
@@ -756,8 +793,42 @@ export default function StatementsTab() {
                   )}
                 </div>
               );
-            })}
-          </div>
+            };
+
+            return (
+              <div className="space-y-6">
+                {/* Active Accounts */}
+                {activeGroups.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Active Accounts</h2>
+                      <span className="text-xs text-slate-400">
+                        {activeGroups.length} institution{activeGroups.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {activeGroups.map(renderInstGroup)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Archived Accounts */}
+                {archivedGroups.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Archived Accounts</h2>
+                      <span className="text-xs text-slate-400">
+                        {archivedGroups.length} institution{archivedGroups.length !== 1 ? "s" : ""} &middot; no activity in 6+ months
+                      </span>
+                    </div>
+                    <div className="space-y-2 opacity-75">
+                      {archivedGroups.map(renderInstGroup)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </>
       )}
 
@@ -843,26 +914,26 @@ export default function StatementsTab() {
                     {detailStatement.account_holder}
                   </td>
                 </tr>
-                {detailStatement.statement_date && (
+                {(detailStatement.period_start || detailStatement.statement_date) && (
                   <tr>
                     <td className="text-slate-400 py-1.5 pr-4 whitespace-nowrap align-top">
-                      Statement Date
+                      Starting
                     </td>
                     <td className="text-slate-700">
-                      {detailStatement.statement_date}
+                      {detailStatement.period_start || detailStatement.statement_date}
                     </td>
                   </tr>
                 )}
-                <tr>
-                  <td className="text-slate-400 py-1.5 pr-4 whitespace-nowrap align-top">
-                    Period
-                  </td>
-                  <td className="text-slate-700">
-                    {detailStatement.month
-                      ? `${MONTH_NAMES[detailStatement.month]} ${detailStatement.year}`
-                      : detailStatement.year || "Unknown"}
-                  </td>
-                </tr>
+                {detailStatement.period_end && (
+                  <tr>
+                    <td className="text-slate-400 py-1.5 pr-4 whitespace-nowrap align-top">
+                      Ending
+                    </td>
+                    <td className="text-slate-700">
+                      {detailStatement.period_end}
+                    </td>
+                  </tr>
+                )}
                 <tr>
                   <td className="text-slate-400 py-1.5 pr-4 whitespace-nowrap align-top">
                     File
