@@ -1,12 +1,12 @@
 {
-  "version": "v260314.06 9:16p",
-  "release": 6,
-  "sha": "7f433a9",
-  "fullSha": "7f433a9d66f83b56f405735bc4ab0f1d5474e567",
+  "version": "v260314.07 9:27p",
+  "release": 7,
+  "sha": "7899509",
+  "fullSha": "78995096b3b4df78e0808f2a4fbdeff2fd56da73",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 02:16:36+00",
-  "commits": [{"sha":"7f433a9","message":"Use CSS scale for visible 20%/25%/30% size increases on homepage","author":"Rahul"}]
+  "pushedAt": "2026-03-15 02:27:42+00",
+  "commits": [{"sha":"7899509","message":"Rework homepage layout: wordmark up 200px, logo box top-aligned, nav adjustments","author":"Rahul"}]
 }
