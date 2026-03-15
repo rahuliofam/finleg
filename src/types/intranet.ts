@@ -57,6 +57,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "attendance", label: "Attendance", defaultVisible: false },
   ],
   admin: [
+    { key: "uploads", label: "Uploads", defaultVisible: true },
     { key: "users", label: "Users", defaultVisible: true },
     { key: "passwords", label: "Passwords", defaultVisible: false },
     { key: "settings", label: "Settings", defaultVisible: false },
