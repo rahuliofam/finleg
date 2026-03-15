@@ -29,7 +29,7 @@ from logging_config import get_logger, log_with_data
 
 logger = get_logger("api")
 
-DB_PATH = os.path.expanduser("~/file-search-api/file_index.db")
+DB_PATH = os.path.expanduser("~/rvault20_index.db")
 THUMBNAIL_SIZE = (300, 300)
 ALLOWED_ORIGINS = [
     "https://finleg.net",

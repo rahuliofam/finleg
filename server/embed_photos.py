@@ -26,7 +26,7 @@ from logging_config import get_logger
 
 logger = get_logger("embed_photos")
 
-DB_PATH = os.path.expanduser("~/file-search-api/file_index.db")
+DB_PATH = os.path.expanduser("~/rvault20_index.db")
 BATCH_SIZE = 32
 MODEL_NAME = "ViT-B-16-SigLIP2"
 PRETRAINED = "webli"

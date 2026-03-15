@@ -27,7 +27,7 @@ from logging_config import get_logger
 
 logger = get_logger("index_faces")
 
-DB_PATH = os.path.expanduser("~/file-search-api/file_index.db")
+DB_PATH = os.path.expanduser("~/rvault20_index.db")
 
 
 def init_db(db_path: str) -> sqlite3.Connection:

@@ -25,7 +25,7 @@ from logging_config import get_logger
 
 logger = get_logger("caption_photos")
 
-DB_PATH = os.path.expanduser("~/file-search-api/file_index.db")
+DB_PATH = os.path.expanduser("~/rvault20_index.db")
 CAPTION_PROMPT = "Describe this photo in detail including people, activities, setting, colors, objects, and any text visible."
 
 
