@@ -1,12 +1,12 @@
 {
-  "version": "v260315.32 3:05p",
-  "release": 67,
-  "sha": "81aa4a8",
-  "fullSha": "81aa4a8eb6811f26df46483372ba56bacc75fe5e",
+  "version": "v260315.33 3:25p",
+  "release": 68,
+  "sha": "e00df1e",
+  "fullSha": "e00df1efea360b749c1519b2cb59ecd405a63ff8",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 20:05:40+00",
-  "commits": [{"sha":"81aa4a8","message":"Redesign Statements view — hierarchical grouping, sortable columns, document links","author":"Rahul"}]
+  "pushedAt": "2026-03-15 20:25:44+00",
+  "commits": [{"sha":"e00df1e","message":"Remove hardcoded Supabase service_role key from all scripts + add gitleaks pre-commit hook","author":"Rahul"}]
 }
