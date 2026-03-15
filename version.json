@@ -1,12 +1,12 @@
 {
-  "version": "v260314.02 7:55p",
-  "release": 2,
-  "sha": "3472c42",
-  "fullSha": "3472c42154d4ba0d0971364601438a67de25d981",
+  "version": "v260314.03 8:13p",
+  "release": 3,
+  "sha": "95dc7c0",
+  "fullSha": "95dc7c0a47f2ded2ee8a400d3b11493ed2ceeb9a",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 00:55:24+00",
-  "commits": [{"sha":"3472c42","message":"fix: improve homepage and about page branding aesthetics","author":"Rahul"}]
+  "pushedAt": "2026-03-15 01:13:41+00",
+  "commits": [{"sha":"95dc7c0","message":"docs: add Open Brain reference URL to all related files","author":"Rahul"}]
 }
