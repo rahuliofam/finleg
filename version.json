@@ -1,12 +1,12 @@
 {
-  "version": "v260315.26 1:56p",
-  "release": 61,
-  "sha": "4c707f0",
-  "fullSha": "4c707f030142fae989b519e919797cc5228069ba",
+  "version": "v260315.27 2:03p",
+  "release": 62,
+  "sha": "59da853",
+  "fullSha": "59da853213d1284099e85c4eafe5e0fc11811097",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 18:56:40+00",
-  "commits": [{"sha":"0baf8eb","message":"Add family docs to R2 document library — legal, taxes, investments, other","author":"Rahul"},{"sha":"f97387b","message":"Rewrite doc extraction to use Claude CLI headless mode","author":"Rahul"},{"sha":"f7fc04d","message":"Fix extraction script: use R2 S3 API + Claude CLI model alias","author":"Rahul"},{"sha":"5fe4b25","message":"Merge main into xenodochial-tharp — resolve conflicts keeping CLI headless version","author":"Rahul"},{"sha":"4c707f0","message":"Merge pull request #14 from rahuliofam/xenodochial-tharp","author":"Rahul"}]
+  "pushedAt": "2026-03-15 19:03:55+00",
+  "commits": [{"sha":"f9da65f","message":"Fix extraction script crash on timeout — add error handling per document","author":"Rahul"},{"sha":"59da853","message":"Merge pull request #15 from rahuliofam/xenodochial-tharp","author":"Rahul"}]
 }
