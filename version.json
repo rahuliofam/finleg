@@ -1,12 +1,12 @@
 {
-  "version": "v260314.22 10:48p",
-  "release": 22,
-  "sha": "d88e1c3",
-  "fullSha": "d88e1c34820b70ca6f631bfe79c134cb326d4e6f",
+  "version": "v260314.23 10:58p",
+  "release": 23,
+  "sha": "1753613",
+  "fullSha": "17536137740a435a5a5048a7a1cd693277a6c983",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 03:48:58+00",
-  "commits": [{"sha":"d88e1c3","message":"Add Sessions link to navbar, visible on all public pages","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 03:58:51+00",
+  "commits": [{"sha":"1753613","message":"Brand intranet header with Finleg logo, dynamic version, and green theme (#3)","author":"Rahul"}]
 }
