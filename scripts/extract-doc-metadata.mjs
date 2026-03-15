@@ -22,7 +22,10 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { readFileSync, writeFileSync, unlinkSync, mkdirSync } from 'fs';
+import { createWriteStream } from 'fs';
+import { pipeline } from 'stream/promises';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -32,6 +35,17 @@ const execAsync = promisify(exec);
 // ── Config ──
 const SUPABASE_URL = 'https://gjdvzzxsrzuorguwkaih.supabase.co';
 const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzQzMTk1NywiZXhwIjoyMDg5MDA3OTU3fQ.iYlTfc9IhMpOphSLUjBCTEto2Mq_1dD1-gVIEo4LUrc';
+
+// Cloudflare R2 via S3 API
+const R2_ACCOUNT_ID = '9cd3a280a54ce2a5b382602f0247b577';
+const R2_ACCESS_KEY = 'e096a89017992c90daf23b7be0b5da0a';
+const R2_SECRET_KEY = 'fc4716d54e00d0e7f936e442dfc7b6240d3e5163c721237f24936ed95be3764f';
+
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: { accessKeyId: R2_ACCESS_KEY, secretAccessKey: R2_SECRET_KEY },
+});
 const DRY_RUN = process.argv.includes('--dry-run');
 const LIMIT = parseInt(process.argv.find(a => a.startsWith('--limit='))?.split('=')[1] || '0') || 999;
 const CATEGORY_FILTER = process.argv.find(a => a.startsWith('--category='))?.split('=')[1] || null;
@@ -68,8 +82,8 @@ async function downloadFromR2(bucket, r2Key) {
   const tmpPath = join(TMP_DIR, safeFilename);
 
   try {
-    const cmd = `wrangler r2 object get '${bucket}/${r2Key}' --file='${tmpPath}' --remote`;
-    await execAsync(cmd, { timeout: 60000 });
+    const resp = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: r2Key }));
+    await pipeline(resp.Body, createWriteStream(tmpPath));
     return tmpPath;
   } catch (e) {
     console.error(`  Download failed: ${e.message?.slice(0, 80)}`);
@@ -87,8 +101,8 @@ Current institution: ${existingMeta.institution || 'unknown'}`;
   let promptText;
 
   if (IMAGE_TYPES.includes(fileType) || fileType === 'pdf') {
-    // For images and PDFs, reference the file and let Claude CLI handle it
-    promptText = `${EXTRACTION_PROMPT}\n\nContext:\n${context}\n\nAnalyze the attached file: ${filePath}`;
+    // For images and PDFs, use allowedTools to let Claude read the local file
+    promptText = `${EXTRACTION_PROMPT}\n\nContext:\n${context}\n\nRead and analyze this file: ${filePath}`;
   } else {
     // Read text content for text-based files
     let textContent;
@@ -105,18 +119,14 @@ Current institution: ${existingMeta.institution || 'unknown'}`;
   writeFileSync(promptPath, promptText);
 
   try {
-    // Use Claude CLI headless mode with --print flag
-    const args = ['--print', '--model', 'claude-sonnet-4-6-20250514'];
+    // Use Claude CLI --print mode
+    // For PDFs/images, allow Read tool so Claude can read the local file
+    const isPdfOrImage = IMAGE_TYPES.includes(fileType) || fileType === 'pdf';
+    const allowTools = isPdfOrImage ? ' --allowedTools "Read"' : '';
 
-    // For PDFs and images, attach the file
-    if (IMAGE_TYPES.includes(fileType) || fileType === 'pdf') {
-      args.push('--file', filePath);
-    }
-
-    // Read prompt from stdin via shell
     const { stdout } = await execAsync(
-      `cat "${promptPath}" | claude ${args.join(' ')}`,
-      { timeout: 120000, maxBuffer: 10 * 1024 * 1024 }
+      `cat "${promptPath}" | claude --print --model sonnet${allowTools}`,
+      { timeout: 180000, maxBuffer: 10 * 1024 * 1024 }
     );
 
     const text = stdout.trim();
