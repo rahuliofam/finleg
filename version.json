@@ -1,12 +1,12 @@
 {
-  "version": "v260315.10 2:14a",
-  "release": 45,
-  "sha": "195b3bd",
-  "fullSha": "195b3bdf3accefde1f10427dc15bf13e4cb01437",
+  "version": "v260315.11 2:18a",
+  "release": 46,
+  "sha": "c1ca605",
+  "fullSha": "c1ca6053053fdac20ba17de332572354892f7cc5",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 07:14:23+00",
-  "commits": [{"sha":"469d6bb","message":"Simplify roles to Admin, Family, Accountant, Collaborator","author":"Rahul"},{"sha":"195b3bd","message":"Merge branch 'fervent-brattain'","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 07:18:32+00",
+  "commits": [{"sha":"4c71cb5","message":"Require invitation for access — no auto-creation of users","author":"Rahul"},{"sha":"c1ca605","message":"Merge branch 'fervent-brattain'","author":"Rahul"}]
 }
