@@ -1,12 +1,12 @@
 {
-  "version": "v260314.03 8:13p",
-  "release": 3,
-  "sha": "95dc7c0",
-  "fullSha": "95dc7c0a47f2ded2ee8a400d3b11493ed2ceeb9a",
+  "version": "v260314.04 8:19p",
+  "release": 4,
+  "sha": "330f652",
+  "fullSha": "330f652305fe68cf5dc293ac0aed5ac69d0dd79c",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 01:13:41+00",
-  "commits": [{"sha":"95dc7c0","message":"docs: add Open Brain reference URL to all related files","author":"Rahul"}]
+  "pushedAt": "2026-03-15 01:19:35+00",
+  "commits": [{"sha":"330f652","message":"refactor: remove i18n system, flatten routes to drop /en/ prefix","author":"Rahul"}]
 }
