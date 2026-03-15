@@ -9,22 +9,15 @@ export function Navbar() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
 
-  // Hide public navbar on intranet pages (intranet has its own header)
-  if (pathname.includes("/intranet")) {
-    return null;
-  }
-
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between py-2">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex flex-col items-center transition-opacity hover:opacity-80">
-            <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-10 w-auto" />
-            <div className="h-5 w-20 overflow-hidden -mt-1">
-              <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="w-full h-auto object-contain" style={{ marginTop: '-38%' }} />
-            </div>
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+            <img src="/finleg-logo-transparent.png" alt="Finleg" className="h-9 w-auto" />
+            <img src="/finleg-wordmark-transparent.png" alt="Finleg" className="h-10 w-auto" />
           </Link>
-          <span className="text-xs text-slate-400 font-mono hidden sm:inline self-end mb-1">
+          <span className="text-lg text-slate-500 font-mono hidden sm:inline">
             {versionData.version}
           </span>
         </div>
