@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Remediation — Action Items</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #1e293b; background: #f8fafc; }
+    h1 { color: #dc2626; font-size: 1.5rem; border-bottom: 2px solid #dc2626; padding-bottom: 8px; }
+    h2 { color: #334155; font-size: 1.1rem; margin-top: 28px; }
+    .alert { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .alert strong { color: #dc2626; }
+    .done { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .done strong { color: #16a34a; }
+    ol { padding-left: 20px; }
+    li { margin: 12px 0; line-height: 1.6; }
+    code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    a { color: #2563eb; }
+    .timestamp { color: #94a3b8; font-size: 0.85rem; margin-top: 32px; }
+  </style>
+</head>
+<body>
+  <h1>GitGuardian Secret Exposure — Remediation Checklist</h1>
+
+  <div class="alert">
+    <strong>URGENT — Secrets are in git history forever. Removing from code is not enough. You must rotate.</strong>
+  </div>
+
+  <h2>1. Rotate Supabase Service Role Key</h2>
+  <ol>
+    <li>Go to <a href="https://supabase.com/dashboard/project/gjdvzzxsrzuorguwkaih/settings/api" target="_blank">Supabase Dashboard → Settings → API</a></li>
+    <li>Under <strong>service_role key</strong>, click <strong>Regenerate</strong></li>
+    <li>Copy the new key</li>
+    <li>Update your local <code>.env</code> file: <code>SUPABASE_SERVICE_ROLE_KEY=new-key-here</code></li>
+    <li>Update the key on Hostinger VPS (for batch jobs)</li>
+  </ol>
+
+  <h2>2. Rotate Cloudflare R2 API Token</h2>
+  <ol>
+    <li>Go to <a href="https://dash.cloudflare.com/?to=/:account/r2/api-tokens" target="_blank">Cloudflare Dashboard → R2 → Manage R2 API Tokens</a></li>
+    <li><strong>Revoke</strong> the existing token</li>
+    <li>Create a new token with the same permissions</li>
+    <li>Update <code>wrangler</code> auth: run <code>wrangler login</code> or update <code>~/.wrangler/config/default.toml</code></li>
+  </ol>
+
+  <h2>3. Create your <code>.env</code> file</h2>
+  <ol>
+    <li>Copy the template: <code>cp .env.example .env</code></li>
+    <li>Paste the <strong>new</strong> rotated keys (from steps 1 &amp; 2 above)</li>
+    <li>Verify scripts work: <code>node scripts/verify-index.mjs</code></li>
+  </ol>
+
+  <div class="done">
+    <strong>Already done by Claude:</strong>
+    <ul>
+      <li>All 5 scripts updated to use <code>process.env</code> + <code>dotenv</code> (no more hardcoded keys)</li>
+      <li><code>.env.example</code> created with placeholder keys</li>
+      <li><code>.env</code> already in <code>.gitignore</code></li>
+      <li>Gitleaks pre-commit hook installed (<code>.githooks/pre-commit</code>)</li>
+      <li><code>npm prepare</code> script auto-configures hooks for new clones</li>
+    </ul>
+  </div>
+
+  <p class="timestamp">Generated: 2026-03-15 — GitGuardian incident response</p>
+</body>
+</html>
