@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Scan staged changes for secrets before committing.
+# Install: git config core.hooksPath .githooks
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --verbose
+else
+  echo "WARNING: gitleaks not installed. Install with: brew install gitleaks"
+  echo "Skipping secret scan."
+fi
