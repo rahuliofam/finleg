@@ -1,12 +1,12 @@
 {
-  "version": "v260315.33 3:25p",
-  "release": 68,
-  "sha": "e00df1e",
-  "fullSha": "e00df1efea360b749c1519b2cb59ecd405a63ff8",
+  "version": "v260315.34 3:28p",
+  "release": 69,
+  "sha": "36dee6d",
+  "fullSha": "36dee6d9063cdaf273c83bd9ffa77a192d647409",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 20:25:44+00",
-  "commits": [{"sha":"e00df1e","message":"Remove hardcoded Supabase service_role key from all scripts + add gitleaks pre-commit hook","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 20:28:20+00",
+  "commits": [{"sha":"36dee6d","message":"Add auto sign-in query param for automated testing","author":"Rahul"}]
 }
