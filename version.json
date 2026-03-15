@@ -1,12 +1,12 @@
 {
-  "version": "v260314.25 11:03p",
-  "release": 25,
-  "sha": "0a44b6c",
-  "fullSha": "0a44b6cbc37bda1132edc2961f652933e14794e9",
+  "version": "v260314.26 11:08p",
+  "release": 26,
+  "sha": "3fab5fb",
+  "fullSha": "3fab5fb9f63e711f1f17eebde9c1ed50d818bf5f",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 04:03:08+00",
-  "commits": [{"sha":"a4dbcd5","message":"Add Users, Releases, and Brand admin tab pages","author":"Rahul"},{"sha":"0a44b6c","message":"Stack navbar logo vertically with wordmark centered below","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 04:08:39+00",
+  "commits": [{"sha":"3fab5fb","message":"Fix sessions auth: OAuth redirect returns to original page","author":"Rahul"}]
 }
