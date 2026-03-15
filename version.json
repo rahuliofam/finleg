@@ -1,12 +1,12 @@
 {
-  "version": "v260315.06 1:02a",
-  "release": 41,
-  "sha": "8ef79c2",
-  "fullSha": "8ef79c2da8be2455c973d27da75bf0932253c170",
+  "version": "v260315.07 1:05a",
+  "release": 42,
+  "sha": "14adf99",
+  "fullSha": "14adf998c2c17694d376debcf58c25223f239cc4",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 06:02:18+00",
-  "commits": [{"sha":"8ef79c2","message":"Add Open Graph and Twitter Card meta tags","author":"Rahul"}]
+  "pushedAt": "2026-03-15 06:05:11+00",
+  "commits": [{"sha":"14adf99","message":"Enlarge logo and wordmark in OG image for better visibility","author":"Rahul"}]
 }
