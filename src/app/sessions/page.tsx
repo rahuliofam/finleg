@@ -57,12 +57,15 @@ interface Stats {
 function formatDate(iso: string) {
   if (!iso) return "—";
   const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
+  const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = d.toLocaleDateString("en-US", { month: "short" });
+  const year = d.getFullYear();
+  const time = d.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
   });
+  return `${weekday} ${day} ${month} ${year}, ${time}`;
 }
 
 function formatNumber(n: number) {
