@@ -460,24 +460,24 @@ export default function FinancialLegalTab() {
             &times;
           </button>
 
-          <div className="bg-white rounded-xl p-8 max-w-[500px] w-[90vw] text-left">
+          <div className="bg-white rounded-xl p-8 max-w-[500px] w-[90vw] text-left text-slate-900">
             <div className="text-5xl text-center mb-4">{fileIcon(currentFile.file_type)}</div>
             <h3 className="text-lg font-semibold mb-4 break-all">{currentFile.filename}</h3>
             <table className="w-full text-sm">
               <tbody>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Account</td><td>{currentFile.account_name}{currentFile.account_number ? ` (${currentFile.account_number})` : ""}</td></tr>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Institution</td><td className="capitalize">{currentFile.institution}</td></tr>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Account Type</td><td className="capitalize">{currentFile.account_type?.replace(/-/g, " ")}</td></tr>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Holder</td><td>{currentFile.account_holder}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Account</td><td>{currentFile.account_name}{currentFile.account_number ? ` (${currentFile.account_number})` : ""}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Institution</td><td className="capitalize">{currentFile.institution}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Account Type</td><td className="capitalize">{currentFile.account_type?.replace(/-/g, " ")}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Holder</td><td>{currentFile.account_holder}</td></tr>
                 {currentFile.statement_date && (
-                  <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Date</td><td>{currentFile.statement_date}</td></tr>
+                  <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Date</td><td>{currentFile.statement_date}</td></tr>
                 )}
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Size</td><td>{formatSize(currentFile.file_size)}</td></tr>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Type</td><td>{(currentFile.file_type || "unknown").toUpperCase()}</td></tr>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Bucket</td><td>{currentFile.bucket}</td></tr>
-                <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">R2 Key</td><td className="break-all text-xs">{currentFile.r2_key}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Size</td><td>{formatSize(currentFile.file_size)}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Type</td><td>{(currentFile.file_type || "unknown").toUpperCase()}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Bucket</td><td>{currentFile.bucket}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">R2 Key</td><td className="break-all text-xs">{currentFile.r2_key}</td></tr>
                 {currentFile.is_closed && (
-                  <tr><td className="text-slate-400 py-1 pr-3 whitespace-nowrap">Status</td><td className="text-amber-600">Closed Account</td></tr>
+                  <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Status</td><td className="text-amber-600">Closed Account</td></tr>
                 )}
               </tbody>
             </table>
