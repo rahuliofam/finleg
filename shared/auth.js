@@ -156,7 +156,7 @@ export async function initAuth() {
 
     // If we have cached auth, use it to pre-populate state immediately
     // This lets the UI show content instantly while Supabase verifies in background
-    if (cached?.appUser && ['oracle', 'admin', 'staff', 'resident', 'associate', 'demo', 'public', 'prospect'].includes(cached.role)) {
+    if (cached?.appUser && ['admin', 'family', 'accountant', 'collaborator'].includes(cached.role)) {
       authLog.info('Using cached auth for instant access');
       currentRole = cached.role;
       currentAppUser = cached.appUser;
@@ -429,12 +429,12 @@ async function handleAuthChange(session) {
         currentUser.displayName = session.user.user_metadata?.full_name || session.user.email;
       }
     } else {
-      // No invitation found — auto-create as public user
-      authLog.info('No invitation found — auto-creating as public user', { email: userEmail });
+      // No invitation found — auto-create as collaborator
+      authLog.info('No invitation found — auto-creating as collaborator', { email: userEmail });
       const displayName = session.user.user_metadata?.full_name || userEmail.split('@')[0];
 
-      let newPublicUser = null;
-      let publicCreateError = null;
+      let newUser = null;
+      let createErr = null;
       try {
         const result = await withTimeout(
           supabase
@@ -444,28 +444,28 @@ async function handleAuthChange(session) {
               email: userEmail,
               display_name: displayName,
               ...splitDisplayName(displayName),
-              role: 'public',
+              role: 'collaborator',
             })
             .select()
             .single(),
           AUTH_TIMEOUT_MS,
-          'Public user creation timed out'
+          'User creation timed out'
         );
-        newPublicUser = result.data;
-        publicCreateError = result.error;
+        newUser = result.data;
+        createErr = result.error;
       } catch (timeoutError) {
-        authLog.warn('Public user creation timed out', timeoutError.message);
-        publicCreateError = timeoutError;
+        authLog.warn('User creation timed out', timeoutError.message);
+        createErr = timeoutError;
       }
 
-      if (!publicCreateError && newPublicUser) {
-        authLog.info('Created public app_user', { email: userEmail });
-        currentAppUser = newPublicUser;
-        currentRole = 'public';
+      if (!createErr && newUser) {
+        authLog.info('Created collaborator app_user', { email: userEmail });
+        currentAppUser = newUser;
+        currentRole = 'collaborator';
         currentUser.displayName = displayName;
-        cacheAuthState(currentUser, newPublicUser, 'public');
+        cacheAuthState(currentUser, newUser, 'collaborator');
       } else {
-        authLog.error('Error creating public app_user', publicCreateError);
+        authLog.error('Error creating app_user', createErr);
         currentAppUser = null;
         currentRole = 'unauthorized';
         currentUser.displayName = session.user.user_metadata?.full_name || session.user.email;
@@ -609,15 +609,14 @@ export function getAuthState() {
     appUser: currentAppUser,
     role: currentRole,
     isAuthenticated: currentUser !== null,
-    isAdmin: ['admin', 'oracle'].includes(currentRole),
-    isStaff: ['staff', 'admin', 'oracle'].includes(currentRole),
-    isResident: ['resident', 'associate', 'staff', 'admin', 'oracle'].includes(currentRole),
-    isPublic: currentRole === 'public',
-    // Treat 'pending' as authorized to allow redirect while we verify in background
-    isAuthorized: ['oracle', 'admin', 'staff', 'resident', 'associate', 'demo', 'public', 'prospect', 'pending'].includes(currentRole),
+    isAdmin: currentRole === 'admin',
+    isFamily: currentRole === 'family',
+    isAccountant: currentRole === 'accountant',
+    isCollaborator: currentRole === 'collaborator',
+    // Keep legacy helpers for compatibility
+    isStaff: ['admin', 'family'].includes(currentRole),
+    isAuthorized: ['admin', 'family', 'accountant', 'collaborator'].includes(currentRole),
     isUnauthorized: currentRole === 'unauthorized',
-    isPending: currentRole === 'pending',
-    isCurrentResident: currentAppUser?.is_current_resident === true,
     // Granular permissions
     permissions: currentPermissions,
     hasPermission: (key) => currentPermissions.has(key),
