@@ -10,10 +10,11 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 function authenticate(req: Request): boolean {
-  const url = new URL(req.url);
   const headerKey = req.headers.get("x-brain-key");
-  const queryKey = url.searchParams.get("key");
-  return headerKey === MCP_ACCESS_KEY || queryKey === MCP_ACCESS_KEY;
+  const authHeader = req.headers.get("authorization");
+  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  // Only accept keys via headers (not query params, which get logged in server/proxy logs)
+  return headerKey === MCP_ACCESS_KEY || bearerToken === MCP_ACCESS_KEY;
 }
 
 async function generateEmbedding(text: string): Promise<number[]> {

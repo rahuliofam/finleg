@@ -5,19 +5,37 @@ import { createClient } from "npm:@supabase/supabase-js@2.47.10";
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const INGEST_API_KEY = Deno.env.get("INGEST_API_KEY") || Deno.env.get("MCP_ACCESS_KEY")!;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+function authenticate(req: Request): boolean {
+  const headerKey = req.headers.get("x-brain-key");
+  const authHeader = req.headers.get("authorization");
+  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  return headerKey === INGEST_API_KEY || bearerToken === INGEST_API_KEY;
+}
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Open Brain ingest endpoint", { status: 200 });
   }
 
+  // Slack URL verification must work without auth (Slack sends it during setup)
+  // but we peek at the body first to check
   const body = await req.json();
 
-  // Handle Slack URL verification
+  // Allow Slack URL verification without auth (one-time setup handshake)
   if (body.type === "url_verification") {
     return new Response(JSON.stringify({ challenge: body.challenge }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // All other requests require authentication
+  if (!authenticate(req)) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
       headers: { "Content-Type": "application/json" },
     });
   }
