@@ -53,12 +53,12 @@ export function Navbar() {
             </Link>
           )}
           <Link
-            href="/sessions"
+            href="/clauded"
             className={`text-sm font-medium transition-colors hover:text-white ${
-              pathname.includes("/sessions") ? "text-white" : "text-green-100/70"
+              pathname.includes("/clauded") ? "text-white" : "text-green-100/70"
             }`}
           >
-            Sessions
+            Claude Dev
           </Link>
           <Link
             href="/about"
