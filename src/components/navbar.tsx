@@ -30,6 +30,14 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
+          {!loading && user && (
+            <Link
+              href="/intranet"
+              className="text-sm font-medium px-5 py-2 bg-[#1B6B3A] hover:bg-[#145530] text-white rounded-full transition-colors"
+            >
+              Dashboard
+            </Link>
+          )}
           <Link
             href="/sessions"
             className={`text-sm font-medium transition-colors hover:text-[#1B6B3A] ${
@@ -52,12 +60,6 @@ export function Navbar() {
                 <span className="text-sm text-slate-500 hidden sm:inline">
                   {user.email}
                 </span>
-                <Link
-                  href="/intranet"
-                  className="text-sm font-medium px-5 py-2 bg-[#1B6B3A] hover:bg-[#145530] text-white rounded-full transition-colors"
-                >
-                  Dashboard
-                </Link>
                 <button
                   onClick={handleSignOut}
                   className="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
