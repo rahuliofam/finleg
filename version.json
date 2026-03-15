@@ -1,12 +1,12 @@
 {
-  "version": "v260314.27 11:10p",
-  "release": 27,
-  "sha": "a861b56",
-  "fullSha": "a861b568eee32b44482dcad4cac2644ef908ef52",
+  "version": "v260314.28 11:17p",
+  "release": 28,
+  "sha": "fd0361e",
+  "fullSha": "fd0361e5c4a9feefa643add702dd3f766dd288b9",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 04:10:13+00",
-  "commits": [{"sha":"a861b56","message":"Show navbar on all pages including intranet for consistent navigation","author":"Rahul"}]
+  "pushedAt": "2026-03-15 04:17:59+00",
+  "commits": [{"sha":"c400b55","message":"Fix sessions auth: remove guard from public page, fix OAuth redirect","author":"Rahul"},{"sha":"104c0e7","message":"Restore AuthGuard on sessions page (contains sensitive data)","author":"Rahul"},{"sha":"2647476","message":"Show user email and Sign Out in navbar when authenticated","author":"Rahul"},{"sha":"fd0361e","message":"Merge: show auth status (email + Sign Out) in navbar","author":"Rahul"}]
 }
