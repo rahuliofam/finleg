@@ -24,27 +24,35 @@ interface DocResult {
   is_closed: boolean;
   property: string | null;
   original_path: string;
+  description: string | null;
+  ai_metadata: Record<string, unknown> | null;
 }
 
 // Category chips — matches document_index.category values
 const CATEGORIES = [
   { value: "", label: "All" },
   { value: "statement", label: "Statements" },
-  { value: "tax", label: "Tax" },
+  { value: "tax", label: "Tax (Accounting)" },
+  { value: "tax-personal", label: "Tax (Personal)" },
+  { value: "legal", label: "Legal" },
+  { value: "investment", label: "Investments" },
   { value: "insurance", label: "Insurance" },
   { value: "property-expense", label: "Property" },
   { value: "credit-report", label: "Credit Reports" },
   { value: "reference", label: "Reference" },
+  { value: "other", label: "Other" },
 ];
 
 // Account type filter
 const ACCOUNT_TYPES = [
   { value: "", label: "All Account Types" },
+  // Financial
   { value: "credit-card", label: "Credit Cards" },
   { value: "checking", label: "Checking" },
   { value: "payment", label: "Payment (Venmo, PayPal, Cash App)" },
   { value: "brokerage", label: "Brokerage" },
   { value: "ira", label: "IRA" },
+  { value: "self-directed-ira", label: "Self-Directed IRA" },
   { value: "trust", label: "Trust" },
   { value: "crypto", label: "Crypto" },
   { value: "mortgage", label: "Mortgage" },
@@ -52,9 +60,32 @@ const ACCOUNT_TYPES = [
   { value: "credit-line", label: "Credit Line" },
   { value: "auto-loan", label: "Auto Loan" },
   { value: "sba-loan", label: "SBA Loan" },
-  { value: "tax", label: "Tax" },
+  // Tax
+  { value: "tax", label: "Tax (Accounting)" },
+  { value: "tax-return", label: "Tax Return" },
+  { value: "w2", label: "W-2" },
+  { value: "1099", label: "1099" },
+  { value: "1098", label: "1098" },
+  { value: "k1", label: "K-1" },
+  { value: "paycheck", label: "Paycheck/Paystub" },
+  { value: "franchise-tax", label: "Franchise Tax" },
+  { value: "property-tax", label: "Property Tax" },
+  // Legal
+  { value: "power-of-attorney", label: "Power of Attorney" },
+  { value: "will-and-poa", label: "Will & POA" },
+  { value: "divorce", label: "Divorce" },
+  { value: "property-deed", label: "Property Deed" },
+  { value: "ein-registration", label: "EIN Registration" },
+  { value: "business-formation", label: "Business Formation" },
+  { value: "litigation", label: "Litigation" },
+  // Investments
+  { value: "private-investment", label: "Private Investment" },
+  // Other
   { value: "insurance", label: "Insurance" },
   { value: "property", label: "Property" },
+  { value: "education", label: "Education" },
+  { value: "social-security", label: "Social Security" },
+  { value: "vehicle-title", label: "Vehicle Title" },
   { value: "closed", label: "Closed Accounts" },
 ];
 
@@ -75,6 +106,16 @@ const INSTITUTIONS = [
   { value: "cash-app", label: "Cash App" },
   { value: "sba", label: "SBA" },
   { value: "irs", label: "IRS" },
+  { value: "ssa", label: "Social Security Admin" },
+  { value: "fidelity", label: "Fidelity" },
+  { value: "swan", label: "SWAN" },
+  { value: "decentrane", label: "Decentrane" },
+  { value: "madison-trust", label: "Madison Trust" },
+  { value: "venturables", label: "Venturables LLC" },
+  { value: "peak-advisors", label: "Peak Advisors" },
+  { value: "snohomish-county", label: "Snohomish County" },
+  { value: "texas", label: "Texas (State)" },
+  { value: "dmv", label: "DMV" },
   { value: "various", label: "Various" },
 ];
 
@@ -87,10 +128,10 @@ const FORMATS = [
   { value: "image", label: "Image (jpg, png)" },
 ];
 
-// Year filter — generate dynamically
+// Year filter — generate dynamically (2026 back to 2013 for tax history)
 const YEARS = [
   { value: "", label: "All Years" },
-  ...Array.from({ length: 8 }, (_, i) => {
+  ...Array.from({ length: 14 }, (_, i) => {
     const y = 2026 - i;
     return { value: String(y), label: String(y) };
   }),
@@ -462,9 +503,13 @@ export default function FinancialLegalTab() {
 
           <div className="bg-white rounded-xl p-8 max-w-[500px] w-[90vw] text-left text-slate-900">
             <div className="text-5xl text-center mb-4">{fileIcon(currentFile.file_type)}</div>
-            <h3 className="text-lg font-semibold mb-4 break-all">{currentFile.filename}</h3>
+            <h3 className="text-lg font-semibold mb-2 break-all">{currentFile.filename}</h3>
+            {currentFile.description && (
+              <p className="text-sm text-slate-500 mb-4 italic">{currentFile.description}</p>
+            )}
             <table className="w-full text-sm">
               <tbody>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Category</td><td className="capitalize">{currentFile.category?.replace(/-/g, " ")}</td></tr>
                 <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Account</td><td>{currentFile.account_name}{currentFile.account_number ? ` (${currentFile.account_number})` : ""}</td></tr>
                 <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Institution</td><td className="capitalize">{currentFile.institution}</td></tr>
                 <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Account Type</td><td className="capitalize">{currentFile.account_type?.replace(/-/g, " ")}</td></tr>
