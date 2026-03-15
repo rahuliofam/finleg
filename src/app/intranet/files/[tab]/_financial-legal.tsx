@@ -171,7 +171,12 @@ export default function FinancialLegalTab() {
         }
 
         // Sorting
-        const sortCol = sortBy === "name" ? "filename" : sortBy === "size" ? "file_size" : "year";
+        const sortColMap: Record<string, string> = {
+          name: "filename", size: "file_size", year: "year",
+          institution: "institution", account_type: "account_type",
+          category: "category", account_holder: "account_holder", format: "file_type",
+        };
+        const sortCol = sortColMap[sortBy] || "year";
         q = q.order(sortCol, { ascending: sortOrder === "asc" });
         if (sortCol === "year") {
           q = q.order("month", { ascending: sortOrder === "asc", nullsFirst: false });
@@ -232,7 +237,7 @@ export default function FinancialLegalTab() {
   const selectClass = "px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm text-slate-700 outline-none focus:border-emerald-600";
 
   return (
-    <div className="max-w-[1100px] mx-auto">
+    <div className="max-w-[1400px] mx-auto">
       {/* Header */}
       <div className="flex items-baseline gap-4 mb-6 flex-wrap">
         <h1 className="text-2xl font-bold text-slate-900">Financial &amp; Legal</h1>
@@ -298,7 +303,7 @@ export default function FinancialLegalTab() {
         </select>
       </div>
 
-      {/* Filters row 2: Format, Year, Sort */}
+      {/* Filters row 2: Format, Year */}
       <div className="flex gap-2 mb-6 flex-wrap items-center">
         <select value={format} onChange={(e) => setFormat(e.target.value)} className={selectClass}>
           {FORMATS.map((t) => (
@@ -309,15 +314,6 @@ export default function FinancialLegalTab() {
           {YEARS.map((t) => (
             <option key={t.value} value={t.value}>{t.label}</option>
           ))}
-        </select>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectClass}>
-          <option value="year">Date</option>
-          <option value="name">Name</option>
-          <option value="size">Size</option>
-        </select>
-        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={selectClass}>
-          <option value="desc">Newest first</option>
-          <option value="asc">Oldest first</option>
         </select>
         {(accountType || institution || format || yearFilter || holderFilter || category) && (
           <button
@@ -353,35 +349,64 @@ export default function FinancialLegalTab() {
             {from}-{to} of {total.toLocaleString()} documents
           </div>
 
-          <div className="mb-6">
-            {results.map((f, i) => (
-              <div
-                key={f.id}
-                onClick={() => openFile(i)}
-                className="flex items-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-lg mb-1.5 cursor-pointer hover:border-emerald-500 hover:shadow-sm transition-all"
-              >
-                <div className="text-2xl w-10 text-center flex-shrink-0">{fileIcon(f.file_type)}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate text-slate-900">{f.filename}</div>
-                  <div className="text-xs text-slate-400 truncate mt-0.5">
-                    {f.account_name}
-                    {f.account_number ? ` (${f.account_number})` : ""}
-                    {f.account_holder && f.account_holder !== "various" ? ` - ${f.account_holder}` : ""}
-                  </div>
-                </div>
-                <span className="text-[0.65rem] font-semibold uppercase bg-slate-100 text-slate-500 px-2 py-0.5 rounded flex-shrink-0">
-                  {f.file_type || "?"}
-                </span>
-                {f.year && (
-                  <div className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0 hidden sm:block">
-                    {f.statement_date || f.year}
-                  </div>
-                )}
-                <div className="text-[0.78rem] text-slate-600 whitespace-nowrap min-w-[60px] text-right flex-shrink-0">
-                  {formatSize(f.file_size)}
-                </div>
-              </div>
-            ))}
+          <div className="mb-6 overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b-2 border-slate-200 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("account_holder"); setSortOrder(sortBy === "account_holder" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    Holder {sortBy === "account_holder" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("institution"); setSortOrder(sortBy === "institution" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    Institution {sortBy === "institution" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("account_type"); setSortOrder(sortBy === "account_type" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    Acct Type {sortBy === "account_type" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("category"); setSortOrder(sortBy === "category" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    File Type {sortBy === "category" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("name"); setSortOrder(sortBy === "name" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    File Name {sortBy === "name" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("year"); setSortOrder(sortBy === "year" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    Date {sortBy === "year" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("format"); setSortOrder(sortBy === "format" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    Format {sortBy === "format" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap text-right cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("size"); setSortOrder(sortBy === "size" && sortOrder === "asc" ? "desc" : "asc"); }}>
+                    Size {sortBy === "size" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((f, i) => (
+                  <tr
+                    key={f.id}
+                    onClick={() => openFile(i)}
+                    className="border-b border-slate-100 cursor-pointer hover:bg-emerald-50/50 transition-colors"
+                  >
+                    <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">{f.account_holder && f.account_holder !== "various" ? f.account_holder : "—"}</td>
+                    <td className="py-2.5 px-3 capitalize text-slate-700 whitespace-nowrap">{f.institution?.replace(/-/g, " ") || "—"}</td>
+                    <td className="py-2.5 px-3 capitalize text-slate-600 whitespace-nowrap">{f.account_type?.replace(/-/g, " ") || "—"}</td>
+                    <td className="py-2.5 px-3 capitalize text-slate-600 whitespace-nowrap">{f.category?.replace(/-/g, " ") || "—"}</td>
+                    <td className="py-2.5 px-3 text-slate-900 max-w-[300px]">
+                      <div className="truncate font-medium">{f.filename}</div>
+                      <div className="text-xs text-slate-400 truncate">
+                        {f.account_name}{f.account_number ? ` (${f.account_number})` : ""}
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap">{f.statement_date || f.year || "—"}</td>
+                    <td className="py-2.5 px-3">
+                      <span className="text-[0.65rem] font-semibold uppercase bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+                        {f.file_type || "?"}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-600 text-right whitespace-nowrap">{formatSize(f.file_size)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {/* Pagination */}
