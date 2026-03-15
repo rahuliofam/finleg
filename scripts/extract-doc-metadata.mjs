@@ -1,50 +1,44 @@
 #!/usr/bin/env node
 /**
- * Extract rich metadata from documents using Claude API (Sonnet 4.6).
- * Designed to run on Hostinger VPS or any server with ANTHROPIC_API_KEY set.
+ * Extract rich metadata from documents using Claude CLI headless mode.
+ * Designed to run on Hostinger VPS via `claude --print`.
  *
  * Reads documents from Cloudflare R2, sends to Claude for parsing,
  * and updates Supabase document_index with extracted metadata.
  *
  * Usage:
- *   ANTHROPIC_API_KEY=sk-... node scripts/extract-doc-metadata.mjs [--dry-run] [--limit=N] [--category=legal]
+ *   node scripts/extract-doc-metadata.mjs [--dry-run] [--limit=N] [--category=legal]
  *
- * Environment:
- *   ANTHROPIC_API_KEY — required (uses Claude Sonnet 4.6 for document parsing)
+ * Prerequisites on Hostinger:
+ *   - Claude CLI installed (`npm install -g @anthropic-ai/claude-code`)
+ *   - wrangler installed (`npm install -g wrangler`)
+ *   - Node.js 22+
  *
  * The script:
- *   1. Queries Supabase for documents missing enriched metadata (description IS NULL)
+ *   1. Queries Supabase for documents missing enriched metadata (ai_metadata IS NULL)
  *   2. Downloads each file from R2
- *   3. Sends to Claude Sonnet 4.6 with a structured extraction prompt
+ *   3. Sends to Claude CLI headless (`claude --print`) for structured extraction
  *   4. Updates Supabase with extracted fields
  */
 
 import { createClient } from '@supabase/supabase-js';
-import Anthropic from '@anthropic-ai/sdk';
-import { exec } from 'child_process';
-import { readFileSync, unlinkSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, unlinkSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';
+import { exec } from 'child_process';
 
 const execAsync = promisify(exec);
 
 // ── Config ──
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-if (!ANTHROPIC_API_KEY) {
-  console.error('ERROR: Set ANTHROPIC_API_KEY environment variable');
-  process.exit(1);
-}
-
 const SUPABASE_URL = 'https://gjdvzzxsrzuorguwkaih.supabase.co';
 const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzQzMTk1NywiZXhwIjoyMDg5MDA3OTU3fQ.iYlTfc9IhMpOphSLUjBCTEto2Mq_1dD1-gVIEo4LUrc';
 const DRY_RUN = process.argv.includes('--dry-run');
 const LIMIT = parseInt(process.argv.find(a => a.startsWith('--limit='))?.split('=')[1] || '0') || 999;
 const CATEGORY_FILTER = process.argv.find(a => a.startsWith('--category='))?.split('=')[1] || null;
-const PARALLEL = 3; // concurrent Claude API calls (rate limit friendly)
+const PARALLEL = 2; // concurrent Claude CLI calls (conservative for headless mode)
 const TMP_DIR = '/tmp/doc-extract';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
 // File types Claude can parse
 const PARSEABLE_TYPES = ['pdf', 'docx', 'doc', 'txt', 'csv', 'xlsx', 'xls', 'xml'];
@@ -90,62 +84,58 @@ Current category: ${existingMeta.category || 'unknown'}
 Current account_type: ${existingMeta.account_type || 'unknown'}
 Current institution: ${existingMeta.institution || 'unknown'}`;
 
-  let content;
+  let promptText;
 
-  if (IMAGE_TYPES.includes(fileType)) {
-    // Send as image
-    const imageData = readFileSync(filePath);
-    const base64 = imageData.toString('base64');
-    const mediaType = fileType === 'png' ? 'image/png' : 'image/jpeg';
-
-    content = [
-      { type: 'text', text: `${EXTRACTION_PROMPT}\n\nContext:\n${context}` },
-      { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-    ];
-  } else if (fileType === 'pdf') {
-    // Send as PDF document
-    const pdfData = readFileSync(filePath);
-    const base64 = pdfData.toString('base64');
-
-    content = [
-      { type: 'text', text: `${EXTRACTION_PROMPT}\n\nContext:\n${context}` },
-      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } },
-    ];
+  if (IMAGE_TYPES.includes(fileType) || fileType === 'pdf') {
+    // For images and PDFs, reference the file and let Claude CLI handle it
+    promptText = `${EXTRACTION_PROMPT}\n\nContext:\n${context}\n\nAnalyze the attached file: ${filePath}`;
   } else {
-    // Read as text for docx/txt/csv/xml
+    // Read text content for text-based files
     let textContent;
     try {
-      textContent = readFileSync(filePath, 'utf-8').slice(0, 50000); // limit to 50k chars
+      textContent = readFileSync(filePath, 'utf-8').slice(0, 50000);
     } catch {
       textContent = `[Binary file: ${filename}, type: ${fileType}]`;
     }
-
-    content = [
-      { type: 'text', text: `${EXTRACTION_PROMPT}\n\nContext:\n${context}\n\nDocument content:\n${textContent}` },
-    ];
+    promptText = `${EXTRACTION_PROMPT}\n\nContext:\n${context}\n\nDocument content:\n${textContent}`;
   }
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6-20250514',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content }],
-  });
+  // Write prompt to a temp file to avoid shell escaping issues
+  const promptPath = join(TMP_DIR, `prompt_${Date.now()}_${Math.random().toString(36).slice(2)}.txt`);
+  writeFileSync(promptPath, promptText);
 
-  const text = response.content[0]?.text || '';
-
-  // Parse JSON from response
   try {
-    // Try to extract JSON from response (handle markdown code blocks)
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
-  } catch (e) {
-    console.error(`  JSON parse error: ${e.message}`);
-    console.error(`  Raw response: ${text.slice(0, 200)}`);
-  }
+    // Use Claude CLI headless mode with --print flag
+    const args = ['--print', '--model', 'claude-sonnet-4-6-20250514'];
 
-  return null;
+    // For PDFs and images, attach the file
+    if (IMAGE_TYPES.includes(fileType) || fileType === 'pdf') {
+      args.push('--file', filePath);
+    }
+
+    // Read prompt from stdin via shell
+    const { stdout } = await execAsync(
+      `cat "${promptPath}" | claude ${args.join(' ')}`,
+      { timeout: 120000, maxBuffer: 10 * 1024 * 1024 }
+    );
+
+    const text = stdout.trim();
+
+    // Parse JSON from response
+    try {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+    } catch (e) {
+      console.error(`  JSON parse error: ${e.message}`);
+      console.error(`  Raw response: ${text.slice(0, 200)}`);
+    }
+
+    return null;
+  } finally {
+    try { unlinkSync(promptPath); } catch {}
+  }
 }
 
 async function processDocument(doc) {
@@ -164,7 +154,7 @@ async function processDocument(doc) {
   if (!tmpPath) return { id, error: 'download failed' };
 
   try {
-    // Extract with Claude
+    // Extract with Claude CLI headless
     const metadata = await extractWithClaude(tmpPath, file_type, filename, { category, account_type, institution, original_path });
 
     if (!metadata) {
@@ -177,8 +167,6 @@ async function processDocument(doc) {
     // Build Supabase update
     const updates = {};
 
-    // Update description (new column — will add via migration)
-    // For now, store enriched data in a JSON-friendly way
     if (metadata.description) updates.description = metadata.description;
     if (metadata.date) updates.statement_date = metadata.date;
     if (metadata.year && !doc.year) updates.year = metadata.year;
@@ -215,8 +203,17 @@ async function processDocument(doc) {
 }
 
 async function main() {
-  console.log(`[START] Claude Metadata Extraction`);
+  console.log(`[START] Claude CLI Headless Metadata Extraction`);
   console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Category: ${CATEGORY_FILTER || 'all'}\n`);
+
+  // Verify Claude CLI is available
+  try {
+    const { stdout } = await execAsync('claude --version', { timeout: 10000 });
+    console.log(`Claude CLI: ${stdout.trim()}`);
+  } catch {
+    console.error('ERROR: Claude CLI not found. Install with: npm install -g @anthropic-ai/claude-code');
+    process.exit(1);
+  }
 
   // Query documents missing enriched metadata
   let query = supabase
@@ -256,7 +253,7 @@ async function main() {
 
     // Rate limit pause between batches
     if (i + PARALLEL < docs.length) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
   }
 
