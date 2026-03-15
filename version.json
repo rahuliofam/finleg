@@ -1,9 +1,12 @@
 {
-  "version": "v260308.01 10:40pm",
-  "release": 1,
-  "sha": "9ec8924",
-  "fullSha": "9ec89244f199bb91c0a3aaafada1850483528d34",
+  "version": "v260314.02 7:55p",
+  "release": 2,
+  "sha": "3472c42",
+  "fullSha": "3472c42154d4ba0d0971364601438a67de25d981",
   "actor": "rsonnad",
-  "pushedAt": "2026-03-08T04:40:57Z",
-  "commits": [{"sha": "9ec8924", "message": "Add on-demand context system to minimize token usage", "author": "Rahul"}]
+  "source": "github-main-push",
+  "model": "ci",
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 00:55:24+00",
+  "commits": [{"sha":"3472c42","message":"fix: improve homepage and about page branding aesthetics","author":"Rahul"}]
 }
