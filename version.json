@@ -1,12 +1,12 @@
 {
-  "version": "v260314.28 11:17p",
-  "release": 28,
-  "sha": "fd0361e",
-  "fullSha": "fd0361e5c4a9feefa643add702dd3f766dd288b9",
+  "version": "v260314.29 11:22p",
+  "release": 29,
+  "sha": "599b81c",
+  "fullSha": "599b81ce74c579ac21be15fc8ed7981911c91e2e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 04:17:59+00",
-  "commits": [{"sha":"c400b55","message":"Fix sessions auth: remove guard from public page, fix OAuth redirect","author":"Rahul"},{"sha":"104c0e7","message":"Restore AuthGuard on sessions page (contains sensitive data)","author":"Rahul"},{"sha":"2647476","message":"Show user email and Sign Out in navbar when authenticated","author":"Rahul"},{"sha":"fd0361e","message":"Merge: show auth status (email + Sign Out) in navbar","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-15 04:22:43+00",
+  "commits": [{"sha":"c69a395","message":"Move Dashboard button to left of Sessions in navbar","author":"Rahul"},{"sha":"599b81c","message":"Merge: move Dashboard left of Sessions in navbar","author":"Rahul"}]
 }
