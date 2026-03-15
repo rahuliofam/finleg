@@ -1,12 +1,12 @@
 {
-  "version": "v260314.17 10:29p",
-  "release": 17,
-  "sha": "78e77d4",
-  "fullSha": "78e77d4cf7adef73eecd99389926e0d23dc58da4",
+  "version": "v260314.19 10:32p",
+  "release": 19,
+  "sha": "0ed7e26",
+  "fullSha": "0ed7e26759bed9b173e56433417c6000dad7885e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 03:29:24+00",
-  "commits": [{"sha":"78e77d4","message":"Fix drive dropdown: use actual Google Drive accounts (Tesloop, Rahulioson)","author":"Rahul"}]
+  "pushedAt": "2026-03-15 03:32:13+00",
+  "commits": [{"sha":"0ed7e26","message":"Remove old static sessions/index.html — replaced by Next.js /sessions page","author":"Rahul"}]
 }
