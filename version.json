@@ -1,12 +1,12 @@
 {
-  "version": "v260314.19 10:32p",
-  "release": 19,
-  "sha": "0ed7e26",
-  "fullSha": "0ed7e26759bed9b173e56433417c6000dad7885e",
+  "version": "v260314.20 10:43p",
+  "release": 20,
+  "sha": "f72714f",
+  "fullSha": "f72714fab578d99cbcaf9787f192b2282773c076",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 03:32:13+00",
-  "commits": [{"sha":"0ed7e26","message":"Remove old static sessions/index.html — replaced by Next.js /sessions page","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 03:43:02+00",
+  "commits": [{"sha":"f72714f","message":"Fix hero alignment: crop padded PNGs, reduce gap, shrink wordmark","author":"Rahul"}]
 }
