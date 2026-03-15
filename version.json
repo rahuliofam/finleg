@@ -1,12 +1,12 @@
 {
-  "version": "v260315.21 6:08a",
-  "release": 56,
-  "sha": "260b352",
-  "fullSha": "260b3522b8c4f74bdd7ee2d5ac27c9688a5da48f",
+  "version": "v260315.22 6:09a",
+  "release": 57,
+  "sha": "577f07d",
+  "fullSha": "577f07d875eab4ec0a5c7ec70f90b463e2fee6c9",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 11:08:16+00",
-  "commits": [{"sha":"260b352","message":"Fix unreadable file detail modal — improve text contrast","author":"Rahul"}]
+  "pushedAt": "2026-03-15 11:09:00+00",
+  "commits": [{"sha":"577f07d","message":"Add Statements tab to Bookkeeping + statement ingestion plan doc (#11)","author":"Rahul"}]
 }
