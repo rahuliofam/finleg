@@ -21,8 +21,8 @@ export function Navbar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
     <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         <Link href={`/${lang}`} className="flex items-center gap-2">
-          <img src="/finleg-logo.png" alt="Finleg" className="h-9 w-auto mix-blend-multiply" />
-          <img src="/finleg-wordmark.png" alt="Finleg" className="h-7 w-auto mix-blend-multiply" />
+          <img src="/finleg-logo.png" alt="Finleg" className="h-12 w-auto mix-blend-multiply" />
+          <img src="/finleg-wordmark.png" alt="Finleg" className="h-9 w-auto mix-blend-multiply" />
         </Link>
 
         <div className="flex items-center gap-4">
