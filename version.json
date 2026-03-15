@@ -1,12 +1,12 @@
 {
-  "version": "v260315.15 4:14a",
-  "release": 50,
-  "sha": "0bfda5e",
-  "fullSha": "0bfda5eb0cd01a411e35020524e70844b4c21da2",
+  "version": "v260315.16 5:16a",
+  "release": 51,
+  "sha": "5c0d786",
+  "fullSha": "5c0d7867e18d69f83e9d956321bf1b0a34a66307",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 09:14:58+00",
-  "commits": [{"sha":"40906f6","message":"Fix security: remove hardcoded Supabase service role key from source","author":"Rahul"},{"sha":"0bfda5e","message":"Merge pull request #9 from rahuliofam/goofy-goldstine","author":"Rahul"}]
+  "pushedAt": "2026-03-15 10:16:32+00",
+  "commits": [{"sha":"5c0d786","message":"Security hardening: fix privilege escalation, data leaks, and open endpoints","author":"Rahul"}]
 }
