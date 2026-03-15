@@ -25,12 +25,8 @@ export interface SectionDefinition {
 }
 
 export const SECTIONS: SectionDefinition[] = [
-  { key: "devices", label: "Devices" },
-  { key: "residents", label: "Residents" },
-  { key: "associates", label: "Associates" },
-  { key: "staff", label: "Staff" },
-  { key: "admin", label: "Admin" },
   { key: "files", label: "File Vault" },
+  { key: "admin", label: "Admin" },
 ];
 
 export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
