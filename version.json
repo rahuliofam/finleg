@@ -1,12 +1,12 @@
 {
-  "version": "v260315.14 2:47a",
-  "release": 49,
-  "sha": "32be5cf",
-  "fullSha": "32be5cf8457d7da9354ed38b2780c401b41cc8ce",
+  "version": "v260315.15 4:14a",
+  "release": 50,
+  "sha": "0bfda5e",
+  "fullSha": "0bfda5eb0cd01a411e35020524e70844b4c21da2",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 07:47:02+00",
-  "commits": [{"sha":"39f3479","message":"Fix Ledger Notes: show actual spending, not double-entry totals","author":"Rahul"},{"sha":"32be5cf","message":"Merge branch 'zen-dhawan'","author":"Rahul"}]
+  "pushedAt": "2026-03-15 09:14:58+00",
+  "commits": [{"sha":"40906f6","message":"Fix security: remove hardcoded Supabase service role key from source","author":"Rahul"},{"sha":"0bfda5e","message":"Merge pull request #9 from rahuliofam/goofy-goldstine","author":"Rahul"}]
 }
