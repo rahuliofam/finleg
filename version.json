@@ -1,12 +1,12 @@
 {
-  "version": "v260314.10 9:40p",
-  "release": 10,
-  "sha": "099ff20",
-  "fullSha": "099ff20b60005be91410cedb94e49e00e239f824",
+  "version": "v260314.11 9:44p",
+  "release": 11,
+  "sha": "8a4f7dc",
+  "fullSha": "8a4f7dce6d1d79c32807c04834f1c964c97e2b44",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-15 02:40:00+00",
-  "commits": [{"sha":"099ff20","message":"Add File Vault page with Google auth for family access","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-15 02:44:41+00",
+  "commits": [{"sha":"8a4f7dc","message":"Update signin page: stack logo/wordmark vertically, enlarge text","author":"Rahul"}]
 }
