@@ -5,7 +5,7 @@ export default function HomePage() {
   return (
     <CenteredBrandLayout>
       <p className="text-2xl text-slate-500 mb-10">
-        Financial and legal hassles — now united in a single AI platform.
+        Financial and legal hassles —<br />now united in a single AI platform.
       </p>
 
       <div className="flex flex-col items-center gap-4">
