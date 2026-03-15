@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 import { createClient } from '@supabase/supabase-js';
-const s = createClient('https://gjdvzzxsrzuorguwkaih.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzQzMTk1NywiZXhwIjoyMDg5MDA3OTU3fQ.iYlTfc9IhMpOphSLUjBCTEto2Mq_1dD1-gVIEo4LUrc');
+import { config } from 'dotenv';
+
+config();
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_SERVICE_KEY) { console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env'); process.exit(1); }
+
+const s = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const { count: total } = await s.from('document_index').select('id', { count: 'exact', head: true });
 console.log('TOTAL:', total);

@@ -27,6 +27,13 @@
 - `openLightbox(url)` for images
 - Tailwind: use design tokens from `@theme` block (see `docs/PATTERNS.md`). Run `npm run css:build` after new classes.
 
+## Batch Processing
+
+- **Always use Hostinger VPS** for batch jobs (document parsing, bulk extraction, long-running scripts)
+- **Use Claude CLI headless mode** (`claude --print`) instead of Anthropic SDK for all AI-powered batch processing
+- **Hostinger SSH:** `sshpass -f ~/.ssh/alpacapps-hostinger.pass ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no root@93.188.164.224`
+- **Prerequisites on Hostinger:** Claude CLI (`npm i -g @anthropic-ai/claude-code`), wrangler (`npm i -g wrangler`), Node 22+
+
 ## Quick Refs
 
 - **Tech:** Vanilla HTML/JS + Tailwind v4 | Supabase | GitHub Pages
