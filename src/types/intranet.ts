@@ -72,12 +72,15 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "photos", label: "Photos", defaultVisible: true },
   ],
   bookkeeping: [
+    { key: "dashboard", label: "Dashboard", defaultVisible: true },
     { key: "ledger-notes", label: "Ledger Notes", defaultVisible: true },
     { key: "statements", label: "Statements", defaultVisible: true },
     { key: "categorize", label: "Categorize", defaultVisible: true },
     { key: "receipts", label: "Receipts", defaultVisible: true },
     { key: "bookkeeper", label: "Bookkeeper Queue", defaultVisible: true },
+    { key: "tasks", label: "Tasks", defaultVisible: true },
     { key: "activity", label: "Activity", defaultVisible: true },
+    { key: "tax-report", label: "Tax Report", defaultVisible: true },
   ],
 };
 

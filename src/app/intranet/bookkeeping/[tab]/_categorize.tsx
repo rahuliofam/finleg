@@ -111,17 +111,54 @@ export default function CategorizeTab() {
     if (updateError) {
       setError(updateError.message);
     } else {
-      // Learn from this categorization — check if we should create a rule
+      // Learn from this categorization — check if we should create or update a rule
       const txn = transactions.find((t) => t.id === txnId);
       if (txn?.vendor_name) {
         const { data: existingRules } = await supabase
           .from("category_rules")
-          .select("id")
+          .select("id, category, hit_count")
           .ilike("match_pattern", txn.vendor_name)
+          .eq("is_active", true)
           .limit(1);
 
-        if (!existingRules?.length) {
-          // Check if this vendor has been categorized the same way 2+ times
+        if (existingRules?.length) {
+          // Rule exists — check if human is overriding it
+          const rule = existingRules[0];
+          if (rule.category !== category) {
+            // Human chose a different category than the rule
+            // Track override count: deactivate rule if overridden 3+ times
+            const { count: overrideCount } = await supabase
+              .from("qb_transactions")
+              .select("id", { count: "exact", head: true })
+              .eq("vendor_name", txn.vendor_name)
+              .eq("our_category", category)
+              .eq("category_source", "human")
+              .neq("our_category", rule.category);
+
+            if ((overrideCount || 0) >= 3) {
+              // Deactivate the old rule and create a new one
+              await supabase.from("category_rules").update({ is_active: false, updated_at: new Date().toISOString() }).eq("id", rule.id);
+              await supabase.from("category_rules").insert({
+                match_pattern: txn.vendor_name.toLowerCase(),
+                match_type: "contains",
+                category,
+                priority: 5,
+                created_by: "owner",
+              });
+              // Log rule update
+              await supabase.from("bookkeeping_activity_log").insert({
+                action: "rule_created",
+                entity_type: "category_rule",
+                actor: "owner",
+                details: { vendor: txn.vendor_name, old_category: rule.category, new_category: category, reason: "rule_override_3x" },
+              });
+            }
+          }
+        } else {
+          // No rule exists — decide threshold for creating one
+          const wasAiCategorized = txn.category_source === "ai" && (txn.category_confidence || 0) >= 0.9;
+          const threshold = wasAiCategorized ? 1 : 2; // Lower threshold if AI was confident and human confirmed
+
           const { count } = await supabase
             .from("qb_transactions")
             .select("id", { count: "exact", head: true })
@@ -129,13 +166,20 @@ export default function CategorizeTab() {
             .eq("our_category", category)
             .eq("review_status", "approved");
 
-          if ((count || 0) >= 2) {
+          if ((count || 0) >= threshold) {
             await supabase.from("category_rules").insert({
               match_pattern: txn.vendor_name.toLowerCase(),
               match_type: "contains",
               category,
               priority: 5,
-              created_by: "ai",
+              created_by: wasAiCategorized ? "ai" : "owner",
+            });
+            // Log rule creation
+            await supabase.from("bookkeeping_activity_log").insert({
+              action: "rule_created",
+              entity_type: "category_rule",
+              actor: wasAiCategorized ? "ai" : "owner",
+              details: { vendor: txn.vendor_name, category, threshold, ai_confirmed: wasAiCategorized },
             });
           }
         }

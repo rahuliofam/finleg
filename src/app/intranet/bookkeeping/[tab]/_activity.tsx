@@ -30,10 +30,26 @@ const ACTOR_LABELS: Record<string, string> = {
   system: "System",
 };
 
+interface SyncRun {
+  id: string;
+  sync_type: string;
+  started_at: string;
+  completed_at: string | null;
+  status: string;
+  since_date: string | null;
+  entities_fetched: Record<string, number> | null;
+  entities_new: number;
+  entities_updated: number;
+  error_message: string | null;
+  triggered_by: string | null;
+}
+
 export default function ActivityTab() {
   const [entries, setEntries] = useState<ActivityEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncRuns, setSyncRuns] = useState<SyncRun[]>([]);
   const [stats, setStats] = useState<{
     total_receipts: number;
     matched_receipts: number;
@@ -76,10 +92,41 @@ export default function ActivityTab() {
     });
   }, []);
 
+  const fetchSyncRuns = useCallback(async () => {
+    const { data } = await supabase
+      .from("sync_runs")
+      .select("*")
+      .order("started_at", { ascending: false })
+      .limit(10);
+    setSyncRuns(data || []);
+  }, []);
+
+  const handleSyncNow = async () => {
+    setSyncing(true);
+    setError(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke("qb-sync", {
+        body: {
+          syncType: "manual",
+          triggeredBy: `admin:${session?.user?.email || "unknown"}`,
+        },
+      });
+      if (res.error) throw res.error;
+      // Refresh data after sync
+      await Promise.all([fetchActivity(), fetchStats(), fetchSyncRuns()]);
+    } catch (err: any) {
+      setError(`Sync failed: ${err.message || String(err)}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   useEffect(() => {
     fetchActivity();
     fetchStats();
-  }, [fetchActivity, fetchStats]);
+    fetchSyncRuns();
+  }, [fetchActivity, fetchStats, fetchSyncRuns]);
 
   const formatTime = (d: string) => {
     const date = new Date(d);
@@ -143,12 +190,60 @@ export default function ActivityTab() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Activity Feed</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Everything the AI agent and humans have done
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Activity Feed</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Everything the AI agent and humans have done
+          </p>
+        </div>
+        <button
+          onClick={handleSyncNow}
+          disabled={syncing}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {syncing ? (
+            <>
+              <span className="animate-spin">⟳</span>
+              Syncing...
+            </>
+          ) : (
+            <>🔄 Sync Now</>
+          )}
+        </button>
       </div>
+
+      {/* Recent Sync Runs */}
+      {syncRuns.length > 0 && (
+        <div className="mb-6 rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+            <h2 className="text-sm font-semibold text-slate-700">Recent Syncs</h2>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {syncRuns.slice(0, 5).map((run) => (
+              <div key={run.id} className="px-4 py-2.5 flex items-center gap-3 text-sm">
+                <span className={`inline-block w-2 h-2 rounded-full flex-shrink-0 ${
+                  run.status === "success" ? "bg-green-500" :
+                  run.status === "error" ? "bg-red-500" :
+                  "bg-amber-500 animate-pulse"
+                }`} />
+                <span className="text-slate-600 capitalize">{run.sync_type.replace("_", " ")}</span>
+                {run.entities_fetched && (
+                  <span className="text-slate-400">
+                    {Object.values(run.entities_fetched).reduce((a, b) => a + b, 0)} fetched
+                  </span>
+                )}
+                {run.error_message && (
+                  <span className="text-red-500 truncate max-w-xs" title={run.error_message}>
+                    {run.error_message.slice(0, 60)}
+                  </span>
+                )}
+                <span className="ml-auto text-xs text-slate-400">{formatTime(run.started_at)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
