@@ -55,8 +55,15 @@ if [ -n "$missing" ]; then
   exit 1
 fi
 
-command -v pg_dump >/dev/null 2>&1 || { echo "ERROR: pg_dump not found" >&2; exit 1; }
-command -v aws >/dev/null 2>&1     || { echo "ERROR: aws CLI not found (apt install awscli)" >&2; exit 1; }
+# Prefer pg17 if available (Supabase runs Postgres 17), fall back to default
+if [ -x /usr/lib/postgresql/17/bin/pg_dump ]; then
+  PG_DUMP=/usr/lib/postgresql/17/bin/pg_dump
+elif command -v pg_dump >/dev/null 2>&1; then
+  PG_DUMP=pg_dump
+else
+  echo "ERROR: pg_dump not found" >&2; exit 1
+fi
+command -v aws >/dev/null 2>&1 || { echo "ERROR: aws CLI not found" >&2; exit 1; }
 
 # ── build pg_dump command ────────────────────────────────────────────
 DATE=$(date -u +"%Y%m%d-%H%M%S")
@@ -109,7 +116,7 @@ fi
 
 # ── dump ─────────────────────────────────────────────────────────────
 echo "[$(date -u +%H:%M:%S)] Starting pg_dump..."
-pg_dump "$DB_URL" "${DUMP_ARGS[@]}" | gzip > "$DUMP_FILE"
+$PG_DUMP "$DB_URL" "${DUMP_ARGS[@]}" | gzip > "$DUMP_FILE"
 
 SIZE=$(du -h "$DUMP_FILE" | cut -f1)
 echo "[$(date -u +%H:%M:%S)] Dump complete: $DUMP_FILE ($SIZE)"
