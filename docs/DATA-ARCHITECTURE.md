@@ -30,7 +30,8 @@
 
 ## 1. Cloudflare R2 — File Storage
 
-**Account:** wingsiebird@gmail.com (ID: `9cd3a280a54ce2a5b382602f0247b577`)
+**Account:** Rah Hui Lio Son Fami (ID: `1417f040cdffb8ba923a28be80d095b6`)
+**1Password:** DevOps-finleg → "Cloudflare R2 — Finleg Object Storage"
 
 ### Buckets
 
