@@ -1,12 +1,12 @@
 {
-  "version": "v260316.14 5:20p",
-  "release": 90,
-  "sha": "4f064bb",
-  "fullSha": "4f064bb4475f5d652a70c5f7cad836b8c124686d",
+  "version": "v260316.15 5:26p",
+  "release": 91,
+  "sha": "da585ba",
+  "fullSha": "da585ba55baceb3b96dc63199b40055391d2e1c1",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-16 22:20:21+00",
-  "commits": [{"sha":"4f064bb","message":"Fix missing bookkeeping tab navigation — seed all 9 tabs + merge defaults","author":"Rahul"}]
+  "pushedAt": "2026-03-16 22:26:14+00",
+  "commits": [{"sha":"da585ba","message":"Add \"How It Works\" section with Components page — system overview, roles, flywheel","author":"Rahul"}]
 }
