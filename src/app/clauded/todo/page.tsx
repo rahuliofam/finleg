@@ -114,8 +114,85 @@ export default function TodoPage() {
           </ul>
         </div>
 
+        <h2 className="text-lg font-semibold text-slate-700 mt-7">
+          Security Posture Review (2026-03-16)
+        </h2>
+        <p className="text-slate-600 mt-2 leading-relaxed">
+          A full security audit identified 6 additional items beyond the GitGuardian remediation.
+        </p>
+
+        <div className="mt-4 space-y-4">
+          <div className="border border-red-200 bg-red-50 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">HIGH</span>
+              <strong className="text-slate-800">Cloudflare Worker placeholder auth token</strong>
+            </div>
+            <p className="text-slate-600 text-sm mt-1">
+              <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">cloudflare/claude-sessions/src/index.js</code> — hardcoded{" "}
+              <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">CHANGE_ME_TO_A_SECRET</code>.
+              Use <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">env.AUTH_TOKEN</code> (Cloudflare secret) instead.
+              Set via <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">wrangler secret put AUTH_TOKEN</code>.
+            </p>
+          </div>
+
+          <div className="border border-amber-200 bg-amber-50 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded">MEDIUM</span>
+              <strong className="text-slate-800">CORS wide open on Cloudflare Worker</strong>
+            </div>
+            <p className="text-slate-600 text-sm mt-1">
+              <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">Access-Control-Allow-Origin: &apos;*&apos;</code> lets any site call the API.
+              Restrict to your actual domain(s).
+            </p>
+          </div>
+
+          <div className="border border-amber-200 bg-amber-50 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded">MEDIUM</span>
+              <strong className="text-slate-800">Gitleaks hook silently skips if not installed</strong>
+            </div>
+            <p className="text-slate-600 text-sm mt-1">
+              <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">.githooks/pre-commit</code> exits 0 when gitleaks is missing — commits proceed unscanned.
+              Should exit 1 (fail-closed).
+            </p>
+          </div>
+
+          <div className="border border-slate-200 bg-slate-50 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <span className="bg-slate-400 text-white text-xs font-bold px-2 py-0.5 rounded">LOW</span>
+              <strong className="text-slate-800">todo.html exposes remediation details publicly</strong>
+            </div>
+            <p className="text-slate-600 text-sm mt-1">
+              Static <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">todo.html</code> is served on GitHub Pages with Supabase project ref and key rotation details.
+              Delete or gitignore once remediation is complete.
+            </p>
+          </div>
+
+          <div className="border border-slate-200 bg-slate-50 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <span className="bg-slate-400 text-white text-xs font-bold px-2 py-0.5 rounded">LOW</span>
+              <strong className="text-slate-800">No client-side password complexity enforcement</strong>
+            </div>
+            <p className="text-slate-600 text-sm mt-1">
+              <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">shared/auth.js</code> — passwords go straight to Supabase (6-char minimum).
+              Add client-side validation requiring 12+ characters.
+            </p>
+          </div>
+
+          <div className="border border-slate-200 bg-slate-50 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <span className="bg-slate-400 text-white text-xs font-bold px-2 py-0.5 rounded">LOW</span>
+              <strong className="text-slate-800">Auth cache persists 7 days in localStorage</strong>
+            </div>
+            <p className="text-slate-600 text-sm mt-1">
+              Cached auth state (role, identity) in <code className="bg-slate-200 px-1.5 py-0.5 rounded text-sm">shared/auth.js</code> lasts
+              a week. Physical device access reveals cached identity. Intentional UX tradeoff — be aware on shared devices.
+            </p>
+          </div>
+        </div>
+
         <p className="text-slate-400 text-sm mt-8">
-          Generated: 2026-03-15 — GitGuardian incident response
+          Generated: 2026-03-15 — GitGuardian incident response | Updated: 2026-03-16 — security posture review
         </p>
       </div>
     </div>
