@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 
-const API_BASE = "https://claude-sessions.alpacapps.workers.dev";
-const API_TOKEN = "alpaca-sessions-2026";
+const API_BASE = "https://claude-sessions.finleg.workers.dev";
+const API_TOKEN = "ngmWTBKoDl76jH3VhbXfQ1mqlFunQuAux1qrwHZW";
 
 // Project display names (rename raw DB values)
 const PROJECT_ALIASES: Record<string, string> = {

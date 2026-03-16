@@ -164,7 +164,7 @@ All R2 files originate from:
 ## 3. Cloudflare D1 — Session Archive
 
 **Database:** `claude-sessions`
-**Worker:** https://claude-sessions.alpacapps.workers.dev
+**Worker:** https://claude-sessions.finleg.workers.dev
 **Config:** `/cloudflare/claude-sessions/wrangler.jsonc`
 
 | Column | Type | Purpose |
@@ -266,7 +266,7 @@ curl -X POST https://gjdvzzxsrzuorguwkaih.supabase.co/functions/v1/qb-sync
 |---|---|---|---|
 | QuickBooks API | `https://quickbooks.api.intuit.com` | GL, transactions, accounts | OAuth 2.0 Bearer |
 | File Vault API | `https://files.alpacaplayhouse.com` | File search, preview, thumbnails from RVAULT20 drive | Bearer token |
-| Claude Sessions | `https://claude-sessions.alpacapps.workers.dev` | Session archive CRUD | Bearer token |
+| Claude Sessions | `https://claude-sessions.finleg.workers.dev` | Session archive CRUD | Bearer token |
 | Supabase REST | `https://gjdvzzxsrzuorguwkaih.supabase.co/rest/v1/` | Database queries | Anon key + user JWT |
 | Supabase Auth | `https://gjdvzzxsrzuorguwkaih.supabase.co/auth/v1/` | Google OAuth, sessions | Anon key |
 | Google Gemini | Google AI API | 768-dim embeddings for Open Brain | API key (edge function secret) |
