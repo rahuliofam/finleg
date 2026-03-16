@@ -11,5 +11,5 @@ CLAUDE.local.md
 docs/CREDENTIALS.md
 local.env
 qb-general-ledger-api.json
-backups/
+/backups/
 .gstack/

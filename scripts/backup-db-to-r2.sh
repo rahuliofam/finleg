@@ -32,6 +32,9 @@ R2_SECRET="${R2_SECRET_ACCESS_KEY:-}"
 R2_ACCOUNT="${R2_ACCOUNT_ID:-}"
 R2_BUCKET="${R2_BACKUP_BUCKET:-finleg-backups}"
 R2_ENDPOINT="https://${R2_ACCOUNT}.r2.cloudflarestorage.com"
+SUPABASE_URL="${SUPABASE_URL:-https://gjdvzzxsrzuorguwkaih.supabase.co}"
+SUPABASE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
+START_TIME=$(date +%s)
 
 # ── parse args ───────────────────────────────────────────────────────
 TABLES_ONLY=false
@@ -161,3 +164,15 @@ rm -f "$DUMP_FILE"
 
 echo "[$(date -u +%H:%M:%S)] Backup complete: $R2_KEY"
 echo "To restore: aws s3 cp s3://$R2_BUCKET/$R2_KEY - --endpoint-url $R2_ENDPOINT | gunzip | psql \$SUPABASE_DB_URL"
+
+# ── log to Supabase ──────────────────────────────────────────────────
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+if [ -n "$SUPABASE_KEY" ]; then
+  curl -sf "$SUPABASE_URL/rest/v1/backup_logs" \
+    -H "apikey: $SUPABASE_KEY" \
+    -H "Authorization: Bearer $SUPABASE_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"source\":\"hostinger\",\"backup_type\":\"db-to-r2\",\"status\":\"success\",\"duration_seconds\":$DURATION,\"r2_key\":\"$R2_KEY\",\"details\":{\"size\":\"$SIZE\",\"tables_only\":$TABLES_ONLY}}" \
+    >/dev/null 2>&1 || echo "  Warning: failed to log backup to Supabase"
+fi
