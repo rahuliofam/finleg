@@ -11,7 +11,7 @@ export default function ChangelogPage() {
           href="/clauded"
           className="text-sm text-slate-400 hover:text-slate-600 transition-colors"
         >
-          ← Claude Dev
+          ← Clauded
         </Link>
       </div>
       <ReleasesTab />
