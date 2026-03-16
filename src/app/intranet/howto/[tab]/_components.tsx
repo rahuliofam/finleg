@@ -327,6 +327,213 @@ export default function ComponentsPage() {
         </div>
       </div>
 
+      {/* Architecture Diagram */}
+      <div className="mb-8 border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-slate-800 px-5 py-3 flex items-center justify-between">
+          <h2 className="text-base font-bold text-white">Data &amp; Process Flow</h2>
+          <span className="text-xs text-slate-400">How data moves through the system</span>
+        </div>
+        <div className="p-5 bg-slate-50 overflow-x-auto">
+          <div className="min-w-[700px]">
+            {/* Row 1: External Data Sources */}
+            <div className="flex items-center justify-center gap-6 mb-2">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">External Sources</span>
+            </div>
+            <div className="flex items-center justify-center gap-4 mb-1">
+              <div className="flex flex-col items-center">
+                <div className="px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-semibold shadow-sm">
+                  QuickBooks Online
+                </div>
+                <div className="text-[10px] text-slate-400 mt-0.5">Transactions, Accounts</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="px-4 py-2.5 bg-orange-500 text-white rounded-lg text-sm font-semibold shadow-sm">
+                  Email Receipts
+                </div>
+                <div className="text-[10px] text-slate-400 mt-0.5">Via Resend Webhook</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold shadow-sm">
+                  Statement PDFs
+                </div>
+                <div className="text-[10px] text-slate-400 mt-0.5">Parsed &amp; Indexed</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-semibold shadow-sm">
+                  Brokerage Data
+                </div>
+                <div className="text-[10px] text-slate-400 mt-0.5">Holdings &amp; Trades</div>
+              </div>
+            </div>
+
+            {/* Arrows down */}
+            <div className="flex items-center justify-center gap-4 my-1">
+              <div className="flex flex-col items-center w-32">
+                <svg width="20" height="24" className="text-slate-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+              </div>
+              <div className="flex flex-col items-center w-32">
+                <svg width="20" height="24" className="text-slate-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+              </div>
+              <div className="flex flex-col items-center w-32">
+                <svg width="20" height="24" className="text-slate-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+              </div>
+              <div className="flex flex-col items-center w-32">
+                <svg width="20" height="24" className="text-slate-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+              </div>
+            </div>
+
+            {/* Row 2: Ingestion Layer */}
+            <div className="flex items-center justify-center gap-6 mb-2">
+              <span className="text-[10px] font-semibold text-blue-500 uppercase tracking-widest">Ingestion &amp; Sync</span>
+            </div>
+            <div className="flex items-center justify-center gap-3 mb-1">
+              <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold text-blue-800 text-center">
+                QB Sync<br/><span className="font-normal text-blue-600">Edge Function</span>
+              </div>
+              <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold text-blue-800 text-center">
+                Receipt Parser<br/><span className="font-normal text-blue-600">Resend Webhook</span>
+              </div>
+              <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold text-blue-800 text-center">
+                PDF Extractor<br/><span className="font-normal text-blue-600">Hostinger Batch</span>
+              </div>
+              <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold text-blue-800 text-center">
+                Statement Import<br/><span className="font-normal text-blue-600">R2 Document Index</span>
+              </div>
+            </div>
+
+            {/* Arrow down to DB */}
+            <div className="flex justify-center my-1">
+              <svg width="20" height="24" className="text-slate-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+            </div>
+
+            {/* Row 3: Database (central) */}
+            <div className="flex justify-center mb-1">
+              <div className="relative px-6 py-3 bg-white border-2 border-slate-300 rounded-xl shadow-md">
+                <div className="text-center">
+                  <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Supabase PostgreSQL</div>
+                  <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 text-[11px] text-slate-600">
+                    <span className="font-semibold text-green-700">qb_transactions</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-orange-600">receipts</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-blue-600">sync_runs</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-purple-600">category_rules</span>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 text-[11px] text-slate-600 mt-0.5">
+                    <span className="font-semibold text-red-600">integrity_findings</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-amber-600">todos</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-teal-600">investment_*</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-indigo-600">ai_metrics</span>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 text-[11px] text-slate-600 mt-0.5">
+                    <span className="font-semibold text-cyan-700">qb_writeback_queue</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-slate-500">document_index</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-pink-600">cc/checking/loan_*</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Arrows fanning out: left (AI), center (automation), right (human) */}
+            <div className="flex items-start justify-center gap-8 mt-1">
+              {/* Left branch: AI Processing */}
+              <div className="flex flex-col items-center">
+                <svg width="20" height="24" className="text-purple-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+                <div className="text-[10px] font-semibold text-purple-500 uppercase tracking-widest mb-1">AI Layer</div>
+                <div className="flex flex-col gap-2">
+                  <div className="px-3 py-2 bg-purple-100 border border-purple-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-purple-800">AI Categorizer</span>
+                    <br/><span className="text-purple-600">Claude via CLI</span>
+                  </div>
+                  <div className="px-3 py-2 bg-purple-100 border border-purple-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-purple-800">Accuracy Tracker</span>
+                    <br/><span className="text-purple-600">Weekly Metrics</span>
+                  </div>
+                </div>
+                {/* Arrow back up */}
+                <svg width="20" height="24" className="text-purple-300 mt-1"><path d="M10 24 L10 6 M5 10 L10 4 L15 10" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+                <div className="text-[10px] text-purple-400 italic">writes back</div>
+              </div>
+
+              {/* Center branch: Automated Checks */}
+              <div className="flex flex-col items-center">
+                <svg width="20" height="24" className="text-blue-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+                <div className="text-[10px] font-semibold text-blue-500 uppercase tracking-widest mb-1">Automation</div>
+                <div className="flex flex-col gap-2">
+                  <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-blue-800">Integrity Checker</span>
+                    <br/><span className="text-blue-600">Weekly Scan</span>
+                  </div>
+                  <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-blue-800">Email Digest</span>
+                    <br/><span className="text-blue-600">Sunday 9AM</span>
+                  </div>
+                  <div className="px-3 py-2 bg-blue-100 border border-blue-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-blue-800">Investment Bridge</span>
+                    <br/><span className="text-blue-600">Monthly</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right branch: Human Actions */}
+              <div className="flex flex-col items-center">
+                <svg width="20" height="24" className="text-amber-300"><path d="M10 0 L10 18 M5 14 L10 20 L15 14" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+                <div className="text-[10px] font-semibold text-amber-500 uppercase tracking-widest mb-1">Human Actions</div>
+                <div className="flex flex-col gap-2">
+                  <div className="px-3 py-2 bg-amber-100 border border-amber-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-amber-800">Categorize Tab</span>
+                    <br/><span className="text-amber-600">Approve / Override</span>
+                  </div>
+                  <div className="px-3 py-2 bg-amber-100 border border-amber-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-amber-800">Tasks Tab</span>
+                    <br/><span className="text-amber-600">Resolve Issues</span>
+                  </div>
+                  <div className="px-3 py-2 bg-amber-100 border border-amber-200 rounded-lg text-xs text-center">
+                    <span className="font-semibold text-amber-800">Writeback Approval</span>
+                    <br/><span className="text-amber-600">Approve QB Changes</span>
+                  </div>
+                </div>
+                {/* Arrow back up */}
+                <svg width="20" height="24" className="text-amber-300 mt-1"><path d="M10 24 L10 6 M5 10 L10 4 L15 10" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+                <div className="text-[10px] text-amber-400 italic">feedback loop</div>
+              </div>
+            </div>
+
+            {/* Bottom: Writeback to QB */}
+            <div className="flex justify-center mt-4">
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-2 bg-cyan-100 border border-cyan-200 rounded-lg text-xs text-center">
+                  <span className="font-semibold text-cyan-800">QB Writeback</span>
+                  <br/><span className="text-cyan-600">Push Approved Changes</span>
+                </div>
+                <svg width="40" height="20" className="text-cyan-400"><path d="M0 10 L30 10 M26 5 L34 10 L26 15" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+                <div className="px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-semibold shadow-sm">
+                  QuickBooks Online
+                </div>
+              </div>
+            </div>
+
+            {/* Outputs row */}
+            <div className="flex items-center justify-center gap-6 mt-5 mb-1">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Presentation Layer</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {["Dashboard", "Ledger Notes", "Categorize", "Tasks", "Tax Report", "Activity", "Email Digest"].map((tab) => (
+                <div key={tab} className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-medium text-slate-700 shadow-sm">
+                  {tab}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Self-improvement flywheel */}
       <div className="mb-8 p-5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
         <h2 className="text-lg font-bold text-green-900 mb-3">
