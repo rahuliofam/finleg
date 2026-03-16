@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 interface Statement {
   id: string;
@@ -621,8 +621,8 @@ export default function StatementsTab() {
                             const acctExpanded = expandedAccounts.has(acct.key);
 
                             return (
+                              <React.Fragment key={acct.key}>
                               <tr
-                                key={acct.key}
                                 onClick={() => toggleAccount(acct.key)}
                                 className={`border-t border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors ${acct.isClosed ? "opacity-60" : ""}`}
                               >
@@ -694,101 +694,98 @@ export default function StatementsTab() {
                                   </svg>
                                 </td>
                               </tr>
+                              {acctExpanded && (
+                                <tr>
+                                  <td colSpan={6} className="p-0">
+                                    <div className="pl-4 pb-2 mb-2 border-l-2 border-emerald-200 ml-2">
+                                      <div className="text-[0.65rem] text-slate-400 uppercase tracking-wider font-medium py-1.5">
+                                        {getDisplayName(acct)} &mdash; {acct.statements.length} statement{acct.statements.length !== 1 ? "s" : ""}
+                                      </div>
+                                      <table className="w-full text-sm">
+                                        <thead>
+                                          <tr className="text-[0.6rem] text-slate-400 uppercase tracking-wider">
+                                            <th className="text-left py-1 pr-3 font-medium">Starting</th>
+                                            <th className="text-left py-1 pr-3 font-medium">Ending</th>
+                                            <th className="text-left py-1 pr-3 font-medium">Filename</th>
+                                            <th className="text-right py-1 pr-3 font-medium">Size</th>
+                                            <th className="text-center py-1 font-medium w-16">View</th>
+                                            <th className="text-center py-1 font-medium w-16">Data</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {acct.statements.map((s) => {
+                                            const hasParsed = parsedDocIds.has(s.id);
+                                            const fmtDate = (d: string | null) => {
+                                              if (!d) return null;
+                                              const dt = new Date(d + "T00:00:00");
+                                              return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                                            };
+                                            const startDate = fmtDate(s.period_start);
+                                            const endDate = fmtDate(s.period_end);
+                                            const fallbackPeriod = s.month
+                                              ? `${MONTH_NAMES[s.month]} ${s.year}`
+                                              : s.year
+                                                ? String(s.year)
+                                                : null;
+                                            return (
+                                              <tr
+                                                key={s.id}
+                                                onClick={(e) => { e.stopPropagation(); setDetailStatement(s); }}
+                                                className="hover:bg-emerald-50 cursor-pointer transition-colors border-t border-slate-50"
+                                              >
+                                                <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
+                                                  {startDate || fallbackPeriod || "\u2014"}
+                                                </td>
+                                                <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
+                                                  {endDate || "\u2014"}
+                                                </td>
+                                                <td className="py-1.5 pr-3 text-slate-500 truncate max-w-[300px]">
+                                                  {s.filename}
+                                                </td>
+                                                <td className="py-1.5 pr-3 text-slate-400 text-right whitespace-nowrap text-xs">
+                                                  {formatSize(s.file_size)}
+                                                </td>
+                                                {/* View original PDF */}
+                                                <td className="py-1.5 text-center w-16">
+                                                  <a
+                                                    href={fileUrl(s.bucket, s.r2_key)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="text-emerald-600 hover:text-emerald-800 text-xs font-medium"
+                                                    title="View original document"
+                                                  >
+                                                    PDF
+                                                  </a>
+                                                </td>
+                                                {/* Parsed data */}
+                                                <td className="py-1.5 text-center w-16">
+                                                  {hasParsed ? (
+                                                    <button
+                                                      onClick={(e) => { e.stopPropagation(); loadParsedDetail(s); }}
+                                                      className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                                                      title="View parsed statement data"
+                                                    >
+                                                      View
+                                                    </button>
+                                                  ) : (
+                                                    <span className="text-slate-300 text-xs">&mdash;</span>
+                                                  )}
+                                                </td>
+                                              </tr>
+                                            );
+                                          })}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                              </React.Fragment>
                             );
                           })}
                         </tbody>
                       </table>
-
-                      {/* Expanded statement sub-tables */}
-                      {sortAccounts(instGroup.accounts).map((acct) => {
-                        const acctExpanded = expandedAccounts.has(acct.key);
-                        if (!acctExpanded) return null;
-
-                        return (
-                          <div key={`stmts-${acct.key}`} className="pl-4 pb-2 mb-2 border-l-2 border-emerald-200 ml-2">
-                            <div className="text-[0.65rem] text-slate-400 uppercase tracking-wider font-medium py-1.5">
-                              {getDisplayName(acct)} &mdash; {acct.statements.length} statement{acct.statements.length !== 1 ? "s" : ""}
-                            </div>
-                            <table className="w-full text-sm">
-                              <thead>
-                                <tr className="text-[0.6rem] text-slate-400 uppercase tracking-wider">
-                                  <th className="text-left py-1 pr-3 font-medium">Starting</th>
-                                  <th className="text-left py-1 pr-3 font-medium">Ending</th>
-                                  <th className="text-left py-1 pr-3 font-medium">Filename</th>
-                                  <th className="text-right py-1 pr-3 font-medium">Size</th>
-                                  <th className="text-center py-1 font-medium w-16">View</th>
-                                  <th className="text-center py-1 font-medium w-16">Data</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {acct.statements.map((s) => {
-                                  const hasParsed = parsedDocIds.has(s.id);
-                                  const fmtDate = (d: string | null) => {
-                                    if (!d) return null;
-                                    const dt = new Date(d + "T00:00:00");
-                                    return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-                                  };
-                                  const startDate = fmtDate(s.period_start);
-                                  const endDate = fmtDate(s.period_end);
-                                  // Fallback: if no period dates, use month/year
-                                  const fallbackPeriod = s.month
-                                    ? `${MONTH_NAMES[s.month]} ${s.year}`
-                                    : s.year
-                                      ? String(s.year)
-                                      : null;
-                                  return (
-                                    <tr
-                                      key={s.id}
-                                      onClick={(e) => { e.stopPropagation(); setDetailStatement(s); }}
-                                      className="hover:bg-emerald-50 cursor-pointer transition-colors border-t border-slate-50"
-                                    >
-                                      <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
-                                        {startDate || fallbackPeriod || "\u2014"}
-                                      </td>
-                                      <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
-                                        {endDate || "\u2014"}
-                                      </td>
-                                      <td className="py-1.5 pr-3 text-slate-500 truncate max-w-[300px]">
-                                        {s.filename}
-                                      </td>
-                                      <td className="py-1.5 pr-3 text-slate-400 text-right whitespace-nowrap text-xs">
-                                        {formatSize(s.file_size)}
-                                      </td>
-                                      {/* View original PDF */}
-                                      <td className="py-1.5 text-center w-16">
-                                        <a
-                                          href={fileUrl(s.bucket, s.r2_key)}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          onClick={(e) => e.stopPropagation()}
-                                          className="text-emerald-600 hover:text-emerald-800 text-xs font-medium"
-                                          title="View original document"
-                                        >
-                                          PDF
-                                        </a>
-                                      </td>
-                                      {/* Parsed data */}
-                                      <td className="py-1.5 text-center w-16">
-                                        {hasParsed ? (
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); loadParsedDetail(s); }}
-                                            className="text-blue-600 hover:text-blue-800 text-xs font-medium"
-                                            title="View parsed statement data"
-                                          >
-                                            View
-                                          </button>
-                                        ) : (
-                                          <span className="text-slate-300 text-xs">&mdash;</span>
-                                        )}
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
-                        );
-                      })}
                     </div>
                   )}
                 </div>
