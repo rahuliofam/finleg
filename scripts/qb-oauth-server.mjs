@@ -21,7 +21,7 @@ config(); // Load .env
 const CLIENT_ID = process.env.QUICKBOOKS_CLIENT_ID;
 const CLIENT_SECRET = process.env.QUICKBOOKS_CLIENT_SECRET;
 const QB_ENV = process.env.QUICKBOOKS_ENVIRONMENT || 'sandbox';
-const REDIRECT_URI = 'http://localhost:3847/callback';
+const REDIRECT_URI = 'http://localhost:3000/callback';
 const TOKEN_URL = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
 const AUTH_URL = 'https://appcenter.intuit.com/connect/oauth2';
 
@@ -53,7 +53,7 @@ const authParams = new URLSearchParams({
 const authorizationUrl = `${AUTH_URL}?${authParams}`;
 
 const server = createServer(async (req, res) => {
-  const url = new URL(req.url, `http://localhost:3847`);
+  const url = new URL(req.url, `http://localhost:3000`);
 
   if (url.pathname === '/callback') {
     const code = url.searchParams.get('code');
@@ -152,8 +152,8 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(3847, () => {
-  console.log('OAuth callback server running on http://localhost:3847');
+server.listen(3000, () => {
+  console.log('OAuth callback server running on http://localhost:3000');
   console.log(`\nOpen this URL to authorize:\n\n${authorizationUrl}\n`);
 
   // Try to open browser

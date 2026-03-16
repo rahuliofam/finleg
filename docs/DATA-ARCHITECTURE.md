@@ -5,25 +5,25 @@
 ## Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        DATA SOURCES                             │
-├──────────────┬──────────────────┬──────────────────────────────-─┤
-│  Local Files │  QuickBooks CSV  │  User Auth (Google OAuth)      │
-│  (1,880 docs)│  (General Ledger)│  (Supabase Auth)               │
-└──────┬───────┴────────┬─────────┴──────────────┬────────────────┘
-       │                │                        │
-       ▼                ▼                        ▼
-┌──────────────┐ ┌──────────────┐  ┌─────────────────────────────┐
-│ Cloudflare R2│ │   Supabase   │  │       Supabase Auth         │
-│ (file store) │ │  (database)  │  │    (sessions, users)        │
-└──────┬───────┘ └──────┬───────┘  └──────────────┬──────────────┘
-       │                │                         │
-       └────────┬───────┘                         │
-                ▼                                 ▼
-       ┌─────────────────────────────────────────────────────────┐
-       │            Next.js App (GitHub Pages)                   │
-       │     File Vault  │  Bookkeeping  │  Admin  │  Sessions  │
-       └─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                          DATA SOURCES                               │
+├──────────────┬──────────────────┬───────────────┬──────────────────-┤
+│  Local Files │  QuickBooks API  │  QuickBooks   │  User Auth       │
+│  (1,880 docs)│  (Production)    │  CSV (Legacy) │  (Google OAuth)  │
+└──────┬───────┴────────┬─────────┴───────┬───────┴─────────┬────────┘
+       │                │                 │                 │
+       ▼                ▼                 ▼                 ▼
+┌──────────────┐ ┌──────────────┐  ┌──────────────┐ ┌──────────────┐
+│ Cloudflare R2│ │ QB API (prod)│  │   Supabase   │ │ Supabase Auth│
+│ (file store) │ │ OAuth 2.0    │  │  (database)  │ │ (sessions)   │
+└──────┬───────┘ └──────┬───────┘  └──────┬───────┘ └──────┬───────┘
+       │                │                 │                 │
+       └────────┬───────┴─────────────────┘                 │
+                ▼                                           ▼
+       ┌─────────────────────────────────────────────────────────────┐
+       │              Next.js App (GitHub Pages)                     │
+       │  File Vault │ Bookkeeping │ Accounts │ Admin │ Claude Dev  │
+       └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -181,10 +181,89 @@ All R2 files originate from:
 
 ---
 
-## 4. External APIs
+## 4. QuickBooks Online API (Production)
+
+**Company:** Sonnad Financial (Realm ID: `123146509258379`)
+**App:** "ClaudeCoded" — Intuit Developer Portal
+**Status:** Production approved, API verified 2026-03-16
+
+### Architecture
+
+```
+┌──────────────────┐     OAuth 2.0      ┌──────────────────────────┐
+│  Local Scripts    │ ◄──refresh token──► │  Intuit OAuth Server     │
+│  (test-qb.mjs)   │     exchange        │  oauth.platform.intuit   │
+└────────┬─────────┘                     └──────────────────────────┘
+         │ access token
+         ▼
+┌──────────────────────────────────────────────────────────────────┐
+│              QuickBooks API (quickbooks.api.intuit.com)          │
+│  CompanyInfo │ Accounts │ GeneralLedger │ Purchases │ Deposits  │
+└────────┬─────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                     Supabase Database                            │
+│  qb_tokens │ qb_general_ledger │ qb_transactions │ category_rules│
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Authentication
+
+1. **Get initial tokens:** [OAuth Playground](https://developer.intuit.com/app/developer/playground) → authorize → get refresh token
+2. **Save refresh token:** `local.env` → `QUICKBOOKS_REFRESH_TOKEN`
+3. **Scripts auto-refresh:** Exchange refresh token → new access token (1hr) + rotated refresh token
+4. **Token expiry:** Refresh tokens last 100 days. Re-authorize via Playground if expired.
+
+### Credentials
+
+| Secret | Location |
+|---|---|
+| Client ID (prod) | 1Password → Family Tax → "QuickBooks Dev - ClaudeCoded" → Production |
+| Client Secret (prod) | Same (note: lowercase `l` at position 9: `HoxaRk9w1l1...`) |
+| Refresh Token | `local.env` → auto-rotated on each use |
+| Realm ID | `123146509258379` |
+
+### API Endpoints Used
+
+| Endpoint | Purpose | Script |
+|---|---|---|
+| `GET /v3/company/{realm}/companyinfo/{realm}` | Company info | `test-quickbooks.mjs` |
+| `GET /v3/company/{realm}/query?query=SELECT * FROM Account` | Chart of Accounts (196 accounts) | `test-quickbooks.mjs` |
+| `GET /v3/company/{realm}/reports/GeneralLedger` | Full GL report | `test-quickbooks.mjs` |
+| `GET /v3/company/{realm}/query?query=SELECT * FROM Purchase` | Expenses | `qb-sync` edge fn |
+| `GET /v3/company/{realm}/query?query=SELECT * FROM Deposit` | Deposits | `qb-sync` edge fn |
+| `GET /v3/company/{realm}/query?query=SELECT * FROM Transfer` | Transfers | `qb-sync` edge fn |
+
+### Data Verified (2026-03-16)
+
+| Metric | API | Supabase (CSV) | Notes |
+|---|---|---|---|
+| Transaction rows | 13,058 | 9,229 | Different date ranges |
+| Accounts | 139 | 121 | API covers more |
+| Date range | 2024-01-01 → 2025-12-31 | 2025-01-01 → 2026-03-11 | API adjustable |
+
+### How to Use
+
+```bash
+# Test API connectivity + fetch GL (saves to qb-general-ledger-api.json)
+node scripts/test-quickbooks.mjs
+
+# If refresh token expired, get new one from:
+# https://developer.intuit.com/app/developer/playground
+# Then update QUICKBOOKS_REFRESH_TOKEN in local.env
+
+# Sync transactions via edge function (after tokens stored in qb_tokens)
+curl -X POST https://gjdvzzxsrzuorguwkaih.supabase.co/functions/v1/qb-sync
+```
+
+---
+
+## 5. External APIs
 
 | API | Base URL | Purpose | Auth |
 |---|---|---|---|
+| QuickBooks API | `https://quickbooks.api.intuit.com` | GL, transactions, accounts | OAuth 2.0 Bearer |
 | File Vault API | `https://files.alpacaplayhouse.com` | File search, preview, thumbnails from RVAULT20 drive | Bearer token |
 | Claude Sessions | `https://claude-sessions.alpacapps.workers.dev` | Session archive CRUD | Bearer token |
 | Supabase REST | `https://gjdvzzxsrzuorguwkaih.supabase.co/rest/v1/` | Database queries | Anon key + user JWT |
@@ -193,7 +272,7 @@ All R2 files originate from:
 
 ---
 
-## 5. Data Ingestion Scripts
+## 6. Data Ingestion Scripts
 
 | Script | Input | Output | Purpose |
 |---|---|---|---|
@@ -205,7 +284,7 @@ All R2 files originate from:
 
 ---
 
-## 6. Deployment
+## 7. Deployment
 
 **Platform:** GitHub Pages (static export)
 **URL:** https://rahuliofam.github.io/finleg/ (also https://finleg.net)
@@ -218,7 +297,7 @@ All R2 files originate from:
 
 ---
 
-## 7. Data Counts (as of 2026-03-15)
+## 8. Data Counts (as of 2026-03-15)
 
 | Dimension | Breakdown |
 |---|---|
@@ -230,6 +309,6 @@ All R2 files originate from:
 
 ---
 
-## 8. Future: Statement Data Tables
+## 9. Future: Statement Data Tables
 
 Files flagged with `convertible=true` (10 reference spreadsheets) are candidates for Supabase table ingestion. Additionally, bank/brokerage/loan PDF statements will be parsed into transaction tables with line-item data, tagged with source statement metadata (institution, account number, date).
