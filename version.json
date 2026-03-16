@@ -1,12 +1,12 @@
 {
-  "version": "v260316.03 3:05a",
-  "release": 79,
-  "sha": "6cb0ea1",
-  "fullSha": "6cb0ea113dbb2d05f3b95663cb42df67ac95162c",
+  "version": "v260316.04 3:16a",
+  "release": 80,
+  "sha": "0c91818",
+  "fullSha": "0c91818b01855df99041e702d14318dbfbab7cd0",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-16 08:05:49+00",
-  "commits": [{"sha":"6cb0ea1","message":"Add QuickBooks production API integration docs and test script","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-16 08:16:53+00",
+  "commits": [{"sha":"0c91818","message":"Add QB GL comparison script with R2 upload support","author":"Rahul"}]
 }
