@@ -1,8 +1,6 @@
 // Claude Sessions API — Cloudflare Worker + D1
 // Stores and retrieves Claude Code session transcripts.
-// Auth: Bearer token — change AUTH_TOKEN below before deploying.
-
-const AUTH_TOKEN = 'CHANGE_ME_TO_A_SECRET';
+// Auth: Bearer token — set via `wrangler secret put AUTH_TOKEN`
 
 export default {
   async fetch(request, env) {
@@ -11,9 +9,9 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders() });
     }
 
-    // Auth check
+    // Auth check (AUTH_TOKEN is a wrangler secret, available on env)
     const auth = request.headers.get('Authorization');
-    if (auth !== `Bearer ${AUTH_TOKEN}`) {
+    if (auth !== `Bearer ${env.AUTH_TOKEN}`) {
       return json({ error: 'unauthorized' }, 401);
     }
 
