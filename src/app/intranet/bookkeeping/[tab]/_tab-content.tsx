@@ -7,12 +7,17 @@ import CategorizeTab from "./_categorize";
 import ReceiptsTab from "./_receipts";
 import BookkeeperTab from "./_bookkeeper";
 import ActivityTab from "./_activity";
+import TasksTab from "./_tasks";
+import DashboardTab from "./_dashboard";
+import TaxReportTab from "./_tax-report";
 
 export default function BookkeepingTabContent() {
   const params = useParams();
   const tab = params.tab as string;
 
   switch (tab) {
+    case "dashboard":
+      return <DashboardTab />;
     case "ledger-notes":
       return <LedgerNotesTab />;
     case "statements":
@@ -23,8 +28,12 @@ export default function BookkeepingTabContent() {
       return <ReceiptsTab />;
     case "bookkeeper":
       return <BookkeeperTab />;
+    case "tasks":
+      return <TasksTab />;
     case "activity":
       return <ActivityTab />;
+    case "tax-report":
+      return <TaxReportTab />;
     default:
       return (
         <div className="text-center py-12 text-slate-400">
