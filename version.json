@@ -1,12 +1,12 @@
 {
-  "version": "v260316.15 5:26p",
-  "release": 91,
-  "sha": "da585ba",
-  "fullSha": "da585ba55baceb3b96dc63199b40055391d2e1c1",
+  "version": "v260316.16 5:36p",
+  "release": 92,
+  "sha": "8ee7dd9",
+  "fullSha": "8ee7dd9460f0c28cb3a02ccdf005d8b43268836e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-16 22:26:14+00",
-  "commits": [{"sha":"da585ba","message":"Add \"How It Works\" section with Components page — system overview, roles, flywheel","author":"Rahul"}]
+  "pushedAt": "2026-03-16 22:36:38+00",
+  "commits": [{"sha":"c28ec39","message":"Add pg_cron schedules for automated QB sync, integrity checks, and email digest","author":"Rahul"},{"sha":"14204ba","message":"Fix missing bookkeeping tab navigation — seed all 9 tabs + merge defaults","author":"Rahul"},{"sha":"fa8809e","message":"Add \"How It Works\" section with Components page — system overview, roles, flywheel","author":"Rahul"},{"sha":"a7691e3","message":"Add data & process flow diagram to How It Works page","author":"Rahul"},{"sha":"8ee7dd9","message":"Merge branch 'friendly-curran'","author":"Rahul"}]
 }
