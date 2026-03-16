@@ -78,11 +78,21 @@ export function usePageDisplayConfig(): UsePageDisplayConfigReturn {
               sort_order: row.sort_order,
             });
           }
-          // Merge with defaults for any sections not in the DB
+          // Merge with defaults: add missing sections AND missing tabs within sections
           const defaults = getDefaultConfig();
           for (const section of Object.keys(defaults)) {
             if (!grouped[section]) {
               grouped[section] = defaults[section];
+            } else {
+              // Add any tabs defined in code but missing from DB
+              const existingKeys = new Set(grouped[section].map((t) => t.tab_key));
+              for (const defaultTab of defaults[section]) {
+                if (!existingKeys.has(defaultTab.tab_key)) {
+                  grouped[section].push(defaultTab);
+                }
+              }
+              // Re-sort by sort_order
+              grouped[section].sort((a, b) => a.sort_order - b.sort_order);
             }
           }
           setConfig(grouped);
