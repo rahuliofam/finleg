@@ -1,12 +1,12 @@
 {
-  "version": "v260316.02 12:57a",
-  "release": 78,
-  "sha": "a261877",
-  "fullSha": "a261877a830e771475dc56459a64c67c2fdf7b8b",
+  "version": "v260316.03 3:05a",
+  "release": 79,
+  "sha": "6cb0ea1",
+  "fullSha": "6cb0ea113dbb2d05f3b95663cb42df67ac95162c",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-16 05:57:22+00",
-  "commits": [{"sha":"383a4e6","message":"Move todo to /clauded/todo, rename nav button to Clauded, add hub link","author":"Rahul"},{"sha":"a261877","message":"Merge branch 'vigorous-mcnulty'","author":"Rahul"}]
+  "pushedAt": "2026-03-16 08:05:49+00",
+  "commits": [{"sha":"6cb0ea1","message":"Add QuickBooks production API integration docs and test script","author":"Rahul"}]
 }
