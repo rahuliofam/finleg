@@ -1,12 +1,12 @@
 {
-  "version": "v260315.38 7:12p",
-  "release": 73,
-  "sha": "fd9cdc4",
-  "fullSha": "fd9cdc4a12c714a5da0e93cebbcce28fabfa623f",
+  "version": "v260316.01 12:45a",
+  "release": 77,
+  "sha": "18ad6e5",
+  "fullSha": "18ad6e55785804071bd380ab3cfbee332f2a456b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-16 00:12:27+00",
-  "commits": [{"sha":"fd9cdc4","message":"Fix account expand showing statements in wrong position (#18)","author":"Rahul"}]
+  "pushedAt": "2026-03-16 05:45:44+00",
+  "commits": [{"sha":"0e8c55e","message":"Remove hardcoded Supabase service_role key from all scripts + add gitleaks pre-commit hook","author":"Rahul"},{"sha":"acf8c3a","message":"Move todo.html to Next.js page at /todo so it actually serves","author":"Rahul"},{"sha":"18ad6e5","message":"Merge branch 'vigorous-mcnulty'","author":"Rahul"}]
 }

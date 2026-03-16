@@ -23,13 +23,23 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    href: "/clauded/todo",
+    label: "Todo",
+    description: "Security remediation checklist and pending action items",
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function ClaudedPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-slate-900">Claude Dev</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Clauded</h1>
         <p className="text-slate-500 mt-2">
           AI-powered development tools and activity
         </p>

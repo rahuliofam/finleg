@@ -58,7 +58,7 @@ export function Navbar() {
               pathname.includes("/clauded") ? "text-white" : "text-green-100/70"
             }`}
           >
-            Claude Dev
+            Clauded
           </Link>
           <Link
             href="/about"
