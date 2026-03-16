@@ -35,7 +35,7 @@ apt install -y postgresql-client-16 awscli
 # Create env file with credentials
 cat > ~/.env-finleg << 'EOF'
 SUPABASE_DB_URL=postgresql://postgres.gjdvzzxsrzuorguwkaih:PASSWORD@aws-0-us-west-1.pooler.supabase.com:6543/postgres
-R2_ACCOUNT_ID=9cd3a280a54ce2a5b382602f0247b577
+R2_ACCOUNT_ID=1417f040cdffb8ba923a28be80d095b6
 R2_ACCESS_KEY_ID=<from .env>
 R2_SECRET_ACCESS_KEY=<from .env>
 R2_BACKUP_BUCKET=finleg-backups
