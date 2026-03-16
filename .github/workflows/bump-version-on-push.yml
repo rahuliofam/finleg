@@ -50,4 +50,11 @@ jobs:
           git add -A
           git diff --staged --quiet && echo "No version changes (unexpected)" && exit 1 || true
           git commit -m "chore: bump version [skip ci]"
-          git push origin main
+
+          # Tag the release for easy rollback (e.g., r80, r81)
+          RELEASE_NUM=$(node -e "console.log(require('./version.json').release)" 2>/dev/null || echo "")
+          if [ -n "$RELEASE_NUM" ]; then
+            git tag -a "r${RELEASE_NUM}" -m "Release ${RELEASE_NUM}"
+          fi
+
+          git push origin main --tags
