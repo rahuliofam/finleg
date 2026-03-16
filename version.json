@@ -1,12 +1,12 @@
 {
-  "version": "v260316.04 3:16a",
-  "release": 80,
-  "sha": "0c91818",
-  "fullSha": "0c91818b01855df99041e702d14318dbfbab7cd0",
+  "version": "v260316.05 3:37a",
+  "release": 81,
+  "sha": "05beeed",
+  "fullSha": "05beeed8f3ccc418e52cfc9da2e70758d7202472",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-16 08:16:53+00",
-  "commits": [{"sha":"0c91818","message":"Add QB GL comparison script with R2 upload support","author":"Rahul"}]
+  "pushedAt": "2026-03-16 08:37:50+00",
+  "commits": [{"sha":"05beeed","message":"Add photo caption operations runbook","author":"Rahul"}]
 }
