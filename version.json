@@ -1,12 +1,12 @@
 {
-  "version": "v260315.39 7:17p",
-  "release": 74,
-  "sha": "e030dec",
-  "fullSha": "e030decad8044a89fe4bba579381d6bf35eff8b7",
+  "version": "v260315.40 7:31p",
+  "release": 75,
+  "sha": "c0cf0f5",
+  "fullSha": "c0cf0f5fdf8c1fcf92ceb43a7d44840da528bc48",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-16 00:17:03+00",
-  "commits": [{"sha":"e030dec","message":"Fix extractDate parsing account numbers as years","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-16 00:31:19+00",
+  "commits": [{"sha":"c0cf0f5","message":"Add legal pages (terms + privacy) and footer links (#19)","author":"Rahul"}]
 }
