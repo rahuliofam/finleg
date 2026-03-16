@@ -4,7 +4,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const RESEND_API_URL = "https://api.resend.com";
 const FORWARD_TO = "rahchak@gmail.com";
 const FROM_ADDRESS = "agent@finleg.net";
-const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
 /**
  * Fetch the full email content from Resend API.
@@ -76,84 +75,6 @@ async function forwardEmail(original: any, apiKey: string): Promise<void> {
 }
 
 /**
- * Parse a receipt image/PDF using Claude API.
- */
-async function parseReceiptWithClaude(
-  attachmentBase64: string,
-  mediaType: string,
-  emailSubject: string,
-  emailBody: string,
-  anthropicKey: string
-): Promise<any> {
-  const isImage = mediaType.startsWith("image/");
-  const isPdf = mediaType === "application/pdf";
-
-  const content: any[] = [];
-
-  if (isImage) {
-    content.push({
-      type: "image",
-      source: { type: "base64", media_type: mediaType, data: attachmentBase64 },
-    });
-  } else if (isPdf) {
-    content.push({
-      type: "document",
-      source: { type: "base64", media_type: "application/pdf", data: attachmentBase64 },
-    });
-  }
-
-  content.push({
-    type: "text",
-    text: `Parse this receipt/invoice and extract the following as JSON:
-{
-  "vendor": "store/company name",
-  "amount": 0.00,
-  "date": "YYYY-MM-DD",
-  "category": "best category guess (e.g. Office Supplies, Meals & Entertainment, Software, Travel, Professional Services, Utilities, etc.)",
-  "tax": 0.00,
-  "payment_method": "card type or last 4 digits if visible",
-  "line_items": [{"description": "item", "amount": 0.00, "quantity": 1}],
-  "confidence": 0.95
-}
-
-Email subject was: "${emailSubject}"
-Email body snippet: "${emailBody?.slice(0, 500) || "(none)"}"
-
-If the subject contains a category hint (e.g. "meals" or "office supplies"), use that as the category.
-Return ONLY valid JSON, no markdown.`,
-  });
-
-  const res = await fetch(ANTHROPIC_API_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": anthropicKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
-      messages: [{ role: "user", content }],
-    }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Claude API error: ${res.status} ${text}`);
-  }
-
-  const result = await res.json();
-  const text = result.content?.[0]?.text || "";
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    console.error("Failed to parse Claude response as JSON:", text);
-    return { raw_text: text, confidence: 0 };
-  }
-}
-
-/**
  * Store attachment in Supabase Storage and return the public URL.
  */
 async function storeAttachment(
@@ -184,84 +105,6 @@ async function storeAttachment(
 
   const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(path);
   return urlData.publicUrl;
-}
-
-/**
- * Try to match a receipt to an existing QB transaction.
- */
-async function tryMatchTransaction(
-  supabase: any,
-  amount: number,
-  date: string,
-  vendor: string
-): Promise<{ qb_txn_id: string; confidence: number } | null> {
-  if (!amount || !date) return null;
-
-  // Look for transactions within ±5 days with matching amount
-  const { data: candidates } = await supabase
-    .from("qb_transactions")
-    .select("id, txn_date, amount, vendor_name, receipt_id")
-    .is("receipt_id", null)
-    .gte("txn_date", shiftDate(date, -5))
-    .lte("txn_date", shiftDate(date, 5))
-    .order("txn_date", { ascending: false });
-
-  if (!candidates?.length) return null;
-
-  // Score candidates
-  let bestMatch: any = null;
-  let bestScore = 0;
-
-  for (const txn of candidates) {
-    let score = 0;
-    const txnAmount = Math.abs(parseFloat(txn.amount));
-    const receiptAmount = Math.abs(amount);
-
-    // Exact amount match = 0.6
-    if (Math.abs(txnAmount - receiptAmount) < 0.01) {
-      score += 0.6;
-    } else if (Math.abs(txnAmount - receiptAmount) < 1.0) {
-      score += 0.3; // Close amount (rounding)
-    } else {
-      continue; // Skip if amounts don't match at all
-    }
-
-    // Date proximity (0-0.2)
-    const daysDiff = Math.abs(daysBetween(date, txn.txn_date));
-    score += Math.max(0, 0.2 - daysDiff * 0.04);
-
-    // Vendor name similarity (0-0.2)
-    if (vendor && txn.vendor_name) {
-      const vendorLower = vendor.toLowerCase();
-      const txnVendorLower = txn.vendor_name.toLowerCase();
-      if (txnVendorLower.includes(vendorLower) || vendorLower.includes(txnVendorLower)) {
-        score += 0.2;
-      }
-    }
-
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = txn;
-    }
-  }
-
-  if (bestMatch && bestScore >= 0.5) {
-    return { qb_txn_id: bestMatch.id, confidence: Math.round(bestScore * 100) / 100 };
-  }
-
-  return null;
-}
-
-function shiftDate(dateStr: string, days: number): string {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split("T")[0];
-}
-
-function daysBetween(a: string, b: string): number {
-  const da = new Date(a);
-  const db = new Date(b);
-  return Math.round((da.getTime() - db.getTime()) / 86400000);
 }
 
 /**
@@ -339,7 +182,6 @@ serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "https://gjdvzzxsrzuorguwkaih.supabase.co";
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const resendKey = Deno.env.get("RESEND_API_KEY");
-  const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
 
   if (!resendKey) throw new Error("RESEND_API_KEY not set");
 
@@ -383,8 +225,8 @@ serve(async (req: Request) => {
       });
     }
 
-    if (!supabase || !anthropicKey) {
-      console.log("Missing SUPABASE_SERVICE_ROLE_KEY or ANTHROPIC_API_KEY — receipt processing skipped");
+    if (!supabase) {
+      console.log("Missing SUPABASE_SERVICE_ROLE_KEY — receipt processing skipped");
       return new Response(JSON.stringify({ success: true, receipts: 0, reason: "missing_keys" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -393,12 +235,11 @@ serve(async (req: Request) => {
 
     // Extract category hint from subject
     const userCategory = extractCategoryFromSubject(email.subject);
-    const emailBody = email.text || email.html?.replace(/<[^>]+>/g, "") || "";
     const fromLine = typeof email.from === "string"
       ? email.from
       : email.from?.[0]?.address || email.from?.[0] || "";
 
-    const processedReceipts = [];
+    const processedReceipts: Array<{ id: string; filename: string }> = [];
 
     for (const attachment of receiptAttachments) {
       try {
@@ -406,29 +247,11 @@ serve(async (req: Request) => {
         const filename = attachment.filename || `receipt_${Date.now()}`;
         const base64Data = attachment.content || attachment.data || "";
 
-        // Store attachment
+        // Store attachment in Supabase Storage
         const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
         const attachmentUrl = await storeAttachment(supabase, filename, binaryData, contentType);
 
-        // Parse with Claude
-        let parsed: any = {};
-        try {
-          parsed = await parseReceiptWithClaude(
-            base64Data,
-            contentType,
-            email.subject || "",
-            emailBody,
-            anthropicKey
-          );
-        } catch (parseErr) {
-          console.error("Receipt parsing failed:", parseErr);
-          parsed = { confidence: 0, error: String(parseErr) };
-        }
-
-        // Use user-provided category if available, otherwise use AI
-        const category = userCategory || parsed.category || null;
-
-        // Insert receipt record
+        // Insert receipt as "pending" — AI parsing happens on Hostinger via claude --print
         const receiptRecord = {
           email_from: fromLine,
           email_subject: email.subject || null,
@@ -437,19 +260,8 @@ serve(async (req: Request) => {
           attachment_url: attachmentUrl,
           attachment_filename: filename,
           attachment_content_type: contentType,
-          parsed_vendor: parsed.vendor || null,
-          parsed_amount: parsed.amount || null,
-          parsed_date: parsed.date || null,
-          parsed_category: category,
-          parsed_line_items: parsed.line_items || null,
-          parsed_tax: parsed.tax || null,
-          parsed_payment_method: parsed.payment_method || null,
-          ai_confidence: parsed.confidence || 0,
-          ai_raw_response: parsed,
           user_category: userCategory,
-          user_notes: null,
-          status: parsed.confidence > 0 ? "parsed" : "error",
-          error_message: parsed.error || null,
+          status: "pending",
         };
 
         const { data: insertedReceipt, error: insertError } = await supabase
@@ -463,59 +275,13 @@ serve(async (req: Request) => {
           continue;
         }
 
-        const receiptId = insertedReceipt.id;
-
-        // Try to match with a QB transaction
-        if (parsed.amount && parsed.date) {
-          const match = await tryMatchTransaction(
-            supabase,
-            parsed.amount,
-            parsed.date,
-            parsed.vendor
-          );
-
-          if (match) {
-            // Update receipt with match
-            await supabase
-              .from("receipts")
-              .update({
-                matched_qb_txn_id: match.qb_txn_id,
-                match_confidence: match.confidence,
-                match_method: match.confidence >= 0.8 ? "exact_amount" : "fuzzy",
-                status: "matched",
-              })
-              .eq("id", receiptId);
-
-            // Update QB transaction with receipt link
-            await supabase
-              .from("qb_transactions")
-              .update({
-                receipt_id: receiptId,
-                our_category: category,
-                category_confidence: parsed.confidence,
-                category_source: userCategory ? "human" : "ai",
-                review_status: match.confidence >= 0.8 ? "auto_categorized" : "needs_review",
-              })
-              .eq("id", match.qb_txn_id);
-
-            await logActivity(supabase, "receipt_matched", "receipt", receiptId, "ai", {
-              qb_txn_id: match.qb_txn_id,
-              confidence: match.confidence,
-              amount: parsed.amount,
-              vendor: parsed.vendor,
-            });
-          }
-        }
-
-        await logActivity(supabase, "receipt_parsed", "receipt", receiptId, "ai", {
-          vendor: parsed.vendor,
-          amount: parsed.amount,
-          confidence: parsed.confidence,
-          category,
+        await logActivity(supabase, "receipt_ingested", "receipt", insertedReceipt.id, "system", {
+          filename,
           from: fromLine,
+          user_category: userCategory,
         });
 
-        processedReceipts.push({ id: receiptId, vendor: parsed.vendor, amount: parsed.amount });
+        processedReceipts.push({ id: insertedReceipt.id, filename });
       } catch (attachErr) {
         console.error("Error processing attachment:", attachErr);
       }
