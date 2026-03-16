@@ -1,12 +1,12 @@
 {
-  "version": "v260316.13 5:16p",
-  "release": 89,
-  "sha": "0af1688",
-  "fullSha": "0af168834ad7a3f1264602facb9be2d0ffe8cd16",
+  "version": "v260316.14 5:20p",
+  "release": 90,
+  "sha": "4f064bb",
+  "fullSha": "4f064bb4475f5d652a70c5f7cad836b8c124686d",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-16 22:16:29+00",
-  "commits": [{"sha":"0af1688","message":"Migrate Cloudflare Workers + D1 from alpacapps to finleg account (#23)","author":"Rahul"}]
+  "pushedAt": "2026-03-16 22:20:21+00",
+  "commits": [{"sha":"4f064bb","message":"Fix missing bookkeeping tab navigation — seed all 9 tabs + merge defaults","author":"Rahul"}]
 }
