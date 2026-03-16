@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import ComponentsPage from "./_components";
+import NutsBoltsPage from "./_nutsbolts";
 
 export default function HowtoTabContent() {
   const params = useParams();
@@ -10,6 +11,8 @@ export default function HowtoTabContent() {
   switch (tab) {
     case "components":
       return <ComponentsPage />;
+    case "nutsbolts":
+      return <NutsBoltsPage />;
     default:
       return (
         <div className="text-center py-12 text-slate-400">

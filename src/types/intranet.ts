@@ -86,6 +86,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
   ],
   howto: [
     { key: "components", label: "Components", defaultVisible: true },
+    { key: "nutsbolts", label: "Nuts & Bolts", defaultVisible: true },
   ],
 };
 
