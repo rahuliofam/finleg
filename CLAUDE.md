@@ -8,6 +8,7 @@
 > - `docs/DEPLOY.md` — **load for:** pushing, deploying, version questions
 > - `docs/INTEGRATIONS.md` — **load for:** external APIs, vendor setup, pricing
 > - `docs/CHANGELOG.md` — **load for:** understanding recent changes, migration context
+> - `docs/SECRETS-GUIDE.md` — **load for:** security review, secret rotation, auth hardening
 
 > **IMPORTANT: First-time setup!**
 > Run `/setup-alpacapps-infra` to set up the full infrastructure interactively.
