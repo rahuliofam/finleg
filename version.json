@@ -1,12 +1,12 @@
 {
-  "version": "v260315.37 5:44p",
-  "release": 72,
-  "sha": "fbe4208",
-  "fullSha": "fbe42080435235dc464dd5e1631cc1239db5266a",
+  "version": "v260315.38 7:12p",
+  "release": 73,
+  "sha": "fd9cdc4",
+  "fullSha": "fd9cdc4a12c714a5da0e93cebbcce28fabfa623f",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm0kj6c",
-  "pushedAt": "2026-03-15 22:44:59+00",
-  "commits": [{"sha":"e6da824","message":"Add active/archived account sections, date ranges, and fix Tesloop spelling","author":"Rahul"},{"sha":"fbe4208","message":"Merge branch 'admiring-noether'","author":"Rahul"}]
+  "machine": "runnervm46oaq",
+  "pushedAt": "2026-03-16 00:12:27+00",
+  "commits": [{"sha":"fd9cdc4","message":"Fix account expand showing statements in wrong position (#18)","author":"Rahul"}]
 }
