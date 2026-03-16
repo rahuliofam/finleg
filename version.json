@@ -1,12 +1,12 @@
 {
-  "version": "v260315.40 7:31p",
-  "release": 75,
-  "sha": "c0cf0f5",
-  "fullSha": "c0cf0f5fdf8c1fcf92ceb43a7d44840da528bc48",
+  "version": "v260315.41 7:58p",
+  "release": 76,
+  "sha": "fb5a65a",
+  "fullSha": "fb5a65aac732d9bedbdee5d5950bea4084668fa0",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-16 00:31:19+00",
-  "commits": [{"sha":"c0cf0f5","message":"Add legal pages (terms + privacy) and footer links (#19)","author":"Rahul"}]
+  "machine": "runnervm0kj6c",
+  "pushedAt": "2026-03-16 00:58:23+00",
+  "commits": [{"sha":"fb5a65a","message":"Add QuickBooks workflow: receipt ingestion, transaction sync, categorization UI (#20)","author":"Rahul"}]
 }
