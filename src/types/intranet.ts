@@ -6,7 +6,8 @@ export type IntranetSection =
   | "admin"
   | "files"
   | "bookkeeping"
-  | "howto";
+  | "howto"
+  | "clauded";
 
 export interface TabDefinition {
   key: string;
@@ -30,6 +31,7 @@ export const SECTIONS: SectionDefinition[] = [
   { key: "files", label: "File Vault" },
   { key: "bookkeeping", label: "Bookkeeping" },
   { key: "howto", label: "How It Works" },
+  { key: "clauded", label: "Clauded" },
   { key: "admin", label: "Admin" },
 ];
 
@@ -89,6 +91,14 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "nutsbolts", label: "Nuts & Bolts", defaultVisible: true },
     { key: "autoactions", label: "AutoActions", defaultVisible: true },
   ],
+  clauded: [
+    { key: "releases", label: "Releases", defaultVisible: true },
+    { key: "sessions", label: "Sessions", defaultVisible: true },
+    { key: "tokens", label: "Tokens & Cost", defaultVisible: true },
+    { key: "context", label: "Context Window", defaultVisible: true },
+    { key: "backups", label: "Backups", defaultVisible: true },
+    { key: "todo", label: "Todo", defaultVisible: true },
+  ],
 };
 
 export const ALL_TAB_SLUGS: Record<IntranetSection, string[]> = {
@@ -100,4 +110,5 @@ export const ALL_TAB_SLUGS: Record<IntranetSection, string[]> = {
   files: DEFAULT_TABS.files.map((t) => t.key),
   bookkeeping: DEFAULT_TABS.bookkeeping.map((t) => t.key),
   howto: DEFAULT_TABS.howto.map((t) => t.key),
+  clauded: DEFAULT_TABS.clauded.map((t) => t.key),
 };
