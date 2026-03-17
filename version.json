@@ -1,12 +1,12 @@
 {
-  "version": "v260317.17 5:37a",
-  "release": 112,
-  "sha": "2a64411",
-  "fullSha": "2a644116e5d185f2fc9a1a4f6b540ad4cdfe2ac1",
+  "version": "v260317.18 4:41p",
+  "release": 113,
+  "sha": "b125104",
+  "fullSha": "b1251042a8c7ce92fc74dacc62caf6e299079e68",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-17 10:37:02+00",
-  "commits": [{"sha":"2a64411","message":"Remove 1Password references from security page — Bitwarden is sole secret manager","author":"Rahul"}]
+  "pushedAt": "2026-03-17 21:41:25+00",
+  "commits": [{"sha":"b125104","message":"Add email-to-statement ingestion pipeline","author":"Rahul"}]
 }
