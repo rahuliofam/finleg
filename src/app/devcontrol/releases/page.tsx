@@ -1,20 +1,10 @@
 "use client";
 
-import { ReleasesTab } from "@/components/intranet/admin/releases-tab";
-import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function ReleasesPage() {
-  return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      <div className="mb-6">
-        <Link
-          href="/devcontrol"
-          className="text-base text-zinc-400 hover:text-white transition-colors"
-        >
-          ← DevControl
-        </Link>
-      </div>
-      <ReleasesTab />
-    </div>
-  );
+export default function Redirect() {
+  const router = useRouter();
+  useEffect(() => { router.replace("/intranet/devcontrol/releases"); }, [router]);
+  return null;
 }
