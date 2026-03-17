@@ -193,8 +193,8 @@ export default function SecurityPage() {
           <span className="font-semibold text-sm text-emerald-900">Bitwarden Password Manager</span>
         </div>
         <p className="text-xs text-emerald-700">
-          Migrated from 1Password on 2026-03-17. All 270 items across 69 folders (231 logins, 7 identities, 31 secure notes).
-          CLI-based with session caching &mdash; no repeated Touch ID prompts.
+          270 items across 69 folders (231 logins, 7 identities, 31 secure notes).
+          CLI-based with session caching &mdash; no repeated unlock prompts.
         </p>
       </div>
 
@@ -368,37 +368,25 @@ bw-env     →  reads "Portsie Dev Env" →  writes .env.local     →  logs eac
         </div>
       </SectionCard>
 
-      {/* Migration History */}
-      <SectionCard title="Migration History" subtitle="1Password to Bitwarden">
+      {/* Vault Details */}
+      <SectionCard title="Vault Details" subtitle="Bitwarden inventory">
         <div className="p-3 bg-slate-50 rounded-lg">
           <div className="space-y-2 text-xs text-slate-600">
             <div className="flex justify-between">
-              <span>Migration date</span>
-              <span className="text-slate-900 font-medium">2026-03-17</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Items migrated</span>
+              <span>Total items</span>
               <span className="text-slate-900 font-medium">270 (231 logins, 7 identities, 31 secure notes)</span>
             </div>
             <div className="flex justify-between">
-              <span>Folders created</span>
+              <span>Folders</span>
               <span className="text-slate-900 font-medium">69</span>
             </div>
             <div className="flex justify-between">
-              <span>Export format</span>
-              <span className="text-slate-900 font-medium">1Password .1pux</span>
-            </div>
-            <div className="flex justify-between">
-              <span>1Password subscription</span>
-              <span className="text-amber-600 font-medium">Expiring (let lapse)</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Bitwarden plan</span>
+              <span>Plan</span>
               <span className="text-slate-900 font-medium">Premium ($10/yr, upgradeable to Family $40/yr)</span>
             </div>
             <div className="flex justify-between">
-              <span>Why migrated</span>
-              <span className="text-slate-900 font-medium">1Password CLI required Touch ID on every op read call</span>
+              <span>CLI integration</span>
+              <span className="text-slate-900 font-medium">Session caching via bw-read</span>
             </div>
           </div>
         </div>
