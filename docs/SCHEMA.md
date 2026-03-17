@@ -45,6 +45,7 @@ app_users              - User profiles & roles
 user_invitations       - Pre-authorized signups
 page_display_config    - UI tab visibility
 releases               - Deployment tracking
+context_snapshots      - Daily context window token usage (devcontrol dashboard)
 ```
 
 ## Service Config Tables
