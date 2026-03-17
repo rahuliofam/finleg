@@ -1,12 +1,12 @@
 {
-  "version": "v260317.02 2:52a",
-  "release": 97,
-  "sha": "c158f7c",
-  "fullSha": "c158f7ccb4b255321a13c15567f7e453b1f30b83",
+  "version": "v260317.03 2:53a",
+  "release": 98,
+  "sha": "1cae9c7",
+  "fullSha": "1cae9c7fa37bd7c1d20d21ba85a85ba8b4bb4a86",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-17 07:52:39+00",
-  "commits": [{"sha":"c158f7c","message":"Fix dark mode contrast across all Clauded pages — bigger fonts, high-contrast colors (#25)","author":"Rahul"}]
+  "pushedAt": "2026-03-17 07:53:50+00",
+  "commits": [{"sha":"1cae9c7","message":"Add Context Window page showing files loaded into Claude's context","author":"Rahul"}]
 }
