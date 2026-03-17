@@ -1,12 +1,12 @@
 {
-  "version": "v260317.05 3:11a",
-  "release": 100,
-  "sha": "170f98d",
-  "fullSha": "170f98d8b0ba2cc8dbaed08ff72ed2a1eb17dfc2",
+  "version": "v260317.06 3:19a",
+  "release": 101,
+  "sha": "a77b206",
+  "fullSha": "a77b206dadfdcc7cdd565b58c3674cbe13de3a4b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-17 08:11:07+00",
-  "commits": [{"sha":"1825736","message":"Fix dark mode contrast on Clauded pages, restore sessions data, add Tokens page","author":"Rahul"},{"sha":"b47a720","message":"Add Context Window page showing files loaded into Claude's context","author":"Rahul"},{"sha":"d7b8485","message":"Move Clauded into dashboard as section tab with sub-tabs","author":"Rahul"},{"sha":"170f98d","message":"Merge branch 'peaceful-moser'","author":"Rahul"}]
+  "pushedAt": "2026-03-17 08:19:08+00",
+  "commits": [{"sha":"a77b206","message":"feat: add Security tab to How It Works section","author":"Rahul"}]
 }
