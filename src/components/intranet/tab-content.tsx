@@ -11,6 +11,7 @@ import { TokensTab } from "@/components/clauded/tokens-tab";
 import { ContextTab } from "@/components/clauded/context-tab";
 import { BackupsTab } from "@/components/clauded/backups-tab";
 import { TodoTab } from "@/components/clauded/todo-tab";
+import { TocTab } from "@/components/clauded/toc-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
   admin: {
@@ -19,6 +20,7 @@ const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
     brand: BrandTab,
   },
   clauded: {
+    toc: TocTab,
     releases: ReleasesTab,
     sessions: SessionsTab,
     tokens: TokensTab,
