@@ -93,6 +93,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "security", label: "Security", defaultVisible: true },
   ],
   clauded: [
+    { key: "toc", label: "TOC", defaultVisible: true },
     { key: "releases", label: "Releases", defaultVisible: true },
     { key: "sessions", label: "Sessions", defaultVisible: true },
     { key: "tokens", label: "Tokens & Cost", defaultVisible: true },
