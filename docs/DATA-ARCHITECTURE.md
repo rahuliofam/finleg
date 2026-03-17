@@ -31,7 +31,7 @@
 ## 1. Cloudflare R2 — File Storage
 
 **Account:** Rah Hui Lio Son Fami (ID: `1417f040cdffb8ba923a28be80d095b6`)
-**1Password:** DevOps-finleg → "Cloudflare R2 — Finleg Object Storage"
+**Bitwarden:** DevOps-finleg folder → "Cloudflare R2 — Finleg Object Storage"
 
 ### Buckets
 
@@ -220,7 +220,7 @@ All R2 files originate from:
 
 | Secret | Location |
 |---|---|
-| Client ID (prod) | 1Password → Family Tax → "QuickBooks Dev - ClaudeCoded" → Production |
+| Client ID (prod) | Bitwarden → Family Tax folder → "QuickBooks Dev - ClaudeCoded" → Production |
 | Client Secret (prod) | Same (note: lowercase `l` at position 9: `HoxaRk9w1l1...`) |
 | Refresh Token | `local.env` → auto-rotated on each use |
 | Realm ID | `123146509258379` |

@@ -28,12 +28,12 @@ When building or modifying any feature that calls a paid API, instrument it to l
 
 | Credential | Location |
 |---|---|
-| Production Client ID + Secret | 1Password → Family Tax → "QuickBooks Dev - ClaudeCoded" → Production section |
-| Sandbox Client ID + Secret | 1Password → Family Tax → "QuickBooks Dev - ClaudeCoded" → Environment section |
+| Production Client ID + Secret | Bitwarden → Family Tax folder → "QuickBooks Dev - ClaudeCoded" → Production section |
+| Sandbox Client ID + Secret | Bitwarden → Family Tax folder → "QuickBooks Dev - ClaudeCoded" → Environment section |
 | Refresh Token (production) | `local.env` → `QUICKBOOKS_REFRESH_TOKEN` (auto-rotated on each use) |
 | Realm ID | `local.env` → `QUICKBOOKS_REALM_ID` |
 
-> **Important:** The 1Password production Client Secret contains a lowercase `l` (not capital `I`) at position 9: `HoxaRk9w1l1...`
+> **Important:** The Bitwarden production Client Secret contains a lowercase `l` (not capital `I`) at position 9: `HoxaRk9w1l1...`
 
 **OAuth Flow:**
 

@@ -26,7 +26,7 @@ After confirming finleg's new buckets are fully populated and working:
 ```bash
 # 1. Verify new account has correct object counts
 NEW_ENDPOINT="https://1417f040cdffb8ba923a28be80d095b6.r2.cloudflarestorage.com"
-# Use finleg's new R2 credentials (1Password: DevOps-finleg → "Cloudflare R2 — Finleg Object Storage")
+# Use finleg's new R2 credentials (Bitwarden: DevOps-finleg folder → "Cloudflare R2 — Finleg Object Storage")
 
 for bucket in financial-statements bookkeeping-docs legal-docs; do
   echo "=== $bucket ==="
@@ -50,7 +50,7 @@ done
 
 ```bash
 OLD_ENDPOINT="https://9cd3a280a54ce2a5b382602f0247b577.r2.cloudflarestorage.com"
-# Use wingsiebird R2 credentials (1Password: DevOps-shared → "Cloudflare R2 — Object Storage")
+# Use wingsiebird R2 credentials (Bitwarden: DevOps-shared folder → "Cloudflare R2 — Object Storage")
 
 # Empty each bucket first (required before deletion)
 for bucket in financial-statements bookkeeping-docs legal-docs finleg-backups; do
@@ -67,6 +67,6 @@ done
 
 ## After Cleanup
 
-- **Move** the 1Password entry "Cloudflare R2 — Object Storage" from **DevOps-shared** to **DevOps-alpacapps**
+- **Move** the Bitwarden entry "Cloudflare R2 — Object Storage" from **DevOps-shared** folder to **DevOps-alpacapps** folder
   (it's the wingsiebird account, which only has the `alpacapps` bucket now)
 - Scope the wingsiebird R2 API keys down to just the `alpacapps` bucket if desired

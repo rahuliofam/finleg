@@ -434,10 +434,10 @@ export default function NutsBoltsPage() {
       <SectionCard title="Credentials & Secrets" subtitle="Where secrets live">
         <div className="space-y-3">
           <div className="p-3 bg-slate-50 rounded-lg">
-            <div className="font-semibold text-sm text-slate-900 mb-1">1Password</div>
+            <div className="font-semibold text-sm text-slate-900 mb-1">Bitwarden</div>
             <p className="text-xs text-slate-600">
               QB Client ID/Secret, financial institution passwords, and service API keys.
-              Vault: &ldquo;Family Tax&rdquo;
+              Folder: &ldquo;Family Tax&rdquo;
             </p>
           </div>
           <div className="p-3 bg-slate-50 rounded-lg">
@@ -472,13 +472,13 @@ export default function NutsBoltsPage() {
             <span className="font-semibold text-sm text-purple-900">Browser Agent Statement Fetcher</span>
           </div>
           <p className="text-xs text-purple-800 mb-3">
-            Automated browser agents will log in to each financial institution using 1Password credentials
+            Automated browser agents will log in to each financial institution using Bitwarden credentials
             and download the latest statements on a customized schedule per institution.
           </p>
           <div className="space-y-2 text-xs text-purple-700">
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-0.5">1.</span>
-              <span>Credentials pulled from 1Password vault at runtime (never stored on disk)</span>
+              <span>Credentials pulled from Bitwarden vault at runtime (never stored on disk)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-0.5">2.</span>
