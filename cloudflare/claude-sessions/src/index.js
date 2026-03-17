@@ -99,6 +99,14 @@ export default {
       return json(result);
     }
 
+    // GET /projects — list distinct project names
+    if (request.method === 'GET' && url.pathname === '/projects') {
+      const result = await env.DB.prepare(
+        'SELECT DISTINCT project FROM sessions WHERE project IS NOT NULL ORDER BY project'
+      ).all();
+      return json(result.results.map(r => r.project));
+    }
+
     // GET /stats — aggregate stats (cap durations at < 1440 to exclude outliers)
     if (request.method === 'GET' && url.pathname === '/stats') {
       const result = await env.DB.prepare(`
