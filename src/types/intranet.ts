@@ -90,6 +90,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "components", label: "Components", defaultVisible: true },
     { key: "nutsbolts", label: "Nuts & Bolts", defaultVisible: true },
     { key: "autoactions", label: "AutoActions", defaultVisible: true },
+    { key: "security", label: "Security", defaultVisible: true },
   ],
   clauded: [
     { key: "releases", label: "Releases", defaultVisible: true },
