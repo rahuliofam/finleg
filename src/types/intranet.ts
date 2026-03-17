@@ -85,12 +85,14 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "tasks", label: "Tasks", defaultVisible: true },
     { key: "activity", label: "Activity", defaultVisible: true },
     { key: "tax-report", label: "Tax Report", defaultVisible: true },
+    { key: "brokerage", label: "Brokerage", defaultVisible: true },
   ],
   howto: [
     { key: "components", label: "Components", defaultVisible: true },
     { key: "nutsbolts", label: "Nuts & Bolts", defaultVisible: true },
     { key: "autoactions", label: "AutoActions", defaultVisible: true },
     { key: "security", label: "Security", defaultVisible: true },
+    { key: "data-pipeline", label: "Data Pipeline", defaultVisible: true },
   ],
   devcontrol: [
     { key: "toc", label: "TOC", defaultVisible: true },

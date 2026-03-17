@@ -10,6 +10,7 @@ import ActivityTab from "./_activity";
 import TasksTab from "./_tasks";
 import DashboardTab from "./_dashboard";
 import TaxReportTab from "./_tax-report";
+import BrokerageTab from "./_brokerage";
 
 export default function BookkeepingTabContent() {
   const params = useParams();
@@ -34,6 +35,8 @@ export default function BookkeepingTabContent() {
       return <ActivityTab />;
     case "tax-report":
       return <TaxReportTab />;
+    case "brokerage":
+      return <BrokerageTab />;
     default:
       return (
         <div className="text-center py-12 text-slate-400">
