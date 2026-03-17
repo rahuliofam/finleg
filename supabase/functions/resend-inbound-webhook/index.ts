@@ -5,6 +5,28 @@ const RESEND_API_URL = "https://api.resend.com";
 const FORWARD_TO = "rahchak@gmail.com";
 const FROM_ADDRESS = "agent@finleg.net";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta";
+
+const CLASSIFICATION_PROMPT = `Analyze this PDF document. Determine if it is a financial STATEMENT (bank statement, credit card statement, brokerage/investment statement, loan statement, HELOC statement, mortgage statement) or a RECEIPT/INVOICE (a record of a single purchase or payment).
+
+If it is a STATEMENT, extract:
+- institution: lowercase slug (e.g. "amex", "chase", "schwab", "us-bank", "apple", "robinhood", "pnc", "bank-of-america", "coinbase", "wells-fargo")
+- account_type: one of "credit-card", "checking", "brokerage", "ira", "crypto", "heloc", "auto-loan", "mortgage", "credit-line"
+- account_name: human-readable name (e.g. "Blue Cash Preferred", "Brokerage Account")
+- account_number: last 4 digits only (e.g. "4206")
+- account_holder: name on account
+- statement_date: closing/statement date as "YYYY-MM-DD"
+- period_start: "YYYY-MM-DD"
+- period_end: "YYYY-MM-DD"
+
+Return ONLY valid JSON, no markdown fences:
+{"doc_type": "statement", "institution": "...", "account_type": "...", "account_name": "...", "account_number": "...", "account_holder": "...", "statement_date": "YYYY-MM-DD", "period_start": "YYYY-MM-DD", "period_end": "YYYY-MM-DD", "confidence": 0.95}
+
+If it is a RECEIPT/INVOICE or you cannot determine, return:
+{"doc_type": "receipt", "confidence": 0.95}
+
+If you truly cannot tell what this document is, return:
+{"doc_type": "unknown", "confidence": 0.0}`;
 
 /**
  * Fetch the full email content from Resend API.
@@ -73,6 +95,85 @@ async function forwardEmail(original: any, apiKey: string): Promise<void> {
 
   const result = await res.json();
   console.log(`Forwarded to ${FORWARD_TO}, Resend ID: ${result.id}`);
+}
+
+/**
+ * Classify a PDF attachment using Gemini Flash 2.5.
+ * Returns classification JSON with doc_type, institution, account_type, etc.
+ */
+async function classifyWithGemini(
+  base64Data: string,
+  geminiKey: string
+): Promise<any> {
+  const res = await fetch(
+    `${GEMINI_API_URL}/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: "application/pdf", data: base64Data } },
+            { text: CLASSIFICATION_PROMPT },
+          ],
+        }],
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Gemini API error: ${res.status} ${text}`);
+  }
+
+  const result = await res.json();
+  const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+  // Extract JSON from response (handle markdown fences)
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    console.error("No JSON found in Gemini response:", text.slice(0, 300));
+    return { doc_type: "unknown", confidence: 0 };
+  }
+
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch {
+    console.error("Failed to parse Gemini JSON:", jsonMatch[0].slice(0, 300));
+    return { doc_type: "unknown", confidence: 0 };
+  }
+}
+
+/**
+ * Store a statement PDF in Supabase Storage (statements bucket).
+ */
+async function storeStatementAttachment(
+  supabase: any,
+  filename: string,
+  data: Uint8Array,
+  contentType: string
+): Promise<string> {
+  const path = `inbox/${Date.now()}_${filename}`;
+
+  const { error } = await supabase.storage
+    .from("statements")
+    .upload(path, data, { contentType, upsert: false });
+
+  if (error) {
+    if (error.message?.includes("not found") || error.statusCode === 404) {
+      console.log("Creating statements storage bucket...");
+      await supabase.storage.createBucket("statements", { public: true });
+      const { error: retryError } = await supabase.storage
+        .from("statements")
+        .upload(path, data, { contentType, upsert: false });
+      if (retryError) throw retryError;
+    } else {
+      throw error;
+    }
+  }
+
+  const { data: urlData } = supabase.storage.from("statements").getPublicUrl(path);
+  return urlData.publicUrl;
 }
 
 /**
@@ -340,6 +441,7 @@ serve(async (req: Request) => {
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+  const geminiKey = Deno.env.get("GEMINI_API_KEY");
 
   if (!resendKey) throw new Error("RESEND_API_KEY not set");
 
@@ -363,9 +465,9 @@ serve(async (req: Request) => {
     // Always forward to Gmail
     await forwardEmail(email, resendKey);
 
-    // Check if this email has receipt-like attachments
+    // Check if this email has processable attachments (images or PDFs)
     const attachments = email.attachments || [];
-    const receiptAttachments = attachments.filter((a: any) => {
+    const processableAttachments = attachments.filter((a: any) => {
       const type = a.content_type || a.type || "";
       return (
         type.startsWith("image/") ||
@@ -375,17 +477,17 @@ serve(async (req: Request) => {
       );
     });
 
-    if (receiptAttachments.length === 0) {
-      console.log("No receipt attachments found, skipping receipt processing");
-      return new Response(JSON.stringify({ success: true, receipts: 0 }), {
+    if (processableAttachments.length === 0) {
+      console.log("No processable attachments found, done");
+      return new Response(JSON.stringify({ success: true, receipts: 0, statements: 0 }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    if (!supabase || !anthropicKey) {
-      console.log("Missing SUPABASE_SERVICE_ROLE_KEY or ANTHROPIC_API_KEY — receipt processing skipped");
-      return new Response(JSON.stringify({ success: true, receipts: 0, reason: "missing_keys" }), {
+    if (!supabase) {
+      console.log("Missing SUPABASE_SERVICE_ROLE_KEY — processing skipped");
+      return new Response(JSON.stringify({ success: true, receipts: 0, statements: 0, reason: "missing_keys" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -398,16 +500,93 @@ serve(async (req: Request) => {
       ? email.from
       : email.from?.[0]?.address || email.from?.[0] || "";
 
-    const processedReceipts = [];
+    const processedReceipts: any[] = [];
+    const processedStatements: any[] = [];
 
-    for (const attachment of receiptAttachments) {
+    for (const attachment of processableAttachments) {
       try {
         const contentType = attachment.content_type || attachment.type || "application/octet-stream";
-        const filename = attachment.filename || `receipt_${Date.now()}`;
+        const filename = attachment.filename || `attachment_${Date.now()}`;
         const base64Data = attachment.content || attachment.data || "";
-
-        // Store attachment
         const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+        const isPdf = contentType === "application/pdf";
+
+        // ── Classification gate: PDFs get classified by Gemini ──
+        if (isPdf && geminiKey) {
+          let classification: any = { doc_type: "receipt", confidence: 0 };
+          try {
+            classification = await classifyWithGemini(base64Data, geminiKey);
+            console.log(`Gemini classified "${filename}" as: ${classification.doc_type} (confidence: ${classification.confidence})`);
+          } catch (classErr) {
+            console.error(`Gemini classification failed for "${filename}", falling back to receipt:`, classErr);
+          }
+
+          // ── Statement flow ──
+          if (classification.doc_type === "statement" && classification.confidence >= 0.5) {
+            console.log(`Processing as statement: ${classification.institution} ${classification.account_type} ${classification.statement_date}`);
+
+            // Store PDF in statements bucket
+            const attachmentUrl = await storeStatementAttachment(supabase, filename, binaryData, contentType);
+
+            // Insert into statement_inbox
+            const inboxRow = {
+              email_id: emailId,
+              from_address: fromLine,
+              subject: email.subject || null,
+              received_at: email.created_at || new Date().toISOString(),
+              attachment_filename: filename,
+              attachment_url: attachmentUrl,
+              attachment_size: binaryData.length,
+              doc_type: "statement",
+              institution: classification.institution || null,
+              account_type: classification.account_type || null,
+              account_name: classification.account_name || null,
+              account_number: classification.account_number || null,
+              account_holder: classification.account_holder || null,
+              statement_date: classification.statement_date || null,
+              period_start: classification.period_start || null,
+              period_end: classification.period_end || null,
+              classification_confidence: classification.confidence || 0,
+              classification_raw: classification,
+              status: "pending",
+            };
+
+            const { data: inserted, error: insertError } = await supabase
+              .from("statement_inbox")
+              .insert(inboxRow)
+              .select("id")
+              .single();
+
+            if (insertError) {
+              console.error("Failed to insert statement_inbox:", insertError);
+            } else {
+              await logActivity(supabase, "statement_received", "statement_inbox", inserted.id, "gemini", {
+                institution: classification.institution,
+                account_type: classification.account_type,
+                statement_date: classification.statement_date,
+                confidence: classification.confidence,
+                filename,
+                from: fromLine,
+              });
+
+              processedStatements.push({
+                id: inserted.id,
+                institution: classification.institution,
+                account_type: classification.account_type,
+                statement_date: classification.statement_date,
+              });
+            }
+
+            continue; // Skip receipt processing for this attachment
+          }
+        }
+
+        // ── Receipt flow (existing behavior) ──
+        if (!anthropicKey) {
+          console.log("Missing ANTHROPIC_API_KEY — receipt parsing skipped");
+          continue;
+        }
+
         const attachmentUrl = await storeAttachment(supabase, filename, binaryData, contentType);
 
         // Parse with Claude
@@ -522,7 +701,13 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, receipts: processedReceipts.length, details: processedReceipts }),
+      JSON.stringify({
+        success: true,
+        receipts: processedReceipts.length,
+        statements: processedStatements.length,
+        receipt_details: processedReceipts,
+        statement_details: processedStatements,
+      }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
