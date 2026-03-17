@@ -24,16 +24,6 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/clauded/tokens",
-    label: "Tokens & Context",
-    description: "Token usage, costs, and context window analytics",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-      </svg>
-    ),
-  },
-  {
     href: "/clauded/backups",
     label: "Backups",
     description: "Database and file storage backup status and activity log",
@@ -57,29 +47,29 @@ const NAV_ITEMS = [
 
 export default function ClaudedPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-12">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white">Clauded</h1>
-        <p className="text-slate-400 mt-2">
+        <p className="text-zinc-400 text-lg mt-2">
           AI-powered development tools and activity
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-start gap-4 rounded-xl border border-slate-700 p-6 hover:border-slate-500 hover:bg-white/5 transition-colors group"
+            className="flex items-start gap-4 rounded-xl border border-zinc-700 bg-zinc-900 p-6 hover:border-zinc-500 hover:bg-zinc-800 transition-colors group"
           >
-            <div className="text-slate-500 group-hover:text-slate-300 transition-colors mt-0.5">
+            <div className="text-zinc-400 group-hover:text-white transition-colors mt-0.5">
               {item.icon}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white group-hover:text-white">
+              <h2 className="text-lg font-semibold text-white">
                 {item.label}
               </h2>
-              <p className="text-sm text-slate-400 mt-1">{item.description}</p>
+              <p className="text-base text-zinc-400 mt-1">{item.description}</p>
             </div>
           </Link>
         ))}
