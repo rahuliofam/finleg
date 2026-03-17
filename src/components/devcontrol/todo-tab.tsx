@@ -3,13 +3,13 @@
 import dynamic from "next/dynamic";
 
 const TodoPage = dynamic(
-  () => import("@/app/clauded/todo/page"),
+  () => import("@/app/devcontrol/todo/page"),
   { ssr: false }
 );
 
 export function TodoTab() {
   return (
-    <div className="clauded-embed">
+    <div className="devcontrol-embed">
       <TodoPage />
     </div>
   );

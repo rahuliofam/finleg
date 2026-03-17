@@ -81,10 +81,10 @@ export default function BackupsPage() {
     <div className="max-w-5xl mx-auto px-6 py-10">
       <div className="mb-6">
         <Link
-          href="/clauded"
+          href="/devcontrol"
           className="text-base text-zinc-400 hover:text-white transition-colors"
         >
-          ← Clauded
+          ← DevControl
         </Link>
       </div>
 

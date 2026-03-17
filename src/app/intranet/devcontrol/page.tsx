@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 
-const CLAUDED_TABS = [
+const DEVCONTROL_TABS = [
   {
-    href: "/intranet/clauded/releases",
+    href: "/intranet/devcontrol/releases",
     label: "Releases",
     description: "Every PR shipped, with version numbers and line counts",
     icon: (
@@ -14,7 +14,7 @@ const CLAUDED_TABS = [
     ),
   },
   {
-    href: "/intranet/clauded/sessions",
+    href: "/intranet/devcontrol/sessions",
     label: "Sessions",
     description: "AI development session history across all projects",
     icon: (
@@ -24,7 +24,7 @@ const CLAUDED_TABS = [
     ),
   },
   {
-    href: "/intranet/clauded/tokens",
+    href: "/intranet/devcontrol/tokens",
     label: "Tokens & Cost",
     description: "Token usage, costs, and session analytics",
     icon: (
@@ -34,7 +34,7 @@ const CLAUDED_TABS = [
     ),
   },
   {
-    href: "/intranet/clauded/context",
+    href: "/intranet/devcontrol/context",
     label: "Context Window",
     description: "What files load into Claude's context and how much space they use",
     icon: (
@@ -44,7 +44,7 @@ const CLAUDED_TABS = [
     ),
   },
   {
-    href: "/intranet/clauded/backups",
+    href: "/intranet/devcontrol/backups",
     label: "Backups",
     description: "Database and file storage backup status and activity log",
     icon: (
@@ -54,7 +54,7 @@ const CLAUDED_TABS = [
     ),
   },
   {
-    href: "/intranet/clauded/todo",
+    href: "/intranet/devcontrol/todo",
     label: "Todo",
     description: "Security remediation checklist and pending action items",
     icon: (
@@ -65,14 +65,14 @@ const CLAUDED_TABS = [
   },
 ];
 
-export default function ClaudedHubPage() {
+export default function DevControlHubPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">Clauded</h1>
+      <h1 className="text-2xl font-bold text-slate-900 mb-2">DevControl</h1>
       <p className="text-slate-500 mb-6">AI-powered development tools and activity</p>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {CLAUDED_TABS.map((item) => (
+        {DEVCONTROL_TABS.map((item) => (
           <Link
             key={item.href}
             href={item.href}

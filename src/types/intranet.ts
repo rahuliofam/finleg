@@ -7,7 +7,7 @@ export type IntranetSection =
   | "files"
   | "bookkeeping"
   | "howto"
-  | "clauded";
+  | "devcontrol";
 
 export interface TabDefinition {
   key: string;
@@ -31,7 +31,7 @@ export const SECTIONS: SectionDefinition[] = [
   { key: "files", label: "File Vault" },
   { key: "bookkeeping", label: "Bookkeeping" },
   { key: "howto", label: "How It Works" },
-  { key: "clauded", label: "Clauded" },
+  { key: "devcontrol", label: "DevControl" },
   { key: "admin", label: "Admin" },
 ];
 
@@ -92,7 +92,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "autoactions", label: "AutoActions", defaultVisible: true },
     { key: "security", label: "Security", defaultVisible: true },
   ],
-  clauded: [
+  devcontrol: [
     { key: "releases", label: "Releases", defaultVisible: true },
     { key: "sessions", label: "Sessions", defaultVisible: true },
     { key: "tokens", label: "Tokens & Cost", defaultVisible: true },
@@ -111,5 +111,5 @@ export const ALL_TAB_SLUGS: Record<IntranetSection, string[]> = {
   files: DEFAULT_TABS.files.map((t) => t.key),
   bookkeeping: DEFAULT_TABS.bookkeeping.map((t) => t.key),
   howto: DEFAULT_TABS.howto.map((t) => t.key),
-  clauded: DEFAULT_TABS.clauded.map((t) => t.key),
+  devcontrol: DEFAULT_TABS.devcontrol.map((t) => t.key),
 };

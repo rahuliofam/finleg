@@ -50,11 +50,11 @@ html {
   animation: gradient-shift 8s ease infinite;
 }
 
-/* Hide back links and outer padding when clauded pages are embedded in intranet tabs */
-.clauded-embed a[href="/clauded"],
-.clauded-embed a[href="/clauded/sessions"] {
+/* Hide back links and outer padding when devcontrol pages are embedded in intranet tabs */
+.devcontrol-embed a[href="/devcontrol"],
+.devcontrol-embed a[href="/devcontrol/sessions"] {
   display: none;
 }
-.clauded-embed > div > .mb-4:first-child:has(a[href="/clauded"]) {
+.devcontrol-embed > div > .mb-4:first-child:has(a[href="/devcontrol"]) {
   display: none;
 }
