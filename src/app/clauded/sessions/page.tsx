@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 
 const API_BASE = "https://claude-sessions.finleg.workers.dev";
-const API_TOKEN = "ngmWTBKoDl76jH3VhbXfQ1mqlFunQuAux1qrwHZW";
+const API_TOKEN = "alpaca-sessions-2026";
 
 // Project display names (rename raw DB values)
 const PROJECT_ALIASES: Record<string, string> = {
@@ -16,15 +16,15 @@ const HIDDEN_PROJECTS = new Set(["/", "/Users/rahulio", "test", "unknown", ""]);
 
 // Distinct colors per project
 const PROJECT_COLORS: Record<string, { bg: string; text: string }> = {
-  finleg: { bg: "bg-emerald-100", text: "text-emerald-800" },
-  alpacapps: { bg: "bg-purple-100", text: "text-purple-800" },
-  genalpaca: { bg: "bg-purple-100", text: "text-purple-800" },
-  Khangtsen: { bg: "bg-amber-100", text: "text-amber-800" },
-  khangtsen: { bg: "bg-amber-100", text: "text-amber-800" },
-  portsie: { bg: "bg-sky-100", text: "text-sky-800" },
+  finleg: { bg: "bg-emerald-900/50", text: "text-emerald-300" },
+  alpacapps: { bg: "bg-purple-900/50", text: "text-purple-300" },
+  genalpaca: { bg: "bg-purple-900/50", text: "text-purple-300" },
+  Khangtsen: { bg: "bg-amber-900/50", text: "text-amber-300" },
+  khangtsen: { bg: "bg-amber-900/50", text: "text-amber-300" },
+  portsie: { bg: "bg-sky-900/50", text: "text-sky-300" },
 };
 
-const DEFAULT_COLOR = { bg: "bg-blue-100", text: "text-blue-800" };
+const DEFAULT_COLOR = { bg: "bg-blue-900/50", text: "text-blue-300" };
 
 function getProjectDisplay(raw: string) {
   return PROJECT_ALIASES[raw] || raw || "unknown";
@@ -112,7 +112,7 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
   return (
     <button
       onClick={handleCopy}
-      className="px-3 py-1 text-xs border border-slate-300 rounded-md hover:bg-slate-100 transition text-slate-600"
+      className="px-3 py-1 text-xs border border-slate-600 rounded-md hover:bg-slate-700 transition text-slate-300"
     >
       {copied ? "Copied!" : label}
     </button>
@@ -132,7 +132,7 @@ function ShareButton({ sessionId }: { sessionId: string }) {
   return (
     <button
       onClick={handleShare}
-      className={`text-lg flex-shrink-0 transition ${copied ? "text-green-500" : "text-slate-400 hover:text-slate-600"}`}
+      className={`text-lg flex-shrink-0 transition ${copied ? "text-green-400" : "text-slate-500 hover:text-slate-300"}`}
       title="Copy session link"
     >
       {copied ? "✓" : "⤴"}
@@ -173,7 +173,7 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
         <p className="text-slate-400">{error || "Session not found"}</p>
         <a
           href="/clauded/sessions"
-          className="text-sm text-emerald-600 hover:underline mt-4 inline-block"
+          className="text-sm text-emerald-400 hover:underline mt-4 inline-block"
         >
           ← Back to sessions
         </a>
@@ -221,9 +221,9 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
       </section>
 
       <section className="max-w-4xl mx-auto px-6 py-8">
-        <div className="bg-white border rounded-xl p-6 shadow-sm">
+        <div className="border border-slate-700 rounded-xl p-6 bg-slate-900/50">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-slate-500">
               Project: {session.project || "—"} · ID: {session.id}
             </div>
             <CopyButton
@@ -238,29 +238,29 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
                   key={idx}
                   className={`rounded-lg p-4 ${
                     msg.role === "USER"
-                      ? "bg-blue-50 border border-blue-100"
-                      : "bg-white border border-slate-200"
+                      ? "bg-blue-900/30 border border-blue-800"
+                      : "bg-slate-800/50 border border-slate-700"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span
                       className={`text-xs font-bold tracking-wide ${
                         msg.role === "USER"
-                          ? "text-blue-600"
-                          : "text-slate-500"
+                          ? "text-blue-400"
+                          : "text-slate-400"
                       }`}
                     >
                       {msg.role}
                     </span>
                     <CopyButton text={msg.content} />
                   </div>
-                  <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800 font-sans">
+                  <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200 font-sans">
                     {msg.content}
                   </pre>
                 </div>
               ))
             ) : (
-              <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border">
+              <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-slate-800/50 p-4 rounded-lg border border-slate-700 text-slate-300">
                 {session.transcript || "No transcript available"}
               </pre>
             )}
@@ -425,7 +425,7 @@ export default function SessionsPage() {
       </section>
 
       {/* Filters */}
-      <section className="bg-slate-100 border-b border-slate-200">
+      <section className="border-b border-slate-700 bg-slate-900/50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row gap-3">
           <input
             type="text"
@@ -433,29 +433,29 @@ export default function SessionsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && fetchSessions()}
-            className="border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 bg-white text-slate-900 placeholder:text-slate-400"
+            className="border border-slate-600 rounded-lg px-3 py-2 text-sm flex-1 bg-slate-800 text-slate-200 placeholder:text-slate-500"
           />
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-900"
+            className="border border-slate-600 rounded-lg px-3 py-2 text-sm bg-slate-800 text-slate-200"
           />
           <input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-900"
+            className="border border-slate-600 rounded-lg px-3 py-2 text-sm bg-slate-800 text-slate-200"
           />
           <button
             onClick={fetchSessions}
-            className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-slate-700 transition"
+            className="bg-white text-slate-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-200 transition"
           >
             Search
           </button>
           <button
             onClick={clearFilters}
-            className="border border-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm hover:bg-slate-200 transition"
+            className="border border-slate-600 text-slate-300 px-4 py-2 rounded-lg text-sm hover:bg-slate-700 transition"
           >
             Clear
           </button>
@@ -487,7 +487,7 @@ export default function SessionsPage() {
               return (
                 <div
                   key={s.id}
-                  className="relative border rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition"
+                  className="relative border border-slate-700 rounded-xl overflow-hidden bg-slate-900/50 hover:border-slate-500 transition"
                 >
                   {/* Session header row */}
                   <div
@@ -502,27 +502,27 @@ export default function SessionsPage() {
                       >
                         {displayName}
                       </span>
-                      <span className="text-sm font-semibold text-slate-900 truncate">
+                      <span className="text-sm font-semibold text-slate-200 truncate">
                         {s.summary || "No summary"}
                       </span>
 
                       {/* Right: date + badges + share */}
                       <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-400">
                           {formatDate(s.started_at)}
                         </span>
                         {model && (
-                          <span className="hidden sm:inline-block bg-slate-100 text-slate-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="hidden sm:inline-block bg-slate-800 text-slate-400 text-xs font-medium px-2 py-0.5 rounded-full">
                             {model}
                           </span>
                         )}
                         {s.duration_mins > 0 && (
-                          <span className="hidden sm:inline-block bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="hidden sm:inline-block bg-blue-900/40 text-blue-300 text-xs font-medium px-2 py-0.5 rounded-full">
                             {s.duration_mins}m
                           </span>
                         )}
                         {tokens && (
-                          <span className="hidden sm:inline-block bg-green-50 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="hidden sm:inline-block bg-green-900/40 text-green-300 text-xs font-medium px-2 py-0.5 rounded-full">
                             {tokens}
                           </span>
                         )}
@@ -536,7 +536,7 @@ export default function SessionsPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute top-4 right-4 text-slate-300 hover:text-emerald-600 transition text-lg"
+                    className="absolute top-4 right-4 text-slate-600 hover:text-emerald-400 transition text-lg"
                     title="Open in new tab"
                   >
                     ↗
@@ -544,7 +544,7 @@ export default function SessionsPage() {
 
                   {/* Expanded transcript */}
                   {isExpanded && (
-                    <div className="border-t px-5 py-4 bg-slate-50">
+                    <div className="border-t border-slate-700 px-5 py-4 bg-slate-800/50">
                       {/* Actions bar */}
                       <div className="flex items-center gap-2 mb-4">
                         <CopyButton
@@ -561,23 +561,23 @@ export default function SessionsPage() {
                               key={idx}
                               className={`rounded-lg p-4 ${
                                 msg.role === "USER"
-                                  ? "bg-blue-50 border border-blue-100"
-                                  : "bg-white border border-slate-200"
+                                  ? "bg-blue-900/30 border border-blue-800"
+                                  : "bg-slate-900/50 border border-slate-700"
                               }`}
                             >
                               <div className="flex items-center justify-between mb-2">
                                 <span
                                   className={`text-xs font-bold tracking-wide ${
                                     msg.role === "USER"
-                                      ? "text-blue-600"
-                                      : "text-slate-500"
+                                      ? "text-blue-400"
+                                      : "text-slate-400"
                                   }`}
                                 >
                                   {msg.role}
                                 </span>
                                 <CopyButton text={msg.content} />
                               </div>
-                              <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800 font-sans">
+                              <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200 font-sans">
                                 {msg.content.length > 3000
                                   ? msg.content.substring(0, 3000) +
                                     "\n\n... [truncated]"
