@@ -1,6 +1,6 @@
 "use client";
 
-export function TodoTab() {
+export function PlanlistTab() {
   return (
     <div className="space-y-6">
       <div>

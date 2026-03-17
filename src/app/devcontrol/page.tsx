@@ -54,8 +54,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/devcontrol/todo",
-    label: "Todo",
+    href: "/devcontrol/planlist",
+    label: "Planlist",
     description: "Security remediation checklist and pending action items",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
