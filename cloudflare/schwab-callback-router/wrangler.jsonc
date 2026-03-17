@@ -1,0 +1,6 @@
+{
+  "name": "schwab-callback-router",
+  "main": "src/index.js",
+  "compatibility_date": "2024-12-01",
+  "account_id": "1417f040cdffb8ba923a28be80d095b6"
+}
