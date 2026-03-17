@@ -8,10 +8,10 @@ interface SecretConfig {
   options?: string;
 }
 
-interface VaultItem {
+interface VaultFolder {
   folder: string;
-  items: string[];
-  project: string;
+  items: number;
+  category: string;
 }
 
 const SESSION_PARAMS: SecretConfig[] = [
@@ -71,52 +71,92 @@ const SESSION_PARAMS: SecretConfig[] = [
   },
 ];
 
-const VAULT_STRUCTURE: VaultItem[] = [
-  {
-    folder: "DevOps-portsie",
-    items: ["Portsie Dev Env (21 env vars as custom fields)"],
-    project: "Portsie",
-  },
-  {
-    folder: "DevOps-alpacapps",
-    items: [
-      "Hostinger VPS \u2014 OpenClaw Server",
-      "Alpaca Mac \u2014 Local Machine",
-      "Supabase \u2014 AlpacApps Project",
-    ],
-    project: "AlpacApps",
-  },
-  {
-    folder: "DevOps-finleg",
-    items: ["Cloudflare R2 \u2014 Finleg Object Storage"],
-    project: "Finleg",
-  },
-  {
-    folder: "DevOps-shared",
-    items: ["Cloudflare R2 \u2014 Object Storage (wingsiebird)"],
-    project: "Shared",
-  },
-  {
-    folder: "Family Tax",
-    items: ["QuickBooks Dev - ClaudeCoded"],
-    project: "Finleg",
-  },
-  {
-    folder: "Rahul General",
-    items: ["141 personal logins"],
-    project: "Personal",
-  },
-  {
-    folder: "Rahul Financial",
-    items: ["18 financial institution logins"],
-    project: "Personal",
-  },
-  {
-    folder: "Kathy Financial",
-    items: ["5 financial logins"],
-    project: "Personal",
-  },
+const VAULT_FOLDERS: VaultFolder[] = [
+  // Financial & Banking
+  { folder: "Bank", items: 6, category: "Financial" },
+  { folder: "Banking", items: 5, category: "Financial" },
+  { folder: "Brokerage", items: 1, category: "Financial" },
+  { folder: "Credit-card", items: 4, category: "Financial" },
+  { folder: "Credit-report", items: 4, category: "Financial" },
+  { folder: "Finances", items: 1, category: "Financial" },
+  { folder: "Financial", items: 1, category: "Financial" },
+  { folder: "Investment", items: 3, category: "Financial" },
+  { folder: "Loan", items: 5, category: "Financial" },
+  { folder: "Payments", items: 8, category: "Financial" },
+  { folder: "Payroll", items: 1, category: "Financial" },
+  { folder: "Retirement", items: 1, category: "Financial" },
+  // Business & Work
+  { folder: "Accounting", items: 2, category: "Business" },
+  { folder: "Business", items: 1, category: "Business" },
+  { folder: "Crm", items: 1, category: "Business" },
+  { folder: "EDD", items: 1, category: "Business" },
+  { folder: "Esignature", items: 1, category: "Business" },
+  { folder: "Franchise", items: 1, category: "Business" },
+  { folder: "Freelance", items: 1, category: "Business" },
+  { folder: "Legal", items: 1, category: "Business" },
+  { folder: "Listing", items: 2, category: "Business" },
+  { folder: "Marketing", items: 2, category: "Business" },
+  { folder: "Project-management", items: 1, category: "Business" },
+  { folder: "Rental", items: 6, category: "Business" },
+  // Development & DevOps
+  { folder: "Ai", items: 3, category: "Dev" },
+  { folder: "Automation", items: 1, category: "Dev" },
+  { folder: "Bot", items: 2, category: "Dev" },
+  { folder: "Cloudflare", items: 1, category: "Dev" },
+  { folder: "Core", items: 2, category: "Dev" },
+  { folder: "Development", items: 1, category: "Dev" },
+  { folder: "Domains", items: 3, category: "Dev" },
+  { folder: "Oauth", items: 1, category: "Dev" },
+  { folder: "Openrouter", items: 1, category: "Dev" },
+  { folder: "Resend", items: 1, category: "Dev" },
+  { folder: "Ssh", items: 1, category: "Dev" },
+  { folder: "Starter Kit", items: 3, category: "Dev" },
+  { folder: "Storage", items: 1, category: "Dev" },
+  { folder: "Telnyx", items: 1, category: "Dev" },
+  { folder: "Workers", items: 1, category: "Dev" },
+  // Infrastructure & Devices
+  { folder: "Device", items: 3, category: "Infra" },
+  { folder: "Iot", items: 7, category: "Infra" },
+  { folder: "Remote-access", items: 1, category: "Infra" },
+  { folder: "Smart-home", items: 2, category: "Infra" },
+  // Personal & Identity
+  { folder: "Access-code", items: 2, category: "Personal" },
+  { folder: "Admin", items: 1, category: "Personal" },
+  { folder: "Austin", items: 13, category: "Personal" },
+  { folder: "Auto", items: 4, category: "Personal" },
+  { folder: "Benefits", items: 1, category: "Personal" },
+  { folder: "California", items: 2, category: "Personal" },
+  { folder: "Dental", items: 1, category: "Personal" },
+  { folder: "Drive", items: 1, category: "Personal" },
+  { folder: "Email", items: 2, category: "Personal" },
+  { folder: "Government", items: 4, category: "Personal" },
+  { folder: "Health", items: 1, category: "Personal" },
+  { folder: "Identity", items: 7, category: "Personal" },
+  { folder: "Medical", items: 2, category: "Personal" },
+  { folder: "Messaging", items: 1, category: "Personal" },
+  { folder: "Music", items: 1, category: "Personal" },
+  { folder: "Property", items: 2, category: "Personal" },
+  { folder: "Shopping", items: 4, category: "Personal" },
+  { folder: "Social-media", items: 2, category: "Personal" },
+  { folder: "SS", items: 1, category: "Personal" },
+  { folder: "Washington", items: 5, category: "Personal" },
+  { folder: "Weather", items: 1, category: "Personal" },
+  // Inactive / Other
+  { folder: "Anova", items: 1, category: "Other" },
+  { folder: "Arm", items: 1, category: "Other" },
+  { folder: "Deprecated", items: 1, category: "Other" },
+  { folder: "Inactive", items: 2, category: "Other" },
+  { folder: "Local", items: 1, category: "Other" },
 ];
+
+const CATEGORY_META: Record<string, { label: string; color: string }> = {
+  Financial: { label: "Financial & Banking", color: "bg-emerald-100 text-emerald-700" },
+  Business: { label: "Business & Work", color: "bg-blue-100 text-blue-700" },
+  Dev: { label: "Development & DevOps", color: "bg-purple-100 text-purple-700" },
+  Infra: { label: "Infrastructure & Devices", color: "bg-amber-100 text-amber-700" },
+  Personal: { label: "Personal & Identity", color: "bg-slate-200 text-slate-600" },
+  Other: { label: "Inactive / Other", color: "bg-red-100 text-red-600" },
+};
 
 const COMMANDS = [
   { cmd: "bw-unlock", desc: "Unlock vault (one-time password prompt, session cached)", scope: "All projects" },
@@ -153,7 +193,7 @@ export default function SecurityPage() {
           <span className="font-semibold text-sm text-emerald-900">Bitwarden Password Manager</span>
         </div>
         <p className="text-xs text-emerald-700">
-          Migrated from 1Password on 2026-03-17. All 269 items imported (231 logins, 7 identities, 31 secure notes, 69 folders).
+          Migrated from 1Password on 2026-03-17. All 270 items across 69 folders (231 logins, 7 identities, 31 secure notes).
           CLI-based with session caching &mdash; no repeated Touch ID prompts.
         </p>
       </div>
@@ -173,7 +213,7 @@ bw-env     →  reads "Portsie Dev Env" →  writes .env.local     →  logs eac
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-blue-50 rounded-lg text-center">
-              <div className="text-lg font-bold text-blue-900">269</div>
+              <div className="text-lg font-bold text-blue-900">270</div>
               <div className="text-[10px] text-blue-600">Items in Vault</div>
             </div>
             <div className="p-3 bg-blue-50 rounded-lg text-center">
@@ -254,32 +294,36 @@ bw-env     →  reads "Portsie Dev Env" →  writes .env.local     →  logs eac
       </SectionCard>
 
       {/* Vault Structure */}
-      <SectionCard title="Vault Structure" subtitle="Folders & items by project">
-        <div className="space-y-3">
-          {VAULT_STRUCTURE.map((v) => (
-            <div key={v.folder} className="p-3 bg-slate-50 rounded-lg">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-semibold text-sm text-slate-900">{v.folder}</span>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                  v.project === "Portsie" ? "bg-purple-100 text-purple-700" :
-                  v.project === "AlpacApps" ? "bg-blue-100 text-blue-700" :
-                  v.project === "Finleg" ? "bg-amber-100 text-amber-700" :
-                  v.project === "Shared" ? "bg-green-100 text-green-700" :
-                  "bg-slate-200 text-slate-500"
-                }`}>
-                  {v.project}
-                </span>
+      <SectionCard title="Vault Structure" subtitle={`${VAULT_FOLDERS.length} folders \u00b7 270 items (+ 110 unfiled)`}>
+        <div className="space-y-6">
+          {Object.entries(CATEGORY_META).map(([cat, meta]) => {
+            const folders = VAULT_FOLDERS.filter((f) => f.category === cat);
+            if (folders.length === 0) return null;
+            const totalItems = folders.reduce((sum, f) => sum + f.items, 0);
+            return (
+              <div key={cat}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${meta.color}`}>
+                    {meta.label}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {folders.length} folders &middot; {totalItems} items
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {folders.map((f) => (
+                    <span
+                      key={f.folder}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 rounded text-xs text-slate-700 border border-slate-100"
+                    >
+                      {f.folder}
+                      <span className="text-[10px] text-slate-400">({f.items})</span>
+                    </span>
+                  ))}
+                </div>
               </div>
-              <ul className="space-y-0.5">
-                {v.items.map((item) => (
-                  <li key={item} className="text-xs text-slate-600 flex items-center gap-1.5">
-                    <span className="text-slate-300">&bull;</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </SectionCard>
 
@@ -334,7 +378,7 @@ bw-env     →  reads "Portsie Dev Env" →  writes .env.local     →  logs eac
             </div>
             <div className="flex justify-between">
               <span>Items migrated</span>
-              <span className="text-slate-900 font-medium">269 (231 logins, 7 identities, 31 secure notes)</span>
+              <span className="text-slate-900 font-medium">270 (231 logins, 7 identities, 31 secure notes)</span>
             </div>
             <div className="flex justify-between">
               <span>Folders created</span>
