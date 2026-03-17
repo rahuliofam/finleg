@@ -10,7 +10,7 @@ import { SessionsTab } from "@/components/devcontrol/sessions-tab";
 import { TokensTab } from "@/components/devcontrol/tokens-tab";
 import { ContextTab } from "@/components/devcontrol/context-tab";
 import { BackupsTab } from "@/components/devcontrol/backups-tab";
-import { TodoTab } from "@/components/devcontrol/todo-tab";
+import { PlanlistTab } from "@/components/devcontrol/planlist-tab";
 import { TocTab } from "@/components/devcontrol/toc-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
@@ -26,7 +26,7 @@ const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
     tokens: TokensTab,
     context: ContextTab,
     backups: BackupsTab,
-    todo: TodoTab,
+    planlist: PlanlistTab,
   },
 };
 

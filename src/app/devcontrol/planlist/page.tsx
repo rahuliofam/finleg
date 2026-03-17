@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function TodoPage() {
+export default function PlanlistPage() {
   return (
     <div className="min-h-screen py-10 px-5">
       <div className="max-w-3xl mx-auto">
