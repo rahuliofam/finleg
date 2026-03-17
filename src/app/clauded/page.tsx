@@ -47,29 +47,29 @@ const NAV_ITEMS = [
 
 export default function ClaudedPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-slate-900">Clauded</h1>
-        <p className="text-slate-500 mt-2">
+        <h1 className="text-3xl font-bold text-white">Clauded</h1>
+        <p className="text-zinc-400 text-lg mt-2">
           AI-powered development tools and activity
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-start gap-4 rounded-xl border border-slate-200 p-6 hover:border-slate-300 hover:bg-slate-50 transition-colors group"
+            className="flex items-start gap-4 rounded-xl border border-zinc-700 bg-zinc-900 p-6 hover:border-zinc-500 hover:bg-zinc-800 transition-colors group"
           >
-            <div className="text-slate-400 group-hover:text-slate-600 transition-colors mt-0.5">
+            <div className="text-zinc-400 group-hover:text-white transition-colors mt-0.5">
               {item.icon}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 group-hover:text-slate-900">
+              <h2 className="text-lg font-semibold text-white">
                 {item.label}
               </h2>
-              <p className="text-sm text-slate-500 mt-1">{item.description}</p>
+              <p className="text-base text-zinc-400 mt-1">{item.description}</p>
             </div>
           </Link>
         ))}

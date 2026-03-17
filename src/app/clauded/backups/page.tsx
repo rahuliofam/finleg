@@ -26,8 +26,8 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  success: "bg-green-100 text-green-800",
-  error: "bg-red-100 text-red-800",
+  success: "bg-green-900/50 text-green-300 border border-green-700",
+  error: "bg-red-900/50 text-red-300 border border-red-700",
 };
 
 function formatDuration(seconds: number | null): string {
@@ -78,47 +78,47 @@ export default function BackupsPage() {
   const rvaultDays = lastRvault ? daysSince(lastRvault.created_at) : null;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
-      <div className="mb-4">
+    <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="mb-6">
         <Link
           href="/clauded"
-          className="text-sm text-slate-400 hover:text-slate-600 transition-colors"
+          className="text-base text-zinc-400 hover:text-white transition-colors"
         >
           ← Clauded
         </Link>
       </div>
 
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">Backups</h1>
-      <p className="text-slate-500 text-sm mb-8">
+      <h1 className="text-3xl font-bold text-white mb-3">Backups</h1>
+      <p className="text-zinc-400 text-lg mb-10">
         Weekly automated backups of Supabase database and Cloudflare R2 file
         storage.
       </p>
 
       {/* Summary cards */}
-      <div className="grid gap-4 sm:grid-cols-2 mb-8">
-        <div className="rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-slate-700">Database → R2</h3>
-            <span className="text-xs text-slate-400">Hostinger VPS</span>
+      <div className="grid gap-6 sm:grid-cols-2 mb-10">
+        <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Database → R2</h3>
+            <span className="text-sm text-zinc-400">Hostinger VPS</span>
           </div>
-          <p className="text-sm text-slate-500 mb-2">
+          <p className="text-base text-zinc-400 mb-3">
             pg_dump → gzip → Cloudflare R2 (finleg-backups bucket)
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-sm text-zinc-500">
             Schedule: Sundays 3:00 AM UTC
           </p>
           {lastDb && (
-            <div className="mt-3 pt-3 border-t border-slate-100">
-              <p className="text-sm">
+            <div className="mt-4 pt-4 border-t border-zinc-700">
+              <p className="text-base">
                 Last:{" "}
-                <span className="font-medium text-slate-700">
+                <span className="font-medium text-white">
                   {formatDate(lastDb.created_at)}
                 </span>
                 <span
-                  className={`ml-2 text-xs px-1.5 py-0.5 rounded ${
+                  className={`ml-2 text-sm px-2 py-0.5 rounded ${
                     dbDays !== null && dbDays > 8
-                      ? "bg-amber-100 text-amber-800"
-                      : "text-slate-400"
+                      ? "bg-amber-900/50 text-amber-300"
+                      : "text-zinc-400"
                   }`}
                 >
                   {dbDays === 0
@@ -129,7 +129,7 @@ export default function BackupsPage() {
                 </span>
               </p>
               {lastDb.details && (
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-sm text-zinc-400 mt-2">
                   Size: {String(lastDb.details.size || "—")}
                 </p>
               )}
@@ -137,29 +137,29 @@ export default function BackupsPage() {
           )}
         </div>
 
-        <div className="rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-slate-700">R2 → RVAULT20</h3>
-            <span className="text-xs text-slate-400">Alpaca Mac</span>
+        <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">R2 → RVAULT20</h3>
+            <span className="text-sm text-zinc-400">Alpaca Mac</span>
           </div>
-          <p className="text-sm text-slate-500 mb-2">
+          <p className="text-base text-zinc-400 mb-3">
             Sync all R2 buckets + DB dump to external drive
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-sm text-zinc-500">
             Schedule: Sundays 5:00 AM local
           </p>
           {lastRvault && (
-            <div className="mt-3 pt-3 border-t border-slate-100">
-              <p className="text-sm">
+            <div className="mt-4 pt-4 border-t border-zinc-700">
+              <p className="text-base">
                 Last:{" "}
-                <span className="font-medium text-slate-700">
+                <span className="font-medium text-white">
                   {formatDate(lastRvault.created_at)}
                 </span>
                 <span
-                  className={`ml-2 text-xs px-1.5 py-0.5 rounded ${
+                  className={`ml-2 text-sm px-2 py-0.5 rounded ${
                     rvaultDays !== null && rvaultDays > 8
-                      ? "bg-amber-100 text-amber-800"
-                      : "text-slate-400"
+                      ? "bg-amber-900/50 text-amber-300"
+                      : "text-zinc-400"
                   }`}
                 >
                   {rvaultDays === 0
@@ -170,7 +170,7 @@ export default function BackupsPage() {
                 </span>
               </p>
               {lastRvault.details && (
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-sm text-zinc-400 mt-2">
                   Total: {String(lastRvault.details.total_size || "—")} ·{" "}
                   {String(lastRvault.details["financial-statements"] || 0)} +{" "}
                   {String(lastRvault.details["bookkeeping-docs"] || 0)} +{" "}
@@ -183,59 +183,59 @@ export default function BackupsPage() {
       </div>
 
       {/* Activity log */}
-      <h2 className="text-lg font-semibold text-slate-800 mb-4">
+      <h2 className="text-2xl font-semibold text-white mb-6">
         Activity Log
       </h2>
 
       {loading ? (
-        <p className="text-slate-400 text-sm">Loading...</p>
+        <p className="text-zinc-400 text-base">Loading...</p>
       ) : logs.length === 0 ? (
-        <p className="text-slate-400 text-sm">
+        <p className="text-zinc-400 text-base">
           No backup logs yet. Logs will appear after the first scheduled run.
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
-              <tr className="text-left text-slate-500 border-b border-slate-200">
-                <th className="pb-2 font-medium">Date</th>
-                <th className="pb-2 font-medium">Type</th>
-                <th className="pb-2 font-medium">Source</th>
-                <th className="pb-2 font-medium">Status</th>
-                <th className="pb-2 font-medium">Duration</th>
-                <th className="pb-2 font-medium">Details</th>
+              <tr className="text-left text-zinc-400 border-b border-zinc-700">
+                <th className="pb-3 font-semibold">Date</th>
+                <th className="pb-3 font-semibold">Type</th>
+                <th className="pb-3 font-semibold">Source</th>
+                <th className="pb-3 font-semibold">Status</th>
+                <th className="pb-3 font-semibold">Duration</th>
+                <th className="pb-3 font-semibold">Details</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log) => (
                 <tr
                   key={log.id}
-                  className="border-b border-slate-100 hover:bg-slate-50"
+                  className="border-b border-zinc-800 hover:bg-zinc-900/50"
                 >
-                  <td className="py-3 pr-4 whitespace-nowrap text-slate-700">
+                  <td className="py-4 pr-4 whitespace-nowrap text-zinc-200">
                     {formatDate(log.created_at)}
                   </td>
-                  <td className="py-3 pr-4 whitespace-nowrap">
-                    <span className="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded">
+                  <td className="py-4 pr-4 whitespace-nowrap">
+                    <span className="font-mono text-sm bg-zinc-800 text-zinc-200 px-2.5 py-1 rounded">
                       {TYPE_LABELS[log.backup_type] || log.backup_type}
                     </span>
                   </td>
-                  <td className="py-3 pr-4 whitespace-nowrap text-slate-600">
+                  <td className="py-4 pr-4 whitespace-nowrap text-zinc-300">
                     {SOURCE_LABELS[log.source] || log.source}
                   </td>
-                  <td className="py-3 pr-4 whitespace-nowrap">
+                  <td className="py-4 pr-4 whitespace-nowrap">
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        STATUS_COLORS[log.status] || "bg-slate-100 text-slate-600"
+                      className={`text-sm px-2.5 py-1 rounded-full font-medium ${
+                        STATUS_COLORS[log.status] || "bg-zinc-800 text-zinc-300"
                       }`}
                     >
                       {log.status}
                     </span>
                   </td>
-                  <td className="py-3 pr-4 whitespace-nowrap text-slate-500">
+                  <td className="py-4 pr-4 whitespace-nowrap text-zinc-300">
                     {formatDuration(log.duration_seconds)}
                   </td>
-                  <td className="py-3 text-slate-500 text-xs">
+                  <td className="py-4 text-zinc-400 text-sm">
                     {log.r2_key && (
                       <span className="font-mono">{log.r2_key}</span>
                     )}

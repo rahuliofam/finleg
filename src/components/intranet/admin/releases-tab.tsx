@@ -75,10 +75,10 @@ function groupByDate(prs: PRDetail[]): { label: string; prs: PRDetail[] }[] {
 }
 
 const TAG_COLORS: Record<string, string> = {
-  emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  rose: "bg-rose-50 text-rose-700 border-rose-200",
-  violet: "bg-violet-50 text-violet-700 border-violet-200",
-  sky: "bg-sky-50 text-sky-700 border-sky-200",
+  emerald: "bg-emerald-900/50 text-emerald-300 border-emerald-700",
+  rose: "bg-rose-900/50 text-rose-300 border-rose-700",
+  violet: "bg-violet-900/50 text-violet-300 border-violet-700",
+  sky: "bg-sky-900/50 text-sky-300 border-sky-700",
 };
 
 async function fetchWithFallback(url: string) {
@@ -175,10 +175,10 @@ export function ReleasesTab() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Changelog</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-3xl font-bold text-white">Changelog</h1>
+          <p className="text-base text-zinc-400 mt-1">
             {loading
               ? "Loading..."
               : `${prs.length} changes shipped · ${totalLines.toLocaleString()} lines changed`}
@@ -188,7 +188,7 @@ export function ReleasesTab() {
           href={`https://github.com/${OWNER}/${REPO}/pulls?q=is%3Apr+is%3Amerged`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1.5"
+          className="text-sm text-zinc-400 hover:text-white flex items-center gap-1.5"
         >
           <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
             <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" />
@@ -198,24 +198,24 @@ export function ReleasesTab() {
       </div>
 
       {error && (
-        <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
+        <div className="mb-4 text-base rounded-lg px-4 py-3 bg-red-900/50 border border-red-700 text-red-300">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+        <div className="rounded-xl border border-zinc-700 p-8 text-center text-zinc-400 text-base">
           Loading changelog...
         </div>
       ) : prs.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+        <div className="rounded-xl border border-zinc-700 p-8 text-center text-zinc-400 text-base">
           No changes recorded yet.
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {groups.map((group) => (
             <div key={group.label}>
-              <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+              <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
                 {group.label}
               </h2>
               <div className="space-y-2">
@@ -228,17 +228,17 @@ export function ReleasesTab() {
                       href={pr.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 hover:border-slate-300 hover:bg-slate-50 transition-colors group"
+                      className="flex items-center gap-3 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3.5 hover:border-zinc-500 hover:bg-zinc-800 transition-colors group"
                     >
                       {/* Category tag */}
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border shrink-0 ${TAG_COLORS[cat.color]}`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded text-sm font-medium border shrink-0 ${TAG_COLORS[cat.color]}`}
                       >
                         {cat.label}
                       </span>
 
                       {/* Title */}
-                      <span className="text-sm text-slate-800 group-hover:text-slate-900 truncate">
+                      <span className="text-base text-zinc-200 group-hover:text-white truncate">
                         {pr.title}
                       </span>
 
@@ -246,27 +246,27 @@ export function ReleasesTab() {
                       <div className="ml-auto flex items-center gap-3 shrink-0">
                         {/* Version badge */}
                         {pr.version && (
-                          <span className="text-xs font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                          <span className="text-sm font-mono text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded">
                             {pr.version}
                           </span>
                         )}
 
                         {/* Lines changed */}
                         {lines > 0 && (
-                          <span className="text-xs text-slate-400 tabular-nums">
-                            <span className="text-emerald-600">+{pr.additions}</span>
+                          <span className="text-sm text-zinc-400 tabular-nums">
+                            <span className="text-emerald-400">+{pr.additions}</span>
                             {" "}
-                            <span className="text-rose-500">-{pr.deletions}</span>
+                            <span className="text-rose-400">-{pr.deletions}</span>
                           </span>
                         )}
 
                         {/* PR number */}
-                        <span className="text-xs text-slate-400">
+                        <span className="text-sm text-zinc-500">
                           #{pr.number}
                         </span>
 
                         {/* Full timestamp */}
-                        <span className="text-xs text-slate-400 hidden sm:inline">
+                        <span className="text-sm text-zinc-500 hidden sm:inline">
                           {formatFullDate(pr.merged_at)}
                         </span>
                       </div>
