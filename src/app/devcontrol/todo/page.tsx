@@ -6,10 +6,10 @@ export default function TodoPage() {
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <Link
-            href="/clauded"
+            href="/devcontrol"
             className="text-base text-zinc-400 hover:text-white transition-colors"
           >
-            ← Clauded
+            ← DevControl
           </Link>
         </div>
 

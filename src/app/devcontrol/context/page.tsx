@@ -136,10 +136,10 @@ export default function ContextPage() {
     <div className="max-w-4xl mx-auto px-6 py-8">
       <div className="mb-4">
         <Link
-          href="/clauded"
+          href="/devcontrol"
           className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
         >
-          &larr; Clauded
+          &larr; DevControl
         </Link>
       </div>
 

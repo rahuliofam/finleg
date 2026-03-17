@@ -6,12 +6,12 @@ import { UsersTab } from "@/components/intranet/admin/users-tab";
 import { BrandTab } from "@/components/intranet/admin/brand-tab";
 import { UploadsTab } from "@/components/intranet/admin/uploads-tab";
 import { ReleasesTab } from "@/components/intranet/admin/releases-tab";
-import { SessionsTab } from "@/components/clauded/sessions-tab";
-import { TokensTab } from "@/components/clauded/tokens-tab";
-import { ContextTab } from "@/components/clauded/context-tab";
-import { BackupsTab } from "@/components/clauded/backups-tab";
-import { TodoTab } from "@/components/clauded/todo-tab";
-import { TocTab } from "@/components/clauded/toc-tab";
+import { SessionsTab } from "@/components/devcontrol/sessions-tab";
+import { TokensTab } from "@/components/devcontrol/tokens-tab";
+import { ContextTab } from "@/components/devcontrol/context-tab";
+import { BackupsTab } from "@/components/devcontrol/backups-tab";
+import { TodoTab } from "@/components/devcontrol/todo-tab";
+import { TocTab } from "@/components/devcontrol/toc-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
   admin: {
@@ -19,7 +19,7 @@ const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
     users: UsersTab,
     brand: BrandTab,
   },
-  clauded: {
+  devcontrol: {
     toc: TocTab,
     releases: ReleasesTab,
     sessions: SessionsTab,

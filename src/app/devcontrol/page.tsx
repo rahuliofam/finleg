@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const NAV_ITEMS = [
   {
-    href: "/clauded/releases",
+    href: "/devcontrol/releases",
     label: "Releases",
     description: "Every PR shipped, with version numbers and line counts",
     icon: (
@@ -14,7 +14,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/clauded/sessions",
+    href: "/devcontrol/sessions",
     label: "Sessions",
     description: "AI development session history across all projects",
     icon: (
@@ -24,7 +24,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/clauded/tokens",
+    href: "/devcontrol/tokens",
     label: "Tokens & Cost",
     description: "Token usage, costs, and session analytics",
     icon: (
@@ -34,7 +34,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/clauded/context",
+    href: "/devcontrol/context",
     label: "Context Window",
     description: "What files load into Claude's context and how much space they use",
     icon: (
@@ -44,7 +44,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/clauded/backups",
+    href: "/devcontrol/backups",
     label: "Backups",
     description: "Database and file storage backup status and activity log",
     icon: (
@@ -54,7 +54,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/clauded/todo",
+    href: "/devcontrol/todo",
     label: "Todo",
     description: "Security remediation checklist and pending action items",
     icon: (
@@ -65,11 +65,11 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function ClaudedPage() {
+export default function DevControlPage() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white">Clauded</h1>
+        <h1 className="text-3xl font-bold text-white">DevControl</h1>
         <p className="text-zinc-400 text-lg mt-2">
           AI-powered development tools and activity
         </p>

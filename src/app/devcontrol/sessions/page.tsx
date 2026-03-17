@@ -172,7 +172,7 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
       <div className="max-w-5xl mx-auto px-6 py-16 text-center">
         <p className="text-zinc-400 text-lg">{error || "Session not found"}</p>
         <a
-          href="/clauded/sessions"
+          href="/devcontrol/sessions"
           className="text-base text-emerald-400 hover:underline mt-4 inline-block"
         >
           ← Back to sessions
@@ -188,7 +188,7 @@ function SessionDetail({ sessionId }: { sessionId: string }) {
       <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-10">
           <a
-            href="/clauded/sessions"
+            href="/devcontrol/sessions"
             className="text-sm text-white/50 hover:text-white/80 transition mb-4 inline-block"
           >
             ← Back to sessions
@@ -532,7 +532,7 @@ export default function SessionsPage() {
                   </div>
                   {/* Open in new tab */}
                   <a
-                    href={`/clauded/sessions?id=${s.id}`}
+                    href={`/devcontrol/sessions?id=${s.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
