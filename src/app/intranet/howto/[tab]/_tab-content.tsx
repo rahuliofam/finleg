@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import ComponentsPage from "./_components";
 import NutsBoltsPage from "./_nutsbolts";
 import AutoActionsPage from "./_autoactions";
+import DataPipelinePage from "./_data-pipeline";
 
 export default function HowtoTabContent() {
   const params = useParams();
@@ -16,6 +17,8 @@ export default function HowtoTabContent() {
       return <NutsBoltsPage />;
     case "autoactions":
       return <AutoActionsPage />;
+    case "data-pipeline":
+      return <DataPipelinePage />;
     default:
       return (
         <div className="text-center py-12 text-slate-400">

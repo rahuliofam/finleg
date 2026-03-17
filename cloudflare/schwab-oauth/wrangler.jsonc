@@ -1,0 +1,11 @@
+{
+  "name": "schwab-oauth",
+  "main": "src/index.js",
+  "compatibility_date": "2024-12-01",
+  // Pin to finleg's Cloudflare account (Rah Hui Lio Son Fami)
+  "account_id": "1417f040cdffb8ba923a28be80d095b6"
+  // Secrets (set via `wrangler secret put`):
+  //   SCHWAB_APP_KEY, SCHWAB_APP_SECRET,
+  //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+  //   TOKEN_ENCRYPTION_KEY, AUTH_TOKEN
+}
