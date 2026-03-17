@@ -1,12 +1,12 @@
 {
-  "version": "v260317.13 4:05a",
-  "release": 108,
-  "sha": "771d3a5",
-  "fullSha": "771d3a5d5cdd30ec67c01b0aa1f692da4c89a680",
+  "version": "v260317.15 4:30a",
+  "release": 110,
+  "sha": "0b0677a",
+  "fullSha": "0b0677a3386d069bff97463229272f08e40c124f",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-17 09:05:09+00",
-  "commits": [{"sha":"7ab3bfa","message":"feat: add tab navigation bar to standalone devcontrol pages","author":"Rahul"},{"sha":"0f422ee","message":"Merge remote-tracking branch 'origin/affectionate-nightingale'","author":"Rahul"},{"sha":"771d3a5","message":"Merge branch 'main' of https://github.com/rahuliofam/finleg","author":"Rahul"}]
+  "pushedAt": "2026-03-17 09:30:45+00",
+  "commits": [{"sha":"0b0677a","message":"Add Schwab callback router Worker for dynamic OAuth target switching","author":"Rahul"}]
 }
