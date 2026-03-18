@@ -1,12 +1,12 @@
 {
-  "version": "v260317.19 7:22p",
-  "release": 114,
-  "sha": "f9659cd",
-  "fullSha": "f9659cd5e77eddb89c3d4ae06f15b441d0508e0c",
+  "version": "v260317.20 11:05p",
+  "release": 115,
+  "sha": "a34969f",
+  "fullSha": "a34969fdbbfcbe99f2098d425a9be5e46ad871ca",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-18 00:22:07+00",
-  "commits": [{"sha":"6147d60","message":"Add email-to-statement ingestion pipeline","author":"Rahul"},{"sha":"ea871f9","message":"Fix Resend attachment download — fetch via API instead of expecting inline base64","author":"Rahul"},{"sha":"f9659cd","message":"Fix Resend attachment download — fetch via API instead of expecting inline base64","author":"Rahul"}]
+  "pushedAt": "2026-03-18 04:05:49+00",
+  "commits": [{"sha":"a34969f","message":"Fix Gemini model name and add debug diagnostics to webhook","author":"Rahul"}]
 }
