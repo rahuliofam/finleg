@@ -1,12 +1,12 @@
 {
-  "version": "v260317.18 4:41p",
-  "release": 113,
-  "sha": "b125104",
-  "fullSha": "b1251042a8c7ce92fc74dacc62caf6e299079e68",
+  "version": "v260317.19 7:22p",
+  "release": 114,
+  "sha": "f9659cd",
+  "fullSha": "f9659cd5e77eddb89c3d4ae06f15b441d0508e0c",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-17 21:41:25+00",
-  "commits": [{"sha":"b125104","message":"Add email-to-statement ingestion pipeline","author":"Rahul"}]
+  "pushedAt": "2026-03-18 00:22:07+00",
+  "commits": [{"sha":"6147d60","message":"Add email-to-statement ingestion pipeline","author":"Rahul"},{"sha":"ea871f9","message":"Fix Resend attachment download — fetch via API instead of expecting inline base64","author":"Rahul"},{"sha":"f9659cd","message":"Fix Resend attachment download — fetch via API instead of expecting inline base64","author":"Rahul"}]
 }
