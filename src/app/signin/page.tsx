@@ -54,7 +54,7 @@ function SignInContent() {
   return (
     <CenteredBrandLayout>
       <p className="text-2xl text-slate-500 mb-10">
-        Sign in to access your dashboard
+        Sign in to access your account
       </p>
 
       <button
