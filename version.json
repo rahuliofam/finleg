@@ -1,12 +1,12 @@
 {
-  "version": "v260318.09 1:49a",
-  "release": 125,
-  "sha": "acb860d",
-  "fullSha": "acb860d79b07f030e882a24eb5adf861500349db",
+  "version": "v260318.10 2:01a",
+  "release": 126,
+  "sha": "801e37c",
+  "fullSha": "801e37c8a26cd2de9bb0bc2877a73be4719ee215",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-18 06:49:26+00",
-  "commits": [{"sha":"acb860d","message":"feat: deploy R2 files worker and fix file URL references (#30)","author":"Rahul"}]
+  "pushedAt": "2026-03-18 07:01:36+00",
+  "commits": [{"sha":"522797a","message":"fix: sort file vault by statement_date for accurate date ordering","author":"Rahul"},{"sha":"f40476a","message":"feat: add AI summary tooltip on hover over file names","author":"Rahul"},{"sha":"c85e26e","message":"feat: show checkmark feedback when share link is copied","author":"Rahul"},{"sha":"801e37c","message":"fix: correct copiedId type to string to match document id type","author":"Rahul"}]
 }
