@@ -71,8 +71,8 @@ export default {
       return new Response('Not found — expected /{bucket}/{key}', { status: 404 });
     }
 
-    const bucketName = parts[0];
-    const r2Key = parts.slice(1).join('/');
+    const bucketName = decodeURIComponent(parts[0]);
+    const r2Key = decodeURIComponent(parts.slice(1).join('/'));
     const bindingName = BUCKET_MAP[bucketName];
 
     if (!bindingName || !env[bindingName]) {
