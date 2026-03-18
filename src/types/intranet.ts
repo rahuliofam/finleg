@@ -6,6 +6,7 @@ export type IntranetSection =
   | "admin"
   | "files"
   | "bookkeeping"
+  | "zeni"
   | "howto"
   | "devcontrol";
 
@@ -30,6 +31,7 @@ export interface SectionDefinition {
 export const SECTIONS: SectionDefinition[] = [
   { key: "files", label: "File Vault" },
   { key: "bookkeeping", label: "Bookkeeping" },
+  { key: "zeni", label: "Zeni" },
   { key: "howto", label: "How It Works" },
   { key: "devcontrol", label: "DevControl" },
   { key: "admin", label: "Admin" },
@@ -87,6 +89,10 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "tax-report", label: "Tax Report", defaultVisible: true },
     { key: "brokerage", label: "Brokerage", defaultVisible: true },
   ],
+  zeni: [
+    { key: "overview", label: "Overview", defaultVisible: true },
+    { key: "reports", label: "Reports", defaultVisible: true },
+  ],
   howto: [
     { key: "components", label: "Components", defaultVisible: true },
     { key: "nutsbolts", label: "Nuts & Bolts", defaultVisible: true },
@@ -113,6 +119,7 @@ export const ALL_TAB_SLUGS: Record<IntranetSection, string[]> = {
   admin: DEFAULT_TABS.admin.map((t) => t.key),
   files: DEFAULT_TABS.files.map((t) => t.key),
   bookkeeping: DEFAULT_TABS.bookkeeping.map((t) => t.key),
+  zeni: DEFAULT_TABS.zeni.map((t) => t.key),
   howto: DEFAULT_TABS.howto.map((t) => t.key),
   devcontrol: DEFAULT_TABS.devcontrol.map((t) => t.key),
 };
