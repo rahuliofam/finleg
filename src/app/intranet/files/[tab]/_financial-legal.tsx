@@ -3,7 +3,21 @@
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { PAGE_SIZE, fileIcon, formatSize } from "../_shared";
+import { API_BASE, PAGE_SIZE, fileIcon, formatSize } from "../_shared";
+
+/** Map full names like "Rahul Sonnad" → first name "Rahul" */
+function holderFirstName(holder: string | null | undefined): string {
+  if (!holder || holder === "various") return "—";
+  // Known entity names that should NOT be split
+  const entities = new Set(["Family", "Trust", "Tesloop"]);
+  if (entities.has(holder)) return holder;
+  return holder.split(" ")[0];
+}
+
+/** Build public file URL from bucket + r2_key */
+function fileUrl(bucket: string, r2Key: string): string {
+  return `${API_BASE}/${bucket}/${r2Key}`;
+}
 
 interface DocResult {
   id: string;
@@ -418,6 +432,7 @@ export default function FinancialLegalTab() {
                   <th className="py-2.5 px-3 whitespace-nowrap text-right cursor-pointer hover:text-emerald-600" onClick={() => { setSortBy("size"); setSortOrder(sortBy === "size" && sortOrder === "asc" ? "desc" : "asc"); }}>
                     Size {sortBy === "size" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                   </th>
+                  <th className="py-2.5 px-3 whitespace-nowrap text-center w-10"></th>
                 </tr>
               </thead>
               <tbody>
@@ -427,7 +442,7 @@ export default function FinancialLegalTab() {
                     onClick={() => openFile(i)}
                     className="border-b border-slate-100 cursor-pointer hover:bg-emerald-50/50 transition-colors"
                   >
-                    <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">{f.account_holder && f.account_holder !== "various" ? f.account_holder : "—"}</td>
+                    <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">{holderFirstName(f.account_holder)}</td>
                     <td className="py-2.5 px-3 capitalize text-slate-700 whitespace-nowrap">{f.institution?.replace(/-/g, " ") || "—"}</td>
                     <td className="py-2.5 px-3 capitalize text-slate-600 whitespace-nowrap">{f.account_type?.replace(/-/g, " ") || "—"}</td>
                     <td className="py-2.5 px-3 capitalize text-slate-600 whitespace-nowrap">{f.category?.replace(/-/g, " ") || "—"}</td>
@@ -444,6 +459,22 @@ export default function FinancialLegalTab() {
                       </span>
                     </td>
                     <td className="py-2.5 px-3 text-slate-600 text-right whitespace-nowrap">{formatSize(f.file_size)}</td>
+                    <td className="py-2.5 px-3 text-center">
+                      <button
+                        title="Copy share link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = fileUrl(f.bucket, f.r2_key);
+                          navigator.clipboard.writeText(url);
+                        }}
+                        className="text-slate-400 hover:text-emerald-600 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -502,7 +533,16 @@ export default function FinancialLegalTab() {
           </button>
 
           <div className="bg-white rounded-xl p-8 max-w-[500px] w-[90vw] text-left text-slate-900">
-            <div className="text-5xl text-center mb-4">{fileIcon(currentFile.file_type)}</div>
+            <a
+              href={fileUrl(currentFile.bucket, currentFile.r2_key)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-5xl text-center mb-4 hover:opacity-70 transition-opacity cursor-pointer"
+              title="Open file"
+            >
+              {fileIcon(currentFile.file_type)}
+              <div className="text-xs text-emerald-600 mt-1 font-medium">Open file &#x2197;</div>
+            </a>
             <h3 className="text-lg font-semibold mb-2 break-all">{currentFile.filename}</h3>
             {currentFile.description && (
               <p className="text-sm text-slate-500 mb-4 italic">{currentFile.description}</p>
@@ -513,7 +553,7 @@ export default function FinancialLegalTab() {
                 <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Account</td><td>{currentFile.account_name}{currentFile.account_number ? ` (${currentFile.account_number})` : ""}</td></tr>
                 <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Institution</td><td className="capitalize">{currentFile.institution}</td></tr>
                 <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Account Type</td><td className="capitalize">{currentFile.account_type?.replace(/-/g, " ")}</td></tr>
-                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Holder</td><td>{currentFile.account_holder}</td></tr>
+                <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Holder</td><td>{holderFirstName(currentFile.account_holder)}</td></tr>
                 {currentFile.statement_date && (
                   <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Date</td><td>{currentFile.statement_date}</td></tr>
                 )}
