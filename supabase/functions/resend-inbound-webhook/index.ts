@@ -51,28 +51,92 @@ async function fetchEmailContent(emailId: string, apiKey: string, attempt = 1): 
 }
 
 /**
- * Forward the email to the configured address via Resend send API.
+ * Send a processing summary email after all attachments have been processed.
  */
-async function forwardEmail(original: any, apiKey: string): Promise<void> {
-  const subject = `Fwd: ${original.subject || "(no subject)"}`;
-  const htmlBody = original.html || `<pre>${original.text || "(empty)"}</pre>`;
-
+async function sendSummaryEmail(
+  original: any,
+  apiKey: string,
+  processedStatements: any[],
+  processedReceipts: any[]
+): Promise<void> {
   const fromLine = typeof original.from === "string"
     ? original.from
     : original.from?.[0]?.address || original.from?.[0] || "unknown sender";
 
-  const toLine = Array.isArray(original.to)
-    ? original.to.map((t: any) => (typeof t === "string" ? t : t.address)).join(", ")
-    : original.to || "?";
+  const totalProcessed = processedStatements.length + processedReceipts.length;
+  const errors = processedStatements.filter((s: any) => s.error).length +
+    processedReceipts.filter((r: any) => r.error).length;
 
-  const forwardHtml = `
-    <p><strong>Forwarded email to @finleg.net</strong></p>
-    <p><strong>From:</strong> ${fromLine}<br>
-    <strong>To:</strong> ${toLine}<br>
-    <strong>Date:</strong> ${original.created_at || "?"}</p>
-    <hr>
-    ${htmlBody}
-  `;
+  // Build subject line
+  const parts: string[] = [];
+  if (processedStatements.length > 0) {
+    parts.push(`${processedStatements.length} statement${processedStatements.length > 1 ? "s" : ""}`);
+  }
+  if (processedReceipts.length > 0) {
+    parts.push(`${processedReceipts.length} receipt${processedReceipts.length > 1 ? "s" : ""}`);
+  }
+  const subject = totalProcessed > 0
+    ? `Processed ${parts.join(" & ")} from ${fromLine}`
+    : `No attachments processed from ${fromLine}`;
+
+  // Build HTML body
+  let html = `<div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">`;
+  html += `<h2 style="margin-bottom: 4px;">📬 Import Summary</h2>`;
+  html += `<p style="color: #666; margin-top: 0;">From <strong>${fromLine}</strong> · ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</p>`;
+
+  if (processedStatements.length > 0) {
+    html += `<h3 style="border-bottom: 1px solid #e5e5e5; padding-bottom: 4px;">Statements (${processedStatements.length})</h3>`;
+    html += `<table style="width: 100%; border-collapse: collapse; font-size: 14px;">`;
+    html += `<tr style="background: #f5f5f5; text-align: left;"><th style="padding: 6px 8px;">Institution</th><th style="padding: 6px 8px;">Account</th><th style="padding: 6px 8px;">Date</th></tr>`;
+    for (const stmt of processedStatements) {
+      if (stmt.error) {
+        html += `<tr><td colspan="3" style="padding: 6px 8px; color: #dc2626;">❌ Error: ${stmt.error}</td></tr>`;
+      } else {
+        const institution = (stmt.institution || "unknown").replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+        const accountType = (stmt.account_type || "").replace(/-/g, " ");
+        const acctLabel = stmt.account_name
+          ? `${stmt.account_name}${stmt.account_number ? ` ···${stmt.account_number}` : ""}`
+          : accountType;
+        html += `<tr style="border-bottom: 1px solid #eee;">`;
+        html += `<td style="padding: 6px 8px;">${institution}</td>`;
+        html += `<td style="padding: 6px 8px;">${acctLabel}</td>`;
+        html += `<td style="padding: 6px 8px;">${stmt.statement_date || "—"}</td>`;
+        html += `</tr>`;
+      }
+    }
+    html += `</table>`;
+  }
+
+  if (processedReceipts.length > 0) {
+    html += `<h3 style="border-bottom: 1px solid #e5e5e5; padding-bottom: 4px;">Receipts (${processedReceipts.length})</h3>`;
+    html += `<table style="width: 100%; border-collapse: collapse; font-size: 14px;">`;
+    html += `<tr style="background: #f5f5f5; text-align: left;"><th style="padding: 6px 8px;">Vendor</th><th style="padding: 6px 8px;">Amount</th><th style="padding: 6px 8px;">Status</th></tr>`;
+    for (const rcpt of processedReceipts) {
+      if (rcpt.error) {
+        html += `<tr><td colspan="3" style="padding: 6px 8px; color: #dc2626;">❌ Error: ${rcpt.error}</td></tr>`;
+      } else {
+        const amount = rcpt.amount != null ? `$${Number(rcpt.amount).toFixed(2)}` : "—";
+        const status = rcpt.matched ? "✅ Matched" : "⏳ Unmatched";
+        html += `<tr style="border-bottom: 1px solid #eee;">`;
+        html += `<td style="padding: 6px 8px;">${rcpt.vendor || "Unknown"}</td>`;
+        html += `<td style="padding: 6px 8px;">${amount}</td>`;
+        html += `<td style="padding: 6px 8px;">${status}</td>`;
+        html += `</tr>`;
+      }
+    }
+    html += `</table>`;
+  }
+
+  if (totalProcessed === 0) {
+    html += `<p style="color: #666;">No statements or receipts found in the email attachments.</p>`;
+  }
+
+  if (errors > 0) {
+    html += `<p style="color: #dc2626; margin-top: 12px;">⚠️ ${errors} attachment${errors > 1 ? "s" : ""} had processing errors.</p>`;
+  }
+
+  html += `<p style="margin-top: 16px; font-size: 13px; color: #999;"><a href="https://finleg.net/intranet/bookkeeping/statements" style="color: #2563eb;">View in Finleg →</a></p>`;
+  html += `</div>`;
 
   const res = await fetch(`${RESEND_API_URL}/emails`, {
     method: "POST",
@@ -84,17 +148,17 @@ async function forwardEmail(original: any, apiKey: string): Promise<void> {
       from: FROM_ADDRESS,
       to: [FORWARD_TO],
       subject,
-      html: forwardHtml,
+      html,
     }),
   });
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Failed to forward email: ${res.status} ${text}`);
+    throw new Error(`Failed to send summary email: ${res.status} ${text}`);
   }
 
   const result = await res.json();
-  console.log(`Forwarded to ${FORWARD_TO}, Resend ID: ${result.id}`);
+  console.log(`Summary email sent to ${FORWARD_TO}, Resend ID: ${result.id}`);
 }
 
 /**
@@ -504,9 +568,6 @@ serve(async (req: Request) => {
     const email = await fetchEmailContent(emailId, resendKey);
     console.log(`Email from: ${email.from}, subject: ${email.subject}`);
 
-    // Always forward to Gmail
-    await forwardEmail(email, resendKey);
-
     // Check if this email has processable attachments (images or PDFs)
     const attachments = email.attachments || [];
     const processableAttachments = attachments.filter((a: any) => {
@@ -520,7 +581,12 @@ serve(async (req: Request) => {
     });
 
     if (processableAttachments.length === 0) {
-      console.log("No processable attachments found, done");
+      console.log("No processable attachments found, sending summary");
+      try {
+        await sendSummaryEmail(email, resendKey, [], []);
+      } catch (fwdErr) {
+        console.error("Failed to send summary email:", fwdErr);
+      }
       return new Response(JSON.stringify({ success: true, receipts: 0, statements: 0 }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -529,6 +595,11 @@ serve(async (req: Request) => {
 
     if (!supabase) {
       console.log("Missing SUPABASE_SERVICE_ROLE_KEY — processing skipped");
+      try {
+        await sendSummaryEmail(email, resendKey, [], []);
+      } catch (fwdErr) {
+        console.error("Failed to send summary email:", fwdErr);
+      }
       return new Response(JSON.stringify({ success: true, receipts: 0, statements: 0, reason: "missing_keys" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -627,6 +698,8 @@ serve(async (req: Request) => {
                 id: inserted.id,
                 institution: classification.institution,
                 account_type: classification.account_type,
+                account_name: classification.account_name,
+                account_number: classification.account_number,
                 statement_date: classification.statement_date,
               });
             }
@@ -699,6 +772,7 @@ serve(async (req: Request) => {
         const receiptId = insertedReceipt.id;
 
         // Try to match with a QB transaction
+        let receiptMatched = false;
         if (parsed.amount && parsed.date) {
           const match = await tryMatchTransaction(
             supabase,
@@ -708,6 +782,7 @@ serve(async (req: Request) => {
           );
 
           if (match) {
+            receiptMatched = true;
             // Update receipt with match
             await supabase
               .from("receipts")
@@ -748,11 +823,18 @@ serve(async (req: Request) => {
           from: fromLine,
         });
 
-        processedReceipts.push({ id: receiptId, vendor: parsed.vendor, amount: parsed.amount });
+        processedReceipts.push({ id: receiptId, vendor: parsed.vendor, amount: parsed.amount, matched: receiptMatched });
       } catch (attachErr: any) {
         console.error("Error processing attachment:", attachErr);
         processedStatements.push({ error: String(attachErr), stack: attachErr?.stack?.slice(0, 500) });
       }
+    }
+
+    // Send summary email after all processing is complete
+    try {
+      await sendSummaryEmail(email, resendKey, processedStatements, processedReceipts);
+    } catch (fwdErr) {
+      console.error("Failed to send summary email:", fwdErr);
     }
 
     return new Response(
