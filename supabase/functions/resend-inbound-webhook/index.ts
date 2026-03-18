@@ -849,11 +849,15 @@ serve(async (req: Request) => {
       }
     }
 
-    // Send summary email after all processing is complete
-    try {
-      await sendSummaryEmail(email, resendKey, processedStatements, processedReceipts);
-    } catch (fwdErr) {
-      console.error("Failed to send summary email:", fwdErr);
+    // Send summary email for receipts only — statements get their email after parsing in process-inbox.mjs
+    if (processedReceipts.length > 0 || (processedStatements.length === 0 && processedReceipts.length === 0)) {
+      try {
+        await sendSummaryEmail(email, resendKey, [], processedReceipts);
+      } catch (fwdErr) {
+        console.error("Failed to send summary email:", fwdErr);
+      }
+    } else {
+      console.log("Skipping summary email — statements will be emailed after parsing");
     }
 
     return new Response(

@@ -90,6 +90,140 @@ const KNOWN_ACCOUNTS = [
   { institution: 'coinbase', number: null, r2Sub: 'coinbase', holder: 'Rahul' },
 ];
 
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const FROM_ADDRESS = 'agent@finleg.net';
+const NOTIFY_TO = 'rahchak@gmail.com';
+
+/**
+ * Send a processed statement summary email with metadata card + transaction details.
+ */
+async function sendProcessedEmail(item, parsed, txnCount, r2Key) {
+  if (!RESEND_API_KEY) {
+    console.log('    (No RESEND_API_KEY — skipping email notification)');
+    return;
+  }
+
+  const institution = (item.institution || 'unknown').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const accountType = (item.account_type || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const acctLabel = item.account_name || accountType;
+  const sizeKb = item.attachment_size ? `${(item.attachment_size / 1024).toFixed(1)} KB` : '—';
+  const period = (parsed.period_start || item.period_start) && (parsed.period_end || item.period_end)
+    ? `${parsed.period_start || item.period_start} → ${parsed.period_end || item.period_end}`
+    : '—';
+  const statementDate = parsed.statement_date || item.statement_date || '—';
+
+  const metaRow = (label, value) =>
+    `<tr><td style="padding: 3px 8px; color: #666; font-size: 13px; white-space: nowrap;">${label}</td><td style="padding: 3px 8px; font-size: 13px;">${value}</td></tr>`;
+
+  let html = `<div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">`;
+  html += `<h2 style="margin-bottom: 4px;">📬 Import Summary</h2>`;
+  html += `<p style="color: #666; margin-top: 0;">${institution} — ${acctLabel} · Statement date: ${statementDate}</p>`;
+
+  // Document metadata card
+  html += `<div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 16px;">`;
+  html += `<div style="font-weight: 600; margin-bottom: 8px;">📄 ${item.attachment_filename || 'Statement'}</div>`;
+  html += `<table style="border-collapse: collapse; font-size: 14px;">`;
+  html += metaRow('Category', 'Statement');
+  html += metaRow('Account', acctLabel);
+  html += metaRow('Institution', institution);
+  html += metaRow('Account Type', accountType);
+  if (item.account_holder) html += metaRow('Holder', item.account_holder);
+  html += metaRow('Date', statementDate);
+  html += metaRow('Period', period);
+  html += metaRow('Size', sizeKb);
+  html += metaRow('Type', 'PDF');
+  if (r2Key) html += metaRow('R2 Key', r2Key);
+  html += `</table>`;
+  html += `</div>`;
+
+  // Transaction details table
+  const transactions = parsed.transactions || [];
+  if (transactions.length > 0) {
+    html += `<table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px;">`;
+    html += `<tr style="background: #f5f5f5; text-align: left;">`;
+    html += `<th style="padding: 6px 8px;">Date</th>`;
+    html += `<th style="padding: 6px 8px;">Description</th>`;
+    html += `<th style="padding: 6px 8px; text-align: right;">Amount</th>`;
+    html += `</tr>`;
+
+    for (const txn of transactions) {
+      const amt = txn.amount != null ? `$${Number(txn.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—';
+      const desc = (txn.description || '').length > 60
+        ? txn.description.slice(0, 57) + '...'
+        : txn.description || '';
+      html += `<tr style="border-bottom: 1px solid #eee;">`;
+      html += `<td style="padding: 4px 8px; white-space: nowrap;">${txn.transaction_date || '—'}</td>`;
+      html += `<td style="padding: 4px 8px;">${desc}</td>`;
+      html += `<td style="padding: 4px 8px; text-align: right; white-space: nowrap;">${amt}</td>`;
+      html += `</tr>`;
+    }
+    html += `</table>`;
+
+    // Summary line
+    const charges = transactions.filter(t => t.amount > 0).reduce((s, t) => s + Number(t.amount), 0);
+    const payments = transactions.filter(t => t.amount < 0).reduce((s, t) => s + Number(t.amount), 0);
+    const net = charges + payments;
+    html += `<p style="font-size: 13px; color: #333; margin-top: 4px;">`;
+    html += `<strong>${transactions.length} transactions processed</strong><br>`;
+    html += `Charges: $${charges.toFixed(2)} · Payments: $${payments.toFixed(2)} · Net: $${net.toFixed(2)}`;
+    html += `</p>`;
+  }
+
+  // Holdings (for investment statements)
+  const holdings = parsed.holdings || [];
+  if (holdings.length > 0) {
+    html += `<h4 style="margin-top: 16px; margin-bottom: 4px;">Holdings (${holdings.length})</h4>`;
+    html += `<table style="width: 100%; border-collapse: collapse; font-size: 13px;">`;
+    html += `<tr style="background: #f5f5f5; text-align: left;">`;
+    html += `<th style="padding: 6px 8px;">Symbol</th>`;
+    html += `<th style="padding: 6px 8px;">Name</th>`;
+    html += `<th style="padding: 6px 8px; text-align: right;">Value</th>`;
+    html += `</tr>`;
+    for (const h of holdings) {
+      const val = h.market_value != null ? `$${Number(h.market_value).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—';
+      html += `<tr style="border-bottom: 1px solid #eee;">`;
+      html += `<td style="padding: 4px 8px;">${h.ticker_symbol || '—'}</td>`;
+      html += `<td style="padding: 4px 8px;">${(h.security_name || '').slice(0, 40)}</td>`;
+      html += `<td style="padding: 4px 8px; text-align: right;">${val}</td>`;
+      html += `</tr>`;
+    }
+    html += `</table>`;
+  }
+
+  html += `<p style="margin-top: 16px; font-size: 13px; color: #999;"><a href="https://finleg.net/intranet/bookkeeping/statements" style="color: #2563eb;">View in Finleg →</a></p>`;
+  html += `</div>`;
+
+  const senderAddress = item.from_address || NOTIFY_TO;
+  const subject = `Processed: ${institution} ${acctLabel} — ${parsed.period_start || item.period_start || ''} to ${parsed.period_end || item.period_end || ''}`;
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: FROM_ADDRESS,
+        to: [senderAddress],
+        bcc: senderAddress !== NOTIFY_TO ? [NOTIFY_TO] : [],
+        subject,
+        html,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`    ✗ Email send failed: ${res.status} ${text}`);
+    } else {
+      const result = await res.json();
+      console.log(`    ✉ Summary email sent (Resend ID: ${result.id})`);
+    }
+  } catch (emailErr) {
+    console.error(`    ✗ Email error: ${emailErr.message}`);
+  }
+}
+
 function findKnownAccount(institution, accountNumber) {
   const inst = (institution || '').toLowerCase();
   const num = (accountNumber || '').replace(/\D/g, '');
@@ -919,6 +1053,10 @@ async function processItem(item) {
         .from('statement_inbox')
         .update({ status: 'parsed', processed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
         .eq('id', item.id);
+
+      // Send processed email with metadata + transaction details
+      await sendProcessedEmail(item, parsed, txnCount, r2Key);
+
       return { status: 'success', txnCount };
     } else {
       throw new Error('Insert failed');
