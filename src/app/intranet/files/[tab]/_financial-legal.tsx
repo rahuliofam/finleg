@@ -175,6 +175,7 @@ export default function FinancialLegalTab() {
   const [results, setResults] = useState<DocResult[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [totalDocs, setTotalDocs] = useState(0);
@@ -485,18 +486,26 @@ export default function FinancialLegalTab() {
                     <td className="py-2.5 px-3 text-slate-600 text-right whitespace-nowrap">{formatSize(f.file_size)}</td>
                     <td className="py-2.5 px-3 text-center">
                       <button
-                        title="Copy share link"
+                        title={copiedId === f.id ? "Copied!" : "Copy share link"}
                         onClick={(e) => {
                           e.stopPropagation();
                           const url = fileUrl(f.bucket, f.r2_key);
                           navigator.clipboard.writeText(url);
+                          setCopiedId(f.id);
+                          setTimeout(() => setCopiedId((prev) => prev === f.id ? null : prev), 1500);
                         }}
-                        className="text-slate-400 hover:text-emerald-600 transition-colors"
+                        className={`transition-colors ${copiedId === f.id ? "text-emerald-500" : "text-slate-400 hover:text-emerald-600"}`}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                        </svg>
+                        {copiedId === f.id ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                          </svg>
+                        )}
                       </button>
                     </td>
                   </tr>
