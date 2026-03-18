@@ -1,12 +1,12 @@
 {
-  "version": "v260318.10 2:01a",
-  "release": 126,
-  "sha": "801e37c",
-  "fullSha": "801e37c8a26cd2de9bb0bc2877a73be4719ee215",
+  "version": "v260318.11 3:18p",
+  "release": 127,
+  "sha": "c9305c9",
+  "fullSha": "c9305c95e8844b8a7d5b8b311ae9dc830765fa04",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-18 07:01:36+00",
-  "commits": [{"sha":"522797a","message":"fix: sort file vault by statement_date for accurate date ordering","author":"Rahul"},{"sha":"f40476a","message":"feat: add AI summary tooltip on hover over file names","author":"Rahul"},{"sha":"c85e26e","message":"feat: show checkmark feedback when share link is copied","author":"Rahul"},{"sha":"801e37c","message":"fix: correct copiedId type to string to match document id type","author":"Rahul"}]
+  "pushedAt": "2026-03-18 20:18:41+00",
+  "commits": [{"sha":"c9305c9","message":"feat: add Zeni analysis tab with 5 financial features (#31)","author":"Rahul"}]
 }
