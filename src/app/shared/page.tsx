@@ -248,7 +248,7 @@ function SharedContent() {
   // Document view
   if (!doc || !share) return null;
 
-  const fileUrl = `https://files.finleg.net/${doc.bucket}/${doc.r2_key}`;
+  const fileUrl = `https://r2-files.finleg.workers.dev/${doc.bucket}/${doc.r2_key}`;
   const periodLabel = doc.period_start && doc.period_end
     ? `${new Date(doc.period_start + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} — ${new Date(doc.period_end + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
     : doc.month

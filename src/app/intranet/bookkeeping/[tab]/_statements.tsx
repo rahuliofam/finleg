@@ -152,7 +152,7 @@ function formatSize(bytes: number) {
   return (bytes / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0) + " " + units[i];
 }
 
-const API_BASE = "https://files.finleg.net";
+const API_BASE = "https://r2-files.finleg.workers.dev";
 
 function fileUrl(bucket: string, r2Key: string): string {
   return `${API_BASE}/${bucket}/${r2Key}`;
