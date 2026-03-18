@@ -1,12 +1,12 @@
 {
-  "version": "v260318.07 1:35a",
-  "release": 123,
-  "sha": "0be2710",
-  "fullSha": "0be27102d25d10af5320678cb8e696c34fb30f45",
+  "version": "v260318.08 1:38a",
+  "release": 124,
+  "sha": "766a8c9",
+  "fullSha": "766a8c94abdb500b2cf5e449c2501fc4e7859dab",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-18 06:35:33+00",
-  "commits": [{"sha":"0be2710","message":"Extract date from filename when statement_date and month are null","author":"Rahul"}]
+  "pushedAt": "2026-03-18 06:38:33+00",
+  "commits": [{"sha":"ab583cf","message":"Add inline share link to statement detail dialog","author":"Rahul"},{"sha":"766a8c9","message":"Merge pull request #29 from rahuliofam/rahuliofam/doc-share-links","author":"Rahul"}]
 }
