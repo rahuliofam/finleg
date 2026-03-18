@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
-import { SECTIONS, type TabConfig } from "@/types/intranet";
+import { SECTIONS, type IntranetSection, type TabConfig } from "@/types/intranet";
 import { usePageDisplayConfig } from "@/hooks/use-page-display-config";
 
 export function SubTabs() {
@@ -10,7 +10,9 @@ export function SubTabs() {
   const params = useParams();
   const { getVisibleTabs, loading } = usePageDisplayConfig();
 
-  const getActiveSection = () => {
+  const getActiveSection = (): IntranetSection | null => {
+    // Check for "my" section (not in static SECTIONS array)
+    if (pathname.includes("/intranet/my")) return "my";
     for (const section of SECTIONS) {
       if (pathname.includes(`/intranet/${section.key}`)) {
         return section.key;

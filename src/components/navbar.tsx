@@ -49,7 +49,7 @@ export function Navbar() {
               href="/intranet"
               className="text-sm font-medium px-4 py-1.5 bg-[#1B6B3A] hover:bg-[#145530] text-white rounded-full transition-colors"
             >
-              Dashboard
+              App
             </Link>
           )}
           <Link
