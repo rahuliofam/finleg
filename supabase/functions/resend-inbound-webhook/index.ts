@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RESEND_API_URL = "https://api.resend.com";
@@ -86,25 +86,38 @@ async function sendSummaryEmail(
 
   if (processedStatements.length > 0) {
     html += `<h3 style="border-bottom: 1px solid #e5e5e5; padding-bottom: 4px;">Statements (${processedStatements.length})</h3>`;
-    html += `<table style="width: 100%; border-collapse: collapse; font-size: 14px;">`;
-    html += `<tr style="background: #f5f5f5; text-align: left;"><th style="padding: 6px 8px;">Institution</th><th style="padding: 6px 8px;">Account</th><th style="padding: 6px 8px;">Date</th></tr>`;
     for (const stmt of processedStatements) {
       if (stmt.error) {
-        html += `<tr><td colspan="3" style="padding: 6px 8px; color: #dc2626;">❌ Error: ${stmt.error}</td></tr>`;
+        html += `<p style="color: #dc2626;">❌ Error: ${stmt.error}</p>`;
       } else {
         const institution = (stmt.institution || "unknown").replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
-        const accountType = (stmt.account_type || "").replace(/-/g, " ");
-        const acctLabel = stmt.account_name
-          ? `${stmt.account_name}${stmt.account_number ? ` ···${stmt.account_number}` : ""}`
-          : accountType;
-        html += `<tr style="border-bottom: 1px solid #eee;">`;
-        html += `<td style="padding: 6px 8px;">${institution}</td>`;
-        html += `<td style="padding: 6px 8px;">${acctLabel}</td>`;
-        html += `<td style="padding: 6px 8px;">${stmt.statement_date || "—"}</td>`;
-        html += `</tr>`;
+        const accountType = (stmt.account_type || "").replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+        const acctLabel = stmt.account_name || accountType;
+        const sizeKb = stmt.attachment_size ? `${(stmt.attachment_size / 1024).toFixed(1)} KB` : "—";
+        const period = stmt.period_start && stmt.period_end
+          ? `${stmt.period_start} → ${stmt.period_end}`
+          : "—";
+
+        // Document metadata card
+        const metaRow = (label: string, value: string) =>
+          `<tr><td style="padding: 3px 8px; color: #666; font-size: 13px; white-space: nowrap;">${label}</td><td style="padding: 3px 8px; font-size: 13px;">${value}</td></tr>`;
+
+        html += `<div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px;">`;
+        html += `<div style="font-weight: 600; margin-bottom: 8px;">📄 ${stmt.filename || "Statement"}</div>`;
+        html += `<table style="border-collapse: collapse; font-size: 14px;">`;
+        html += metaRow("Category", "Statement");
+        html += metaRow("Account", acctLabel);
+        html += metaRow("Institution", institution);
+        html += metaRow("Account Type", accountType);
+        if (stmt.account_holder) html += metaRow("Holder", stmt.account_holder);
+        html += metaRow("Date", stmt.statement_date || "—");
+        html += metaRow("Period", period);
+        html += metaRow("Size", sizeKb);
+        html += metaRow("Type", "PDF");
+        html += `</table>`;
+        html += `</div>`;
       }
     }
-    html += `</table>`;
   }
 
   if (processedReceipts.length > 0) {
@@ -701,7 +714,12 @@ serve(async (req: Request) => {
                 account_type: classification.account_type,
                 account_name: classification.account_name,
                 account_number: classification.account_number,
+                account_holder: classification.account_holder,
                 statement_date: classification.statement_date,
+                period_start: classification.period_start,
+                period_end: classification.period_end,
+                filename,
+                attachment_size: binaryData.length,
               });
             }
 
