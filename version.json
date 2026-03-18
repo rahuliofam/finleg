@@ -1,12 +1,12 @@
 {
-  "version": "v260318.05 1:07a",
-  "release": 121,
-  "sha": "71017b8",
-  "fullSha": "71017b84120ce2f34e54971824d723a4239200c1",
+  "version": "v260318.06 1:11a",
+  "release": 122,
+  "sha": "287132a",
+  "fullSha": "287132ab9bd09cc523d1d7161025aad08a2195af",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-18 06:07:03+00",
-  "commits": [{"sha":"eebb3a0","message":"Add document sharing with auth-gated links and post-auth redirect","author":"Rahul"},{"sha":"71017b8","message":"Merge pull request #28 from rahuliofam/rahuliofam/doc-share-links","author":"Rahul"}]
+  "pushedAt": "2026-03-18 06:11:52+00",
+  "commits": [{"sha":"287132a","message":"feat: remove hardcoded secrets from schwab-manual-auth script","author":"Rahul"}]
 }
