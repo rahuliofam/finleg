@@ -452,7 +452,13 @@ export default function FinancialLegalTab() {
                         {f.account_name}{f.account_number ? ` (${f.account_number})` : ""}
                       </div>
                     </td>
-                    <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap">{f.statement_date || f.year || "—"}</td>
+                    <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap">
+                      {f.statement_date
+                        ? f.statement_date
+                        : f.year && f.month
+                          ? `${f.year}-${String(f.month).padStart(2, "0")}`
+                          : f.year || "—"}
+                    </td>
                     <td className="py-2.5 px-3">
                       <span className="text-[0.65rem] font-semibold uppercase bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
                         {f.file_type || "?"}
