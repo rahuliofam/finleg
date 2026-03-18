@@ -228,6 +228,8 @@ export default function StatementsTab() {
   const [shareModal, setShareModal] = useState<ShareModal | null>(null);
   const [appUsers, setAppUsers] = useState<AppUser[]>([]);
   const [currentAppUserId, setCurrentAppUserId] = useState<string | null>(null);
+  const [detailShareUrl, setDetailShareUrl] = useState<string | null>(null);
+  const [detailShareCopied, setDetailShareCopied] = useState(false);
 
   const toggleAcctSort = (field: AccountSortField) => {
     if (acctSortField === field) {
@@ -446,6 +448,45 @@ export default function StatementsTab() {
       sentTo.add(userId);
       return { ...prev, sentTo, sending: false };
     });
+  };
+
+  const getDetailShareUrl = async (s: Statement) => {
+    setDetailShareUrl(null);
+    setDetailShareCopied(false);
+    if (!currentAppUserId) return;
+
+    // Check for existing active share
+    const { data: existing } = await supabase
+      .from("document_shares")
+      .select("share_token")
+      .eq("document_id", s.id)
+      .eq("created_by", currentAppUserId)
+      .eq("is_revoked", false)
+      .limit(1)
+      .single();
+
+    if (existing) {
+      setDetailShareUrl(`${window.location.origin}/shared?token=${existing.share_token}`);
+      return;
+    }
+
+    // Create new share
+    const { data: newShare } = await supabase
+      .from("document_shares")
+      .insert({ document_id: s.id, created_by: currentAppUserId })
+      .select("share_token")
+      .single();
+
+    if (newShare) {
+      setDetailShareUrl(`${window.location.origin}/shared?token=${newShare.share_token}`);
+    }
+  };
+
+  const copyDetailShareUrl = async () => {
+    if (!detailShareUrl) return;
+    await navigator.clipboard.writeText(detailShareUrl);
+    setDetailShareCopied(true);
+    setTimeout(() => setDetailShareCopied(false), 2000);
   };
 
   const getDisplayName = (acct: AccountGroup): string => {
@@ -870,7 +911,7 @@ export default function StatementsTab() {
                                             return (
                                               <tr
                                                 key={s.id}
-                                                onClick={(e) => { e.stopPropagation(); setDetailStatement(s); }}
+                                                onClick={(e) => { e.stopPropagation(); setDetailStatement(s); getDetailShareUrl(s); }}
                                                 className="hover:bg-emerald-50 cursor-pointer transition-colors border-t border-slate-50"
                                               >
                                                 <td className="py-1.5 pr-3 text-slate-800 whitespace-nowrap">
@@ -1142,8 +1183,38 @@ export default function StatementsTab() {
                 onClick={() => { setDetailStatement(null); openShareModal(detailStatement); }}
                 className="flex-1 text-center py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
               >
-                Share
+                Send To...
               </button>
+            </div>
+
+            {/* Inline share link */}
+            <div className="mt-4 pt-3 border-t border-slate-100">
+              <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">
+                Share Link
+              </label>
+              {detailShareUrl ? (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={detailShareUrl}
+                    className="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-lg bg-slate-50 text-slate-500 outline-none font-mono"
+                    onClick={(e) => (e.target as HTMLInputElement).select()}
+                  />
+                  <button
+                    onClick={copyDetailShareUrl}
+                    className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      detailShareCopied
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-emerald-600 text-white hover:bg-emerald-700"
+                    }`}
+                  >
+                    {detailShareCopied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+              ) : (
+                <div className="text-xs text-slate-400 italic">Generating link...</div>
+              )}
             </div>
 
             <div className="mt-3 text-xs text-slate-400">
