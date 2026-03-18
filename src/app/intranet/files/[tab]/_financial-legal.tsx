@@ -453,11 +453,20 @@ export default function FinancialLegalTab() {
                       </div>
                     </td>
                     <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap">
-                      {f.statement_date
-                        ? f.statement_date
-                        : f.year && f.month
-                          ? `${f.year}-${String(f.month).padStart(2, "0")}`
-                          : f.year || "—"}
+                      {(() => {
+                        if (f.statement_date) return f.statement_date;
+                        if (f.year && f.month) return `${f.year}-${String(f.month).padStart(2, "0")}`;
+                        // Extract date from filename patterns
+                        const mmYYYY = f.filename?.match(/^(\d{2})-(\d{4})\./);
+                        if (mmYYYY) return `${mmYYYY[2]}-${mmYYYY[1]}`;
+                        const yyyyMM = f.filename?.match(/^(\d{4})-(\d{2})\./);
+                        if (yyyyMM) return `${yyyyMM[1]}-${yyyyMM[2]}`;
+                        // "...January 2026..." or "...March 2025..."
+                        const monthNames: Record<string, string> = { january:"01",february:"02",march:"03",april:"04",may:"05",june:"06",july:"07",august:"08",september:"09",october:"10",november:"11",december:"12" };
+                        const nameMatch = f.filename?.match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})/i);
+                        if (nameMatch) return `${nameMatch[2]}-${monthNames[nameMatch[1].toLowerCase()]}`;
+                        return f.year || "—";
+                      })()}
                     </td>
                     <td className="py-2.5 px-3">
                       <span className="text-[0.65rem] font-semibold uppercase bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
