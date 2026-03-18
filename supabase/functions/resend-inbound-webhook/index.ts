@@ -148,7 +148,7 @@ async function classifyWithGemini(
   geminiKey: string
 ): Promise<any> {
   const res = await fetch(
-    `${GEMINI_API_URL}/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiKey}`,
+    `${GEMINI_API_URL}/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -544,6 +544,7 @@ serve(async (req: Request) => {
 
     const processedReceipts: any[] = [];
     const processedStatements: any[] = [];
+    const _debugClassifications: any[] = [];
 
     for (const attachment of processableAttachments) {
       try {
@@ -568,8 +569,10 @@ serve(async (req: Request) => {
           try {
             classification = await classifyWithGemini(base64Data, geminiKey);
             console.log(`Gemini classified "${filename}" as: ${classification.doc_type} (confidence: ${classification.confidence})`);
-          } catch (classErr) {
+            _debugClassifications.push(classification);
+          } catch (classErr: any) {
             console.error(`Gemini classification failed for "${filename}", falling back to receipt:`, classErr);
+            _debugClassifications.push({ error: String(classErr) });
           }
 
           // ── Statement flow ──
@@ -746,8 +749,9 @@ serve(async (req: Request) => {
         });
 
         processedReceipts.push({ id: receiptId, vendor: parsed.vendor, amount: parsed.amount });
-      } catch (attachErr) {
+      } catch (attachErr: any) {
         console.error("Error processing attachment:", attachErr);
+        processedStatements.push({ error: String(attachErr), stack: attachErr?.stack?.slice(0, 500) });
       }
     }
 
@@ -758,6 +762,17 @@ serve(async (req: Request) => {
         statements: processedStatements.length,
         receipt_details: processedReceipts,
         statement_details: processedStatements,
+        errors: processedStatements.filter((s: any) => s.error).length + processedReceipts.filter((r: any) => r.error).length,
+        _debug: {
+          emailId,
+          totalAttachments: (email.attachments || []).length,
+          processableCount: processableAttachments.length,
+          attachmentTypes: (email.attachments || []).map((a: any) => ({ ct: a.content_type || a.type, fn: a.filename, id: a.id })),
+          hasGeminiKey: !!geminiKey,
+          hasSupabase: !!supabase,
+          classifications: _debugClassifications,
+          hasAnthropicKey: !!Deno.env.get("ANTHROPIC_API_KEY"),
+        },
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
