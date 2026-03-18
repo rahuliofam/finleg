@@ -175,7 +175,7 @@ export default function FinancialLegalTab() {
   const [results, setResults] = useState<DocResult[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
-  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [totalDocs, setTotalDocs] = useState(0);
