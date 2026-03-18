@@ -450,11 +450,16 @@ export default function FinancialLegalTab() {
                     <td className="py-2.5 px-3 capitalize text-slate-700 whitespace-nowrap">{f.institution?.replace(/-/g, " ") || "—"}</td>
                     <td className="py-2.5 px-3 capitalize text-slate-600 whitespace-nowrap">{f.account_type?.replace(/-/g, " ") || "—"}</td>
                     <td className="py-2.5 px-3 capitalize text-slate-600 whitespace-nowrap">{f.category?.replace(/-/g, " ") || "—"}</td>
-                    <td className="py-2.5 px-3 text-slate-900 max-w-[300px]">
+                    <td className="py-2.5 px-3 text-slate-900 max-w-[300px] relative group/tip">
                       <div className="truncate font-medium">{f.filename}</div>
                       <div className="text-xs text-slate-400 truncate">
                         {f.account_name}{f.account_number ? ` (${f.account_number})` : ""}
                       </div>
+                      {f.description && (
+                        <div className="absolute left-0 top-full z-50 mt-1 w-80 max-w-[90vw] rounded-lg bg-slate-800 text-white text-xs leading-relaxed px-3 py-2 shadow-lg opacity-0 pointer-events-none group-hover/tip:opacity-100 transition-opacity duration-150">
+                          {f.description}
+                        </div>
+                      )}
                     </td>
                     <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap">
                       {(() => {
