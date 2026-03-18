@@ -131,11 +131,59 @@ async function downloadToFile(url, destPath) {
   return buffer.length;
 }
 
-// ── Upload PDF to R2 ────────────────────────────────────────────────────────
+// ── Upload PDF to R2 via S3-compatible API ──────────────────────────────────
 async function uploadToR2(localPath, r2Key) {
+  const { readFileSync } = await import('fs');
+  const { createHmac, createHash } = await import('crypto');
+
   const bucket = 'financial-statements';
-  const cmd = `wrangler r2 object put ${shellEsc(bucket + '/' + r2Key)} --file=${shellEsc(localPath)} --content-type=application/pdf --remote`;
-  await execAsync(cmd, { timeout: 60000 });
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKey = process.env.R2_ACCESS_KEY_ID;
+  const secretKey = process.env.R2_SECRET_ACCESS_KEY;
+  if (!accountId || !accessKey || !secretKey) throw new Error('Missing R2 credentials in .env');
+
+  const body = readFileSync(localPath);
+  const host = `${accountId}.r2.cloudflarestorage.com`;
+  const url = `https://${host}/${bucket}/${r2Key}`;
+  const method = 'PUT';
+  const region = 'auto';
+  const service = 's3';
+  const now = new Date();
+  const dateStamp = now.toISOString().replace(/[-:T]/g, '').slice(0, 8);
+  const amzDate = dateStamp + 'T' + now.toISOString().replace(/[-:]/g, '').slice(9, 15) + 'Z';
+
+  const payloadHash = createHash('sha256').update(body).digest('hex');
+  const canonicalUri = `/${bucket}/${r2Key}`;
+  const canonicalQueryString = '';
+  const canonicalHeaders = `content-type:application/pdf\nhost:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
+  const signedHeaders = 'content-type;host;x-amz-content-sha256;x-amz-date';
+  const canonicalRequest = [method, canonicalUri, canonicalQueryString, canonicalHeaders, signedHeaders, payloadHash].join('\n');
+
+  const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, createHash('sha256').update(canonicalRequest).digest('hex')].join('\n');
+
+  const hmac = (key, data) => createHmac('sha256', key).update(data).digest();
+  const signingKey = hmac(hmac(hmac(hmac('AWS4' + secretKey, dateStamp), region), service), 'aws4_request');
+  const signature = createHmac('sha256', signingKey).update(stringToSign).digest('hex');
+
+  const authHeader = `AWS4-HMAC-SHA256 Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Host': host,
+      'x-amz-content-sha256': payloadHash,
+      'x-amz-date': amzDate,
+      'Authorization': authHeader,
+    },
+    body,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`R2 upload failed (${res.status}): ${errText}`);
+  }
 }
 
 // ── Upsert document_index row ───────────────────────────────────────────────
