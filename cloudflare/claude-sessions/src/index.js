@@ -122,6 +122,109 @@ export default {
       return json(result);
     }
 
+    // POST /sessions/ask — AI-powered search using Gemini Flash
+    if (request.method === 'POST' && url.pathname === '/sessions/ask') {
+      const body = await request.json();
+      const question = body.question;
+      if (!question) return json({ error: 'question required' }, 400);
+
+      // Build search context from provided session IDs or from keyword search
+      let sessions = [];
+      if (body.session_ids?.length) {
+        // Use specific sessions passed from the UI
+        const placeholders = body.session_ids.map(() => '?').join(',');
+        const result = await env.DB.prepare(
+          `SELECT id, project, model, started_at, duration_mins, summary, transcript FROM sessions WHERE id IN (${placeholders})`
+        ).bind(...body.session_ids).all();
+        sessions = result.results;
+      } else if (body.search) {
+        // Fall back to keyword search
+        const result = await env.DB.prepare(
+          `SELECT id, project, model, started_at, duration_mins, summary, transcript FROM sessions
+           WHERE summary LIKE ? OR transcript LIKE ?
+           ORDER BY COALESCE(started_at, ended_at) DESC LIMIT 20`
+        ).bind(`%${body.search}%`, `%${body.search}%`).all();
+        sessions = result.results;
+      } else {
+        // No context — search across recent sessions using summaries only
+        const result = await env.DB.prepare(
+          `SELECT id, project, model, started_at, duration_mins, summary FROM sessions
+           ORDER BY COALESCE(started_at, ended_at) DESC LIMIT 50`
+        ).bind().all();
+        sessions = result.results;
+      }
+
+      if (sessions.length === 0) {
+        return json({ answer: "No sessions found to search through.", session_id: null });
+      }
+
+      // Build context — use full transcripts if few sessions, summaries if many
+      const useTranscripts = sessions.length <= 10;
+      const sessionContext = sessions.map((s, i) => {
+        const header = `[Session ${i + 1}] ID: ${s.id} | Project: ${s.project || 'unknown'} | Date: ${s.started_at || 'unknown'} | Model: ${s.model || 'unknown'} | Duration: ${s.duration_mins || '?'}min`;
+        const summary = `Summary: ${s.summary || 'No summary'}`;
+        if (useTranscripts && s.transcript) {
+          // Truncate long transcripts to ~4K chars each
+          const transcript = s.transcript.length > 4000 ? s.transcript.substring(0, 4000) + '\n... [truncated]' : s.transcript;
+          return `${header}\n${summary}\nTranscript:\n${transcript}`;
+        }
+        return `${header}\n${summary}`;
+      }).join('\n\n---\n\n');
+
+      // Call Gemini Flash
+      const geminiResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `You are a helpful assistant that searches through AI coding session logs. You have access to ${sessions.length} session(s) below.
+
+Answer the user's question based on these sessions. Be specific — reference session dates, projects, and details. If you can identify a specific session that answers the question, include its ID.
+
+If the answer isn't in the sessions, say so clearly.
+
+SESSIONS:
+${sessionContext}
+
+USER QUESTION: ${question}
+
+Respond in this JSON format:
+{ "answer": "your answer here", "session_id": "the most relevant session ID or null", "confidence": "high|medium|low" }`
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 1024,
+              responseMimeType: "application/json"
+            }
+          })
+        }
+      );
+
+      if (!geminiResponse.ok) {
+        const err = await geminiResponse.text();
+        return json({ error: 'Gemini API error', detail: err }, 502);
+      }
+
+      const geminiData = await geminiResponse.json();
+      const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+      try {
+        const parsed = JSON.parse(rawText);
+        return json({
+          answer: parsed.answer || rawText,
+          session_id: parsed.session_id || null,
+          confidence: parsed.confidence || 'low',
+          sessions_searched: sessions.length
+        });
+      } catch {
+        return json({ answer: rawText, session_id: null, confidence: 'low', sessions_searched: sessions.length });
+      }
+    }
+
     // POST /fix-timestamps — repair ended_at for bulk-imported sessions
     if (request.method === 'POST' && url.pathname === '/fix-timestamps') {
       const body = await request.json();

@@ -85,6 +85,9 @@ export function SessionsTab() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [transcriptCache, setTranscriptCache] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [aiQuery, setAiQuery] = useState("");
+  const [aiAnswer, setAiAnswer] = useState<{ answer: string; session_id: string | null; confidence: string; sessions_searched: number } | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const headers = { Authorization: `Bearer ${API_TOKEN}` };
 
@@ -117,6 +120,36 @@ export function SessionsTab() {
     if (expandedId === id) { setExpandedId(null); }
     else { setExpandedId(id); fetchFullSession(id); }
   };
+
+  const askAI = useCallback(async () => {
+    if (!aiQuery.trim()) return;
+    setAiLoading(true);
+    setAiAnswer(null);
+    try {
+      const body: Record<string, unknown> = { question: aiQuery };
+      // If we have sessions loaded, pass their IDs for context
+      if (sessions.length > 0) {
+        body.session_ids = sessions.map((s) => s.id);
+      }
+      // Also pass the current keyword search for fallback
+      if (search) body.search = search;
+      const res = await fetch(`${API_BASE}/sessions/ask`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAiAnswer(data);
+        // Auto-expand the referenced session if one was identified
+        if (data.session_id) {
+          setExpandedId(data.session_id);
+          fetchFullSession(data.session_id);
+        }
+      }
+    } catch {}
+    setAiLoading(false);
+  }, [aiQuery, sessions, search]);
 
   useEffect(() => {
     fetch(`${API_BASE}/stats`, { headers }).then((r) => r.json()).then(setStats).catch(() => {});
@@ -170,6 +203,56 @@ export function SessionsTab() {
         </button>
       </div>
 
+      {/* AI Search */}
+      <div className="border border-purple-200 rounded-xl p-4 bg-purple-50/50">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm font-semibold text-purple-700">Ask AI</span>
+          <span className="text-xs text-purple-400">Search across {sessions.length > 0 ? `${sessions.length} loaded sessions` : "all sessions"}</span>
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="e.g. &quot;Which session discusses redirecting the Schwab callback URL?&quot;"
+            value={aiQuery}
+            onChange={(e) => setAiQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && askAI()}
+            className="border border-purple-300 rounded-lg px-3 py-2 text-sm flex-1 text-slate-800 placeholder:text-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          />
+          <button
+            onClick={askAI}
+            disabled={aiLoading || !aiQuery.trim()}
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition disabled:opacity-50"
+          >
+            {aiLoading ? "Thinking..." : "Ask"}
+          </button>
+        </div>
+        {aiAnswer && (
+          <div className="mt-3 bg-white border border-purple-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                aiAnswer.confidence === "high" ? "bg-green-100 text-green-700" :
+                aiAnswer.confidence === "medium" ? "bg-amber-100 text-amber-700" :
+                "bg-slate-100 text-slate-600"
+              }`}>{aiAnswer.confidence} confidence</span>
+              <span className="text-xs text-slate-400">Searched {aiAnswer.sessions_searched} sessions</span>
+            </div>
+            <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{aiAnswer.answer}</p>
+            {aiAnswer.session_id && (
+              <button
+                onClick={() => {
+                  setExpandedId(aiAnswer.session_id);
+                  if (aiAnswer.session_id) fetchFullSession(aiAnswer.session_id);
+                  document.getElementById(`session-${aiAnswer.session_id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+                className="mt-2 text-xs text-purple-600 hover:text-purple-800 font-medium"
+              >
+                Jump to session →
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Sessions list */}
       {loading ? (
         <div className="text-center py-12 text-slate-400">Loading...</div>
@@ -186,7 +269,7 @@ export function SessionsTab() {
             const messages = isExpanded ? parseTranscript(transcriptCache[s.id] || s.transcript || "") : [];
 
             return (
-              <div key={s.id} className="border border-slate-200 rounded-xl overflow-hidden bg-white hover:border-slate-300 transition">
+              <div key={s.id} id={`session-${s.id}`} className="border border-slate-200 rounded-xl overflow-hidden bg-white hover:border-slate-300 transition">
                 <div className="px-5 py-4 cursor-pointer" onClick={() => toggleSession(s.id)}>
                   <div className="flex items-center gap-2">
                     <span className={`inline-block ${projColor} text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0`}>{projName}</span>
