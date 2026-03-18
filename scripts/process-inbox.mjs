@@ -108,9 +108,17 @@ function buildR2Key(item) {
     subfolder = known.r2Sub;
   } else {
     // Build a reasonable subfolder: institution-accountname-number
-    const parts = [item.institution, item.account_name, item.account_number]
+    // Strip institution prefix from account_name to avoid duplication (e.g. "apple" + "Apple Card" → "apple-card" not "apple-apple-card")
+    const instSlug = (item.institution || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    let nameSlug = (item.account_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    if (nameSlug.startsWith(instSlug + '-')) {
+      nameSlug = nameSlug.slice(instSlug.length + 1);
+    } else if (nameSlug === instSlug) {
+      nameSlug = '';
+    }
+    const parts = [instSlug, nameSlug, item.account_number]
       .filter(Boolean)
-      .map(s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''));
+      .map(s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''));
     subfolder = parts.join('-') || 'unknown';
   }
 

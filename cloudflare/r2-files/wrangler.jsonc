@@ -1,0 +1,22 @@
+{
+  "name": "r2-files",
+  "main": "src/index.js",
+  "compatibility_date": "2024-12-01",
+  // Pin to finleg's Cloudflare account (Rah Hui Lio Son Fami)
+  "account_id": "1417f040cdffb8ba923a28be80d095b6",
+  // Deployed at: r2-files.finleg.workers.dev
+  "r2_buckets": [
+    {
+      "binding": "FINANCIAL_STATEMENTS",
+      "bucket_name": "financial-statements"
+    },
+    {
+      "binding": "BOOKKEEPING_DOCS",
+      "bucket_name": "bookkeeping-docs"
+    },
+    {
+      "binding": "LEGAL_DOCS",
+      "bucket_name": "legal-docs"
+    }
+  ]
+}
