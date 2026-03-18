@@ -232,9 +232,13 @@ export default function FinancialLegalTab() {
           category: "category", account_holder: "account_holder", format: "file_type",
         };
         const sortCol = sortColMap[sortBy] || "year";
-        q = q.order(sortCol, { ascending: sortOrder === "asc" });
         if (sortCol === "year") {
-          q = q.order("month", { ascending: sortOrder === "asc", nullsFirst: false });
+          // Sort by statement_date first (most precise), then year/month as fallback
+          q = q.order("statement_date", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
+          q = q.order("year", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
+          q = q.order("month", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
+        } else {
+          q = q.order(sortCol, { ascending: sortOrder === "asc" });
         }
 
         // Pagination
