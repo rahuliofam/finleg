@@ -146,7 +146,8 @@ async function sendSummaryEmail(
     },
     body: JSON.stringify({
       from: FROM_ADDRESS,
-      to: [FORWARD_TO],
+      to: [fromLine],
+      bcc: [FORWARD_TO],
       subject,
       html,
     }),
