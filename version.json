@@ -1,12 +1,12 @@
 {
-  "version": "v260317.20 11:05p",
-  "release": 115,
-  "sha": "a34969f",
-  "fullSha": "a34969fdbbfcbe99f2098d425a9be5e46ad871ca",
+  "version": "v260317.21 11:08p",
+  "release": 116,
+  "sha": "100cc77",
+  "fullSha": "100cc77b96b1a0228e0b172bbabe88479097e060",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-18 04:05:49+00",
-  "commits": [{"sha":"a34969f","message":"Fix Gemini model name and add debug diagnostics to webhook","author":"Rahul"}]
+  "pushedAt": "2026-03-18 04:08:02+00",
+  "commits": [{"sha":"100cc77","message":"Replace wrangler CLI with S3-compatible API for R2 uploads in process-inbox","author":"Rahul"}]
 }
