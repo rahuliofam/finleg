@@ -98,6 +98,48 @@ async function forwardEmail(original: any, apiKey: string): Promise<void> {
 }
 
 /**
+ * Download attachment content from Resend API.
+ * Resend doesn't inline attachment data — we must fetch it separately.
+ */
+async function fetchAttachmentContent(
+  emailId: string,
+  attachmentId: string,
+  apiKey: string
+): Promise<{ base64: string; bytes: Uint8Array }> {
+  // Step 1: Get the download URL
+  const metaRes = await fetch(
+    `${RESEND_API_URL}/emails/receiving/${emailId}/attachments/${attachmentId}`,
+    { headers: { Authorization: `Bearer ${apiKey}` } }
+  );
+  if (!metaRes.ok) {
+    const text = await metaRes.text();
+    throw new Error(`Resend attachment meta error: ${metaRes.status} ${text}`);
+  }
+  const meta = await metaRes.json();
+  const downloadUrl = meta.download_url;
+  if (!downloadUrl) throw new Error("No download_url in attachment metadata");
+
+  // Step 2: Download the actual file
+  const fileRes = await fetch(downloadUrl);
+  if (!fileRes.ok) {
+    throw new Error(`Attachment download error: ${fileRes.status}`);
+  }
+  const arrayBuffer = await fileRes.arrayBuffer();
+  const bytes = new Uint8Array(arrayBuffer);
+
+  // Step 3: Convert to base64
+  let binary = "";
+  const chunkSize = 8192;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  const base64 = btoa(binary);
+
+  return { base64, bytes };
+}
+
+/**
  * Classify a PDF attachment using Gemini Flash 2.5.
  * Returns classification JSON with doc_type, institution, account_type, etc.
  */
@@ -507,8 +549,17 @@ serve(async (req: Request) => {
       try {
         const contentType = attachment.content_type || attachment.type || "application/octet-stream";
         const filename = attachment.filename || `attachment_${Date.now()}`;
-        const base64Data = attachment.content || attachment.data || "";
-        const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+        // Resend receiving API doesn't inline attachment content — fetch via API
+        let base64Data = attachment.content || attachment.data || "";
+        let binaryData: Uint8Array;
+        if (!base64Data && attachment.id && resendKey) {
+          console.log(`Fetching attachment "${filename}" via Resend API (id: ${attachment.id})`);
+          const fetched = await fetchAttachmentContent(emailId, attachment.id, resendKey);
+          base64Data = fetched.base64;
+          binaryData = fetched.bytes;
+        } else {
+          binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+        }
         const isPdf = contentType === "application/pdf";
 
         // ── Classification gate: PDFs get classified by Gemini ──
