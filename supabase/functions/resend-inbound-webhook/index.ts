@@ -6,6 +6,7 @@ const FORWARD_TO = "rahchak@gmail.com";
 const FROM_ADDRESS = "agent@finleg.net";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta";
+const HOSTINGER_TRIGGER_URL = "https://finleg-trigger.alpacapps.com";
 
 const CLASSIFICATION_PROMPT = `Analyze this PDF document. Determine if it is:
 1. A financial STATEMENT (bank statement, credit card statement, brokerage/investment statement, loan statement, HELOC statement, mortgage statement)
@@ -560,6 +561,23 @@ function extractCategoryFromSubject(subject: string): string | null {
   return null;
 }
 
+/**
+ * Fire-and-forget trigger to Hostinger to start processing immediately.
+ * Falls back silently — the cron is still there as a safety net.
+ */
+async function triggerHostinger(endpoint: string, triggerSecret: string) {
+  try {
+    const res = await fetch(`${HOSTINGER_TRIGGER_URL}${endpoint}`, {
+      method: "POST",
+      headers: { "x-trigger-secret": triggerSecret, "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(5000),
+    });
+    console.log(`Hostinger trigger ${endpoint}: ${res.status}`);
+  } catch (err: any) {
+    console.warn(`Hostinger trigger ${endpoint} failed (cron will pick up):`, err.message);
+  }
+}
+
 // ============================================================
 // Main handler
 // ============================================================
@@ -573,6 +591,7 @@ serve(async (req: Request) => {
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
   const geminiKey = Deno.env.get("GEMINI_API_KEY");
+  const triggerSecret = Deno.env.get("HOSTINGER_TRIGGER_SECRET") || "";
 
   if (!resendKey) throw new Error("RESEND_API_KEY not set");
 
@@ -786,6 +805,9 @@ serve(async (req: Request) => {
                 filename,
                 attachment_size: binaryData.length,
               });
+
+              // Trigger Hostinger to process immediately (fire-and-forget)
+              triggerHostinger("/process-statement", triggerSecret);
             }
 
             continue; // Skip receipt processing for this attachment
@@ -847,6 +869,9 @@ serve(async (req: Request) => {
                 filename,
                 attachment_size: binaryData.length,
               });
+
+              // Trigger Hostinger to process immediately (fire-and-forget)
+              triggerHostinger("/process-tax-return", triggerSecret);
             }
 
             continue; // Skip receipt processing for this attachment
