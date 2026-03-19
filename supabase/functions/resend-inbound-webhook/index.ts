@@ -7,7 +7,10 @@ const FROM_ADDRESS = "agent@finleg.net";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta";
 
-const CLASSIFICATION_PROMPT = `Analyze this PDF document. Determine if it is a financial STATEMENT (bank statement, credit card statement, brokerage/investment statement, loan statement, HELOC statement, mortgage statement) or a RECEIPT/INVOICE (a record of a single purchase or payment).
+const CLASSIFICATION_PROMPT = `Analyze this PDF document. Determine if it is:
+1. A financial STATEMENT (bank statement, credit card statement, brokerage/investment statement, loan statement, HELOC statement, mortgage statement)
+2. A TAX RETURN or tax-related document (Form 1040, 1041, 1065, 1120S, 706, 709, W-2, 1099, K-1, any IRS form or schedule, state tax return, 1040-V payment voucher, tax extension, or any document from a tax preparer containing tax forms)
+3. A RECEIPT/INVOICE (a record of a single purchase or payment)
 
 If it is a STATEMENT, extract:
 - institution: lowercase slug (e.g. "amex", "chase", "schwab", "us-bank", "apple", "robinhood", "pnc", "bank-of-america", "coinbase", "wells-fargo")
@@ -21,6 +24,14 @@ If it is a STATEMENT, extract:
 
 Return ONLY valid JSON, no markdown fences:
 {"doc_type": "statement", "institution": "...", "account_type": "...", "account_name": "...", "account_number": "...", "account_holder": "...", "statement_date": "YYYY-MM-DD", "period_start": "YYYY-MM-DD", "period_end": "YYYY-MM-DD", "confidence": 0.95}
+
+If it is a TAX RETURN or tax-related document, extract:
+- return_type: the main IRS form number ("1040", "1041", "1065", "1120S", "706", "709", "1040V", or "other")
+- tax_year: the tax year covered (e.g. 2023)
+- entity_name: taxpayer name as shown on the return
+- entity_type: "individual", "trust", "estate", "partnership", or "corporation"
+
+Return: {"doc_type": "tax_return", "return_type": "1040", "tax_year": 2023, "entity_name": "John Smith", "entity_type": "individual", "confidence": 0.95}
 
 If it is a RECEIPT/INVOICE or you cannot determine, return:
 {"doc_type": "receipt", "confidence": 0.95}
@@ -718,6 +729,66 @@ serve(async (req: Request) => {
                 statement_date: classification.statement_date,
                 period_start: classification.period_start,
                 period_end: classification.period_end,
+                filename,
+                attachment_size: binaryData.length,
+              });
+            }
+
+            continue; // Skip receipt processing for this attachment
+          }
+
+          // ── Tax return flow ──
+          if (classification.doc_type === "tax_return" && classification.confidence >= 0.5) {
+            console.log(`Processing as tax return: ${classification.return_type} for ${classification.entity_name} (${classification.tax_year})`);
+
+            // Store PDF in statements bucket (tax-returns subfolder)
+            const attachmentUrl = await storeStatementAttachment(supabase, `tax-returns/${filename}`, binaryData, contentType);
+
+            // Insert into statement_inbox with doc_type = 'tax_return' for the batch processor to pick up
+            const inboxRow = {
+              email_id: emailId,
+              from_address: fromLine,
+              subject: email.subject || null,
+              received_at: email.created_at || new Date().toISOString(),
+              attachment_filename: filename,
+              attachment_url: attachmentUrl,
+              attachment_size: binaryData.length,
+              doc_type: "tax_return",
+              institution: "irs",
+              account_type: classification.return_type || "1040",
+              account_name: classification.entity_name || null,
+              account_holder: classification.entity_name || null,
+              statement_date: classification.tax_year ? `${classification.tax_year}-12-31` : null,
+              classification_confidence: classification.confidence || 0,
+              classification_raw: classification,
+              status: "pending",
+            };
+
+            const { data: inserted, error: insertError } = await supabase
+              .from("statement_inbox")
+              .insert(inboxRow)
+              .select("id")
+              .single();
+
+            if (insertError) {
+              console.error("Failed to insert tax return to statement_inbox:", insertError);
+            } else {
+              await logActivity(supabase, "tax_return_received", "statement_inbox", inserted.id, "gemini", {
+                return_type: classification.return_type,
+                tax_year: classification.tax_year,
+                entity_name: classification.entity_name,
+                confidence: classification.confidence,
+                filename,
+                from: fromLine,
+              });
+
+              processedStatements.push({
+                id: inserted.id,
+                institution: "IRS",
+                account_type: `Form ${classification.return_type}`,
+                account_name: classification.entity_name,
+                account_holder: classification.entity_name,
+                statement_date: classification.tax_year ? `${classification.tax_year}-12-31` : null,
                 filename,
                 attachment_size: binaryData.length,
               });
