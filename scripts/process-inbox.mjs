@@ -6,10 +6,11 @@
  * and inserts structured data into Supabase statement tables.
  *
  * Usage:
- *   node scripts/process-inbox.mjs                   # Process all pending
+ *   node scripts/process-inbox.mjs                   # Process all pending + auto-retry failed
  *   node scripts/process-inbox.mjs --dry-run          # Parse but don't insert
  *   node scripts/process-inbox.mjs --limit 5          # Process max 5 items
  *   node scripts/process-inbox.mjs --id <uuid>        # Process specific inbox item
+ *   node scripts/process-inbox.mjs --id <uuid> --retry # Force-retry a failed item (resets retry count)
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -33,6 +34,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 // ── CLI args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
+const FORCE_RETRY = args.includes('--retry');
 const LIMIT = parseInt(getArg('--limit') || '50');
 const SPECIFIC_ID = getArg('--id');
 const MODEL = 'sonnet';
@@ -433,18 +435,57 @@ function getPrompt(accountType) {
   return CC_PROMPT; // fallback
 }
 
+// ── Retry config ─────────────────────────────────────────────────────────────
+const MAX_RETRIES = 3;
+const RETRY_STRATEGIES = [
+  { timeout: 600000, model: MODEL, maxTurns: 4, label: 'default' },
+  { timeout: 900000, model: MODEL, maxTurns: 6, label: 'chunked' },
+  { timeout: 1200000, model: 'opus', maxTurns: 8, label: 'opus-thorough' },
+];
+
+// Extract retry count from error_message format: "[retry:N] error text"
+function getRetryCount(errorMessage) {
+  const match = (errorMessage || '').match(/^\[retry:(\d+)]/);
+  return match ? parseInt(match[1]) : 0;
+}
+
 // ── Parse PDF with Claude CLI ────────────────────────────────────────────────
-async function parsePdfWithClaude(pdfPath, accountType) {
+async function parsePdfWithClaude(pdfPath, accountType, retryContext = null) {
   const prompt = getPrompt(accountType);
   const promptPath = pdfPath.replace('.pdf', '-prompt.txt');
-  const fullPrompt = `Read the PDF file at ${pdfPath} and extract the data.\n\n${prompt}`;
+  const attempt = retryContext?.attempt || 1;
+  const strategy = RETRY_STRATEGIES[Math.min(attempt - 1, RETRY_STRATEGIES.length - 1)];
+
+  // Build adaptive prompt with retry context
+  let fullPrompt = `Read the PDF file at ${pdfPath} and extract the data.\n\n`;
+
+  if (retryContext && attempt > 1) {
+    fullPrompt += `IMPORTANT CONTEXT: Previous parse attempt #${attempt - 1} failed.\n`;
+    fullPrompt += `Error: ${retryContext.previousError}\n`;
+    fullPrompt += `Strategy used: ${retryContext.previousStrategy}\n\n`;
+
+    if (attempt === 2) {
+      fullPrompt += `This time, use a chunked extraction approach:\n`;
+      fullPrompt += `1. First extract ONLY the summary/header fields (balances, dates, limits).\n`;
+      fullPrompt += `2. Then extract transactions in groups of ~30, processing page by page.\n`;
+      fullPrompt += `3. Combine everything into one final JSON output.\n`;
+      fullPrompt += `Take your time — accuracy over speed.\n\n`;
+    } else {
+      fullPrompt += `This is the FINAL attempt (#3). The PDF is complex and has failed twice.\n`;
+      fullPrompt += `Read the PDF very carefully, page by page.\n`;
+      fullPrompt += `Extract summary fields first. Then systematically go through every page for transactions.\n`;
+      fullPrompt += `If the PDF has many transactions, output them ALL — do not truncate.\n\n`;
+    }
+  }
+
+  fullPrompt += prompt;
   writeFileSync(promptPath, fullPrompt);
 
-  const cmd = `cat ${shellEsc(promptPath)} | CLAUDECODE="" claude --print --model ${MODEL} --allowedTools Read --max-turns 4`;
+  const cmd = `cat ${shellEsc(promptPath)} | CLAUDECODE="" claude --print --model ${strategy.model} --allowedTools Read --max-turns ${strategy.maxTurns}`;
 
   try {
     const { stdout } = await execAsync(cmd, {
-      timeout: 600000,
+      timeout: strategy.timeout,
       maxBuffer: 10 * 1024 * 1024,
     });
 
@@ -464,7 +505,7 @@ async function parsePdfWithClaude(pdfPath, accountType) {
     console.error(`  ✗ No JSON found in response (first 200 chars): ${text.slice(0, 200)}`);
     return null;
   } catch (e) {
-    console.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 500)}`);
+    console.error(`  ✗ Claude CLI error (${strategy.label}): ${e.message?.slice(0, 500)}`);
     if (e.stderr) console.error(`  ✗ stderr: ${e.stderr?.slice(0, 500)}`);
     return null;
   } finally {
@@ -836,10 +877,25 @@ async function insertLoanStatement(doc, parsed) {
   return true;
 }
 
+// ── Clean up partial inserts before retry ────────────────────────────────────
+async function cleanupPartialInserts(documentId) {
+  if (!documentId) return;
+  // Delete any partial data from previous failed attempts
+  for (const table of ['cc_transactions', 'checking_transactions', 'investment_transactions', 'loan_transactions', 'holdings_snapshots', 'realized_gain_loss']) {
+    await supabase.from(table).delete().eq('document_id', documentId);
+  }
+  for (const table of ['cc_statement_summaries', 'checking_statement_summaries', 'investment_statement_summaries', 'loan_statement_summaries']) {
+    await supabase.from(table).delete().eq('document_id', documentId);
+  }
+}
+
 // ── Process a single inbox item ─────────────────────────────────────────────
 async function processItem(item) {
   const label = `${item.institution || '?'}/${item.account_type || '?'} ${item.statement_date || '?'}`;
-  console.log(`\n  → Processing: ${label} (${item.attachment_filename})`);
+  const priorRetries = getRetryCount(item.error_message);
+  const isRetry = item.status === 'error' && priorRetries > 0;
+
+  console.log(`\n  → Processing: ${label} (${item.attachment_filename})${isRetry ? ` [retry ${priorRetries}/${MAX_RETRIES}]` : ''}`);
 
   // Mark as processing
   await supabase
@@ -855,18 +911,15 @@ async function processItem(item) {
     const fileSize = await downloadToFile(item.attachment_url, tmpPath);
     console.log(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
 
-    // 2. Build R2 key and upload
-    const r2Key = buildR2Key(item);
-    console.log(`    R2 key: ${r2Key}`);
+    // 2. Build R2 key and upload (skip if already done on a prior attempt)
+    const r2Key = item.r2_key || buildR2Key(item);
+    let documentId = item.document_id || null;
 
-    if (!DRY_RUN) {
+    if (!DRY_RUN && !item.r2_key) {
+      console.log(`    R2 key: ${r2Key}`);
       console.log(`    Uploading to R2...`);
       await uploadToR2(tmpPath, r2Key);
-    }
 
-    // 3. Upsert document_index
-    let documentId = null;
-    if (!DRY_RUN) {
       console.log(`    Indexing in document_index...`);
       documentId = await upsertDocumentIndex(item, r2Key, fileSize);
 
@@ -874,23 +927,71 @@ async function processItem(item) {
         .from('statement_inbox')
         .update({ status: 'indexed', r2_key: r2Key, document_id: documentId, updated_at: new Date().toISOString() })
         .eq('id', item.id);
+    } else if (item.r2_key) {
+      console.log(`    R2 key: ${r2Key} (already uploaded)`);
     }
 
-    // 4. Parse with Claude CLI
-    console.log(`    Parsing with Claude (${MODEL})...`);
-    const parsed = await parsePdfWithClaude(tmpPath, item.account_type);
+    // 3. Parse with Claude CLI — retry loop
+    const startAttempt = priorRetries + 1;
+    let parsed = null;
+    let lastError = null;
+    let successAttempt = 0;
 
-    if (!parsed) {
-      throw new Error('Claude CLI returned no parseable JSON');
-    }
+    for (let attempt = startAttempt; attempt <= MAX_RETRIES; attempt++) {
+      const strategy = RETRY_STRATEGIES[Math.min(attempt - 1, RETRY_STRATEGIES.length - 1)];
+      const retryContext = attempt === 1 ? null : {
+        attempt,
+        previousError: lastError,
+        previousStrategy: RETRY_STRATEGIES[Math.min(attempt - 2, RETRY_STRATEGIES.length - 1)].label,
+      };
 
-    if (parsed.is_statement === false) {
-      console.log(`    SKIPPED — not a statement`);
+      console.log(`    Parsing with Claude (${strategy.model}/${strategy.label}), attempt ${attempt}/${MAX_RETRIES}...`);
+
+      // Clean up any partial inserts from prior attempts
+      if (attempt > 1 && documentId) {
+        await cleanupPartialInserts(documentId);
+      }
+
+      parsed = await parsePdfWithClaude(tmpPath, item.account_type, retryContext);
+
+      if (parsed && parsed.is_statement !== false) {
+        successAttempt = attempt;
+        break; // Success
+      }
+
+      // Determine error
+      if (!parsed) {
+        lastError = 'Claude CLI returned no parseable JSON';
+      } else if (parsed.is_statement === false) {
+        // Not a statement — don't retry, this is a classification issue
+        console.log(`    SKIPPED — not a statement`);
+        await supabase
+          .from('statement_inbox')
+          .update({ status: 'error', error_message: 'Not a statement (Claude)', updated_at: new Date().toISOString() })
+          .eq('id', item.id);
+        return { status: 'not_statement' };
+      }
+
+      // Update DB with retry progress
       await supabase
         .from('statement_inbox')
-        .update({ status: 'error', error_message: 'Not a statement (Claude)', updated_at: new Date().toISOString() })
+        .update({
+          status: 'error',
+          error_message: `[retry:${attempt}] ${lastError?.slice(0, 450)}`,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', item.id);
-      return { status: 'not_statement' };
+
+      if (attempt < MAX_RETRIES) {
+        console.log(`    ⟳ Attempt ${attempt} failed: ${lastError?.slice(0, 80)}. Waiting 10s before retry...`);
+        await new Promise(r => setTimeout(r, 10000));
+      } else {
+        console.error(`    ✗ All ${MAX_RETRIES} attempts failed: ${lastError?.slice(0, 200)}`);
+      }
+    }
+
+    if (!parsed) {
+      throw new Error(`[retry:${MAX_RETRIES}] All ${MAX_RETRIES} parse attempts failed. Last error: ${lastError}`);
     }
 
     const txnCount = (parsed.transactions || []).length + (parsed.holdings || []).length;
@@ -900,10 +1001,8 @@ async function processItem(item) {
       return { status: 'dry_run', txnCount };
     }
 
-    // 5. Insert into statement tables
-    // Enrich the item with document_id and r2_key for insert functions
+    // 4. Insert into statement tables
     const doc = { ...item, document_id: documentId, r2_key: r2Key };
-
     const tableType = getTableType(item.account_type);
     let ok = false;
 
@@ -917,20 +1016,22 @@ async function processItem(item) {
     }
 
     if (ok) {
-      console.log(`    ✓ Inserted: ${txnCount} items`);
+      console.log(`    ✓ Inserted: ${txnCount} items${successAttempt > 1 ? ` (succeeded on attempt ${successAttempt})` : ''}`);
       await supabase
         .from('statement_inbox')
-        .update({ status: 'parsed', processed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .update({ status: 'parsed', error_message: null, processed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
         .eq('id', item.id);
       return { status: 'success', txnCount };
     } else {
       throw new Error('Insert failed');
     }
   } catch (err) {
-    console.error(`    ✗ Error: ${err.message}`);
+    const retryNum = getRetryCount(err.message) || (priorRetries + 1);
+    const errMsg = err.message?.startsWith('[retry:') ? err.message.slice(0, 500) : `[retry:${retryNum}] ${err.message?.slice(0, 450)}`;
+    console.error(`    ✗ Error: ${err.message?.slice(0, 200)}`);
     await supabase
       .from('statement_inbox')
-      .update({ status: 'error', error_message: err.message?.slice(0, 500), updated_at: new Date().toISOString() })
+      .update({ status: 'error', error_message: errMsg, updated_at: new Date().toISOString() })
       .eq('id', item.id);
     return { status: 'error' };
   } finally {
@@ -943,33 +1044,65 @@ async function main() {
   console.log(`\n╔══════════════════════════════════════════╗`);
   console.log(`║  Statement Inbox Processor               ║`);
   console.log(`╚══════════════════════════════════════════╝`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Model: ${MODEL}\n`);
+  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Model: ${MODEL} | Retry: ${FORCE_RETRY ? 'force' : 'auto'}\n`);
 
-  // Fetch pending items
-  let query = supabase
-    .from('statement_inbox')
-    .select('*')
-    .in('status', ['pending', 'indexed'])
-    .order('created_at', { ascending: true })
-    .limit(LIMIT);
+  // Force-reset a specific item for retry
+  if (SPECIFIC_ID && FORCE_RETRY) {
+    await supabase
+      .from('statement_inbox')
+      .update({ status: 'pending', error_message: null, updated_at: new Date().toISOString() })
+      .eq('id', SPECIFIC_ID);
+    console.log(`  Reset ${SPECIFIC_ID} for force-retry\n`);
+  }
+
+  // Fetch items to process
+  let items;
 
   if (SPECIFIC_ID) {
-    query = supabase
+    const { data, error } = await supabase
       .from('statement_inbox')
       .select('*')
       .eq('id', SPECIFIC_ID);
+    if (error) throw new Error(`Query error: ${error.message}`);
+    items = data || [];
+  } else {
+    // Fetch pending/indexed items AND errored items that haven't exhausted retries
+    const { data: pending } = await supabase
+      .from('statement_inbox')
+      .select('*')
+      .in('status', ['pending', 'indexed'])
+      .order('created_at', { ascending: true })
+      .limit(LIMIT);
+
+    const { data: retryable } = await supabase
+      .from('statement_inbox')
+      .select('*')
+      .eq('status', 'error')
+      .not('error_message', 'like', '%Not a statement%')
+      .not('error_message', 'like', `%[retry:${MAX_RETRIES}]%`)
+      .order('created_at', { ascending: true })
+      .limit(LIMIT);
+
+    // Merge: pending first, then retryable errors
+    const pendingIds = new Set((pending || []).map(i => i.id));
+    items = [...(pending || [])];
+    for (const r of (retryable || [])) {
+      if (!pendingIds.has(r.id)) items.push(r);
+    }
+    items = items.slice(0, LIMIT);
+
+    const retryCount = (retryable || []).filter(r => !pendingIds.has(r.id)).length;
+    console.log(`Found ${items.length} item(s) (${(pending || []).length} pending, ${retryCount} retryable)\n`);
   }
 
-  const { data: items, error } = await query;
-  if (error) throw new Error(`Query error: ${error.message}`);
-
-  console.log(`Found ${items?.length || 0} pending statement(s)\n`);
-  if (!items?.length) return;
+  if (!items.length) {
+    console.log('Nothing to process.\n');
+    return;
+  }
 
   const stats = { success: 0, dry_run: 0, error: 0, not_statement: 0, unsupported_type: 0, totalTxns: 0 };
   const startTime = Date.now();
 
-  // Process sequentially (Claude CLI is the bottleneck)
   for (const item of items) {
     const result = await processItem(item);
     stats[result.status] = (stats[result.status] || 0) + 1;
