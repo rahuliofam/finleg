@@ -78,6 +78,32 @@ echo '["collection-id"]' | bw encode | bw move "item-id" "org-id"
 bw sync
 ```
 
+## Collection Naming Convention
+
+| Pattern | Example | Contents |
+|---|---|---|
+| `DevOps-{project}` | `DevOps-alpacapps` | API keys, OAuth, bot tokens, server access for one project |
+| `DevOps-shared` | `DevOps-shared` | Cross-project infra (Cloudflare, R2, domain registrars) |
+| `{Person} Financial` | `Rahul Financial` | Banks, cards, loans, investments |
+| `{Person} General` | `Rahul General` | Utilities, insurance, shopping, govt, medical |
+| `{Business} Internet` | `Alpaca Internet` | Business web accounts (Airbnb, VRBO, social media) |
+| `Family Tax` | `Family Tax` | SSNs, security Q&A, identity info |
+| `Alpaca House` | `Alpaca House` | Shareable house credentials (WiFi, doors, smart home) |
+
+## Item Structure
+
+### API Credentials
+- **Title:** `{Service} — {Purpose}` (e.g., "Stripe — Payment Processing")
+- **Fields:** API key, OAuth client ID/secret, refresh tokens, base URL, webhook URL
+
+### Server Access
+- **Title:** `{Provider} — {Role}` (e.g., "Hostinger VPS — OpenClaw Server")
+- **Fields:** IP, SSH user, password, OS, specs, domain
+
+### Login Accounts
+- **Title:** `{Service}` or `{Service} — {Context}`
+- **Fields:** Account number, card number, autopay account, due date, policy number
+
 ## Sharing Collections
 
 To share a collection with someone (e.g., accountant):
@@ -85,3 +111,16 @@ To share a collection with someone (e.g., accountant):
 1. Invite them: Bitwarden web vault → Organization → Members → Invite
 2. Assign collections: grant access to only specific collections
 3. Set permissions: read-only or can edit
+
+## Shell Integration (Portsie)
+
+Portsie has additional `bw-*` helper functions for `.env.local` generation:
+
+```bash
+source ~/Documents/CodingProjects/portsie/scripts/bw-secrets.sh
+bw-env          # Generate .env.local from Bitwarden "Portsie Dev Env" item
+bw-get FIELD    # Get a single secret
+bw-status       # Check session status
+```
+
+See `scripts/bw-profile.sh` (sourced in `~/.zshrc`) for auto-session restore on shell startup.
