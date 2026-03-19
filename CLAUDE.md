@@ -8,6 +8,7 @@
 > - `docs/DEPLOY.md` — **load for:** pushing, deploying, version questions
 > - `docs/INTEGRATIONS.md` — **load for:** external APIs, vendor setup, pricing
 > - `docs/CHANGELOG.md` — **load for:** understanding recent changes, migration context
+> - `docs/SECRETS-BITWARDEN.md` — **load for:** Bitwarden CLI, secrets management, vault organization, sharing credentials
 
 > **IMPORTANT: First-time setup!**
 > Run `/setup-alpacapps-infra` to set up the full infrastructure interactively.
