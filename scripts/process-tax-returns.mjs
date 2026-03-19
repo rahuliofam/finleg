@@ -732,7 +732,7 @@ async function sendSuccessEmail(filename, data, formsInserted) {
     if (data.summary.amount_owed) html += metaRow('Amount Owed', fmtUsd(data.summary.amount_owed));
     if (data.summary.refund_amount) html += metaRow('Refund', fmtUsd(data.summary.refund_amount));
   }
-  html += metaRow('Forms Stored', formsInserted.join(', '));
+  html += metaRow('Forms Extracted and Stored', formsInserted.join(', '));
   html += `</table></div>`;
   html += `</div>`;
 
