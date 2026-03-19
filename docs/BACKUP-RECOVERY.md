@@ -177,7 +177,63 @@ Pre-migration dumps are saved to `backups/` (gitignored) with timestamps.
 
 ---
 
-## 6. R2 File Recovery
+## 6. Google Drive Sync (rclone → RVAULT20)
+
+**Script:** `~/scripts/sync-gdrive-to-rvault.sh` (on Alpaca Mac)
+**Schedule:** Daily at 2am via crontab
+**Destination:** `/Volumes/RVAULT20/GDriveSync/`
+
+### Remotes
+
+| Remote | Account | Local Path |
+|--------|---------|------------|
+| `gdrive:` | rahulioson@gmail.com | `GDriveSync/googledrivesync-rahulioson/` |
+| `gdrive-tesloop:` | rahulio@tesloop.com | `GDriveSync/googledrivesync-tesloop/` |
+
+### Usage (SSH to Alpaca Mac)
+
+```bash
+ssh alpacamac
+
+# Sync both accounts
+~/scripts/sync-gdrive-to-rvault.sh
+
+# Sync one account only
+~/scripts/sync-gdrive-to-rvault.sh rahulioson
+~/scripts/sync-gdrive-to-rvault.sh tesloop
+
+# Preview what would sync
+~/scripts/sync-gdrive-to-rvault.sh --dry-run
+
+# Check logs
+tail -50 ~/logs/gdrive-sync.log
+
+# Check if sync is running
+ps aux | grep rclone | grep -v grep
+```
+
+### Re-auth (if tokens expire)
+
+Refresh tokens auto-renew, but if a remote stops working:
+
+```bash
+ssh alpacamac
+/usr/local/bin/rclone config reconnect gdrive:         # rahulioson@gmail.com
+/usr/local/bin/rclone config reconnect gdrive-tesloop:  # rahulio@tesloop.com
+```
+
+This requires browser auth — run from a session with display access (VNC/Screen Sharing).
+
+### Notes
+
+- Uses `rclone sync` (mirror mode) — files deleted from Drive will be deleted locally
+- Excludes `.DS_Store`, `.tmp`, `.Trash`
+- 4 parallel transfers, fast-list enabled for speed
+- Google Photos sync (`gphotos:`) is configured but not included in the automated job — Google Photos API has severe rate limits that make full sync impractical
+
+---
+
+## 7. R2 File Recovery
 
 R2 files are uploaded from local source files. If R2 data is lost:
 
