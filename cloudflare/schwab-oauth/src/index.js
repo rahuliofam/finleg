@@ -71,7 +71,7 @@ async function getSchwabInstitutionId(env) {
 
 function handleAuth(url, env) {
   const state = crypto.randomUUID();
-  const callbackUrl = `${url.origin}/schwab/callback`;
+  const callbackUrl = 'https://www.portsie.com/schwab/callback';
 
   const params = new URLSearchParams({
     client_id: env.SCHWAB_APP_KEY,
@@ -89,7 +89,7 @@ async function handleCallback(url, env) {
     return redirectToIntranet('error=missing_code');
   }
 
-  const callbackUrl = `${url.origin}/schwab/callback`;
+  const callbackUrl = 'https://www.portsie.com/schwab/callback';
   const credentials = btoa(`${env.SCHWAB_APP_KEY}:${env.SCHWAB_APP_SECRET}`);
 
   const tokenRes = await fetch(SCHWAB_TOKEN_URL, {
