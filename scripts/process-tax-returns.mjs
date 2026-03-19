@@ -7,9 +7,10 @@
  * tables + EAV, and emails conflicts to rahchak@gmail.com.
  *
  * Usage:
- *   node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"   # Process a directory
- *   node scripts/process-tax-returns.mjs --file "/path/to/file.pdf"  # Process single file
- *   node scripts/process-tax-returns.mjs --dry-run --dir "/path"     # Extract but don't insert
+ *   node scripts/process-tax-returns.mjs --inbox                     # Poll statement_inbox for pending tax returns
+ *   node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"       # Process a directory of local PDFs
+ *   node scripts/process-tax-returns.mjs --file "/path/to/file.pdf"  # Process single local file
+ *   node scripts/process-tax-returns.mjs --dry-run --inbox           # Extract but don't insert
  *   node scripts/process-tax-returns.mjs --limit 5 --dir "/path"     # Process max 5 files
  *   node scripts/process-tax-returns.mjs --gemini-only               # Skip Claude verification
  *   node scripts/process-tax-returns.mjs --reprocess --entity "Rahul" --year 2023  # Re-extract
@@ -45,6 +46,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
 const GEMINI_ONLY = args.includes('--gemini-only');
+const INBOX_MODE = args.includes('--inbox');
 const LIMIT = parseInt(getArg('--limit') || '100');
 const DIR_PATH = getArg('--dir');
 const FILE_PATH = getArg('--file');
@@ -1458,48 +1460,158 @@ function discoverPdfs(dirPath) {
   return filtered.slice(0, LIMIT);
 }
 
+// ── Download file from URL to temp path ─────────────────────────────────────
+async function downloadToFile(url, destPath) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
+  const buffer = Buffer.from(await res.arrayBuffer());
+  writeFileSync(destPath, buffer);
+  return buffer.length;
+}
+
+// ── Inbox mode: poll statement_inbox for pending tax returns ─────────────────
+async function processInbox() {
+  console.log(`Polling statement_inbox for pending tax returns...\n`);
+
+  const { data: items, error } = await supabase
+    .from('statement_inbox')
+    .select('*')
+    .eq('doc_type', 'tax_return')
+    .in('status', ['pending', 'indexed'])
+    .order('created_at', { ascending: true })
+    .limit(LIMIT);
+
+  if (error) throw new Error(`Inbox query error: ${error.message}`);
+
+  console.log(`Found ${items?.length || 0} pending tax return(s)\n`);
+  if (!items?.length) return { total: 0 };
+
+  const stats = { success: 0, dry_run: 0, error: 0, not_tax_return: 0, skipped_existing: 0 };
+
+  for (const item of items) {
+    const label = `${item.account_name || '?'} — ${item.account_type || '?'} (${item.attachment_filename})`;
+    console.log(`\n  → Inbox item: ${label}`);
+
+    // Mark as processing
+    await supabase
+      .from('statement_inbox')
+      .update({ status: 'processing', updated_at: new Date().toISOString() })
+      .eq('id', item.id);
+
+    const tmpPath = `/tmp/tax-inbox-${item.id}.pdf`;
+
+    try {
+      // Download from Supabase Storage
+      console.log(`    Downloading from storage...`);
+      const fileSize = await downloadToFile(item.attachment_url, tmpPath);
+      console.log(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
+
+      // Process the file
+      const result = await processFile(tmpPath);
+      stats[result.status] = (stats[result.status] || 0) + 1;
+
+      // Update inbox status
+      if (result.status === 'success') {
+        await supabase
+          .from('statement_inbox')
+          .update({
+            status: 'parsed',
+            processed_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', item.id);
+      } else if (result.status === 'not_tax_return') {
+        await supabase
+          .from('statement_inbox')
+          .update({
+            status: 'error',
+            error_message: 'Not a tax return',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', item.id);
+      } else if (result.status === 'error') {
+        await supabase
+          .from('statement_inbox')
+          .update({
+            status: 'error',
+            error_message: result.error?.slice(0, 500) || 'Unknown error',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', item.id);
+      }
+    } catch (err) {
+      console.error(`    ✗ Error: ${err.message}`);
+      stats.error++;
+      await supabase
+        .from('statement_inbox')
+        .update({
+          status: 'error',
+          error_message: err.message?.slice(0, 500),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', item.id);
+    } finally {
+      try { unlinkSync(tmpPath); } catch { /* ignore */ }
+    }
+  }
+
+  return { total: items.length, ...stats };
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
   console.log(`\n╔══════════════════════════════════════════╗`);
   console.log(`║  Tax Return Processor                    ║`);
   console.log(`╚══════════════════════════════════════════╝`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Extraction: ${GEMINI_ONLY ? 'Gemini only' : 'Gemini + Claude'} | Limit: ${LIMIT}\n`);
+  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Source: ${INBOX_MODE ? 'INBOX' : 'LOCAL'} | Extraction: ${GEMINI_ONLY ? 'Gemini only' : 'Gemini + Claude'} | Limit: ${LIMIT}\n`);
 
-  let files = [];
+  const startTime = Date.now();
+  let stats;
 
-  if (FILE_PATH) {
-    if (!existsSync(FILE_PATH)) {
-      console.error(`File not found: ${FILE_PATH}`);
+  if (INBOX_MODE) {
+    // Poll statement_inbox for pending tax returns
+    const result = await processInbox();
+    stats = result;
+  } else {
+    // Local file mode
+    let files = [];
+
+    if (FILE_PATH) {
+      if (!existsSync(FILE_PATH)) {
+        console.error(`File not found: ${FILE_PATH}`);
+        process.exit(1);
+      }
+      files = [FILE_PATH];
+    } else if (DIR_PATH) {
+      files = discoverPdfs(DIR_PATH);
+    } else {
+      console.error('Must specify --inbox, --dir, or --file');
+      console.log('Usage:');
+      console.log('  node scripts/process-tax-returns.mjs --inbox                        # Poll inbox');
+      console.log('  node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"          # Local directory');
+      console.log('  node scripts/process-tax-returns.mjs --file "/path/to/file.pdf"     # Single file');
       process.exit(1);
     }
-    files = [FILE_PATH];
-  } else if (DIR_PATH) {
-    files = discoverPdfs(DIR_PATH);
-  } else {
-    console.error('Must specify --dir or --file');
-    console.log('Usage: node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"');
-    process.exit(1);
-  }
 
-  console.log(`Found ${files.length} PDF(s) to process\n`);
-  if (!files.length) return;
+    console.log(`Found ${files.length} PDF(s) to process\n`);
+    if (!files.length) return;
 
-  const stats = { success: 0, dry_run: 0, error: 0, not_tax_return: 0, skipped_existing: 0 };
-  const startTime = Date.now();
+    stats = { success: 0, dry_run: 0, error: 0, not_tax_return: 0, skipped_existing: 0 };
 
-  // Process sequentially (API rate limits)
-  for (const file of files) {
-    const result = await processFile(file);
-    stats[result.status] = (stats[result.status] || 0) + 1;
+    // Process sequentially (API rate limits)
+    for (const file of files) {
+      const result = await processFile(file);
+      stats[result.status] = (stats[result.status] || 0) + 1;
+    }
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log(`\n══════════════════════════════════════════`);
   console.log(`COMPLETE in ${elapsed}s`);
-  console.log(`  Successful: ${stats.success + stats.dry_run}`);
-  console.log(`  Errors: ${stats.error}`);
-  console.log(`  Not tax returns: ${stats.not_tax_return}`);
-  console.log(`  Skipped (existing): ${stats.skipped_existing}`);
+  console.log(`  Successful: ${stats.success || 0}`);
+  console.log(`  Errors: ${stats.error || 0}`);
+  console.log(`  Not tax returns: ${stats.not_tax_return || 0}`);
+  console.log(`  Skipped (existing): ${stats.skipped_existing || 0}`);
   console.log(`══════════════════════════════════════════\n`);
 }
 
