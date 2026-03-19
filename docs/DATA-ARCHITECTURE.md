@@ -53,9 +53,11 @@ financial-statements/
 │   ├── chase-amazon-cc-4206/          (Rahul)
 │   ├── chase-visa-cc-7191/            (Subhash)
 │   ├── boa-cc-6420/                   (Subhash)
-│   └── robinhood-gold-card-3892/      (Rahul)
+│   ├── robinhood-gold-card-3892/      (Rahul)
+│   └── robinhood-gold-card-6868/      (Rahul)
 ├── bank-accounts/
 │   ├── schwab-checking-3711/          (Rahul)
+│   ├── robinhood-checking-2074/       (Rahul)
 │   ├── us-bank-checking-7444/         (Rahul)
 │   ├── cash-app/                      (Rahul)
 │   ├── venmo/                         (Rahul)

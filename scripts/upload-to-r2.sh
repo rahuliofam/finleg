@@ -67,6 +67,16 @@ get_routing() {
       CATEGORY="statement"; ACCOUNT_TYPE="credit-card"; INSTITUTION="robinhood"
       ACCOUNT_NAME="Robinhood Gold Card"; ACCOUNT_NUMBER="3892"; ACCOUNT_HOLDER="Rahul"
       ;;
+    "Robinhood Gold Card (6868)"*)
+      R2_PREFIX="credit-cards/robinhood-gold-card-6868"
+      CATEGORY="statement"; ACCOUNT_TYPE="credit-card"; INSTITUTION="robinhood"
+      ACCOUNT_NAME="Robinhood Gold Card"; ACCOUNT_NUMBER="6868"; ACCOUNT_HOLDER="Rahul"
+      ;;
+    "Robinhood Checking (2074)"*)
+      R2_PREFIX="bank-accounts/robinhood-checking-2074"
+      CATEGORY="statement"; ACCOUNT_TYPE="checking"; INSTITUTION="robinhood"
+      ACCOUNT_NAME="Robinhood Checking"; ACCOUNT_NUMBER="2074"; ACCOUNT_HOLDER="Rahul"
+      ;;
     "CS Checking (3711)"*)
       R2_PREFIX="bank-accounts/schwab-checking-3711"
       CATEGORY="statement"; ACCOUNT_TYPE="checking"; INSTITUTION="charles-schwab"

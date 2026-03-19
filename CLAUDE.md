@@ -18,6 +18,7 @@
 2. Push immediately — GitHub Pages deploys on push to main. See `docs/DEPLOY.md`
 3. CI bumps version — never bump locally
 4. Run SQL migrations directly — never ask the user to run SQL manually
+5. **Migration numbering:** Before creating a new migration, run `ls supabase/migrations/ | sort -n | tail -1` to find the highest number, then use the next sequential number. Never hardcode or guess the number. Prefix must be purely numeric (no letters like `017b`).
 
 ## Code Guards
 
