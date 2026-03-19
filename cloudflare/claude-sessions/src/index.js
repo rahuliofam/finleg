@@ -171,16 +171,8 @@ export default {
         return `${header}\n${summary}`;
       }).join('\n\n---\n\n');
 
-      // Call Gemini Flash
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `You are a helpful assistant that searches through AI coding session logs. You have access to ${sessions.length} session(s) below.
+      // Call Workers AI (Llama 3.3 70B)
+      const prompt = `You are a helpful assistant that searches through AI coding session logs. You have access to ${sessions.length} session(s) below.
 
 Answer the user's question based on these sessions. Be specific — reference session dates, projects, and details. If you can identify a specific session that answers the question, include its ID.
 
@@ -191,38 +183,43 @@ ${sessionContext}
 
 USER QUESTION: ${question}
 
-Respond in this JSON format:
-{ "answer": "your answer here", "session_id": "the most relevant session ID or null", "confidence": "high|medium|low" }`
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.2,
-              maxOutputTokens: 1024,
-              responseMimeType: "application/json"
-            }
-          })
-        }
-      );
+Respond ONLY with valid JSON in this format (no other text):
+{ "answer": "your answer here", "session_id": "the most relevant session ID or null", "confidence": "high|medium|low" }`;
 
-      if (!geminiResponse.ok) {
-        const err = await geminiResponse.text();
-        return json({ error: 'Gemini API error', detail: err }, 502);
+      let aiResult;
+      try {
+        aiResult = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.2,
+          max_tokens: 1024,
+        });
+      } catch (aiErr) {
+        return json({ error: 'Workers AI error', detail: String(aiErr) }, 502);
       }
 
-      const geminiData = await geminiResponse.json();
-      const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const rawText = aiResult?.response || '';
 
-      try {
-        const parsed = JSON.parse(rawText);
+      // Workers AI may return JSON as string or pre-parsed
+      let parsed;
+      if (typeof rawText === 'object') {
+        parsed = rawText;
+      } else {
+        try { parsed = JSON.parse(rawText); } catch { parsed = null; }
+      }
+
+      if (parsed) {
+        // Unwrap nested response layers
+        while (parsed.answer && typeof parsed.answer === 'object' && parsed.answer.answer) {
+          parsed = parsed.answer;
+        }
         return json({
-          answer: parsed.answer || rawText,
+          answer: String(parsed.answer || rawText),
           session_id: parsed.session_id || null,
           confidence: parsed.confidence || 'low',
           sessions_searched: sessions.length
         });
-      } catch {
-        return json({ answer: rawText, session_id: null, confidence: 'low', sessions_searched: sessions.length });
       }
+      return json({ answer: String(rawText), session_id: null, confidence: 'low', sessions_searched: sessions.length });
     }
 
     // POST /fix-timestamps — repair ended_at for bulk-imported sessions

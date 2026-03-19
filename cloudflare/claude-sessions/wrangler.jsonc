@@ -12,5 +12,8 @@
       "database_name": "claude-sessions",
       "database_id": "5e8b3c40-f47d-45ee-bdca-71ae63850bec"
     }
-  ]
+  ],
+  "ai": {
+    "binding": "AI"
+  }
 }

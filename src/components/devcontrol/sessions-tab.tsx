@@ -86,7 +86,7 @@ export function SessionsTab() {
   const [transcriptCache, setTranscriptCache] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [aiQuery, setAiQuery] = useState("");
-  const [aiAnswer, setAiAnswer] = useState<{ answer: string; session_id: string | null; confidence: string; sessions_searched: number } | null>(null);
+  const [aiAnswer, setAiAnswer] = useState<{ answer: string; session_id: string | null; confidence: string; sessions_searched: number; error?: boolean } | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   const headers = { Authorization: `Bearer ${API_TOKEN}` };
@@ -146,8 +146,13 @@ export function SessionsTab() {
           setExpandedId(data.session_id);
           fetchFullSession(data.session_id);
         }
+      } else {
+        const errText = await res.text().catch(() => "Unknown error");
+        setAiAnswer({ answer: `Error ${res.status}: ${errText}`, session_id: null, confidence: "low", sessions_searched: 0, error: true });
       }
-    } catch {}
+    } catch (err) {
+      setAiAnswer({ answer: `Network error: ${err instanceof Error ? err.message : "Failed to reach API"}`, session_id: null, confidence: "low", sessions_searched: 0, error: true });
+    }
     setAiLoading(false);
   }, [aiQuery, sessions, search]);
 
@@ -228,14 +233,20 @@ export function SessionsTab() {
         </div>
         {aiAnswer && (
           <div className="mt-3 bg-white border border-purple-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                aiAnswer.confidence === "high" ? "bg-green-100 text-green-700" :
-                aiAnswer.confidence === "medium" ? "bg-amber-100 text-amber-700" :
-                "bg-slate-100 text-slate-600"
-              }`}>{aiAnswer.confidence} confidence</span>
-              <span className="text-xs text-slate-400">Searched {aiAnswer.sessions_searched} sessions</span>
-            </div>
+            {aiAnswer.error ? (
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">error</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                  aiAnswer.confidence === "high" ? "bg-green-100 text-green-700" :
+                  aiAnswer.confidence === "medium" ? "bg-amber-100 text-amber-700" :
+                  "bg-slate-100 text-slate-600"
+                }`}>{aiAnswer.confidence} confidence</span>
+                <span className="text-xs text-slate-400">Searched {aiAnswer.sessions_searched} sessions</span>
+              </div>
+            )}
             <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{aiAnswer.answer}</p>
             {aiAnswer.session_id && (
               <button
