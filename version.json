@@ -1,12 +1,12 @@
 {
-  "version": "v260319.01 7:24a",
-  "release": 131,
-  "sha": "81988f6",
-  "fullSha": "81988f675b6142efae0b2e6b4e5da2ad84de5600",
+  "version": "v260319.02 3:05p",
+  "release": 133,
+  "sha": "84268bb",
+  "fullSha": "84268bbbb84c404b6548d5b91b100cb9485c8f21",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-19 12:24:06+00",
-  "commits": [{"sha":"a03d67d","message":"feat: add upload script for legal migration docs from Google Drive","author":"Rahul"},{"sha":"6c64503","message":"feat: extract and store full text from documents in database","author":"Rahul"},{"sha":"5ab31e6","message":"feat: add OCR script for scanned image PDFs via Claude CLI","author":"Rahul"},{"sha":"f082c84","message":"feat: add Gemini 2.5 Flash OCR script for scanned PDFs","author":"Rahul"},{"sha":"81988f6","message":"feat: show extracted text indicator and viewer in File Vault","author":"Rahul"}]
+  "pushedAt": "2026-03-19 20:05:52+00",
+  "commits": [{"sha":"c670219","message":"feat: interactive conflict resolution via email for tax return extraction","author":"Rahul"},{"sha":"84268bb","message":"Merge pull request #35 from rahuliofam/rahuliofam/discrepancy-email-fix","author":"Rahul"}]
 }
