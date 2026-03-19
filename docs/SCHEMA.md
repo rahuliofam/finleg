@@ -48,6 +48,13 @@ releases               - Deployment tracking
 context_snapshots      - Daily context window token usage (devcontrol dashboard)
 ```
 
+### Google Takeout Tracking
+```
+google_takeout_exports - Tracks Takeout export archives (archive_id, account, export_date, products[], total_parts, extraction_status)
+google_takeout_files   - Individual files per export (file_name, part_number, file_size, download_date, extracted)
+  - export_archive_id   - FK to google_takeout_exports.archive_id
+```
+
 ## Service Config Tables
 
 These are created when optional services are enabled:
