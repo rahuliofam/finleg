@@ -805,7 +805,7 @@ async function createTaxReturn(entityId, data) {
     amount_owed: data.summary?.amount_owed || null,
     refund_amount: data.summary?.refund_amount || null,
     extraction_status: 'extracted',
-    extraction_model: GEMINI_ONLY ? 'gemini-2.5-flash' : 'gemini-2.5-flash+claude-sonnet',
+    extraction_model: 'gemini-2.5-flash',
     extraction_confidence: 0.9,
   };
 
@@ -1421,12 +1421,24 @@ async function processFile(filePath) {
     const formsInserted = await insertFormData(returnId, data.tax_year, data);
     console.log(`    ✓ Inserted: ${formsInserted.join(', ')}`);
 
-    // Step 9: Send conflict email if needed
+    // Step 9: Update verification metadata
+    if (!GEMINI_ONLY) {
+      const verificationStatus = claudeResult
+        ? (conflicts.length > 0 ? 'conflicts' : 'agreed')
+        : 'failed';
+      await supabase.from('tax_returns').update({
+        verification_model: 'claude-sonnet-4.6',
+        verification_status: verificationStatus,
+        verification_conflicts: conflicts.length > 0 ? conflicts : null,
+      }).eq('id', returnId);
+    }
+
+    // Step 10: Send conflict email if needed
     if (conflicts.length > 0) {
       await sendConflictEmail(filename, conflicts, geminiResult, claudeResult);
     }
 
-    // Step 10: Send success email
+    // Step 11: Send success email
     await sendSuccessEmail(filename, data, formsInserted);
 
     return { status: 'success', formsInserted };
