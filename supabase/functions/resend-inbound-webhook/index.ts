@@ -659,6 +659,23 @@ serve(async (req: Request) => {
         }
         const isPdf = contentType === "application/pdf";
 
+        // ── Compute SHA-256 content hash for duplicate detection ──
+        const hashBuffer = await crypto.subtle.digest("SHA-256", binaryData);
+        const contentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+        // Check if this exact file was already ingested
+        const { data: existingDup } = await supabase
+          .from("statement_inbox")
+          .select("id, doc_type, status, attachment_filename")
+          .eq("content_hash", contentHash)
+          .limit(1)
+          .maybeSingle();
+
+        if (existingDup) {
+          console.log(`DUPLICATE: "${filename}" matches existing inbox item ${existingDup.id} (${existingDup.attachment_filename}, status: ${existingDup.status}) — skipping`);
+          continue;
+        }
+
         // ── Classification gate: PDFs get classified by Gemini ──
         if (isPdf && geminiKey) {
           let classification: any = { doc_type: "receipt", confidence: 0 };
@@ -687,6 +704,7 @@ serve(async (req: Request) => {
               attachment_filename: filename,
               attachment_url: attachmentUrl,
               attachment_size: binaryData.length,
+              content_hash: contentHash,
               doc_type: "statement",
               institution: classification.institution || null,
               account_type: classification.account_type || null,
@@ -755,6 +773,7 @@ serve(async (req: Request) => {
               attachment_size: binaryData.length,
               doc_type: "tax_return",
               institution: "irs",
+              content_hash: contentHash,
               account_type: classification.return_type || "1040",
               account_name: classification.entity_name || null,
               account_holder: classification.entity_name || null,
