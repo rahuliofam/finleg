@@ -40,6 +40,7 @@ interface DocResult {
   original_path: string;
   description: string | null;
   ai_metadata: Record<string, unknown> | null;
+  extracted_text: string | null;
 }
 
 // Category chips — matches document_index.category values
@@ -181,6 +182,7 @@ export default function FinancialLegalTab() {
   const [totalDocs, setTotalDocs] = useState(0);
   const [lightbox, setLightbox] = useState<{ open: boolean; index: number }>({ open: false, index: 0 });
   const [lightboxBlob, setLightboxBlob] = useState<string | null>(null);
+  const [showText, setShowText] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Load total document count on mount
@@ -201,7 +203,7 @@ export default function FinancialLegalTab() {
       try {
         let q = supabase
           .from("document_index")
-          .select("*", { count: "exact" });
+          .select("id,bucket,r2_key,filename,file_type,file_size,category,account_type,institution,account_name,account_number,account_holder,year,month,statement_date,is_closed,property,original_path,description,ai_metadata,extracted_text", { count: "exact" });
 
         // Text search
         if (query.trim()) {
@@ -269,6 +271,7 @@ export default function FinancialLegalTab() {
     setLightbox({ open: false, index: 0 });
     if (lightboxBlob) URL.revokeObjectURL(lightboxBlob);
     setLightboxBlob(null);
+    setShowText(false);
   };
 
   const openFile = async (index: number) => {
@@ -482,6 +485,11 @@ export default function FinancialLegalTab() {
                       <span className="text-[0.65rem] font-semibold uppercase bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
                         {f.file_type || "?"}
                       </span>
+                      {f.extracted_text && (
+                        <span className="text-[0.6rem] font-semibold uppercase bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded ml-1" title="Extracted text available">
+                          TXT
+                        </span>
+                      )}
                     </td>
                     <td className="py-2.5 px-3 text-slate-600 text-right whitespace-nowrap">{formatSize(f.file_size)}</td>
                     <td className="py-2.5 px-3 text-center">
@@ -565,7 +573,7 @@ export default function FinancialLegalTab() {
             &times;
           </button>
 
-          <div className="bg-white rounded-xl p-8 max-w-[500px] w-[90vw] text-left text-slate-900">
+          <div className="bg-white rounded-xl p-8 max-w-[500px] w-[90vw] text-left text-slate-900 max-h-[85vh] overflow-y-auto">
             <a
               href={fileUrl(currentFile.bucket, currentFile.r2_key)}
               target="_blank"
@@ -597,8 +605,41 @@ export default function FinancialLegalTab() {
                 {currentFile.is_closed && (
                   <tr><td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Status</td><td className="text-amber-600">Closed Account</td></tr>
                 )}
+                {currentFile.extracted_text && (
+                  <tr>
+                    <td className="text-slate-500 py-1 pr-3 whitespace-nowrap">Text</td>
+                    <td>
+                      <button
+                        onClick={() => setShowText(!showText)}
+                        className="text-emerald-600 hover:text-emerald-700 font-medium text-sm"
+                      >
+                        {showText ? "Hide text" : `View extracted text (${(currentFile.extracted_text.length / 1000).toFixed(1)}k chars)`}
+                      </button>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
+
+            {/* Extracted text panel */}
+            {showText && currentFile.extracted_text && (
+              <div className="mt-4 border border-slate-200 rounded-lg">
+                <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border-b border-slate-200 rounded-t-lg">
+                  <span className="text-xs font-semibold text-slate-500 uppercase">Extracted Text</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(currentFile.extracted_text!);
+                    }}
+                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    Copy all
+                  </button>
+                </div>
+                <pre className="p-3 text-xs text-slate-700 whitespace-pre-wrap break-words max-h-[300px] overflow-y-auto font-sans leading-relaxed">
+                  {currentFile.extracted_text}
+                </pre>
+              </div>
+            )}
           </div>
 
           <div className="text-slate-400 text-sm mt-3 text-center max-w-[90vw] truncate">
