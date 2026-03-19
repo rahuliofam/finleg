@@ -1712,6 +1712,12 @@ async function processInbox() {
     } finally {
       try { unlinkSync(tmpPath); } catch { /* ignore */ }
     }
+
+    // Rate-limit delay between extractions to avoid Gemini 429s (60s between items)
+    if (items.indexOf(item) < items.length - 1) {
+      console.log('    Waiting 60s before next extraction (rate limit)...');
+      await new Promise(r => setTimeout(r, 60_000));
+    }
   }
 
   return { total: items.length, ...stats };
