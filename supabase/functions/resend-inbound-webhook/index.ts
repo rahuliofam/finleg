@@ -666,13 +666,49 @@ serve(async (req: Request) => {
         // Check if this exact file was already ingested
         const { data: existingDup } = await supabase
           .from("statement_inbox")
-          .select("id, doc_type, status, attachment_filename")
+          .select("id, doc_type, status, attachment_filename, attachment_url, created_at")
           .eq("content_hash", contentHash)
           .limit(1)
           .maybeSingle();
 
         if (existingDup) {
           console.log(`DUPLICATE: "${filename}" matches existing inbox item ${existingDup.id} (${existingDup.attachment_filename}, status: ${existingDup.status}) — skipping`);
+
+          // Send duplicate notification email back to sender with link to existing file
+          const dupDate = existingDup.created_at ? new Date(existingDup.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "unknown date";
+          const docLabel = existingDup.doc_type === "tax_return" ? "tax return" : existingDup.doc_type || "document";
+          const viewUrl = existingDup.doc_type === "tax_return"
+            ? "https://finleg.net/intranet/bookkeeping/tax-returns"
+            : "https://finleg.net/intranet/bookkeeping/statements";
+          const fileUrl = existingDup.attachment_url || viewUrl;
+
+          const dupHtml = `<div style="font-family: -apple-system, sans-serif; max-width: 560px; padding: 20px;">
+            <h2 style="color: #b45309; margin-bottom: 8px;">Duplicate File Detected</h2>
+            <p><strong>"${filename}"</strong> has already been processed as a ${docLabel} on <strong>${dupDate}</strong>.</p>
+            <p>Original file: <strong>${existingDup.attachment_filename}</strong> (status: ${existingDup.status})</p>
+            <p style="margin-top: 16px;">
+              <a href="${fileUrl}" style="background: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block;">View Existing File →</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 13px; color: #999;">No extraction was performed. If this is a corrected version, reply with "Reprocess" in the subject line.</p>
+          </div>`;
+
+          try {
+            await fetch(`${RESEND_API_URL}/emails`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+              body: JSON.stringify({
+                from: FROM_ADDRESS,
+                to: [fromLine],
+                bcc: [FORWARD_TO],
+                subject: `Duplicate: ${filename}`,
+                html: dupHtml,
+              }),
+            });
+            console.log(`Duplicate notification sent to ${fromLine} for ${filename}`);
+          } catch (emailErr: any) {
+            console.error(`Failed to send duplicate notification:`, emailErr);
+          }
+
           continue;
         }
 
