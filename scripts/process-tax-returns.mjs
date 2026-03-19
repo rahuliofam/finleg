@@ -342,6 +342,17 @@ Return ONLY valid JSON (no markdown fences) with this structure:
         "all_line_items": {}
       }
     ],
+    "form_2555": {
+      "foreign_country": "...",
+      "employer_name": "...",
+      "line_19_regular_exclusion_limit": 0.00,
+      "line_24_housing_exclusion": 0.00,
+      "line_27_foreign_earned_income": 0.00,
+      "line_36_housing_deduction": 0.00,
+      "line_42_foreign_earned_income_exclusion": 0.00,
+      "line_45_housing_exclusion": 0.00,
+      "line_50_total_exclusion": 0.00
+    },
     "form_1040v": {
       "amount_owed": 0.00,
       "payment_date": "YYYY-MM-DD or null"
@@ -1177,6 +1188,27 @@ async function insertFormData(returnId, taxYear, data) {
       });
     }
     inserted.push('Schedule A');
+  }
+
+  // Form 2555 - Foreign Earned Income Exclusion (EAV)
+  if (forms.form_2555) {
+    const f = forms.form_2555;
+    const fields = Object.entries(f).filter(([_, v]) => v != null);
+    for (const [key, value] of fields) {
+      await supabase.from('tax_return_line_items').insert({
+        return_id: returnId, tax_year: taxYear,
+        form_name: 'Form 2555',
+        form_part: key.startsWith('line_19') || key.startsWith('line_24') ? 'Foreign Earned Income Exclusion' :
+                   key.startsWith('line_27') || key.startsWith('line_36') ? 'Foreign Housing' :
+                   key.startsWith('line_42') || key.startsWith('line_45') || key.startsWith('line_50') ? 'Exclusion Summary' :
+                   'General',
+        line_number: key.replace(/^line_/, '').replace(/_/g, ' '),
+        line_description: key.replace(/^line_\d+[a-z]?_/, '').replace(/_/g, ' '),
+        amount: typeof value === 'number' ? value : null,
+        text_value: typeof value === 'string' ? value : null,
+      });
+    }
+    inserted.push('Form 2555');
   }
 
   // Form 4562
