@@ -18,6 +18,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.s
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const HOSTINGER_TRIGGER_URL = process.env.HOSTINGER_TRIGGER_URL || 'https://alpaclaw.cloud/finleg-trigger';
 const HOSTINGER_TRIGGER_SECRET = process.env.HOSTINGER_TRIGGER_SECRET;
+const MACHINE_NAME = process.env.HOSTNAME || (await import('os')).default.hostname().replace('.localdomain', '');
 
 if (!SUPABASE_KEY) {
   console.error('Missing SUPABASE_SERVICE_ROLE_KEY env var');
@@ -160,8 +161,8 @@ async function main() {
 
     // Insert inbox row
     const inboxRow = {
-      from_address: 'batch-upload@finleg.net',
-      subject: `Batch upload: ${file}`,
+      from_address: `claude upload from ${MACHINE_NAME}`,
+      subject: `Claude upload: ${file}`,
       received_at: new Date().toISOString(),
       attachment_filename: file,
       attachment_url: attachmentUrl,
