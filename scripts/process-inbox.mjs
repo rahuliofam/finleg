@@ -71,6 +71,8 @@ const KNOWN_ACCOUNTS = [
   { institution: 'chase', number: '7191', r2Sub: 'chase-visa-cc-7191', holder: 'Subhash' },
   { institution: 'bank-of-america', number: '6420', r2Sub: 'boa-cc-6420', holder: 'Subhash' },
   { institution: 'robinhood', number: '3892', r2Sub: 'robinhood-gold-card-3892', holder: 'Rahul' },
+  { institution: 'robinhood', number: '6868', r2Sub: 'robinhood-gold-card-6868', holder: 'Rahul' },
+  { institution: 'robinhood', number: '2074', r2Sub: 'robinhood-checking-2074', holder: 'Rahul' },
   { institution: 'charles-schwab', number: '3711', r2Sub: 'schwab-checking-3711', holder: 'Rahul' },
   { institution: 'schwab', number: '3711', r2Sub: 'schwab-checking-3711', holder: 'Rahul' },
   { institution: 'us-bank', number: '7444', r2Sub: 'us-bank-checking-7444', holder: 'Rahul' },
@@ -442,8 +444,8 @@ async function parsePdfWithClaude(pdfPath, accountType) {
 
   try {
     const { stdout } = await execAsync(cmd, {
-      timeout: 180000,
-      maxBuffer: 2 * 1024 * 1024,
+      timeout: 600000,
+      maxBuffer: 10 * 1024 * 1024,
     });
 
     const text = stdout.trim();
@@ -462,7 +464,8 @@ async function parsePdfWithClaude(pdfPath, accountType) {
     console.error(`  ✗ No JSON found in response (first 200 chars): ${text.slice(0, 200)}`);
     return null;
   } catch (e) {
-    console.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 100)}`);
+    console.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 500)}`);
+    if (e.stderr) console.error(`  ✗ stderr: ${e.stderr?.slice(0, 500)}`);
     return null;
   } finally {
     try { unlinkSync(promptPath); } catch { /* ignore */ }
