@@ -877,9 +877,10 @@ async function getOrCreateEntity(entityData) {
 }
 
 // ── Create tax_returns envelope ─────────────────────────────────────────────
-async function createTaxReturn(entityId, data) {
+async function createTaxReturn(entityId, data, inboxId = null) {
   const row = {
     entity_id: entityId,
+    inbox_id: inboxId,
     tax_year: data.tax_year,
     return_type: data.return_type === '1040V' ? '1040' : data.return_type,
     filing_status: data.entity?.filing_status || null,
@@ -1436,7 +1437,7 @@ async function insertFormData(returnId, taxYear, data) {
 }
 
 // ── Process a single PDF file ───────────────────────────────────────────────
-async function processFile(filePath) {
+async function processFile(filePath, { inboxId = null } = {}) {
   const filename = basename(filePath);
   console.log(`\n  → Processing: ${filename}`);
 
@@ -1517,7 +1518,7 @@ async function processFile(filePath) {
 
     // Step 5: Create entity + return envelope
     const entityId = await getOrCreateEntity(data.entity);
-    const returnId = await createTaxReturn(entityId, data);
+    const returnId = await createTaxReturn(entityId, data, inboxId);
 
     if (!returnId) {
       return { status: 'skipped_existing' };
@@ -1654,7 +1655,7 @@ async function processInbox() {
       console.log(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
 
       // Process the file
-      const result = await processFile(tmpPath);
+      const result = await processFile(tmpPath, { inboxId: item.id });
       stats[result.status] = (stats[result.status] || 0) + 1;
 
       // Update inbox status
