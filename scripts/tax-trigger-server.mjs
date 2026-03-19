@@ -39,9 +39,8 @@ function runExtraction() {
 
   execFile('node', [
     `${SCRIPT_DIR}process-tax-returns.mjs`,
-    '--inbox',
-    '--gemini-only'
-  ], { cwd: SCRIPT_DIR.replace(/scripts\/$/, ''), timeout: 300_000 }, (err, stdout, stderr) => {
+    '--inbox'
+  ], { cwd: SCRIPT_DIR.replace(/scripts\/$/, ''), timeout: 600_000 }, (err, stdout, stderr) => {
     processing = false;
 
     if (err) {
