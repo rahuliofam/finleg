@@ -619,6 +619,15 @@ function getNestedValue(obj, path) {
   return path.split('.').reduce((o, k) => o?.[k], obj);
 }
 
+// ── Austin time helper ──────────────────────────────────────────────────────
+function austinNow() {
+  return new Date().toLocaleString('en-US', {
+    timeZone: 'America/Chicago',
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  }) + ' CT';
+}
+
 // ── Send conflict resolution email ──────────────────────────────────────────
 async function sendConflictEmail(filename, conflicts, gemini, claude) {
   if (!RESEND_API_KEY) {
@@ -645,6 +654,7 @@ async function sendConflictEmail(filename, conflicts, gemini, claude) {
   html += metaRow('Tax Year', taxYear);
   html += metaRow('Return Type', `Form ${returnType}`);
   html += metaRow('Conflicts', `${conflicts.length} field(s) disagree`);
+  html += metaRow('Detected', austinNow());
   html += `</table></div>`;
 
   // Conflict table
@@ -733,6 +743,7 @@ async function sendSuccessEmail(filename, data, formsInserted) {
     if (data.summary.refund_amount) html += metaRow('Refund', fmtUsd(data.summary.refund_amount));
   }
   html += metaRow('Forms Extracted and Stored', formsInserted.join(', '));
+  html += metaRow('Processed', austinNow());
   html += `</table></div>`;
   html += `</div>`;
 

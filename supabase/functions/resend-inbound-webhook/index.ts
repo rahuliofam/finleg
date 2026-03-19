@@ -94,7 +94,7 @@ async function sendSummaryEmail(
   // Build HTML body
   let html = `<div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">`;
   html += `<h2 style="margin-bottom: 4px;">📬 Import Summary</h2>`;
-  html += `<p style="color: #666; margin-top: 0;">From <strong>${fromLine}</strong> · ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</p>`;
+  html += `<p style="color: #666; margin-top: 0;">From <strong>${fromLine}</strong> · ${new Date().toLocaleString("en-US", { timeZone: "America/Chicago", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", hour12: true })} CT</p>`;
 
   if (processedStatements.length > 0) {
     html += `<h3 style="border-bottom: 1px solid #e5e5e5; padding-bottom: 4px;">Statements (${processedStatements.length})</h3>`;
@@ -694,7 +694,7 @@ serve(async (req: Request) => {
           console.log(`DUPLICATE: "${filename}" matches existing inbox item ${existingDup.id} (${existingDup.attachment_filename}, status: ${existingDup.status}) — skipping`);
 
           // Send duplicate notification email back to sender with link to existing file
-          const dupDate = existingDup.created_at ? new Date(existingDup.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "unknown date";
+          const dupDate = existingDup.created_at ? new Date(existingDup.created_at).toLocaleString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }) + " CT" : "unknown date";
           const docLabel = existingDup.doc_type === "tax_return" ? "tax return" : existingDup.doc_type || "document";
           const viewUrl = existingDup.doc_type === "tax_return"
             ? "https://finleg.net/intranet/bookkeeping/tax-returns"
