@@ -1,12 +1,12 @@
 {
-  "version": "v260318.13 8:06p",
-  "release": 129,
-  "sha": "745cf3b",
-  "fullSha": "745cf3bb588fed2666c9c7bc2aeed4c21d0dcb98",
+  "version": "v260318.14 10:33p",
+  "release": 130,
+  "sha": "54047db",
+  "fullSha": "54047db1f07091b9d43e146e54d863d60b1900a9",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-19 01:06:12+00",
-  "commits": [{"sha":"bc56661","message":"feat: replace raw email forward with processing summary email","author":"Rahul"},{"sha":"63b0387","message":"feat: send summary email to original sender with bcc to personal Gmail","author":"Rahul"},{"sha":"1bc745a","message":"feat: add document metadata card to summary email","author":"Rahul"},{"sha":"745cf3b","message":"feat: send detailed summary email after statement parsing completes","author":"Rahul"}]
+  "pushedAt": "2026-03-19 03:33:26+00",
+  "commits": [{"sha":"54047db","message":"fix: session ask button now works — switch from Gemini to Workers AI","author":"Rahul"}]
 }
