@@ -6,7 +6,7 @@ const FORWARD_TO = "rahchak@gmail.com";
 const FROM_ADDRESS = "agent@finleg.net";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta";
-const HOSTINGER_TRIGGER_URL = "https://finleg-trigger.alpacapps.com";
+const HOSTINGER_TRIGGER_URL = "https://alpaclaw.cloud/finleg-trigger";
 
 const CLASSIFICATION_PROMPT = `Analyze this PDF document. Determine if it is:
 1. A financial STATEMENT (bank statement, credit card statement, brokerage/investment statement, loan statement, HELOC statement, mortgage statement)
