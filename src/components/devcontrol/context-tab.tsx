@@ -150,6 +150,7 @@ const CONTEXT_FILES: { name: string; path: string; category: ContextItem["catego
   { name: "INTEGRATIONS.md", path: "docs/INTEGRATIONS.md", category: "docs", description: "External APIs, vendor setup, pricing", githubPath: "docs/INTEGRATIONS.md" },
   { name: "CHANGELOG.md", path: "docs/CHANGELOG.md", category: "docs", description: "Recent changes, migration context", githubPath: "docs/CHANGELOG.md" },
   { name: "DATA-ARCHITECTURE.md", path: "docs/DATA-ARCHITECTURE.md", category: "docs", description: "Data architecture documentation", githubPath: "docs/DATA-ARCHITECTURE.md" },
+  { name: "SECRETS-BITWARDEN.md", path: "docs/SECRETS-BITWARDEN.md", category: "docs", description: "Bitwarden CLI, secrets management, vault organization, sharing credentials", githubPath: "docs/SECRETS-BITWARDEN.md" },
   { name: "System prompt", path: "(built-in)", category: "system", description: "Claude's base system prompt, tool definitions, environment info" },
 ];
 
