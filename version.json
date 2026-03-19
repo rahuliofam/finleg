@@ -1,12 +1,12 @@
 {
-  "version": "v260319.02 3:05p",
-  "release": 133,
-  "sha": "84268bb",
-  "fullSha": "84268bbbb84c404b6548d5b91b100cb9485c8f21",
+  "version": "v260319.03 5:49p",
+  "release": 134,
+  "sha": "3e62090",
+  "fullSha": "3e6209038578487c0890084ef9128a72f31cb06e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-19 20:05:52+00",
-  "commits": [{"sha":"c670219","message":"feat: interactive conflict resolution via email for tax return extraction","author":"Rahul"},{"sha":"84268bb","message":"Merge pull request #35 from rahuliofam/rahuliofam/discrepancy-email-fix","author":"Rahul"}]
+  "pushedAt": "2026-03-19 22:49:04+00",
+  "commits": [{"sha":"3e62090","message":"fix: use registered portsie.com callback URL for Schwab OAuth (#36)","author":"Rahul"}]
 }
