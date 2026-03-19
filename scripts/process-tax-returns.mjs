@@ -74,6 +74,31 @@ const ENTITY_MAP = {
   'Subhash Sonnad Rvoc Tr': { display_name: 'Subhash Sonnad Revocable Trust', entity_type: 'trust' },
 };
 
+// ── Form manifest prompt — first pass to inventory all forms ────────────────
+const MANIFEST_PROMPT = `You are a tax return analysis system. Scan this entire PDF and list EVERY form, schedule, and worksheet present.
+
+Return ONLY valid JSON (no markdown fences) with this structure:
+
+{
+  "return_type": "1040 | 1041 | 1065 | 1120S | 706 | 709",
+  "tax_year": 2023,
+  "entity_name": "Name as shown on return",
+  "total_pages": 0,
+  "forms": [
+    {
+      "form_code": "Form 1040",
+      "pages": "1-2",
+      "description": "U.S. Individual Income Tax Return"
+    }
+  ]
+}
+
+RULES:
+- List EVERY form, schedule, and worksheet — even W-2s, 1099s, and state returns.
+- Include the page range where each form appears.
+- Common forms to look for: Form 1040, Schedule 1, 2, 3, A, B, C, D, E, SE, Form 2555, 4562, 4797, 8949, 8959, 8960, 8962, 8995, 1040-V, W-2, 1099-INT, 1099-DIV, 1099-B, 1099-NEC, 1099-MISC, K-1, Form 1041, state returns.
+- Be thorough — missing a form means missing data.`;
+
 // ── Extraction prompt — comprehensive for all tax return types ──────────────
 const TAX_RETURN_PROMPT = `You are a tax return data extraction system. Extract ALL data from this tax return PDF as JSON.
 
@@ -373,6 +398,61 @@ RULES:
 - For K-1s: include all K-1s attached to the return.
 - If this is a 1040-V payment voucher only (not a full return), set return_type to "1040V" and only populate forms.form_1040v.
 - If the PDF is NOT a tax return, return: {"return_type": "not_tax_return"}`;
+
+// ── Form manifest extraction (Pass 1) ──────────────────────────────────────
+async function extractManifest(pdfPath) {
+  const pdfBuffer = readFileSync(pdfPath);
+  const pdfBase64 = pdfBuffer.toString('base64');
+
+  const requestBody = {
+    contents: [{
+      parts: [
+        { inline_data: { mime_type: 'application/pdf', data: pdfBase64 } },
+        { text: MANIFEST_PROMPT },
+      ],
+    }],
+    generationConfig: { temperature: 0, responseMimeType: 'application/json' },
+  };
+
+  const url = `${process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta'}/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+  if (!res.ok) {
+    console.warn(`    Manifest extraction failed (${res.status}) — proceeding without`);
+    return null;
+  }
+  const result = await res.json();
+  const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) return null;
+  return parseJsonResponse(text, 'Manifest');
+}
+
+// Map manifest form names to our extraction JSON keys
+const FORM_KEY_MAP = {
+  'form 1040': 'form_1040', 'schedule 1': 'schedule_1', 'schedule 2': 'schedule_2',
+  'schedule 3': 'schedule_3', 'schedule a': 'schedule_a', 'schedule b': 'schedule_b',
+  'schedule c': 'schedule_c', 'schedule d': 'schedule_d', 'schedule e': 'schedule_e',
+  'schedule se': 'schedule_se', 'form 2555': 'form_2555', 'form 4562': 'form_4562',
+  'form 4797': 'form_4797', 'form 8949': 'form_8949_transactions',
+  'form 8959': 'form_8959', 'form 8960': 'form_8960',
+  'form 8962': 'form_8962', 'form 8995': 'form_8995',
+  'form 1041': 'form_1041', 'schedule k-1': 'schedule_k1', 'k-1': 'schedule_k1',
+  'form 1040-v': 'form_1040v', '1040-v': 'form_1040v',
+};
+
+function checkManifestCoverage(manifest, extractedForms) {
+  if (!manifest?.forms?.length) return [];
+  const missing = [];
+  for (const mf of manifest.forms) {
+    const code = mf.form_code.toLowerCase().trim();
+    // Skip informational documents (W-2, 1099s, state returns)
+    if (/^(w-2|1099|state|city|it-|ca-|ny-)/.test(code)) continue;
+    const key = FORM_KEY_MAP[code];
+    if (key && !extractedForms[key]) {
+      missing.push({ form_code: mf.form_code, expected_key: key, pages: mf.pages });
+    }
+  }
+  return missing;
+}
 
 // ── Gemini Flash extraction ─────────────────────────────────────────────────
 async function extractWithGemini(pdfPath) {
@@ -818,6 +898,9 @@ async function createTaxReturn(entityId, data) {
     extraction_status: 'extracted',
     extraction_model: 'gemini-2.5-flash',
     extraction_confidence: 0.9,
+    extraction_notes: data._missing_forms?.length
+      ? `Missing forms: ${data._missing_forms.map(f => f.form_code).join(', ')}`
+      : null,
   };
 
   // Check if return already exists
@@ -1358,14 +1441,34 @@ async function processFile(filePath) {
   console.log(`\n  → Processing: ${filename}`);
 
   try {
-    // Step 1: Extract with Gemini Flash 2.5 (primary)
-    console.log(`    Extracting with Gemini Flash 2.5...`);
+    // Step 0: Form manifest (Pass 1) — inventory all forms in the PDF
+    console.log(`    Pass 1: Scanning form manifest...`);
+    const manifest = await extractManifest(filePath);
+    if (manifest?.forms?.length) {
+      console.log(`    Found ${manifest.forms.length} forms: ${manifest.forms.map(f => f.form_code).join(', ')}`);
+    }
+
+    // Step 1: Extract with Gemini Flash 2.5 (primary, Pass 2)
+    console.log(`    Pass 2: Extracting with Gemini Flash 2.5...`);
     const geminiResult = await extractWithGemini(filePath);
 
     if (!geminiResult) throw new Error('Gemini returned no parseable result');
     if (geminiResult.return_type === 'not_tax_return') {
       console.log(`    SKIPPED — not a tax return`);
       return { status: 'not_tax_return' };
+    }
+
+    // Check manifest coverage — flag any forms found in PDF but missing from extraction
+    const missingForms = checkManifestCoverage(manifest, geminiResult.forms || {});
+    if (missingForms.length > 0) {
+      console.log(`    ⚠ ${missingForms.length} form(s) in PDF but missing from extraction:`);
+      for (const mf of missingForms) {
+        console.log(`      - ${mf.form_code} (pages ${mf.pages})`);
+      }
+      // Store missing forms in extraction_notes for review
+      geminiResult._missing_forms = missingForms;
+    } else if (manifest) {
+      console.log(`    ✓ All manifest forms covered in extraction`);
     }
 
     console.log(`    Gemini: ${geminiResult.return_type} for ${geminiResult.entity?.name} (${geminiResult.tax_year})`);
