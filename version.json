@@ -1,12 +1,12 @@
 {
-  "version": "v260319.12 10:02p",
-  "release": 143,
-  "sha": "c226902",
-  "fullSha": "c226902e51a81a8b5cc4b171de5038f663244909",
+  "version": "v260319.13 11:39p",
+  "release": 144,
+  "sha": "2bbd657",
+  "fullSha": "2bbd65765ed3568e7baba2c22b15a4096b04e9a5",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-20 03:02:56+00",
-  "commits": [{"sha":"c226902","message":"style: add Schwab-style alternating row shading and group accent borders","author":"Rahul"}]
+  "pushedAt": "2026-03-20 04:39:11+00",
+  "commits": [{"sha":"2bbd657","message":"feat: Schwab-style Total Value section with chart axes and time periods","author":"Rahul"}]
 }
