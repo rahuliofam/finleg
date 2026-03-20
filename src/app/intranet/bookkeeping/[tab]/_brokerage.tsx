@@ -236,6 +236,8 @@ export default function BrokerageTab() {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [expandedPositionAccounts, setExpandedPositionAccounts] = useState<Record<string, boolean>>({});
   const [showSettings, setShowSettings] = useState(false);
+  const [totalValueExpanded, setTotalValueExpanded] = useState(true);
+  const [chartRange, setChartRange] = useState("1M");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -343,90 +345,111 @@ export default function BrokerageTab() {
   return (
     <div style={{ maxWidth: 1400, fontFamily: FONT, fontFeatureSettings: "'tnum'", color: "#333" }}>
 
-      {/* ============ PAGE TITLE ============ */}
-      <div style={{ marginBottom: 4 }}>
-        <h1 style={{ ...S.sectionTitle, fontSize: 24, marginBottom: 2 }}>Summary</h1>
-      </div>
-
-      {/* ============ TOTAL VALUE + CHART ============ */}
-      <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", marginBottom: 16, padding: "16px 20px" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 40, marginBottom: 12 }}>
-          {/* Total Value */}
-          <div>
-            <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2, display: "flex", alignItems: "center", gap: 4 }}>
-              Total Value
-              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>i</span>
-            </div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", lineHeight: "36px" }}>{fmt(totalValue)}</div>
-          </div>
-          {/* Day Change */}
-          <div>
-            <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2, display: "flex", alignItems: "center", gap: 4 }}>
-              Day Change
-              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>i</span>
-            </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#888" }}>–</div>
-          </div>
-          {/* 1-Month Change */}
-          <div>
-            <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 }}>
-              1-Month Change
-            </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#888" }}>–</div>
-          </div>
-
-          {/* Right side: sync controls */}
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-            {lastSync?.at && <span style={{ fontSize: 11, color: "#999" }}>Updated {fmtDate(lastSync.at)}</span>}
-            {status?.connected ? (
-              <>
-                <button onClick={handleSync} disabled={syncing} style={{
-                  padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
-                  background: syncing ? "#999" : "#0d7a3e", color: "#fff", border: "none", cursor: syncing ? "default" : "pointer",
-                }}>
-                  {syncing ? "Syncing..." : "Sync Now"}
-                </button>
-                <button onClick={handleDisconnect} style={{
-                  padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
-                  background: "#fff", color: "#d32f2f", border: "1px solid #d32f2f", cursor: "pointer",
-                }}>
-                  Disconnect
-                </button>
-              </>
-            ) : (
+      {/* ============ PAGE TITLE + SYNC CONTROLS ============ */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <h1 style={{ ...S.sectionTitle, fontSize: 24, marginBottom: 0 }}>Summary</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {lastSync?.at && <span style={{ fontSize: 12, color: "#999" }}>Updated: {fmtDate(lastSync.at)}</span>}
+          {status?.connected ? (
+            <>
+              <button onClick={handleSync} disabled={syncing} style={{
+                width: 24, height: 24, borderRadius: "50%", border: "1px solid #ccc", background: "#fff",
+                cursor: syncing ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14, color: syncing ? "#999" : "#555",
+              }} title="Refresh">
+                &#8635;
+              </button>
               <button onClick={handleConnect} style={{
                 padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
                 background: "#0d7a3e", color: "#fff", border: "none", cursor: "pointer",
               }}>
                 Connect Schwab
               </button>
-            )}
+            </>
+          ) : (
+            <button onClick={handleConnect} style={{
+              padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
+              background: "#0d7a3e", color: "#fff", border: "none", cursor: "pointer",
+            }}>
+              Connect Schwab
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Expiry warning */}
+      {status?.connected && status.refreshTokenExpiresAt && (() => {
+        const daysLeft = Math.ceil((new Date(status.refreshTokenExpiresAt).getTime() - Date.now()) / 86400000);
+        return daysLeft <= 2 ? (
+          <div style={{ padding: "8px 12px", borderRadius: 3, border: "1px solid #f59e0b", background: "#fffbeb", fontSize: 12, color: "#92400e", marginBottom: 8 }}>
+            Schwab connection expires in {daysLeft} day{daysLeft !== 1 ? "s" : ""}. Re-authenticate to maintain sync.
           </div>
+        ) : null;
+      })()}
+
+      {/* ============ TOTAL VALUE + CHART ============ */}
+      <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", marginBottom: 16 }}>
+        {/* Collapsible header */}
+        <div
+          onClick={() => setTotalValueExpanded((p) => !p)}
+          style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", borderBottom: totalValueExpanded ? "1px solid #eee" : "none" }}
+        >
+          <span style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", fontFamily: FONT }}>Total Value</span>
+          <span style={{ fontSize: 12, color: "#888" }}>{totalValueExpanded ? "▲" : "▼"}</span>
         </div>
 
-        {/* Expiry warning */}
-        {status?.connected && status.refreshTokenExpiresAt && (() => {
-          const daysLeft = Math.ceil((new Date(status.refreshTokenExpiresAt).getTime() - Date.now()) / 86400000);
-          return daysLeft <= 2 ? (
-            <div style={{ padding: "8px 12px", borderRadius: 3, border: "1px solid #f59e0b", background: "#fffbeb", fontSize: 12, color: "#92400e", marginBottom: 12 }}>
-              Schwab connection expires in {daysLeft} day{daysLeft !== 1 ? "s" : ""}. Re-authenticate to maintain sync.
+        {totalValueExpanded && (
+          <div style={{ padding: "16px 20px" }}>
+            {/* Metrics row */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 40, marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                  Total Value
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>i</span>
+                </div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", lineHeight: "36px" }}>{fmt(totalValue)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                  Day Change
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>i</span>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#888" }}>–</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 }}>
+                  1-Month Change
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#888" }}>–</div>
+              </div>
             </div>
-          ) : null;
-        })()}
 
-        {/* Chart placeholder */}
-        <div style={{ height: 100, background: "linear-gradient(180deg, rgba(13,122,62,0.06) 0%, rgba(255,255,255,0) 100%)", borderRadius: 3, border: "1px solid #eee", display: "flex", alignItems: "flex-end", padding: "0 16px 8px" }}>
-          <svg viewBox="0 0 400 60" style={{ width: "100%", height: "100%" }} preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0d7a3e" stopOpacity="0.12" />
-                <stop offset="100%" stopColor="#0d7a3e" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d="M0,45 Q40,42 80,38 T160,30 T240,25 T320,18 T400,12" fill="none" stroke="#0d7a3e" strokeWidth="1.5" />
-            <path d="M0,45 Q40,42 80,38 T160,30 T240,25 T320,18 T400,12 V60 H0Z" fill="url(#cg)" />
-          </svg>
-        </div>
+            {/* Time period buttons + Table View */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4, marginBottom: 12 }}>
+              <button style={{ ...btnStyle, display: "flex", alignItems: "center", gap: 4, marginRight: 8, border: "1px solid #ccc" }}>
+                <span style={{ fontSize: 11 }}>&#9638;</span> Table View
+              </button>
+              {(["1M", "3M", "6M", "YTD", "1Y", "2Y"] as const).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setChartRange(r)}
+                  style={{
+                    width: 36, height: 28, borderRadius: 14, fontSize: 11, fontWeight: 600,
+                    fontFamily: FONT, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                    border: chartRange === r ? "2px solid #0d7a3e" : "1px solid #ccc",
+                    background: chartRange === r ? "#fff" : "#fff",
+                    color: chartRange === r ? "#0d7a3e" : "#555",
+                  }}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+
+            {/* Chart with axes */}
+            <ChartWithAxes totalValue={totalValue} chartRange={chartRange} />
+          </div>
+        )}
       </div>
 
       {/* ============ NOT CONNECTED ============ */}
@@ -783,6 +806,136 @@ function PositionRows({
         </tr>
       )}
     </>
+  );
+}
+
+// ============================================================
+// Chart with Axes (Schwab-style)
+// ============================================================
+
+function ChartWithAxes({ totalValue, chartRange }: { totalValue: number; chartRange: string }) {
+  // Generate date labels for X-axis based on range
+  const rangeDays: Record<string, number> = { "1M": 30, "3M": 90, "6M": 180, "YTD": 78, "1Y": 365, "2Y": 730 };
+  const days = rangeDays[chartRange] || 30;
+  const now = new Date();
+  const tickCount = Math.min(days, 12);
+  const stepDays = Math.floor(days / tickCount);
+
+  const dateLabels: string[] = [];
+  for (let i = tickCount; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i * stepDays);
+    dateLabels.push(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }));
+  }
+
+  // Generate Y-axis labels
+  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(totalValue, 1))));
+  const base = Math.floor(totalValue / magnitude) * magnitude;
+  const step = magnitude * 0.25;
+  const yLabels: string[] = [];
+  for (let i = 0; i < 4; i++) {
+    const val = base - step + step * i;
+    if (val >= 1000000) yLabels.push(`$${(val / 1000000).toFixed(2)}M`);
+    else if (val >= 1000) yLabels.push(`$${(val / 1000).toFixed(0)}K`);
+    else yLabels.push(`$${val.toFixed(0)}`);
+  }
+
+  // Chart dimensions
+  const chartW = 900;
+  const chartH = 200;
+  const marginL = 0;
+  const marginR = 60;
+  const marginB = 30;
+
+  // Generate a gentle upward line with some variation
+  const points: Array<[number, number]> = [];
+  const numPoints = 30;
+  for (let i = 0; i <= numPoints; i++) {
+    const x = marginL + (i / numPoints) * (chartW - marginL - marginR);
+    // Gentle upward trend with small random-looking oscillation
+    const progress = i / numPoints;
+    const trend = chartH * 0.7 - progress * chartH * 0.3;
+    const wave = Math.sin(i * 0.8) * 12 + Math.cos(i * 1.3) * 8;
+    const y = Math.max(10, Math.min(chartH - marginB - 10, trend + wave));
+    points.push([x, y]);
+  }
+
+  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ");
+  const fillPath = `${linePath} V${chartH - marginB} H${marginL} Z`;
+
+  return (
+    <div style={{ position: "relative" }}>
+      <svg
+        viewBox={`0 0 ${chartW} ${chartH + 5}`}
+        style={{ width: "100%", height: 250, display: "block" }}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0d7a3e" stopOpacity="0.10" />
+            <stop offset="100%" stopColor="#0d7a3e" stopOpacity="0.01" />
+          </linearGradient>
+        </defs>
+
+        {/* Horizontal grid lines */}
+        {[0.25, 0.5, 0.75].map((frac, i) => {
+          const y = (chartH - marginB) * frac;
+          return (
+            <line
+              key={i}
+              x1={marginL}
+              y1={y}
+              x2={chartW - marginR}
+              y2={y}
+              stroke="#eee"
+              strokeWidth="1"
+              strokeDasharray="4 3"
+            />
+          );
+        })}
+
+        {/* Bottom axis line */}
+        <line x1={marginL} y1={chartH - marginB} x2={chartW - marginR} y2={chartH - marginB} stroke="#ddd" strokeWidth="1" />
+
+        {/* Fill area */}
+        <path d={fillPath} fill="url(#chartFill)" />
+
+        {/* Line */}
+        <path d={linePath} fill="none" stroke="#0d7a3e" strokeWidth="1.5" />
+
+        {/* X-axis date labels */}
+        {dateLabels.map((label, i) => {
+          const x = marginL + (i / (dateLabels.length - 1)) * (chartW - marginL - marginR);
+          return (
+            <text
+              key={i}
+              x={x}
+              y={chartH - marginB + 18}
+              textAnchor="middle"
+              style={{ fontSize: 10, fill: "#999", fontFamily: FONT }}
+            >
+              {label}
+            </text>
+          );
+        })}
+
+        {/* Y-axis labels (right side) */}
+        {yLabels.map((label, i) => {
+          const y = (chartH - marginB) * (1 - i / (yLabels.length - 1)) ;
+          return (
+            <text
+              key={i}
+              x={chartW - marginR + 8}
+              y={y + 3}
+              textAnchor="start"
+              style={{ fontSize: 10, fill: "#999", fontFamily: FONT }}
+            >
+              {label}
+            </text>
+          );
+        })}
+      </svg>
+    </div>
   );
 }
 
