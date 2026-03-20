@@ -1,12 +1,12 @@
 {
-  "version": "v260319.04 7:00p",
-  "release": 135,
-  "sha": "26b175f",
-  "fullSha": "26b175fdef27fe1b5d45f3aa825f632407985e00",
+  "version": "v260319.05 8:59p",
+  "release": 136,
+  "sha": "c1006b5",
+  "fullSha": "c1006b5607af38a6922da9d4d9014cb38ab668b1",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-20 00:00:55+00",
-  "commits": [{"sha":"26b175f","message":"feat: populate all 36 Schwab family accounts with metadata","author":"Rahul"}]
+  "pushedAt": "2026-03-20 01:59:31+00",
+  "commits": [{"sha":"c1006b5","message":"feat: redesign brokerage page to match Schwab summary layout","author":"Rahul"}]
 }
