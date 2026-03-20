@@ -636,7 +636,7 @@ function GroupRows({
     <>
       {/* Group header */}
       <tr onClick={onToggle} style={{ cursor: "pointer" }}>
-        <td colSpan={7} style={S.groupHeader}>
+        <td colSpan={7} style={{ ...S.groupHeader, borderLeft: "3px solid #0d7a3e" }}>
           <span style={{ display: "inline-block", width: 14, fontSize: 9, color: "#666", marginRight: 4 }}>
             {expanded ? "▼" : "▶"}
           </span>
@@ -645,11 +645,12 @@ function GroupRows({
       </tr>
 
       {/* Account rows */}
-      {expanded && group.accounts.map((acct) => {
+      {expanded && group.accounts.map((acct, idx) => {
         const value = acct.total_value || acct.balance_current || 0;
         const hasHoldings = (holdings[acct.id]?.length || 0) > 0;
+        const rowBg = idx % 2 === 1 ? "#f8f8f8" : "#fff";
         return (
-          <tr key={acct.id} onMouseOver={(e) => (e.currentTarget.style.background = "#f8fdf9")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+          <tr key={acct.id} style={{ background: rowBg }} onMouseOver={(e) => (e.currentTarget.style.background = "#f0f7f2")} onMouseOut={(e) => (e.currentTarget.style.background = rowBg)}>
             <td style={S.td}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                 {acct.connection_type === "api" ? (
@@ -732,12 +733,13 @@ function PositionRows({
       </tr>
 
       {/* Holding rows */}
-      {expanded && holdings.map((h) => {
+      {expanded && holdings.map((h, idx) => {
         const pctOfAcct = totalMV > 0 && h.market_value ? (h.market_value / totalMV) * 100 : null;
         const gl = h.unrealized_gain_loss;
         const glPct = h.unrealized_gain_loss_pct;
+        const rowBg = idx % 2 === 1 ? "#f8f8f8" : "#fff";
         return (
-          <tr key={h.id} onMouseOver={(e) => (e.currentTarget.style.background = "#f8fdf9")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+          <tr key={h.id} style={{ background: rowBg }} onMouseOver={(e) => (e.currentTarget.style.background = "#f0f7f2")} onMouseOut={(e) => (e.currentTarget.style.background = rowBg)}>
             <td style={{ ...S.td, paddingLeft: 28 }}>
               <div style={{ fontWeight: 600, color: "#0d7a3e", fontSize: 13 }}>{h.security?.ticker_symbol || "–"}</div>
               <div style={{ fontSize: 11, color: "#999", marginTop: 1, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.security?.name || ""}</div>
