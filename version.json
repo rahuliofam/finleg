@@ -1,12 +1,12 @@
 {
-  "version": "v260319.03 5:49p",
-  "release": 134,
-  "sha": "3e62090",
-  "fullSha": "3e6209038578487c0890084ef9128a72f31cb06e",
+  "version": "v260319.04 7:00p",
+  "release": 135,
+  "sha": "26b175f",
+  "fullSha": "26b175fdef27fe1b5d45f3aa825f632407985e00",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-19 22:49:04+00",
-  "commits": [{"sha":"3e62090","message":"fix: use registered portsie.com callback URL for Schwab OAuth (#36)","author":"Rahul"}]
+  "pushedAt": "2026-03-20 00:00:55+00",
+  "commits": [{"sha":"26b175f","message":"feat: populate all 36 Schwab family accounts with metadata","author":"Rahul"}]
 }
