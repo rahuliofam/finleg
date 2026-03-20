@@ -131,10 +131,23 @@ async function ensureValidToken(
 }
 
 // ============================================================
-// Schwab API helpers
+// Schwab API helpers — with full audit logging
 // ============================================================
 
-async function schwabFetch<T>(accessToken: string, path: string): Promise<T> {
+interface ApiLogContext {
+  supabase: any;
+  syncRunId: string | null;
+  accountId?: string | null;
+  triggeredBy: string;
+}
+
+async function schwabFetch<T>(
+  accessToken: string,
+  path: string,
+  logCtx?: ApiLogContext
+): Promise<T> {
+  const startTime = Date.now();
+
   const res = await fetch(`${SCHWAB_TRADER_URL}${path}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -142,12 +155,57 @@ async function schwabFetch<T>(accessToken: string, path: string): Promise<T> {
     },
   });
 
+  const responseTimeMs = Date.now() - startTime;
+  const status = res.status;
+
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Schwab API ${res.status}: ${text}`);
+
+    // Log failed call
+    if (logCtx?.supabase) {
+      await logCtx.supabase.from("schwab_api_log").insert({
+        sync_run_id: logCtx.syncRunId,
+        account_id: logCtx.accountId || null,
+        endpoint: path,
+        http_method: "GET",
+        http_status: status,
+        response_body: null,
+        error_message: text,
+        rows_returned: 0,
+        response_time_ms: responseTimeMs,
+        triggered_by: logCtx.triggeredBy,
+      });
+    }
+
+    throw new Error(`Schwab API ${status}: ${text}`);
   }
 
-  return res.json() as Promise<T>;
+  const data = await res.json();
+
+  // Count rows in response
+  const rowCount = Array.isArray(data)
+    ? data.length
+    : data?.securitiesAccount?.positions?.length ||
+      data?.transactions?.length ||
+      (typeof data === "object" ? 1 : 0);
+
+  // Log successful call with full response
+  if (logCtx?.supabase) {
+    await logCtx.supabase.from("schwab_api_log").insert({
+      sync_run_id: logCtx.syncRunId,
+      account_id: logCtx.accountId || null,
+      endpoint: path,
+      http_method: "GET",
+      http_status: status,
+      response_body: data,
+      error_message: null,
+      rows_returned: rowCount,
+      response_time_ms: responseTimeMs,
+      triggered_by: logCtx.triggeredBy,
+    });
+  }
+
+  return data as T;
 }
 
 // ============================================================
@@ -299,14 +357,21 @@ serve(async (req: Request) => {
 
     const accessToken = await ensureValidToken(supabase, tokenRecord, encKey);
 
+    // Build logging context
+    const logCtx: ApiLogContext = {
+      supabase,
+      syncRunId: syncRun?.id || null,
+      triggeredBy: options.triggeredBy,
+    };
+
     // 1. Fetch account numbers
     const accountNumbers: Array<{ accountNumber: string; hashValue: string }> =
-      await schwabFetch(accessToken, "/accounts/accountNumbers");
+      await schwabFetch(accessToken, "/accounts/accountNumbers", logCtx);
 
     console.log(`Found ${accountNumbers.length} Schwab accounts`);
 
     // 2. Fetch accounts with positions
-    const accounts: any[] = await schwabFetch(accessToken, "/accounts?fields=positions");
+    const accounts: any[] = await schwabFetch(accessToken, "/accounts?fields=positions", logCtx);
 
     let totalHoldings = 0;
     let totalTransactions = 0;
@@ -414,7 +479,8 @@ serve(async (req: Request) => {
         try {
           const txnData: any = await schwabFetch(
             accessToken,
-            `/accounts/${hashEntry.hashValue}/transactions?startDate=${startDate}&endDate=${endDate}`
+            `/accounts/${hashEntry.hashValue}/transactions?startDate=${startDate}&endDate=${endDate}`,
+            { ...logCtx, accountId: accountId }
           );
 
           const txns = Array.isArray(txnData) ? txnData : txnData?.transactions || [];
