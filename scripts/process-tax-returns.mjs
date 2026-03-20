@@ -692,37 +692,31 @@ async function sendConflictEmail(filename, conflicts, gemini, claude, returnId, 
   html += `</table></div>`;
 
   // Instructions
-  html += `<p style="font-size:13px;color:#444;margin-bottom:12px;">Click <strong>Use Gemini</strong> or <strong>Use Claude</strong> for each field below to pick the correct value. You'll get a summary email when all are resolved.</p>`;
+  html += `<p style="font-size:13px;color:#444;margin-bottom:12px;">Pick the correct value for each field below. You'll get a summary email when all are resolved.</p>`;
 
-  // Conflict table with action buttons
-  html += `<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px;">`;
-  html += `<tr style="background:#fef2f2;text-align:left;">`;
-  html += `<th style="padding:6px 8px;">Field</th>`;
-  html += `<th style="padding:6px 8px;text-align:right;">Gemini</th>`;
-  html += `<th style="padding:6px 8px;text-align:right;">Claude</th>`;
-  html += `<th style="padding:6px 8px;text-align:right;">Diff</th>`;
-  html += `<th style="padding:6px 8px;text-align:center;">Pick</th>`;
-  html += `</tr>`;
-
+  // Individual conflict cards with buttons under each value
   for (const c of conflicts) {
     const fmtG = typeof c.gemini_value === 'number' ? `$${c.gemini_value.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : String(c.gemini_value);
     const fmtC = typeof c.claude_value === 'number' ? `$${c.claude_value.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : String(c.claude_value);
-    const fmtD = c.diff != null ? `$${c.diff.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—';
     const geminiUrl = resolveUrl(c.field, 'gemini');
     const claudeUrl = resolveUrl(c.field, 'claude');
 
-    html += `<tr style="border-bottom:1px solid #eee;">`;
-    html += `<td style="padding:6px 8px;font-family:monospace;font-size:12px;">${c.field}</td>`;
-    html += `<td style="padding:6px 8px;text-align:right;">${fmtG}</td>`;
-    html += `<td style="padding:6px 8px;text-align:right;">${fmtC}</td>`;
-    html += `<td style="padding:6px 8px;text-align:right;color:#dc2626;">${fmtD}</td>`;
-    html += `<td style="padding:6px 8px;text-align:center;white-space:nowrap;">`;
-    html += `<a href="${geminiUrl}" style="${btnStyle('#2563eb')}">Use Gemini</a> `;
+    html += `<div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:10px;">`;
+    html += `<div style="font-family:monospace;font-size:12px;color:#666;margin-bottom:8px;">${c.field}</div>`;
+    html += `<table style="width:100%;border-collapse:collapse;"><tr>`;
+    // Gemini column
+    html += `<td style="width:50%;text-align:center;padding:4px 8px;border-right:1px solid #e5e7eb;">`;
+    html += `<div style="font-size:18px;font-weight:600;margin-bottom:6px;">${fmtG}</div>`;
+    html += `<a href="${geminiUrl}" style="${btnStyle('#2563eb')}">Use Gemini</a>`;
+    html += `</td>`;
+    // Claude column
+    html += `<td style="width:50%;text-align:center;padding:4px 8px;">`;
+    html += `<div style="font-size:18px;font-weight:600;margin-bottom:6px;">${fmtC}</div>`;
     html += `<a href="${claudeUrl}" style="${btnStyle('#7c3aed')}">Use Claude</a>`;
     html += `</td>`;
-    html += `</tr>`;
+    html += `</tr></table>`;
+    html += `</div>`;
   }
-  html += `</table>`;
 
   html += `<p style="font-size:12px;color:#999;">Gemini was used as the primary source. Your selections will update the database and you'll receive a confirmation summary.</p>`;
   html += `</div>`;
