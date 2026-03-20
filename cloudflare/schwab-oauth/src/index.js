@@ -10,6 +10,17 @@ const GITHUB_PAGES_ORIGIN = 'https://rahulio.github.io';
 const SCHWAB_INSTITUTION_NAME = 'Charles Schwab';
 
 export default {
+  // Cron trigger — auto-refresh token every 3 days to prevent expiry
+  async scheduled(event, env, ctx) {
+    console.log('Cron: refreshing Schwab token...');
+    try {
+      const result = await doTokenRefresh(env);
+      console.log('Cron: token refresh result:', JSON.stringify(result));
+    } catch (err) {
+      console.error('Cron: token refresh failed:', err.message);
+    }
+  },
+
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders() });
@@ -179,14 +190,20 @@ async function handleStatus(env) {
   });
 }
 
-async function handleRefresh(env) {
+// Shared token refresh logic — used by both /schwab/refresh endpoint and cron trigger
+async function doTokenRefresh(env) {
   const institutionId = await getSchwabInstitutionId(env);
   const res = await supabaseRequest(env,
     `/rest/v1/oauth_tokens?institution_id=eq.${institutionId}&select=*&limit=1`
   );
   const data = await res.json();
   if (!data || data.length === 0) {
-    return json({ error: 'no tokens found' }, 404);
+    return { ok: false, error: 'no tokens found' };
+  }
+
+  // Skip if refresh token already expired
+  if (data[0].refresh_token_expires_at && new Date() >= new Date(data[0].refresh_token_expires_at)) {
+    return { ok: false, error: 'refresh_token_expired' };
   }
 
   const encKey = await importEncryptionKey(env.TOKEN_ENCRYPTION_KEY);
@@ -209,7 +226,6 @@ async function handleRefresh(env) {
     const errText = await tokenRes.text();
     console.error('Refresh failed:', tokenRes.status, errText);
 
-    // Mark as expired if refresh fails
     if (tokenRes.status === 401 || tokenRes.status === 400) {
       await supabaseRequest(env,
         `/rest/v1/oauth_tokens?id=eq.${data[0].id}`,
@@ -217,7 +233,7 @@ async function handleRefresh(env) {
       );
     }
 
-    return json({ error: 'refresh_failed', details: errText }, tokenRes.status);
+    return { ok: false, error: 'refresh_failed', status: tokenRes.status, details: errText };
   }
 
   const tokens = await tokenRes.json();
@@ -239,7 +255,16 @@ async function handleRefresh(env) {
     }),
   });
 
-  return json({ ok: true, expiresAt: new Date(now + tokens.expires_in * 1000).toISOString() });
+  return { ok: true, expiresAt: new Date(now + tokens.expires_in * 1000).toISOString() };
+}
+
+async function handleRefresh(env) {
+  const result = await doTokenRefresh(env);
+  if (!result.ok) {
+    return json({ error: result.error, details: result.details }, result.status || 404);
+  }
+
+  return json(result);
 }
 
 async function handleDisconnect(env) {
