@@ -1,12 +1,12 @@
 {
-  "version": "v260319.06 9:00p",
-  "release": 137,
-  "sha": "51e8ea0",
-  "fullSha": "51e8ea0a4245f36cb1ef24b19c2d8df5db0ca1c1",
+  "version": "v260319.07 9:02p",
+  "release": 138,
+  "sha": "82b8a84",
+  "fullSha": "82b8a843dc47f6dadb0fbaf20d71f12b8da7d5e8",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-20 02:00:22+00",
-  "commits": [{"sha":"ab0a3ee","message":"fix: use workers.dev URL for R2 files instead of unconfigured custom domain","author":"Rahul"},{"sha":"51e8ea0","message":"Merge pull request #37 from rahuliofam/rahuliofam/fix-r2-file-urls","author":"Rahul"}]
+  "pushedAt": "2026-03-20 02:02:08+00",
+  "commits": [{"sha":"860edec","message":"fix: card layout for conflict emails with buttons under each value","author":"Rahul"},{"sha":"82b8a84","message":"Merge pull request #38 from rahuliofam/rahuliofam/fix-r2-file-urls","author":"Rahul"}]
 }
