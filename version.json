@@ -1,12 +1,12 @@
 {
-  "version": "v260319.14 11:58p",
-  "release": 145,
-  "sha": "cb3bc64",
-  "fullSha": "cb3bc64b0ba778147e522bf5af43df67fe079a34",
+  "version": "v260320.01 12:05a",
+  "release": 146,
+  "sha": "09f2f7e",
+  "fullSha": "09f2f7ec81678e15da33ab7f2b62c90cfa1c985b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-20 04:58:08+00",
-  "commits": [{"sha":"cb3bc64","message":"feat: auto-refresh Schwab token via Cloudflare Cron every 3 days","author":"Rahul"}]
+  "pushedAt": "2026-03-20 05:05:21+00",
+  "commits": [{"sha":"09f2f7e","message":"feat: real data in Total Value chart/table, date range switching","author":"Rahul"}]
 }
