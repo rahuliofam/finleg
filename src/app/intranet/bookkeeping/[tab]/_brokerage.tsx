@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
 const SCHWAB_OAUTH_WORKER = "https://schwab-oauth.finleg.workers.dev";
+const FONT = 'Arial, Helvetica, sans-serif';
 
 // ============================================================
 // Types
@@ -123,27 +124,103 @@ const fmtPct = (n: number | null | undefined) =>
 const fmtQty = (n: number | null | undefined) =>
   n != null ? n.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "–";
 
-const fmtDateFull = (d: string | null) =>
-  d
-    ? new Date(d).toLocaleString("en-US", {
-        hour: "2-digit", minute: "2-digit", second: "2-digit",
-        hour12: true, month: "2-digit", day: "2-digit", year: "numeric",
-      })
-    : "";
+const fmtDate = (d: string | null) =>
+  d ? new Date(d).toLocaleString("en-US", {
+    hour: "2-digit", minute: "2-digit", hour12: true,
+    month: "2-digit", day: "2-digit", year: "numeric",
+  }) : "";
 
 // ============================================================
 // Color helpers
 // ============================================================
 
 function changeColor(n: number | null | undefined): string {
-  if (n == null || n === 0) return "text-slate-600";
-  return n > 0 ? "text-green-700" : "text-red-600";
+  if (n == null || n === 0) return "";
+  return n > 0 ? "color: #067a46" : "color: #d32f2f";
 }
 
-function changeBg(n: number | null | undefined): string {
+function changeColorClass(n: number | null | undefined): string {
   if (n == null || n === 0) return "";
-  return n > 0 ? "bg-green-50" : "bg-red-50";
+  return n > 0 ? "pos" : "neg";
 }
+
+// ============================================================
+// Shared inline styles (Schwab-exact measurements)
+// ============================================================
+
+const S = {
+  // Table header cell
+  th: {
+    padding: "8px 12px",
+    fontSize: "11px",
+    fontWeight: 600 as const,
+    color: "#555",
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.5px",
+    borderBottom: "2px solid #ddd",
+    fontFamily: FONT,
+    lineHeight: "16px",
+    whiteSpace: "nowrap" as const,
+  },
+  // Table data cell
+  td: {
+    padding: "10px 12px",
+    fontSize: "13px",
+    fontWeight: 400 as const,
+    color: "#333",
+    fontFamily: FONT,
+    lineHeight: "18px",
+    borderBottom: "1px solid #eee",
+    verticalAlign: "top" as const,
+  },
+  // Group header row
+  groupHeader: {
+    padding: "10px 12px",
+    fontSize: "14px",
+    fontWeight: 700 as const,
+    color: "#1a1a1a",
+    fontFamily: FONT,
+    borderBottom: "1px solid #ddd",
+    cursor: "pointer",
+    backgroundColor: "#fff",
+  },
+  // Group subtotal row
+  groupSubtotal: {
+    padding: "8px 12px",
+    fontSize: "13px",
+    fontWeight: 600 as const,
+    color: "#333",
+    fontFamily: FONT,
+    borderBottom: "2px solid #ddd",
+    backgroundColor: "#fafafa",
+  },
+  // Footer total row
+  footerTotal: {
+    padding: "10px 12px",
+    fontSize: "13px",
+    fontWeight: 700 as const,
+    color: "#1a1a1a",
+    fontFamily: FONT,
+    borderTop: "2px solid #bbb",
+    backgroundColor: "#f5f5f5",
+  },
+  // Section title
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: 700 as const,
+    color: "#1a1a1a",
+    fontFamily: FONT,
+    margin: 0,
+    lineHeight: "28px",
+  },
+  // Small info text
+  infoText: {
+    fontSize: "11px",
+    color: "#888",
+    fontFamily: FONT,
+    lineHeight: "16px",
+  },
+};
 
 // ============================================================
 // Main Component
@@ -158,7 +235,6 @@ export default function BrokerageTab() {
   const [loading, setLoading] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [expandedPositionAccounts, setExpandedPositionAccounts] = useState<Record<string, boolean>>({});
-  const [chartRange, setChartRange] = useState("1M");
   const [showSettings, setShowSettings] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -254,113 +330,111 @@ export default function BrokerageTab() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-500">Loading brokerage data...</div>;
+    return <div style={{ padding: 32, textAlign: "center", color: "#888", fontFamily: FONT, fontSize: 14 }}>Loading...</div>;
   }
 
   const totalValue = accounts.reduce((s, a) => s + (a.total_value || a.balance_current || 0), 0);
+  const totalCash = accounts.reduce((s, a) => s + (a.cash_balance || 0), 0);
   const groups = groupAccounts(accounts);
   const totalHoldingsCount = Object.values(holdings).reduce((s, h) => s + h.length, 0);
   const accountsWithHoldings = accounts.filter((a) => holdings[a.id]?.length);
+  const includedCount = accounts.length;
 
   return (
-    <div className="max-w-[1400px]">
-      {/* ============ HEADER BAR ============ */}
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="text-xl font-bold text-slate-900">Summary</h1>
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          {lastSync?.at && <span>Updated: {fmtDateFull(lastSync.at)}</span>}
-          {status?.connected ? (
-            <>
-              <button onClick={handleSync} disabled={syncing}
-                className="ml-2 px-3 py-1 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50">
-                {syncing ? "Syncing..." : "Sync Now"}
-              </button>
-              <button onClick={handleDisconnect}
-                className="px-3 py-1 text-xs font-medium rounded border border-red-300 text-red-600 hover:bg-red-50">
-                Disconnect
-              </button>
-            </>
-          ) : (
-            <button onClick={handleConnect}
-              className="ml-2 px-3 py-1 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-700">
-              Connect Schwab
-            </button>
-          )}
-        </div>
+    <div style={{ maxWidth: 1400, fontFamily: FONT, fontFeatureSettings: "'tnum'", color: "#333" }}>
+
+      {/* ============ PAGE TITLE ============ */}
+      <div style={{ marginBottom: 4 }}>
+        <h1 style={{ ...S.sectionTitle, fontSize: 24, marginBottom: 2 }}>Summary</h1>
       </div>
 
-      {/* Expiry warning */}
-      {status?.connected && status.refreshTokenExpiresAt && (() => {
-        const daysLeft = Math.ceil((new Date(status.refreshTokenExpiresAt).getTime() - Date.now()) / 86400000);
-        return daysLeft <= 2 ? (
-          <div className="mb-3 rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
-            Schwab connection expires in {daysLeft} day{daysLeft !== 1 ? "s" : ""}. Re-authenticate to maintain sync.
+      {/* ============ TOTAL VALUE + CHART ============ */}
+      <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", marginBottom: 16, padding: "16px 20px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 40, marginBottom: 12 }}>
+          {/* Total Value */}
+          <div>
+            <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2, display: "flex", alignItems: "center", gap: 4 }}>
+              Total Value
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>i</span>
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", lineHeight: "36px" }}>{fmt(totalValue)}</div>
           </div>
-        ) : null;
-      })()}
+          {/* Day Change */}
+          <div>
+            <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2, display: "flex", alignItems: "center", gap: 4 }}>
+              Day Change
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>i</span>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#888" }}>–</div>
+          </div>
+          {/* 1-Month Change */}
+          <div>
+            <div style={{ fontSize: 11, color: "#666", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 }}>
+              1-Month Change
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#888" }}>–</div>
+          </div>
 
-      {/* ============ TOTAL VALUE CARD ============ */}
-      <div className="border border-slate-200 rounded-lg bg-white mb-4">
-        <div className="px-5 pt-4 pb-2">
-          <div className="flex items-baseline gap-8">
-            <div>
-              <div className="text-[11px] text-slate-500 uppercase tracking-wide mb-0.5">
-                Total Value <span className="inline-block w-3 h-3 rounded-full bg-emerald-600 text-white text-[8px] leading-3 text-center ml-0.5">i</span>
-              </div>
-              <div className="text-[28px] font-bold text-slate-900 leading-tight">{fmt(totalValue)}</div>
-            </div>
-            <div>
-              <div className="text-[11px] text-slate-500 uppercase tracking-wide mb-0.5">
-                Day Change <span className="inline-block w-3 h-3 rounded-full bg-emerald-600 text-white text-[8px] leading-3 text-center ml-0.5">i</span>
-              </div>
-              <div className="text-sm font-semibold text-slate-500">–</div>
-            </div>
-            <div>
-              <div className="text-[11px] text-slate-500 uppercase tracking-wide mb-0.5">1-Month Change</div>
-              <div className="text-sm font-semibold text-slate-500">–</div>
-            </div>
+          {/* Right side: sync controls */}
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+            {lastSync?.at && <span style={{ fontSize: 11, color: "#999" }}>Updated {fmtDate(lastSync.at)}</span>}
+            {status?.connected ? (
+              <>
+                <button onClick={handleSync} disabled={syncing} style={{
+                  padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
+                  background: syncing ? "#999" : "#0d7a3e", color: "#fff", border: "none", cursor: syncing ? "default" : "pointer",
+                }}>
+                  {syncing ? "Syncing..." : "Sync Now"}
+                </button>
+                <button onClick={handleDisconnect} style={{
+                  padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
+                  background: "#fff", color: "#d32f2f", border: "1px solid #d32f2f", cursor: "pointer",
+                }}>
+                  Disconnect
+                </button>
+              </>
+            ) : (
+              <button onClick={handleConnect} style={{
+                padding: "5px 14px", fontSize: 12, fontWeight: 600, borderRadius: 3,
+                background: "#0d7a3e", color: "#fff", border: "none", cursor: "pointer",
+              }}>
+                Connect Schwab
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Chart area */}
-        <div className="px-5 pb-4">
-          <div className="flex items-center justify-end gap-1 mb-2">
-            <button className="px-2 py-0.5 text-[11px] rounded border border-slate-200 text-slate-500 hover:bg-slate-50">
-              Table View
-            </button>
-            {["1M", "3M", "6M", "YTD", "1Y", "2Y"].map((r) => (
-              <button key={r} onClick={() => setChartRange(r)}
-                className={`px-2 py-0.5 text-[11px] rounded ${
-                  chartRange === r
-                    ? "bg-emerald-600 text-white"
-                    : "border border-slate-200 text-slate-500 hover:bg-slate-50"
-                }`}>
-                {r}
-              </button>
-            ))}
-          </div>
-          <div className="h-[120px] bg-gradient-to-r from-emerald-50 to-white rounded border border-slate-100 flex items-end px-4 pb-2">
-            {/* Chart placeholder — gradient area */}
-            <svg viewBox="0 0 400 80" className="w-full h-full" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#059669" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#059669" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d="M0,60 Q50,55 100,50 T200,40 T300,35 T400,20" fill="none" stroke="#059669" strokeWidth="2" />
-              <path d="M0,60 Q50,55 100,50 T200,40 T300,35 T400,20 V80 H0Z" fill="url(#chartGrad)" />
-            </svg>
-          </div>
+        {/* Expiry warning */}
+        {status?.connected && status.refreshTokenExpiresAt && (() => {
+          const daysLeft = Math.ceil((new Date(status.refreshTokenExpiresAt).getTime() - Date.now()) / 86400000);
+          return daysLeft <= 2 ? (
+            <div style={{ padding: "8px 12px", borderRadius: 3, border: "1px solid #f59e0b", background: "#fffbeb", fontSize: 12, color: "#92400e", marginBottom: 12 }}>
+              Schwab connection expires in {daysLeft} day{daysLeft !== 1 ? "s" : ""}. Re-authenticate to maintain sync.
+            </div>
+          ) : null;
+        })()}
+
+        {/* Chart placeholder */}
+        <div style={{ height: 100, background: "linear-gradient(180deg, rgba(13,122,62,0.06) 0%, rgba(255,255,255,0) 100%)", borderRadius: 3, border: "1px solid #eee", display: "flex", alignItems: "flex-end", padding: "0 16px 8px" }}>
+          <svg viewBox="0 0 400 60" style={{ width: "100%", height: "100%" }} preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0d7a3e" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#0d7a3e" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d="M0,45 Q40,42 80,38 T160,30 T240,25 T320,18 T400,12" fill="none" stroke="#0d7a3e" strokeWidth="1.5" />
+            <path d="M0,45 Q40,42 80,38 T160,30 T240,25 T320,18 T400,12 V60 H0Z" fill="url(#cg)" />
+          </svg>
         </div>
       </div>
 
       {/* ============ NOT CONNECTED ============ */}
       {!status?.connected && accounts.length === 0 && (
-        <div className="border border-slate-200 rounded-lg bg-white p-12 text-center">
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">Connect Your Schwab Account</h3>
-          <p className="text-sm text-slate-500 mb-4">Link your Charles Schwab brokerage to view accounts, positions, and balances.</p>
-          <button onClick={handleConnect} className="px-4 py-2 text-sm font-medium rounded bg-emerald-600 text-white hover:bg-emerald-700">
+        <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", padding: "48px 24px", textAlign: "center" }}>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Connect Your Schwab Account</h3>
+          <p style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>Link your Charles Schwab brokerage to view accounts, positions, and balances.</p>
+          <button onClick={handleConnect} style={{ padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 3, background: "#0d7a3e", color: "#fff", border: "none", cursor: "pointer" }}>
             Connect Schwab
           </button>
         </div>
@@ -368,23 +442,20 @@ export default function BrokerageTab() {
 
       {/* ============ ACCOUNTS TABLE ============ */}
       {accounts.length > 0 && (
-        <div className="border border-slate-200 rounded-lg bg-white mb-4 overflow-hidden">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+        <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", marginBottom: 16, overflow: "hidden" }}>
+          {/* Section header */}
+          <div style={{ padding: "12px 16px", borderBottom: "1px solid #ddd", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Accounts</h2>
-              <p className="text-[11px] text-slate-400">{accounts.length} of {accounts.length} accounts included in Total Value</p>
+              <h2 style={{ ...S.sectionTitle, fontSize: 16 }}>Accounts</h2>
+              <div style={S.infoText}>{includedCount} of {accounts.length} accounts included in Total Value</div>
             </div>
-            <div className="flex items-center gap-2">
-              <button className="px-2.5 py-1 text-[11px] font-medium rounded border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center gap-1">
-                <span className="text-emerald-600">&#9432;</span> FDIC Disclosures
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button style={{ ...btnStyle, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ color: "#0d7a3e", fontSize: 14 }}>&#9432;</span> FDIC Disclosures
               </button>
-              <button className="px-2.5 py-1 text-[11px] font-medium rounded border border-slate-200 text-slate-600 hover:bg-slate-50">
-                Additional Info
-              </button>
-              <button onClick={() => setShowSettings(true)}
-                className="px-2.5 py-1 text-[11px] font-medium rounded border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <button style={btnStyle}>Additional Info</button>
+              <button onClick={() => setShowSettings(true)} style={{ ...btnStyle, display: "flex", alignItems: "center", gap: 3 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -392,92 +463,138 @@ export default function BrokerageTab() {
             </div>
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 text-[11px] text-slate-500 uppercase tracking-wider">
-                  <th className="px-4 py-2 font-medium text-left min-w-[200px]">Account Name</th>
-                  <th className="px-3 py-2 font-medium text-left w-[100px]">Type</th>
-                  <th className="px-3 py-2 font-medium text-right w-[140px]">Cash & Cash Investments</th>
-                  <th className="px-3 py-2 font-medium text-right w-[130px]">Account Value</th>
-                  <th className="px-3 py-2 font-medium text-right w-[110px]">Day Change $</th>
-                  <th className="px-3 py-2 font-medium text-right w-[100px]">Day Change %</th>
-                  <th className="px-3 py-2 font-medium text-center w-[50px]"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {groups.map((group) => (
-                  <AccountGroupRows
+          {/* Accounts table */}
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ ...S.th, textAlign: "left", minWidth: 220 }}>Account Name</th>
+                <th style={{ ...S.th, textAlign: "left", width: 110 }}>Type</th>
+                <th style={{ ...S.th, textAlign: "right", width: 160 }}>Cash &amp; Cash Investments</th>
+                <th style={{ ...S.th, textAlign: "right", width: 140 }}>Account Value</th>
+                <th style={{ ...S.th, textAlign: "right", width: 120 }}>Day Change $</th>
+                <th style={{ ...S.th, textAlign: "right", width: 110 }}>Day Change %</th>
+                <th style={{ ...S.th, textAlign: "center", width: 50 }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map((group) => {
+                const expanded = expandedGroups[group.name] ?? true;
+                const groupValue = group.accounts.reduce((s, a) => s + (a.total_value || a.balance_current || 0), 0);
+                const groupCash = group.accounts.reduce((s, a) => s + (a.cash_balance || 0), 0);
+
+                return (
+                  <GroupRows
                     key={group.name}
                     group={group}
-                    expanded={expandedGroups[group.name] ?? true}
+                    expanded={expanded}
+                    groupValue={groupValue}
+                    groupCash={groupCash}
                     holdings={holdings}
                     onToggle={() => setExpandedGroups((p) => ({ ...p, [group.name]: !p[group.name] }))}
                   />
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t-2 border-slate-300 bg-slate-50 font-bold text-[13px]">
-                  <td className="px-4 py-2 text-slate-900" colSpan={2}>All Accounts Total</td>
-                  <td className="px-3 py-2 text-right text-slate-700">
-                    {fmt(accounts.reduce((s, a) => s + (a.cash_balance || 0), 0))}
-                  </td>
-                  <td className="px-3 py-2 text-right text-slate-900">{fmt(totalValue)}</td>
-                  <td className="px-3 py-2 text-right text-slate-500">–</td>
-                  <td className="px-3 py-2 text-right text-slate-500">–</td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td style={{ ...S.footerTotal, textAlign: "left" }} colSpan={2}>All Accounts Total</td>
+                <td style={{ ...S.footerTotal, textAlign: "right" }}>{fmt(totalCash)}</td>
+                <td style={{ ...S.footerTotal, textAlign: "right" }}>{fmt(totalValue)}</td>
+                <td style={{ ...S.footerTotal, textAlign: "right", color: "#888" }}>–</td>
+                <td style={{ ...S.footerTotal, textAlign: "right", color: "#888" }}>–</td>
+                <td style={S.footerTotal}></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          {/* Add a Non-Schwab Account link */}
+          <div style={{ padding: "10px 16px", borderTop: "1px solid #eee", display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 16, color: "#0d7a3e", fontWeight: 700 }}>+</span>
+            <span style={{ fontSize: 13, color: "#0d7a3e", fontWeight: 600, cursor: "pointer" }}>Add a Non-Schwab Account</span>
           </div>
         </div>
       )}
 
-      {/* ============ POSITIONS ============ */}
+      {/* ============ POSITIONS SECTION ============ */}
       {totalHoldingsCount > 0 && (
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-200">
-            <h2 className="text-base font-bold text-slate-900">Positions</h2>
+        <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", marginBottom: 16, overflow: "hidden" }}>
+          {/* Section header */}
+          <div style={{ padding: "16px 16px 12px" }}>
+            <h2 style={{ ...S.sectionTitle, fontSize: 18, marginBottom: 8 }}>Positions</h2>
+            {/* Equities sub-section */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>
+              <span style={{ fontSize: 10, color: "#666" }}>&#9660;</span>
+              Equities
+              <span style={{ fontSize: 11, fontWeight: 400, color: "#888" }}>({totalHoldingsCount})</span>
+            </div>
           </div>
 
-          {/* Equities sub-header */}
-          <div className="px-4 py-2 border-b border-slate-100 bg-slate-50/50">
-            <span className="text-[11px] font-semibold text-slate-700 uppercase tracking-wide flex items-center gap-1">
-              <span className="text-slate-400">&#9660;</span> Equities <sup className="text-slate-400 normal-case text-[10px]">{totalHoldingsCount}</sup>
-            </span>
-          </div>
+          {/* Positions table */}
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ ...S.th, textAlign: "left", minWidth: 160 }}>Symbol / Name</th>
+                <th style={{ ...S.th, textAlign: "right", width: 90 }}>Quantity</th>
+                <th style={{ ...S.th, textAlign: "right", width: 90 }}>Price</th>
+                <th style={{ ...S.th, textAlign: "right", width: 100 }}>Price Change</th>
+                <th style={{ ...S.th, textAlign: "right", width: 120 }}>$ Market Value</th>
+                <th style={{ ...S.th, textAlign: "right", width: 110 }}>Day Change</th>
+                <th style={{ ...S.th, textAlign: "right", width: 110 }}>Cost Basis</th>
+                <th style={{ ...S.th, textAlign: "right", width: 100 }}>Gain/Loss $</th>
+                <th style={{ ...S.th, textAlign: "right", width: 100 }}>Gain/Loss %</th>
+                <th style={{ ...S.th, textAlign: "right", width: 80 }}>% of Acct</th>
+                <th style={{ ...S.th, textAlign: "center", width: 60 }}>Reinvest?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {accountsWithHoldings.map((acct) => {
+                const acctHoldings = holdings[acct.id] || [];
+                const expanded = expandedPositionAccounts[acct.id] ?? true;
+                const totalMV = acctHoldings.reduce((s, h) => s + (h.market_value || 0), 0);
+                const totalCB = acctHoldings.reduce((s, h) => s + (h.cost_basis || 0), 0);
+                const totalGL = acctHoldings.reduce((s, h) => s + (h.unrealized_gain_loss || 0), 0);
 
-          {/* Per-account positions */}
-          {accountsWithHoldings.map((acct) => (
-            <PositionsAccountBlock
-              key={acct.id}
-              account={acct}
-              holdings={holdings[acct.id] || []}
-              expanded={expandedPositionAccounts[acct.id] ?? true}
-              onToggle={() => setExpandedPositionAccounts((p) => ({ ...p, [acct.id]: !(p[acct.id] ?? true) }))}
-            />
-          ))}
+                return (
+                  <PositionRows
+                    key={acct.id}
+                    account={acct}
+                    holdings={acctHoldings}
+                    expanded={expanded}
+                    totalMV={totalMV}
+                    totalCB={totalCB}
+                    totalGL={totalGL}
+                    onToggle={() => setExpandedPositionAccounts((p) => ({ ...p, [acct.id]: !(p[acct.id] ?? true) }))}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
-      {/* ============ BOTTOM STATUS BAR ============ */}
-      <div className="mt-4 border border-slate-200 rounded-lg bg-emerald-700 text-white px-4 py-2 flex items-center justify-between text-[11px]">
-        <div className="flex items-center gap-4">
-          <span className="font-medium">{accounts.length} Accounts</span>
+      {/* ============ BOTTOM STATUS BAR (Schwab-style dark footer) ============ */}
+      <div style={{
+        background: "#1a3a2a", color: "#fff", borderRadius: 4, padding: "8px 16px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        fontSize: 12, fontFamily: FONT, fontWeight: 500,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <span>{accounts.length} Accounts</span>
           <span>Assets: {fmt(totalValue)}</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span>Total Value: <strong>{fmt(totalValue)}</strong></span>
-          <span>Positions: <strong>{totalHoldingsCount}</strong></span>
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <span>Cash: {fmt(totalCash)}</span>
+          <span>Loans/Margin: –</span>
+          <span style={{ fontWeight: 700 }}>Total Value: {fmt(totalValue)}</span>
+          <span>Positions: {totalHoldingsCount}</span>
         </div>
       </div>
 
-      {/* ============ CUSTOMIZE SETTINGS MODAL ============ */}
+      {/* ============ SETTINGS MODAL ============ */}
       {showSettings && (
-        <CustomizeSettingsModal
+        <SettingsModal
           accounts={accounts}
-          groups={groupAccounts(accounts)}
+          groups={groups}
           onClose={() => setShowSettings(false)}
         />
       )}
@@ -486,189 +603,192 @@ export default function BrokerageTab() {
 }
 
 // ============================================================
-// Account Group Rows
+// Button style helper
 // ============================================================
 
-function AccountGroupRows({
-  group, expanded, holdings, onToggle,
+const btnStyle: React.CSSProperties = {
+  padding: "4px 10px",
+  fontSize: 11,
+  fontWeight: 600,
+  borderRadius: 3,
+  border: "1px solid #ccc",
+  background: "#fff",
+  color: "#555",
+  cursor: "pointer",
+  fontFamily: FONT,
+};
+
+// ============================================================
+// Group Rows (accounts table)
+// ============================================================
+
+function GroupRows({
+  group, expanded, groupValue, groupCash, holdings, onToggle,
 }: {
   group: AccountGroup;
   expanded: boolean;
+  groupValue: number;
+  groupCash: number;
   holdings: Record<string, Holding[]>;
   onToggle: () => void;
 }) {
-  const groupValue = group.accounts.reduce((s, a) => s + (a.total_value || a.balance_current || 0), 0);
-  const groupCash = group.accounts.reduce((s, a) => s + (a.cash_balance || 0), 0);
-
   return (
     <>
       {/* Group header */}
-      <tr className="border-b border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100 select-none" onClick={onToggle}>
-        <td className="px-4 py-2 font-bold text-slate-800 text-[13px]" colSpan={7}>
-          <span className="inline-block w-3 mr-1.5 text-[10px] text-slate-400">{expanded ? "▼" : "▶"}</span>
+      <tr onClick={onToggle} style={{ cursor: "pointer" }}>
+        <td colSpan={7} style={S.groupHeader}>
+          <span style={{ display: "inline-block", width: 14, fontSize: 9, color: "#666", marginRight: 4 }}>
+            {expanded ? "▼" : "▶"}
+          </span>
           {group.name}
         </td>
       </tr>
 
+      {/* Account rows */}
       {expanded && group.accounts.map((acct) => {
         const value = acct.total_value || acct.balance_current || 0;
         const hasHoldings = (holdings[acct.id]?.length || 0) > 0;
         return (
-          <tr key={acct.id} className="border-b border-slate-100 hover:bg-emerald-50/30">
-            <td className="px-4 py-2">
-              <div className="flex items-start gap-2">
+          <tr key={acct.id} onMouseOver={(e) => (e.currentTarget.style.background = "#f8fdf9")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+            <td style={S.td}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                 {acct.connection_type === "api" ? (
-                  <span className="mt-0.5 w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" title="API-synced" />
+                  <span style={{ marginTop: 4, width: 7, height: 7, borderRadius: "50%", background: "#0d7a3e", flexShrink: 0 }} />
                 ) : (
-                  <span className="mt-0.5 w-2 h-2 rounded-full bg-slate-300 flex-shrink-0" title="Manual" />
+                  <span style={{ marginTop: 4, width: 7, height: 7, borderRadius: "50%", background: "#ccc", flexShrink: 0 }} />
                 )}
                 <div>
-                  <div className="font-medium text-slate-900">{acct.display_name || acct.account_number_masked}</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div style={{ fontWeight: 400, color: "#1a1a1a" }}>
+                    {acct.display_name || acct.account_number_masked}
+                    {" "}
+                    <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 13, height: 13, borderRadius: "50%", background: "#0d7a3e", color: "#fff", fontSize: 8, fontWeight: 700, cursor: "pointer", verticalAlign: "middle" }}>i</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#999", marginTop: 1 }}>
                     {acct.account_number_masked}
                     {acct.account_holder ? ` · ${acct.account_holder}` : ""}
                   </div>
                 </div>
               </div>
             </td>
-            <td className="px-3 py-2 text-slate-600">{typeLabel(acct.account_type)}</td>
-            <td className="px-3 py-2 text-right text-slate-700">{acct.cash_balance != null ? fmt(acct.cash_balance) : "–"}</td>
-            <td className="px-3 py-2 text-right font-medium text-slate-900">{value ? fmt(value) : "–"}</td>
-            <td className="px-3 py-2 text-right text-slate-500">–</td>
-            <td className="px-3 py-2 text-right text-slate-500">–</td>
-            <td className="px-3 py-2 text-center">
-              {hasHoldings && <span className="text-[11px] text-emerald-600 font-medium cursor-pointer hover:underline">More</span>}
+            <td style={{ ...S.td, color: "#555" }}>{typeLabel(acct.account_type)}</td>
+            <td style={{ ...S.td, textAlign: "right", color: "#555" }}>{acct.cash_balance != null ? fmt(acct.cash_balance) : "–"}</td>
+            <td style={{ ...S.td, textAlign: "right", fontWeight: 500, color: "#1a1a1a" }}>{value ? fmt(value) : "–"}</td>
+            <td style={{ ...S.td, textAlign: "right", color: "#888" }}>–</td>
+            <td style={{ ...S.td, textAlign: "right", color: "#888" }}>–</td>
+            <td style={{ ...S.td, textAlign: "center" }}>
+              {hasHoldings && <span style={{ fontSize: 12, color: "#0d7a3e", fontWeight: 600, cursor: "pointer" }}>More</span>}
             </td>
           </tr>
         );
       })}
 
-      {/* Group subtotal rows — Schwab style */}
+      {/* Group subtotal */}
       {expanded && (
-        <>
-          <tr className="bg-slate-50/70 text-[12px]">
-            <td className="px-4 py-1 font-semibold text-slate-500 pl-9" colSpan={3}>{group.name} Total</td>
-            <td className="px-3 py-1 text-right font-semibold text-slate-900">{fmt(groupValue)}</td>
-            <td className="px-3 py-1 text-right text-slate-400">–</td>
-            <td className="px-3 py-1 text-right text-slate-400">–</td>
-            <td></td>
-          </tr>
-        </>
+        <tr>
+          <td style={{ ...S.groupSubtotal, paddingLeft: 28 }} colSpan={2}>{group.name} Total</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right" }}>{fmt(groupCash)}</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right", color: "#1a1a1a" }}>{fmt(groupValue)}</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right", color: "#888" }}>–</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right", color: "#888" }}>–</td>
+          <td style={S.groupSubtotal}></td>
+        </tr>
       )}
     </>
   );
 }
 
 // ============================================================
-// Positions Account Block
+// Position Rows (positions table)
 // ============================================================
 
-function PositionsAccountBlock({
-  account, holdings, expanded, onToggle,
+function PositionRows({
+  account, holdings, expanded, totalMV, totalCB, totalGL, onToggle,
 }: {
   account: Account;
   holdings: Holding[];
   expanded: boolean;
+  totalMV: number;
+  totalCB: number;
+  totalGL: number;
   onToggle: () => void;
 }) {
-  const totalMV = holdings.reduce((s, h) => s + (h.market_value || 0), 0);
-  const totalCB = holdings.reduce((s, h) => s + (h.cost_basis || 0), 0);
-  const totalGL = holdings.reduce((s, h) => s + (h.unrealized_gain_loss || 0), 0);
-
   return (
-    <div className="border-b border-slate-100 last:border-b-0">
-      {/* Account header in positions */}
-      <div className="px-4 py-2 bg-white flex items-center justify-between cursor-pointer hover:bg-slate-50" onClick={onToggle}>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400">{expanded ? "▼" : "▶"}</span>
-          <span className="font-semibold text-[13px] text-slate-900">
-            {account.display_name || account.account_number_masked}
+    <>
+      {/* Account header row in positions */}
+      <tr onClick={onToggle} style={{ cursor: "pointer" }}>
+        <td colSpan={11} style={{ ...S.groupHeader, fontSize: 13 }}>
+          <span style={{ display: "inline-block", width: 14, fontSize: 9, color: "#666", marginRight: 4 }}>
+            {expanded ? "▼" : "▶"}
           </span>
-        </div>
-        <div className="flex items-center gap-4 text-[12px]">
-          <span className="text-slate-500">{holdings.length} positions</span>
-          <span className="font-medium text-slate-900">{fmt(totalMV)}</span>
+          <span style={{ fontWeight: 600 }}>{account.display_name || account.account_number_masked}</span>
+          <span style={{ marginLeft: 16, fontSize: 12, fontWeight: 400, color: "#888" }}>{holdings.length} positions</span>
+          <span style={{ marginLeft: 16, fontSize: 13, fontWeight: 600 }}>{fmt(totalMV)}</span>
           {totalGL !== 0 && (
-            <span className={`font-medium ${totalGL >= 0 ? "text-green-700" : "text-red-600"}`}>
+            <span style={{ marginLeft: 12, fontSize: 13, fontWeight: 600, ...(totalGL >= 0 ? { color: "#067a46" } : { color: "#d32f2f" }) }}>
               {fmt(totalGL)}
             </span>
           )}
-        </div>
-      </div>
+        </td>
+      </tr>
 
+      {/* Holding rows */}
+      {expanded && holdings.map((h) => {
+        const pctOfAcct = totalMV > 0 && h.market_value ? (h.market_value / totalMV) * 100 : null;
+        const gl = h.unrealized_gain_loss;
+        const glPct = h.unrealized_gain_loss_pct;
+        return (
+          <tr key={h.id} onMouseOver={(e) => (e.currentTarget.style.background = "#f8fdf9")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+            <td style={{ ...S.td, paddingLeft: 28 }}>
+              <div style={{ fontWeight: 600, color: "#0d7a3e", fontSize: 13 }}>{h.security?.ticker_symbol || "–"}</div>
+              <div style={{ fontSize: 11, color: "#999", marginTop: 1, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.security?.name || ""}</div>
+            </td>
+            <td style={{ ...S.td, textAlign: "right" }}>{fmtQty(h.quantity)}</td>
+            <td style={{ ...S.td, textAlign: "right" }}>{fmt(h.price)}</td>
+            <td style={{ ...S.td, textAlign: "right", color: "#888" }}>–</td>
+            <td style={{ ...S.td, textAlign: "right", fontWeight: 500 }}>{fmt(h.market_value)}</td>
+            <td style={{ ...S.td, textAlign: "right", color: "#888" }}>–</td>
+            <td style={{ ...S.td, textAlign: "right" }}>{fmt(h.cost_basis)}</td>
+            <td style={{ ...S.td, textAlign: "right", fontWeight: 500, ...(gl != null && gl !== 0 ? (gl > 0 ? { color: "#067a46" } : { color: "#d32f2f" }) : {}) }}>
+              {fmt(gl)}
+            </td>
+            <td style={{ ...S.td, textAlign: "right", ...(glPct != null && glPct !== 0 ? (glPct > 0 ? { color: "#067a46" } : { color: "#d32f2f" }) : {}) }}>
+              {fmtPct(glPct)}
+            </td>
+            <td style={{ ...S.td, textAlign: "right", color: "#555" }}>
+              {pctOfAcct != null ? `${pctOfAcct.toFixed(1)}%` : "–"}
+            </td>
+            <td style={{ ...S.td, textAlign: "center", color: "#888", fontSize: 12 }}>No</td>
+          </tr>
+        );
+      })}
+
+      {/* Account total row in positions */}
       {expanded && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-[12px]">
-            <thead>
-              <tr className="text-[10px] text-slate-500 uppercase tracking-wider border-b border-slate-100 bg-slate-50/50">
-                <th className="px-4 py-1.5 font-medium text-left">Symbol / Name</th>
-                <th className="px-3 py-1.5 font-medium text-right">Quantity</th>
-                <th className="px-3 py-1.5 font-medium text-right">Price</th>
-                <th className="px-3 py-1.5 font-medium text-right">Price Change</th>
-                <th className="px-3 py-1.5 font-medium text-right">$ Market Value</th>
-                <th className="px-3 py-1.5 font-medium text-right">Day Change</th>
-                <th className="px-3 py-1.5 font-medium text-right">Cost Basis</th>
-                <th className="px-3 py-1.5 font-medium text-right">Gain/Loss $</th>
-                <th className="px-3 py-1.5 font-medium text-right">Gain/Loss %</th>
-                <th className="px-3 py-1.5 font-medium text-right">% of Holdings</th>
-              </tr>
-            </thead>
-            <tbody>
-              {holdings.map((h) => {
-                const pctOfHoldings = totalMV > 0 && h.market_value ? (h.market_value / totalMV) * 100 : null;
-                const gl = h.unrealized_gain_loss;
-                const glPct = h.unrealized_gain_loss_pct;
-                return (
-                  <tr key={h.id} className="border-b border-slate-50 hover:bg-slate-50/50">
-                    <td className="px-4 py-2">
-                      <div className="font-medium text-emerald-700">{h.security?.ticker_symbol || "–"}</div>
-                      <div className="text-[10px] text-slate-400 truncate max-w-[180px]">{h.security?.name || ""}</div>
-                    </td>
-                    <td className="px-3 py-2 text-right text-slate-700">{fmtQty(h.quantity)}</td>
-                    <td className="px-3 py-2 text-right text-slate-700">{fmt(h.price)}</td>
-                    <td className="px-3 py-2 text-right text-slate-400">–</td>
-                    <td className="px-3 py-2 text-right font-medium text-slate-900">{fmt(h.market_value)}</td>
-                    <td className="px-3 py-2 text-right text-slate-400">–</td>
-                    <td className="px-3 py-2 text-right text-slate-700">{fmt(h.cost_basis)}</td>
-                    <td className={`px-3 py-2 text-right font-medium ${changeColor(gl)}`}>
-                      {fmt(gl)}
-                    </td>
-                    <td className={`px-3 py-2 text-right ${changeColor(glPct)}`}>
-                      {fmtPct(glPct)}
-                    </td>
-                    <td className="px-3 py-2 text-right text-slate-600">
-                      {pctOfHoldings != null ? `${pctOfHoldings.toFixed(1)}%` : "–"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr className="border-t border-slate-200 bg-slate-50/50 text-[11px] font-semibold">
-                <td className="px-4 py-1.5 text-slate-600">Account Total</td>
-                <td></td><td></td><td></td>
-                <td className="px-3 py-1.5 text-right text-slate-900">{fmt(totalMV)}</td>
-                <td className="px-3 py-1.5 text-right text-slate-400">–</td>
-                <td className="px-3 py-1.5 text-right text-slate-700">{fmt(totalCB)}</td>
-                <td className={`px-3 py-1.5 text-right ${changeColor(totalGL)}`}>{fmt(totalGL)}</td>
-                <td className={`px-3 py-1.5 text-right ${changeColor(totalGL)}`}>
-                  {totalCB > 0 ? fmtPct((totalGL / totalCB) * 100) : "–"}
-                </td>
-                <td className="px-3 py-1.5 text-right text-slate-600">100%</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+        <tr>
+          <td style={{ ...S.groupSubtotal, paddingLeft: 28 }}>Account Total</td>
+          <td style={S.groupSubtotal}></td>
+          <td style={S.groupSubtotal}></td>
+          <td style={S.groupSubtotal}></td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right" }}>{fmt(totalMV)}</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right", color: "#888" }}>–</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right" }}>{fmt(totalCB)}</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right", ...(totalGL >= 0 ? { color: "#067a46" } : { color: "#d32f2f" }) }}>{fmt(totalGL)}</td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right", ...(totalGL >= 0 ? { color: "#067a46" } : { color: "#d32f2f" }) }}>
+            {totalCB > 0 ? fmtPct((totalGL / totalCB) * 100) : "–"}
+          </td>
+          <td style={{ ...S.groupSubtotal, textAlign: "right" }}>100%</td>
+          <td style={S.groupSubtotal}></td>
+        </tr>
       )}
-    </div>
+    </>
   );
 }
 
 // ============================================================
-// Customize Settings Modal
+// Settings Modal
 // ============================================================
 
-function CustomizeSettingsModal({
+function SettingsModal({
   accounts, groups, onClose,
 }: {
   accounts: Account[];
@@ -677,18 +797,29 @@ function CustomizeSettingsModal({
 }) {
   const [tab, setTab] = useState<"accounts" | "grouped" | "ungrouped">("grouped");
 
+  const modalBg: React.CSSProperties = {
+    position: "fixed", inset: 0, zIndex: 50,
+    display: "flex", alignItems: "flex-start", justifyContent: "center", paddingTop: 80,
+    background: "rgba(0,0,0,0.4)",
+  };
+  const modalBox: React.CSSProperties = {
+    background: "#fff", borderRadius: 8, boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+    width: 480, maxHeight: "70vh", display: "flex", flexDirection: "column", fontFamily: FONT,
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/40" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl w-[480px] max-h-[70vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+    <div style={modalBg} onClick={onClose}>
+      <div style={modalBox} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="px-5 pt-4 pb-3 border-b border-slate-200">
-          <h3 className="text-base font-bold text-slate-900">Customize Settings</h3>
-          <div className="flex gap-4 mt-3">
+        <div style={{ padding: "16px 20px 0", borderBottom: "1px solid #ddd" }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>Customize Settings</h3>
+          <div style={{ display: "flex", gap: 20, marginTop: 12 }}>
             {(["accounts", "grouped", "ungrouped"] as const).map((t) => (
-              <button key={t} onClick={() => setTab(t)}
-                className={`text-[12px] font-medium pb-1 border-b-2 ${
-                  tab === t ? "border-emerald-600 text-emerald-700" : "border-transparent text-slate-500 hover:text-slate-700"
-                }`}>
+              <button key={t} onClick={() => setTab(t)} style={{
+                fontSize: 12, fontWeight: 600, padding: "0 0 8px", background: "none", border: "none", cursor: "pointer",
+                borderBottom: tab === t ? "2px solid #0d7a3e" : "2px solid transparent",
+                color: tab === t ? "#0d7a3e" : "#888", fontFamily: FONT,
+              }}>
                 {t === "accounts" ? "Hide Accounts" : t === "grouped" ? "Grouped" : "Ungrouped"}
               </button>
             ))}
@@ -696,83 +827,68 @@ function CustomizeSettingsModal({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-3">
+        <div style={{ flex: 1, overflowY: "auto", padding: "12px 20px" }}>
           {tab === "grouped" && groups.map((g) => (
-            <div key={g.name} className="mb-4">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">{g.name}</div>
+            <div key={g.name} style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>{g.name}</div>
               {g.accounts.map((acct) => (
-                <div key={acct.id} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-slate-50">
-                  <span className="text-slate-400 cursor-grab">&#9776;</span>
-                  <span className={`w-2 h-2 rounded-full ${acct.connection_type === "api" ? "bg-emerald-500" : "bg-slate-300"}`} />
-                  <span className="text-[12px] text-slate-800 flex-1">
-                    {acct.display_name || acct.account_number_masked}
-                  </span>
-                  <span className="text-[10px] text-slate-400">{typeLabel(acct.account_type)}</span>
+                <div key={acct.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderRadius: 3, cursor: "grab" }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = "#f5f5f5")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+                  <span style={{ color: "#bbb", fontSize: 14 }}>&#9776;</span>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: acct.connection_type === "api" ? "#0d7a3e" : "#ccc" }} />
+                  <span style={{ fontSize: 12, color: "#333", flex: 1 }}>{acct.display_name || acct.account_number_masked}</span>
+                  <span style={{ fontSize: 10, color: "#999" }}>{typeLabel(acct.account_type)}</span>
                 </div>
               ))}
             </div>
           ))}
 
-          {tab === "accounts" && (
-            <div className="space-y-1">
-              {accounts.map((acct) => (
-                <div key={acct.id} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-slate-50">
-                  <input type="checkbox" defaultChecked className="accent-emerald-600 w-3.5 h-3.5" />
-                  <span className="text-[12px] text-slate-800 flex-1">
-                    {acct.display_name || acct.account_number_masked}
-                  </span>
-                  <span className="text-[10px] text-slate-400">{acct.account_number_masked}</span>
-                </div>
-              ))}
+          {tab === "accounts" && accounts.map((acct) => (
+            <div key={acct.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderRadius: 3 }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#f5f5f5")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+              <input type="checkbox" defaultChecked style={{ accentColor: "#0d7a3e", width: 14, height: 14 }} />
+              <span style={{ fontSize: 12, color: "#333", flex: 1 }}>{acct.display_name || acct.account_number_masked}</span>
+              <span style={{ fontSize: 10, color: "#999" }}>{acct.account_number_masked}</span>
             </div>
-          )}
+          ))}
 
-          {tab === "ungrouped" && (
-            <div className="space-y-1">
-              {accounts.map((acct) => (
-                <div key={acct.id} className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-slate-50">
-                  <span className="text-slate-400 cursor-grab">&#9776;</span>
-                  <span className="text-[12px] text-slate-800 flex-1">
-                    {acct.display_name || acct.account_number_masked}
-                  </span>
-                  <span className="text-[10px] text-slate-400">{typeLabel(acct.account_type)}</span>
-                </div>
-              ))}
+          {tab === "ungrouped" && accounts.map((acct) => (
+            <div key={acct.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderRadius: 3, cursor: "grab" }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#f5f5f5")} onMouseOut={(e) => (e.currentTarget.style.background = "")}>
+              <span style={{ color: "#bbb", fontSize: 14 }}>&#9776;</span>
+              <span style={{ fontSize: 12, color: "#333", flex: 1 }}>{acct.display_name || acct.account_number_masked}</span>
+              <span style={{ fontSize: 10, color: "#999" }}>{typeLabel(acct.account_type)}</span>
             </div>
-          )}
+          ))}
 
-          {/* Add a Group section */}
+          {/* Add a Group */}
           {tab === "grouped" && (
-            <div className="mt-4 pt-3 border-t border-slate-200">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-2">Add a Group</div>
-              <div className="flex gap-2">
-                <input type="text" placeholder="Group Name"
-                  className="flex-1 px-2 py-1 text-[12px] border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500" />
-                <button className="px-3 py-1 text-[11px] font-medium rounded bg-emerald-600 text-white hover:bg-emerald-700">
-                  Create Group
-                </button>
+            <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #eee" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Add a Group</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input type="text" placeholder="Group Name" style={{
+                  flex: 1, padding: "5px 8px", fontSize: 12, border: "1px solid #ccc", borderRadius: 3,
+                  fontFamily: FONT, outline: "none",
+                }} />
+                <button style={{ ...btnStyle, background: "#0d7a3e", color: "#fff", border: "none" }}>Create Group</button>
               </div>
             </div>
           )}
 
           {/* External accounts */}
-          <div className="mt-4 pt-3 border-t border-slate-200">
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-2">External Accounts</div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500">
-              <input type="checkbox" defaultChecked className="accent-emerald-600 w-3.5 h-3.5" />
-              <span>Show &quot;Add non-Schwab account&quot; row</span>
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #eee" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>External Accounts</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#555" }}>
+              <input type="checkbox" defaultChecked style={{ accentColor: "#0d7a3e", width: 14, height: 14 }} />
+              Show &ldquo;Add non-Schwab account&rdquo; row
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-1.5 text-[12px] font-medium rounded border border-slate-200 text-slate-600 hover:bg-slate-50">
-            Cancel
-          </button>
-          <button onClick={onClose} className="px-4 py-1.5 text-[12px] font-medium rounded bg-emerald-600 text-white hover:bg-emerald-700">
-            Save
-          </button>
+        <div style={{ padding: "12px 20px", borderTop: "1px solid #ddd", display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <button onClick={onClose} style={btnStyle}>Cancel</button>
+          <button onClick={onClose} style={{ ...btnStyle, background: "#0d7a3e", color: "#fff", border: "none" }}>Save</button>
         </div>
       </div>
     </div>
