@@ -644,7 +644,7 @@ async function sendConflictEmail(filename, conflicts, gemini, claude, returnId, 
   const entityName = gemini?.entity?.name || claude?.entity?.name || 'Unknown';
   const taxYear = gemini?.tax_year || claude?.tax_year || '?';
   const returnType = gemini?.return_type || claude?.return_type || '?';
-  const fileUrl = `https://files.finleg.net/financial-statements/${r2Key}`;
+  const fileUrl = `https://r2-files.finleg.workers.dev/financial-statements/${r2Key}`;
 
   // Generate a unique token for this batch of conflicts
   const token = createHash('sha256').update(`${returnId}:${Date.now()}`).digest('hex').slice(0, 24);
@@ -1589,7 +1589,7 @@ async function processFile(filePath, { inboxId = null } = {}) {
     await supabase.from('tax_return_documents').insert({
       return_id: returnId,
       file_path: filePath,
-      storage_url: `https://files.finleg.net/financial-statements/${r2Key}`,
+      storage_url: `https://r2-files.finleg.workers.dev/financial-statements/${r2Key}`,
       file_name: filename,
       file_size_bytes: fileSize,
       forms_contained: formsContained,
