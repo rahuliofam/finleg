@@ -6,7 +6,7 @@
 
 const SCHWAB_AUTH_URL = 'https://api.schwabapi.com/v1/oauth/authorize';
 const SCHWAB_TOKEN_URL = 'https://api.schwabapi.com/v1/oauth/token';
-const GITHUB_PAGES_ORIGIN = 'https://rahulio.github.io';
+const GITHUB_PAGES_ORIGIN = 'https://finleg.net';
 const SCHWAB_INSTITUTION_NAME = 'Charles Schwab';
 
 export default {
@@ -136,28 +136,43 @@ async function handleCallback(url, env) {
   const accessEncrypted = await encrypt(tokens.access_token, encKey);
   const refreshEncrypted = await encrypt(tokens.refresh_token, encKey);
 
-  // Upsert into oauth_tokens (unique on institution_id)
-  const supabaseRes = await supabaseRequest(env, '/rest/v1/oauth_tokens', {
-    method: 'POST',
-    headers: {
-      'Prefer': 'resolution=merge-duplicates',
-    },
-    body: JSON.stringify({
-      institution_id: institutionId,
-      access_token: accessEncrypted,
-      refresh_token: refreshEncrypted,
-      access_token_expires_at: new Date(now + tokens.expires_in * 1000).toISOString(),
-      refresh_token_expires_at: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'active',
-      external_client_id: env.SCHWAB_APP_KEY,
-      last_refreshed_at: new Date().toISOString(),
-    }),
-  });
+  // Store tokens — check for existing row first, then PATCH or INSERT
+  const tokenData = {
+    institution_id: institutionId,
+    access_token: accessEncrypted,
+    refresh_token: refreshEncrypted,
+    access_token_expires_at: new Date(now + tokens.expires_in * 1000).toISOString(),
+    refresh_token_expires_at: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'active',
+    external_client_id: env.SCHWAB_APP_KEY,
+    last_refreshed_at: new Date().toISOString(),
+    error_message: null,
+  };
+
+  const existingRes = await supabaseRequest(env,
+    `/rest/v1/oauth_tokens?institution_id=eq.${institutionId}&select=id&limit=1`
+  );
+  const existing = await existingRes.json();
+
+  let supabaseRes;
+  if (existing && existing.length > 0) {
+    // PATCH existing row
+    supabaseRes = await supabaseRequest(env,
+      `/rest/v1/oauth_tokens?id=eq.${existing[0].id}`,
+      { method: 'PATCH', body: JSON.stringify(tokenData) }
+    );
+  } else {
+    // INSERT new row
+    supabaseRes = await supabaseRequest(env, '/rest/v1/oauth_tokens', {
+      method: 'POST',
+      body: JSON.stringify(tokenData),
+    });
+  }
 
   if (!supabaseRes.ok) {
     const errText = await supabaseRes.text();
     console.error('Supabase store failed:', supabaseRes.status, errText);
-    return redirectToIntranet('error=store_failed');
+    return redirectToIntranet(`error=store_failed&status=${supabaseRes.status}&detail=${encodeURIComponent(errText.substring(0, 200))}`);
   }
 
   return redirectToIntranet('schwab=connected');
@@ -380,7 +395,7 @@ async function supabaseRequest(env, path, options = {}) {
 // ============================================================
 
 function redirectToIntranet(query) {
-  return Response.redirect(`${GITHUB_PAGES_ORIGIN}/finleg/intranet/bookkeeping/brokerage?${query}`, 302);
+  return Response.redirect(`${GITHUB_PAGES_ORIGIN}/intranet/bookkeeping/brokerage?${query}`, 302);
 }
 
 function json(data, status = 200) {
