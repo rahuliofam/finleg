@@ -42,6 +42,11 @@ export default {
         return handleDisconnect(env);
       }
 
+      // Debug: proxy any Schwab API call (temporary)
+      if (request.method === 'GET' && url.pathname.startsWith('/schwab/api/')) {
+        return handleApiProxy(url, env);
+      }
+
       return json({ error: 'not found' }, 404);
     } catch (err) {
       console.error('Worker error:', err);
@@ -244,6 +249,43 @@ async function handleDisconnect(env) {
     { method: 'PATCH', body: JSON.stringify({ status: 'revoked' }) }
   );
   return json({ ok: true });
+}
+
+// ============================================================
+// Debug API proxy (temporary — remove after testing)
+// ============================================================
+
+async function handleApiProxy(url, env) {
+  const institutionId = await getSchwabInstitutionId(env);
+
+  // Get token from DB
+  const tokenRes = await supabaseRequest(env,
+    `/rest/v1/oauth_tokens?institution_id=eq.${institutionId}&select=*&limit=1`
+  );
+  const tokens = await tokenRes.json();
+  if (!tokens || tokens.length === 0) {
+    return json({ error: 'no tokens found' }, 404);
+  }
+
+  const encKey = await importEncryptionKey(env.TOKEN_ENCRYPTION_KEY);
+  const accessToken = await decrypt(tokens[0].access_token, encKey);
+
+  // Strip /schwab/api prefix to get the Schwab API path
+  const schwabPath = url.pathname.replace('/schwab/api', '');
+  const schwabUrl = `https://api.schwabapi.com${schwabPath}${url.search}`;
+
+  const apiRes = await fetch(schwabUrl, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': 'application/json',
+    },
+  });
+
+  const data = await apiRes.text();
+  return new Response(data, {
+    status: apiRes.status,
+    headers: { 'Content-Type': 'application/json', ...corsHeaders() },
+  });
 }
 
 // ============================================================
