@@ -1,12 +1,12 @@
 {
-  "version": "v260319.11 10:00p",
-  "release": 142,
-  "sha": "a2408d6",
-  "fullSha": "a2408d63466f3b737a5b5dabcd05a6f3072f1862",
+  "version": "v260319.12 10:02p",
+  "release": 143,
+  "sha": "c226902",
+  "fullSha": "c226902e51a81a8b5cc4b171de5038f663244909",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-20 03:00:22+00",
-  "commits": [{"sha":"a2408d6","message":"fix: use registered portsie.com callback URL for Schwab OAuth","author":"Rahul"}]
+  "pushedAt": "2026-03-20 03:02:56+00",
+  "commits": [{"sha":"c226902","message":"style: add Schwab-style alternating row shading and group accent borders","author":"Rahul"}]
 }
