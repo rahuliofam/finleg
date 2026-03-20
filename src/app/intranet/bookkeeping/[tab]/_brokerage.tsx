@@ -57,6 +57,12 @@ interface AccountGroup {
   accounts: Account[];
 }
 
+interface BalanceSnapshot {
+  snapshot_date: string;
+  total_value: number | null;
+  account_id: string;
+}
+
 // ============================================================
 // Grouping logic
 // ============================================================
@@ -238,6 +244,8 @@ export default function BrokerageTab() {
   const [showSettings, setShowSettings] = useState(false);
   const [totalValueExpanded, setTotalValueExpanded] = useState(true);
   const [chartRange, setChartRange] = useState("1M");
+  const [chartView, setChartView] = useState<"chart" | "table">("table");
+  const [balanceHistory, setBalanceHistory] = useState<BalanceSnapshot[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -287,6 +295,16 @@ export default function BrokerageTab() {
         }
         setHoldings(grouped);
       }
+    }
+
+    // Fetch balance history for chart/table
+    if (accts?.length) {
+      const { data: balances } = await supabase
+        .from("account_balances")
+        .select("snapshot_date, total_value, account_id")
+        .in("account_id", accts.map((a: Account) => a.id))
+        .order("snapshot_date", { ascending: true });
+      if (balances) setBalanceHistory(balances as BalanceSnapshot[]);
     }
 
     const { data: syncData } = await supabase
@@ -424,10 +442,14 @@ export default function BrokerageTab() {
               </div>
             </div>
 
-            {/* Time period buttons + Table View */}
+            {/* Time period buttons + Table/Chart toggle */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4, marginBottom: 12 }}>
-              <button style={{ ...btnStyle, display: "flex", alignItems: "center", gap: 4, marginRight: 8, border: "1px solid #ccc" }}>
-                <span style={{ fontSize: 11 }}>&#9638;</span> Table View
+              <button
+                onClick={() => setChartView(chartView === "table" ? "chart" : "table")}
+                style={{ ...btnStyle, display: "flex", alignItems: "center", gap: 4, marginRight: 8, border: chartView === "table" ? "2px solid #0d7a3e" : "1px solid #ccc", color: chartView === "table" ? "#0d7a3e" : "#555" }}
+              >
+                <span style={{ fontSize: 11 }}>{chartView === "table" ? "▤" : "◻"}</span>
+                {chartView === "table" ? "Table View" : "Chart View"}
               </button>
               {(["1M", "3M", "6M", "YTD", "1Y", "2Y"] as const).map((r) => (
                 <button
@@ -437,7 +459,7 @@ export default function BrokerageTab() {
                     width: 36, height: 28, borderRadius: 14, fontSize: 11, fontWeight: 600,
                     fontFamily: FONT, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
                     border: chartRange === r ? "2px solid #0d7a3e" : "1px solid #ccc",
-                    background: chartRange === r ? "#fff" : "#fff",
+                    background: "#fff",
                     color: chartRange === r ? "#0d7a3e" : "#555",
                   }}
                 >
@@ -446,8 +468,14 @@ export default function BrokerageTab() {
               ))}
             </div>
 
-            {/* Chart with axes */}
-            <ChartWithAxes totalValue={totalValue} chartRange={chartRange} />
+            {/* Chart or Table — real data from account_balances */}
+            <TotalValueDisplay
+              accounts={accounts}
+              balanceHistory={balanceHistory}
+              chartRange={chartRange}
+              chartView={chartView}
+              totalValue={totalValue}
+            />
           </div>
         )}
       </div>
@@ -810,132 +838,198 @@ function PositionRows({
 }
 
 // ============================================================
-// Chart with Axes (Schwab-style)
+// Total Value Display — Table or Chart with real data
 // ============================================================
 
-function ChartWithAxes({ totalValue, chartRange }: { totalValue: number; chartRange: string }) {
-  // Generate date labels for X-axis based on range
-  const rangeDays: Record<string, number> = { "1M": 30, "3M": 90, "6M": 180, "YTD": 78, "1Y": 365, "2Y": 730 };
-  const days = rangeDays[chartRange] || 30;
-  const now = new Date();
-  const tickCount = Math.min(days, 12);
-  const stepDays = Math.floor(days / tickCount);
+const RANGE_DAYS: Record<string, number> = { "1M": 30, "3M": 90, "6M": 180, "YTD": 0, "1Y": 365, "2Y": 730 };
 
-  const dateLabels: string[] = [];
-  for (let i = tickCount; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i * stepDays);
-    dateLabels.push(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }));
+function getRangeDays(range: string): number {
+  if (range === "YTD") {
+    const now = new Date();
+    const jan1 = new Date(now.getFullYear(), 0, 1);
+    return Math.ceil((now.getTime() - jan1.getTime()) / 86400000);
+  }
+  return RANGE_DAYS[range] || 30;
+}
+
+function filterByRange(snapshots: BalanceSnapshot[], range: string): BalanceSnapshot[] {
+  const days = getRangeDays(range);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutoffStr = cutoff.toISOString().split("T")[0];
+  return snapshots.filter((s) => s.snapshot_date >= cutoffStr);
+}
+
+function TotalValueDisplay({
+  accounts,
+  balanceHistory,
+  chartRange,
+  chartView,
+  totalValue,
+}: {
+  accounts: Account[];
+  balanceHistory: BalanceSnapshot[];
+  chartRange: string;
+  chartView: "chart" | "table";
+  totalValue: number;
+}) {
+  const filtered = filterByRange(balanceHistory, chartRange);
+
+  // Group by date, summing total_value across all accounts
+  const dateMap = new Map<string, { total: number; byAccount: Map<string, number> }>();
+  for (const snap of filtered) {
+    if (!dateMap.has(snap.snapshot_date)) {
+      dateMap.set(snap.snapshot_date, { total: 0, byAccount: new Map() });
+    }
+    const entry = dateMap.get(snap.snapshot_date)!;
+    const val = snap.total_value || 0;
+    entry.total += val;
+    entry.byAccount.set(snap.account_id, val);
   }
 
-  // Generate Y-axis labels
-  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(totalValue, 1))));
-  const base = Math.floor(totalValue / magnitude) * magnitude;
-  const step = magnitude * 0.25;
-  const yLabels: string[] = [];
-  for (let i = 0; i < 4; i++) {
-    const val = base - step + step * i;
-    if (val >= 1000000) yLabels.push(`$${(val / 1000000).toFixed(2)}M`);
-    else if (val >= 1000) yLabels.push(`$${(val / 1000).toFixed(0)}K`);
-    else yLabels.push(`$${val.toFixed(0)}`);
+  const sortedDates = [...dateMap.keys()].sort();
+
+  // Build account lookup for display names — only include accounts with balance data
+  const accountsWithData = accounts.filter((a) => {
+    return filtered.some((s) => s.account_id === a.id && s.total_value != null);
+  });
+
+  if (sortedDates.length === 0) {
+    // No historical data — show current snapshot as single row
+    const today = new Date().toISOString().split("T")[0];
+    return (
+      <div>
+        {chartView === "table" ? (
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ ...S.th, textAlign: "left" }}>Date</th>
+                {accounts.filter((a) => (a.total_value || a.balance_current || 0) > 0).map((a) => (
+                  <th key={a.id} style={{ ...S.th, textAlign: "right" }}>
+                    {a.display_name || a.account_number_masked}
+                  </th>
+                ))}
+                <th style={{ ...S.th, textAlign: "right", fontWeight: 700 }}>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={S.td}>{today}</td>
+                {accounts.filter((a) => (a.total_value || a.balance_current || 0) > 0).map((a) => (
+                  <td key={a.id} style={{ ...S.td, textAlign: "right" }}>
+                    {fmt(a.total_value || a.balance_current)}
+                  </td>
+                ))}
+                <td style={{ ...S.td, textAlign: "right", fontWeight: 700 }}>{fmt(totalValue)}</td>
+              </tr>
+            </tbody>
+          </table>
+        ) : (
+          <div style={{ padding: 24, textAlign: "center", color: "#999", fontSize: 13 }}>
+            No historical data yet. Run daily syncs to build chart history.
+          </div>
+        )}
+      </div>
+    );
   }
 
-  // Chart dimensions
+  if (chartView === "table") {
+    return (
+      <div style={{ maxHeight: 300, overflowY: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th style={{ ...S.th, textAlign: "left", position: "sticky", top: 0, background: "#fff", zIndex: 1 }}>Date</th>
+              {accountsWithData.map((a) => (
+                <th key={a.id} style={{ ...S.th, textAlign: "right", position: "sticky", top: 0, background: "#fff", zIndex: 1 }}>
+                  {a.display_name || a.account_number_masked}
+                </th>
+              ))}
+              <th style={{ ...S.th, textAlign: "right", fontWeight: 700, position: "sticky", top: 0, background: "#fff", zIndex: 1 }}>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...sortedDates].reverse().map((date, idx) => {
+              const entry = dateMap.get(date)!;
+              const rowBg = idx % 2 === 1 ? "#f8f8f8" : "#fff";
+              return (
+                <tr key={date} style={{ background: rowBg }}>
+                  <td style={S.td}>{new Date(date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
+                  {accountsWithData.map((a) => (
+                    <td key={a.id} style={{ ...S.td, textAlign: "right" }}>
+                      {entry.byAccount.has(a.id) ? fmt(entry.byAccount.get(a.id)!) : "–"}
+                    </td>
+                  ))}
+                  <td style={{ ...S.td, textAlign: "right", fontWeight: 600 }}>{fmt(entry.total)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // Chart view — SVG with real data points
   const chartW = 900;
   const chartH = 200;
-  const marginL = 0;
   const marginR = 60;
   const marginB = 30;
+  const values = sortedDates.map((d) => dateMap.get(d)!.total);
+  const minVal = Math.min(...values) * 0.998;
+  const maxVal = Math.max(...values) * 1.002;
+  const range = maxVal - minVal || 1;
 
-  // Generate a gentle upward line with some variation
-  const points: Array<[number, number]> = [];
-  const numPoints = 30;
-  for (let i = 0; i <= numPoints; i++) {
-    const x = marginL + (i / numPoints) * (chartW - marginL - marginR);
-    // Gentle upward trend with small random-looking oscillation
-    const progress = i / numPoints;
-    const trend = chartH * 0.7 - progress * chartH * 0.3;
-    const wave = Math.sin(i * 0.8) * 12 + Math.cos(i * 1.3) * 8;
-    const y = Math.max(10, Math.min(chartH - marginB - 10, trend + wave));
-    points.push([x, y]);
-  }
+  const points = sortedDates.map((_, i) => {
+    const x = (i / Math.max(sortedDates.length - 1, 1)) * (chartW - marginR);
+    const y = (chartH - marginB) - ((values[i] - minVal) / range) * (chartH - marginB - 10);
+    return [x, y] as [number, number];
+  });
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ");
-  const fillPath = `${linePath} V${chartH - marginB} H${marginL} Z`;
+  const fillPath = `${linePath} V${chartH - marginB} H0 Z`;
+
+  // Y-axis labels
+  const yLabels = [0, 0.33, 0.66, 1].map((frac) => {
+    const val = minVal + frac * range;
+    if (val >= 1000000) return `$${(val / 1000000).toFixed(2)}M`;
+    if (val >= 1000) return `$${(val / 1000).toFixed(0)}K`;
+    return `$${val.toFixed(0)}`;
+  });
+
+  // X-axis: show ~8 evenly spaced date labels
+  const xTickCount = Math.min(sortedDates.length, 8);
+  const xStep = Math.max(1, Math.floor(sortedDates.length / xTickCount));
 
   return (
-    <div style={{ position: "relative" }}>
-      <svg
-        viewBox={`0 0 ${chartW} ${chartH + 5}`}
-        style={{ width: "100%", height: 250, display: "block" }}
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0d7a3e" stopOpacity="0.10" />
-            <stop offset="100%" stopColor="#0d7a3e" stopOpacity="0.01" />
-          </linearGradient>
-        </defs>
-
-        {/* Horizontal grid lines */}
-        {[0.25, 0.5, 0.75].map((frac, i) => {
-          const y = (chartH - marginB) * frac;
-          return (
-            <line
-              key={i}
-              x1={marginL}
-              y1={y}
-              x2={chartW - marginR}
-              y2={y}
-              stroke="#eee"
-              strokeWidth="1"
-              strokeDasharray="4 3"
-            />
-          );
-        })}
-
-        {/* Bottom axis line */}
-        <line x1={marginL} y1={chartH - marginB} x2={chartW - marginR} y2={chartH - marginB} stroke="#ddd" strokeWidth="1" />
-
-        {/* Fill area */}
-        <path d={fillPath} fill="url(#chartFill)" />
-
-        {/* Line */}
-        <path d={linePath} fill="none" stroke="#0d7a3e" strokeWidth="1.5" />
-
-        {/* X-axis date labels */}
-        {dateLabels.map((label, i) => {
-          const x = marginL + (i / (dateLabels.length - 1)) * (chartW - marginL - marginR);
-          return (
-            <text
-              key={i}
-              x={x}
-              y={chartH - marginB + 18}
-              textAnchor="middle"
-              style={{ fontSize: 10, fill: "#999", fontFamily: FONT }}
-            >
-              {label}
-            </text>
-          );
-        })}
-
-        {/* Y-axis labels (right side) */}
-        {yLabels.map((label, i) => {
-          const y = (chartH - marginB) * (1 - i / (yLabels.length - 1)) ;
-          return (
-            <text
-              key={i}
-              x={chartW - marginR + 8}
-              y={y + 3}
-              textAnchor="start"
-              style={{ fontSize: 10, fill: "#999", fontFamily: FONT }}
-            >
-              {label}
-            </text>
-          );
-        })}
-      </svg>
-    </div>
+    <svg viewBox={`0 0 ${chartW} ${chartH + 5}`} style={{ width: "100%", height: 250, display: "block" }} preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0d7a3e" stopOpacity="0.10" />
+          <stop offset="100%" stopColor="#0d7a3e" stopOpacity="0.01" />
+        </linearGradient>
+      </defs>
+      {[0.25, 0.5, 0.75].map((frac, i) => (
+        <line key={i} x1={0} y1={(chartH - marginB) * frac} x2={chartW - marginR} y2={(chartH - marginB) * frac} stroke="#eee" strokeWidth="1" strokeDasharray="4 3" />
+      ))}
+      <line x1={0} y1={chartH - marginB} x2={chartW - marginR} y2={chartH - marginB} stroke="#ddd" strokeWidth="1" />
+      <path d={fillPath} fill="url(#chartFill)" />
+      <path d={linePath} fill="none" stroke="#0d7a3e" strokeWidth="1.5" />
+      {sortedDates.filter((_, i) => i % xStep === 0 || i === sortedDates.length - 1).map((date, i) => {
+        const idx = sortedDates.indexOf(date);
+        const x = (idx / Math.max(sortedDates.length - 1, 1)) * (chartW - marginR);
+        return (
+          <text key={i} x={x} y={chartH - marginB + 18} textAnchor="middle" style={{ fontSize: 10, fill: "#999", fontFamily: FONT }}>
+            {new Date(date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+          </text>
+        );
+      })}
+      {yLabels.map((label, i) => (
+        <text key={i} x={chartW - marginR + 8} y={(chartH - marginB) * (1 - i / (yLabels.length - 1)) + 3} textAnchor="start" style={{ fontSize: 10, fill: "#999", fontFamily: FONT }}>
+          {label}
+        </text>
+      ))}
+    </svg>
   );
 }
 
