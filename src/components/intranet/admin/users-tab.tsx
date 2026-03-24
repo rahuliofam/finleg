@@ -95,6 +95,14 @@ export function UsersTab() {
     if (invError) {
       setError(invError.message);
     } else {
+      // Fire-and-forget invitation email
+      const invitedEmail = inviteEmail.toLowerCase().trim();
+      supabase.functions
+        .invoke("send-invitation-email", {
+          body: { email: invitedEmail, role: inviteRole, invited_by_email: user?.email },
+        })
+        .catch((err: unknown) => console.error("Invitation email failed:", err));
+
       setInviteEmail("");
       setInviteRole("public");
       setShowInviteForm(false);
