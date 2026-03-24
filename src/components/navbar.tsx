@@ -10,7 +10,7 @@ import versionData from "@/../version.json";
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, signInWithGoogle } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -90,12 +90,12 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <Link
-                href="/signin"
+              <button
+                onClick={() => signInWithGoogle()}
                 className="text-sm font-medium px-4 py-1.5 bg-[#1B6B3A] hover:bg-[#145530] text-white rounded-full transition-colors"
               >
                 Sign In
-              </Link>
+              </button>
             )
           )}
         </div>
