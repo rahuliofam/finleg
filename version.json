@@ -1,12 +1,12 @@
 {
-  "version": "v260324.03 10:34p",
-  "release": 150,
-  "sha": "7d7bb0b",
-  "fullSha": "7d7bb0bf5c4e01863c566185b1c9117109657cea",
+  "version": "v260324.04 11:01p",
+  "release": 151,
+  "sha": "7682048",
+  "fullSha": "7682048849e1469ca86e99e1571fe7dc256d530f",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-25 03:34:51+00",
-  "commits": [{"sha":"7b54545","message":"feat: send invitation email when admin invites a user","author":"Rahul"},{"sha":"81d363e","message":"docs: add Supabase CLI multi-account instructions to CLAUDE.md","author":"Rahul"},{"sha":"7d7bb0b","message":"Merge branch 'reverent-lewin'","author":"Rahul"}]
+  "pushedAt": "2026-03-25 04:01:02+00",
+  "commits": [{"sha":"7682048","message":"feat: add QuickBooks token refresh script and improve OAuth server","author":"Rahul"}]
 }
