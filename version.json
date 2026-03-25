@@ -1,12 +1,12 @@
 {
-  "version": "v260324.02 12:55p",
-  "release": 149,
-  "sha": "a570160",
-  "fullSha": "a570160ba380df876157d872642db7191dfce439",
+  "version": "v260324.03 10:34p",
+  "release": 150,
+  "sha": "7d7bb0b",
+  "fullSha": "7d7bb0bf5c4e01863c566185b1c9117109657cea",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm46oaq",
-  "pushedAt": "2026-03-24 17:55:32+00",
-  "commits": [{"sha":"a570160","message":"feat: send invitation email when admin invites a user","author":"Rahul"}]
+  "pushedAt": "2026-03-25 03:34:51+00",
+  "commits": [{"sha":"7b54545","message":"feat: send invitation email when admin invites a user","author":"Rahul"},{"sha":"81d363e","message":"docs: add Supabase CLI multi-account instructions to CLAUDE.md","author":"Rahul"},{"sha":"7d7bb0b","message":"Merge branch 'reverent-lewin'","author":"Rahul"}]
 }
