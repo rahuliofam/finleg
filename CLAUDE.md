@@ -34,6 +34,27 @@
 - **Hostinger SSH:** `sshpass -f ~/.ssh/alpacapps-hostinger.pass ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no root@93.188.164.224`
 - **Prerequisites on Hostinger:** Claude CLI (`npm i -g @anthropic-ai/claude-code`), wrangler (`npm i -g wrangler`), Node 22+
 
+## Supabase CLI Multi-Account
+
+The CLI uses `SUPABASE_ACCESS_TOKEN` env var to authenticate. Tokens are in Bitwarden.
+
+| Project | Ref | Token (Bitwarden) |
+|---|---|---|
+| **finleg** | `gjdvzzxsrzuorguwkaih` | "Supabase - finleg" → notes → ClaudeSupaAuto Mgmt Token |
+| **alpacapps** | `aphrrfprbixmhissnjfn` | "Supabase — AlpacApps Project" → notes → Management API Token |
+
+**Deploy edge functions:**
+```bash
+# Finleg
+export BW_SESSION=$(~/bin/bw-unlock)
+SUPABASE_ACCESS_TOKEN=$(bw get notes "Supabase - finleg" | grep "Mgmt Token" | cut -d' ' -f4) \
+  npx supabase functions deploy <function-name> --no-verify-jwt --project-ref gjdvzzxsrzuorguwkaih
+
+# AlpacApps
+SUPABASE_ACCESS_TOKEN=$(bw get notes "Supabase — AlpacApps Project" | grep "Management API Token" | cut -d' ' -f4) \
+  npx supabase functions deploy <function-name> --no-verify-jwt --project-ref aphrrfprbixmhissnjfn
+```
+
 ## Quick Refs
 
 - **Tech:** Vanilla HTML/JS + Tailwind v4 | Supabase | GitHub Pages
