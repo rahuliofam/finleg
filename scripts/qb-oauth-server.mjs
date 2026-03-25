@@ -15,8 +15,16 @@ import { createClient } from '@supabase/supabase-js';
 import { createServer } from 'http';
 import { config } from 'dotenv';
 import { execSync } from 'child_process';
+import { readFileSync, writeFileSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const localEnvPath = resolve(__dirname, '..', 'local.env');
 
 config(); // Load .env
+// Also load local.env (override=true so local.env values take precedence)
+config({ path: localEnvPath, override: true });
 
 const CLIENT_ID = process.env.QUICKBOOKS_CLIENT_ID;
 const CLIENT_SECRET = process.env.QUICKBOOKS_CLIENT_SECRET;
@@ -128,6 +136,24 @@ const server = createServer(async (req, res) => {
       if (error) throw error;
 
       console.log(`Tokens stored in qb_tokens for realm ${realmId}`);
+
+      // Also save refresh token to local.env for scripts that use it
+      try {
+        let envContent = readFileSync(localEnvPath, 'utf-8');
+        if (envContent.includes('QUICKBOOKS_REFRESH_TOKEN=')) {
+          envContent = envContent.replace(
+            /QUICKBOOKS_REFRESH_TOKEN=.*/,
+            `QUICKBOOKS_REFRESH_TOKEN=${tokenData.refresh_token}`
+          );
+        } else {
+          envContent += `\nQUICKBOOKS_REFRESH_TOKEN=${tokenData.refresh_token}\n`;
+        }
+        writeFileSync(localEnvPath, envContent);
+        console.log(`Refresh token saved to local.env`);
+      } catch (e) {
+        console.log(`Could not save to local.env: ${e.message}`);
+        console.log(`Refresh token: ${tokenData.refresh_token}`);
+      }
 
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(`
