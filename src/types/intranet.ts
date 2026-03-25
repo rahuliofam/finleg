@@ -109,6 +109,7 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "context", label: "Context Window", defaultVisible: true },
     { key: "backups", label: "Backups", defaultVisible: true },
     { key: "planlist", label: "Planlist", defaultVisible: true },
+    { key: "flow-mig", label: "Flow Migration", defaultVisible: true },
   ],
   my: [
     { key: "overview", label: "Overview", defaultVisible: true },

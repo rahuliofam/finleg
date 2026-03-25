@@ -11,6 +11,7 @@ import { TokensTab } from "@/components/devcontrol/tokens-tab";
 import { ContextTab } from "@/components/devcontrol/context-tab";
 import { BackupsTab } from "@/components/devcontrol/backups-tab";
 import { PlanlistTab } from "@/components/devcontrol/planlist-tab";
+import { FlowMigTab } from "@/components/devcontrol/flow-mig-tab";
 import { TocTab } from "@/components/devcontrol/toc-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
@@ -27,6 +28,7 @@ const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
     context: ContextTab,
     backups: BackupsTab,
     planlist: PlanlistTab,
+    "flow-mig": FlowMigTab,
   },
 };
 
