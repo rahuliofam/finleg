@@ -10,8 +10,8 @@
 
 | Account Type | Count | Institutions |
 |---|---|---|
-| **Credit Cards** | 254 statements | Amex (Blue Preferred, Blue Business), Apple Card, Chase Amazon CC, Chase Visa CC (Subhash), BofA CC (Subhash), Robinhood Gold Card |
-| **Checking** | 126 statements | Schwab Checking (Rahul), US Bank Checking (Rahul) |
+| **Credit Cards** | 254 statements | Amex (Blue Preferred, Blue Business), Apple Card, Chase Amazon CC, Chase Visa CC (Subhash), BofA CC (Subhash), Robinhood Gold Card (3892, 6868) |
+| **Checking** | 126 statements | Schwab Checking (Rahul), US Bank Checking (Rahul), Robinhood Checking (2074) |
 | **Total** | ~380 PDFs to parse | |
 
 **Excluded from Phase 1:** Brokerage (138), Payment/Venmo/PayPal/CashApp (137), IRA (80), HELOC (69), Mortgage (56), Trust (54), Auto Loan (36), SBA Loan (86), Crypto (8), Credit Line (19), Closed accounts (274 — many overlap with above).
@@ -58,6 +58,8 @@ Before creating tables, you need to understand the actual data in each statement
 | `credit-cards/chase-visa-cc-7191/` | Chase (Subhash) | Credit Card |
 | `credit-cards/boa-cc-6420/` | BofA (Subhash) | Credit Card |
 | `credit-cards/robinhood-gold-card-3892/` | Robinhood | Credit Card |
+| `credit-cards/robinhood-gold-card-6868/` | Robinhood | Credit Card |
+| `bank-accounts/robinhood-checking-2074/` | Robinhood | Checking |
 | `bank-accounts/schwab-checking-3711/` | Schwab | Checking |
 | `bank-accounts/us-bank-checking-7444/` | US Bank | Checking |
 
