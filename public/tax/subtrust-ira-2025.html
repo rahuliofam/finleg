@@ -160,7 +160,7 @@
         Revocable Trust of Subhash Sonnad &middot;
         Charles Schwab &amp; Co., Inc. &middot;
         <span class="badge badge-death">Code 4 — Death</span>
-        &middot; <span style="font-size:0.75rem; color:#94a3b8;">v260406.04 2:02p</span>
+        &middot; <span style="font-size:0.75rem; color:#94a3b8;">v260406.04</span>
     </p>
 
     <!-- ========== SUMMARY ========== -->
@@ -200,15 +200,14 @@
         <p class="acct-info">
             <strong>Source account:</strong> SubTrust Trad IRA (6448-3403) — Revocable Trust of Subhash Sonnad, Charles Schwab &amp; Co.<br>
             <strong>Beneficiaries</strong> (per Schwab transfer docs): <strong>Rahul Sonnad</strong>, <strong>Emina Sonnad</strong>, <strong>Hannah Sonnad</strong>.<br>
-            Schwab uses internal claim reference numbers (not account numbers) on journal entries.
-            The 12/26 GLDM shares were split into 3 lots — likely one per beneficiary.
+            Schwab BENE refs encode the destination account number: TO97297151 = Emina Brokerage (9729-7151), TO54168830 = Hannah Brokerage (5416-8830).
         </p>
         <table>
             <thead>
                 <tr>
                     <th>From Account</th>
                     <th>Schwab Ref / Lot</th>
-                    <th>Likely Recipient</th>
+                    <th>Recipient</th>
                     <th class="right">Cash</th>
                     <th class="right">In-Kind Shares</th>
                     <th class="right">Total</th>
@@ -218,7 +217,7 @@
                 <tr>
                     <td>SubTrust Trad IRA (6448-3403)</td>
                     <td>BENE TO97297151</td>
-                    <td>Rahul, Emina, or Hannah Sonnad</td>
+                    <td>Emina Sonnad — Brokerage (9729-7151)</td>
                     <td class="right amount">$125,128.31</td>
                     <td class="right amount">—</td>
                     <td class="right amount">$125,128.31</td>
@@ -226,7 +225,7 @@
                 <tr>
                     <td>SubTrust Trad IRA (6448-3403)</td>
                     <td>BENE TO54168830</td>
-                    <td>Rahul, Emina, or Hannah Sonnad</td>
+                    <td>Hannah Sonnad — Brokerage (5416-8830)</td>
                     <td class="right amount">$53,013.08</td>
                     <td class="right amount">—</td>
                     <td class="right amount">$53,013.08</td>
@@ -280,8 +279,10 @@
             </tbody>
         </table>
         <div class="note">
-            To map each Schwab claim ref to a specific person, check the inbound journal entries on each beneficiary's inherited IRA account for matching dates and amounts:
-            Rahul Sonnad Inh Trad IRA (****5874), Emina Sonnad TradTrust (4055-9200), Hannah Sonnad TradTrust (7706-6811).
+            <strong>Cash recipients confirmed:</strong> Schwab BENE refs encode the destination account number.
+            TO97297151 = Emina Brokerage (9729-7151). TO54168830 = Hannah Brokerage (5416-8830).<br>
+            <strong>GLDM/TSLA share lots:</strong> The 3 lots lack embedded account refs. To determine which lot went to which person,
+            check inbound journals on: Rahul Inh Trad IRA (6342-5874), Emina Inh Trad IRA (2745-3866), Hannah Inh Trad IRA (8208-3568).
         </div>
     </div>
 
@@ -293,8 +294,8 @@
             <strong>To:</strong> Beneficiary inherited IRA accounts (Rahul Sonnad, Emina Sonnad, Hannah Sonnad)
         </p>
 
-        <h3>Schwab Ref TO97297151 — Rahul, Emina, or Hannah Sonnad — $125,128.31</h3>
-        <p class="acct-info">Death distribution (J4) from SubTrust Trad IRA (6448-3403) to beneficiary inherited IRA. Schwab claim ref TO97297151.</p>
+        <h3>Emina Sonnad — Brokerage (9729-7151) — $125,128.31</h3>
+        <p class="acct-info">Death distribution (J4) from SubTrust Trad IRA (6448-3403) to Emina Sonnad's Brokerage (9729-7151). Schwab ref TO97297151.</p>
         <table>
             <thead>
                 <tr><th>Date</th><th>From Account</th><th>To (Schwab Ref)</th><th>Description</th><th class="right">Amount</th></tr>
@@ -322,14 +323,14 @@
                     <td class="right amount neg">-$98,667.77</td>
                 </tr>
                 <tr class="total-row">
-                    <td colspan="4">Subtotal — Schwab Ref TO97297151</td>
+                    <td colspan="4">Subtotal — Emina Sonnad — Brokerage (9729-7151)</td>
                     <td class="right amount">$125,128.31</td>
                 </tr>
             </tbody>
         </table>
 
-        <h3>Schwab Ref TO54168830 — Rahul, Emina, or Hannah Sonnad — $53,013.08</h3>
-        <p class="acct-info">Death distribution (J4) from SubTrust Trad IRA (6448-3403) to beneficiary inherited IRA. Schwab claim ref TO54168830.</p>
+        <h3>Hannah Sonnad — Brokerage (5416-8830) — $53,013.08</h3>
+        <p class="acct-info">Death distribution (J4) from SubTrust Trad IRA (6448-3403) to Hannah Sonnad's Brokerage (5416-8830). Schwab ref TO54168830.</p>
         <table>
             <thead>
                 <tr><th>Date</th><th>From Account</th><th>To (Schwab Ref)</th><th>Description</th><th class="right">Amount</th></tr>
@@ -364,7 +365,7 @@
                     <td class="right amount neg">-$11,007.77</td>
                 </tr>
                 <tr class="total-row">
-                    <td colspan="4">Subtotal — Schwab Ref TO54168830</td>
+                    <td colspan="4">Subtotal — Hannah Sonnad — Brokerage (5416-8830)</td>
                     <td class="right amount">$53,013.08</td>
                 </tr>
             </tbody>
@@ -400,7 +401,7 @@
         <h3>12/26/2025 — GLDM (SPDR Gold MiniShares ETF) — $385,865.99</h3>
         <table>
             <thead>
-                <tr><th>Date</th><th>From Account</th><th>Likely Recipient</th><th>Symbol</th><th class="right">Shares</th><th class="right">Price</th><th class="right">Value</th></tr>
+                <tr><th>Date</th><th>From Account</th><th>Recipient</th><th>Symbol</th><th class="right">Shares</th><th class="right">Price</th><th class="right">Value</th></tr>
             </thead>
             <tbody>
                 <tr>
@@ -442,7 +443,7 @@
         <h3>06/25/2025 — TSLA (Tesla Inc) — $983.58</h3>
         <table>
             <thead>
-                <tr><th>Date</th><th>From Account</th><th>Likely Recipient</th><th>Symbol</th><th class="right">Shares</th><th class="right">Price</th><th class="right">Value</th></tr>
+                <tr><th>Date</th><th>From Account</th><th>Recipient</th><th>Symbol</th><th class="right">Shares</th><th class="right">Price</th><th class="right">Value</th></tr>
             </thead>
             <tbody>
                 <tr>
