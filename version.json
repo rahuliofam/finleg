@@ -1,12 +1,12 @@
 {
-  "version": "v260406.06 2:13p",
-  "release": 161,
-  "sha": "019fbd4",
-  "fullSha": "019fbd459a2ff6dfb3a8c2fb83fa5f9b373fd4f6",
+  "version": "v260406.07 2:19p",
+  "release": 162,
+  "sha": "8fe1748",
+  "fullSha": "8fe17489dc82bf9f30ceaef2788ec90acb7341fc",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm727z3",
-  "pushedAt": "2026-04-06 19:13:22+00",
-  "commits": [{"sha":"019fbd4","message":"fix: make version number more visible on subtrust IRA report","author":"Rahul"}]
+  "pushedAt": "2026-04-06 19:19:41+00",
+  "commits": [{"sha":"8fe1748","message":"feat: add per-beneficiary aggregate receipts table to SubTrust IRA report","author":"Rahul"}]
 }
