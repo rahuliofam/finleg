@@ -7,6 +7,31 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>SubTrust Trad IRA (6448-3403) — 2025 Disbursements</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+    (function() {
+      const SUPABASE_URL = 'https://gjdvzzxsrzuorguwkaih.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY';
+      const ALLOWED_EMAIL = 'rahulioson@gmail.com';
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, storageKey: 'genalpaca-auth', flowType: 'pkce' }
+      });
+      sb.auth.getSession().then(function(res) {
+        var email = res.data?.session?.user?.email;
+        if (email === ALLOWED_EMAIL) {
+          document.getElementById('auth-gate').style.display = 'none';
+          document.getElementById('main-content').style.display = 'block';
+        } else if (email) {
+          document.getElementById('auth-gate').innerHTML =
+            '<h2 style="margin-bottom:1rem;">Access Denied</h2>' +
+            '<p>Signed in as <strong>' + email + '</strong></p>' +
+            '<p style="margin-top:0.5rem;color:#94a3b8;">This page is restricted. Contact the owner for access.</p>';
+        } else {
+          window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname);
+        }
+      });
+    })();
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -152,6 +177,10 @@
     </style>
 </head>
 <body>
+<div id="auth-gate" class="container" style="text-align:center; padding-top:4rem;">
+    <p style="color:#94a3b8;">Checking authentication...</p>
+</div>
+<div id="main-content" style="display:none;">
 <div class="container">
 
     <p style="text-align:right; font-size:0.8rem; color:#64748b; margin-bottom:0.5rem;">v260406.07 2:19p</p>
@@ -619,6 +648,7 @@
 
     <p class="footnote">Generated from Schwab transaction data and 2025 1099-R forms. For tax filing purposes, consult a qualified tax professional.</p>
 
+</div>
 </div>
 </body>
 </html>
