@@ -1,12 +1,12 @@
 {
-  "version": "v260403.01 1:48p",
-  "release": 155,
-  "sha": "f2c529d",
-  "fullSha": "f2c529d72bff54f7a762d35f4f469c191caa27df",
+  "version": "v260406.01 1:51p",
+  "release": 156,
+  "sha": "5a764ff",
+  "fullSha": "5a764ff5954276e7d2a7913dd24b2d56b5fc2ced",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm727z3",
-  "pushedAt": "2026-04-03 18:48:16+00",
-  "commits": [{"sha":"f2c529d","message":"chore: add project identity check to CLAUDE.md","author":"Rahul"}]
+  "pushedAt": "2026-04-06 18:51:42+00",
+  "commits": [{"sha":"5a764ff","message":"feat: add SubTrust Trad IRA 2025 disbursement report page","author":"Rahul"}]
 }
