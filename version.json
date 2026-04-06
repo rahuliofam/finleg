@@ -1,12 +1,12 @@
 {
-  "version": "v260406.07 2:19p",
-  "release": 162,
-  "sha": "8fe1748",
-  "fullSha": "8fe17489dc82bf9f30ceaef2788ec90acb7341fc",
+  "version": "v260406.08 2:52p",
+  "release": 163,
+  "sha": "8b3078f",
+  "fullSha": "8b3078ffb9b76a98b536f72eefd1e83beb0886db",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm727z3",
-  "pushedAt": "2026-04-06 19:19:41+00",
-  "commits": [{"sha":"8fe1748","message":"feat: add per-beneficiary aggregate receipts table to SubTrust IRA report","author":"Rahul"}]
+  "pushedAt": "2026-04-06 19:52:21+00",
+  "commits": [{"sha":"8b3078f","message":"feat: add auth guard to SubTrust IRA report — restricted to rahulioson@gmail.com","author":"Rahul"}]
 }
