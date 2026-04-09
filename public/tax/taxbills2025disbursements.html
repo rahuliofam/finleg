@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Tax &amp; Disbursement Summary — Beneficiaries</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+    (function() {
+      const sb = window.supabase.createClient('https://gjdvzzxsrzuorguwkaih.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY', { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } });
+      sb.auth.getSession().then(function(res) {
+        var email = res.data?.session?.user?.email;
+        if (email === 'rahulioson@gmail.com') { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; }
+        else if (email) { document.getElementById('auth-gate').innerHTML = '<h2>Access Denied</h2><p>Signed in as ' + email + '</p>'; }
+        else { window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname); }
+      });
+    })();
+    </script>
+    <style>
+        @media print {
+            body { padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            @page { margin: 0.5in; size: letter; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            color: #1e293b;
+            background: #f8fafc;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 { font-size: 1.6rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
+        .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        h2 { font-size: 1.15rem; font-weight: 600; color: #0f172a; margin: 2rem 0 0.75rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.35rem; }
+        h3 { font-size: 1rem; font-weight: 600; color: #334155; margin: 1.25rem 0 0.5rem; }
+
+        /* Summary cards */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; }
+        .card-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.15rem; }
+        .card-acct { font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.75rem; }
+        .card-row { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .card-row:last-child { border-bottom: none; }
+        .card-row .label { color: #64748b; }
+        .card-row .value { font-weight: 600; text-align: right; }
+        .card-row.highlight { background: #f0fdf4; margin: 0.25rem -0.75rem; padding: 0.4rem 0.75rem; border-radius: 6px; }
+        .card-row.highlight .value { color: #16a34a; font-weight: 700; }
+        .card-row.negative .value { color: #dc2626; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        thead th { background: #f1f5f9; color: #475569; font-weight: 600; text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid #cbd5e1; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        thead th.right { text-align: right; }
+        tbody td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #f1f5f9; }
+        tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+        tbody td.bold { font-weight: 700; }
+        tbody tr:hover { background: #fafbfd; }
+        tfoot td { padding: 0.6rem 0.75rem; font-weight: 700; border-top: 2px solid #cbd5e1; background: #f8fafc; }
+        tfoot td.right { text-align: right; }
+
+        /* Detail sections */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 1.5rem; font-size: 0.88rem; margin-bottom: 1rem; }
+        .detail-grid .label { color: #64748b; }
+        .detail-grid .value { font-weight: 600; text-align: right; }
+
+        .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; color: #92400e; margin: 1rem 0; }
+        .note-info { background: #eff6ff; border-color: #93c5fd; color: #1e40af; }
+        .source { font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; }
+
+        #auth-gate { text-align: center; padding: 4rem 1rem; }
+        #main-content { display: none; }
+    </style>
+</head>
+<body>
+    <div id="auth-gate"><p>Authenticating...</p></div>
+    <div id="main-content">
+    <div class="container">
+
+    <h1>2025 Tax Bills & Disbursement Summary</h1>
+    <p class="subtitle">SubTrust Traditional IRA (6448-3403) distributions to beneficiary brokerage accounts</p>
+
+    <!-- ============================================================ -->
+    <!-- SUMMARY CARDS -->
+    <!-- ============================================================ -->
+    <div class="cards">
+
+        <!-- EMINA -->
+        <div class="card">
+            <div class="card-name">Emina Sonnad</div>
+            <div class="card-acct">Schwab Brokerage 9729-7151</div>
+            <div class="card-row"><span class="label">Pre-Disbursement Value</span><span class="value">$73,491</span></div>
+            <div class="card-row"><span class="label">Disbursement Total</span><span class="value">$181,625</span></div>
+            <div class="card-row"><span class="label">Transferred to Rahul/Trust</span><span class="value">($133,567)</span></div>
+            <div class="card-row"><span class="label">Taken Out by Emina</span><span class="value">$0</span></div>
+            <div class="card-row"><span class="label">Tax Due</span><span class="value">($37,193)</span></div>
+            <div class="card-row highlight"><span class="label">Available to Take</span><span class="value">$10,865</span></div>
+        </div>
+
+        <!-- HANNAH -->
+        <div class="card">
+            <div class="card-name">Hannah Sonnad</div>
+            <div class="card-acct">Schwab Brokerage 5416-8830</div>
+            <div class="card-row"><span class="label">Pre-Disbursement Value</span><span class="value">~$75,000</span></div>
+            <div class="card-row"><span class="label">Disbursement Total</span><span class="value">$230,421</span></div>
+            <div class="card-row"><span class="label">Transferred to Rahul/Trust</span><span class="value">$0</span></div>
+            <div class="card-row"><span class="label">Taken Out by Hannah</span><span class="value">($500)</span></div>
+            <div class="card-row"><span class="label">Tax Due</span><span class="value">($46,367)</span></div>
+            <div class="card-row highlight"><span class="label">Available to Take</span><span class="value">$183,554</span></div>
+        </div>
+
+        <!-- HAYDN -->
+        <div class="card">
+            <div class="card-name">Haydn Sonnad</div>
+            <div class="card-acct">Schwab Brokerage 2708-4944</div>
+            <div class="card-row"><span class="label">Pre-Disbursement Value</span><span class="value">$0.02</span></div>
+            <div class="card-row"><span class="label">Disbursement Total</span><span class="value">$151,962</span></div>
+            <div class="card-row"><span class="label">Transferred to Rahul/Trust</span><span class="value">$0</span></div>
+            <div class="card-row"><span class="label">Taken Out by Haydn</span><span class="value">$0</span></div>
+            <div class="card-row"><span class="label">Tax Due</span><span class="value">($28,222)</span></div>
+            <div class="card-row highlight"><span class="label">Available to Take</span><span class="value">$123,740</span></div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MASTER COMPARISON TABLE -->
+    <!-- ============================================================ -->
+    <h2>Side-by-Side Comparison</h2>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th class="right">Emina</th>
+                <th class="right">Hannah</th>
+                <th class="right">Haydn</th>
+                <th class="right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Pre-Disbursement Cash</td>
+                <td class="right">$7,495</td>
+                <td class="right">~$75,000</td>
+                <td class="right">$0.02</td>
+                <td class="right">~$82,495</td>
+            </tr>
+            <tr>
+                <td>Pre-Disbursement Shares</td>
+                <td class="right">$65,996</td>
+                <td class="right">included above</td>
+                <td class="right">$0</td>
+                <td class="right">&mdash;</td>
+            </tr>
+            <tr style="background:#f8fafc;"><td colspan="5" style="padding:0.3rem;"></td></tr>
+            <tr>
+                <td class="bold">Disbursement &mdash; Cash</td>
+                <td class="right">$125,128</td>
+                <td class="right">$53,013</td>
+                <td class="right">$0</td>
+                <td class="right bold">$178,141</td>
+            </tr>
+            <tr>
+                <td class="bold">Disbursement &mdash; GLDM Shares</td>
+                <td class="right">631 shs ($56,497)</td>
+                <td class="right">1,980 shs ($177,408)</td>
+                <td class="right">1,696 shs ($151,962)</td>
+                <td class="right bold">4,307 shs ($385,867)</td>
+            </tr>
+            <tr>
+                <td class="bold">Disbursement Total</td>
+                <td class="right bold">$181,625</td>
+                <td class="right bold">$230,421</td>
+                <td class="right bold">$151,962</td>
+                <td class="right bold">$564,008</td>
+            </tr>
+            <tr style="background:#f8fafc;"><td colspan="5" style="padding:0.3rem;"></td></tr>
+            <tr>
+                <td>Transferred to Rahul/Trust</td>
+                <td class="right">($133,567)</td>
+                <td class="right">$0</td>
+                <td class="right">$0</td>
+                <td class="right">($133,567)</td>
+            </tr>
+            <tr>
+                <td>Taken Out by Account Holder</td>
+                <td class="right">$0</td>
+                <td class="right">($500)</td>
+                <td class="right">$0</td>
+                <td class="right">($500)</td>
+            </tr>
+            <tr>
+                <td class="bold">Tax Due (2025)</td>
+                <td class="right bold">($37,193)</td>
+                <td class="right bold">($46,367)</td>
+                <td class="right bold">($28,222)</td>
+                <td class="right bold">($111,782)</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Available to Take</td>
+                <td class="right">$10,865</td>
+                <td class="right">$183,554</td>
+                <td class="right">$123,740</td>
+                <td class="right">$318,159</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- EMINA DETAIL -->
+    <!-- ============================================================ -->
+    <h2>Emina Sonnad &mdash; Detail</h2>
+
+    <h3>Pre-Disbursement Baseline (Sept 30, 2025)</h3>
+    <div class="detail-grid">
+        <span class="label">Account Value</span><span class="value">$73,491.45</span>
+        <span class="label">Cash (Bank Sweep)</span><span class="value">$7,495.47</span>
+        <span class="label">GOOGL &mdash; 39 shares</span><span class="value">$9,480.90</span>
+        <span class="label">NVDA &mdash; 78 shares</span><span class="value">$14,553.24</span>
+        <span class="label">TSLA &mdash; 47 shares</span><span class="value">$20,901.84</span>
+        <span class="label">IBIT &mdash; 324 shares</span><span class="value">$21,060.00</span>
+    </div>
+    <p class="source">Source: Schwab Brokerage Statement 9729-7151, Sept 2025</p>
+
+    <h3>Disbursements Received from SubTrust IRA</h3>
+    <table>
+        <thead><tr><th>Date</th><th>Type</th><th class="right">Amount</th></tr></thead>
+        <tbody>
+            <tr><td>10/07/2025</td><td>Cash (J4 /BENE FR64483403)</td><td class="right">$15,001.77</td></tr>
+            <tr><td>12/23/2025</td><td>Cash (J4 /BENE FR64483403)</td><td class="right">$11,458.77</td></tr>
+            <tr><td>12/24/2025</td><td>Cash (J4 /BENE FR64483403)</td><td class="right">$98,667.77</td></tr>
+            <tr><td>12/26/2025</td><td>GLDM &mdash; 631 shares @ $89.535</td><td class="right">$56,496.59</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">Total Disbursement</td><td class="right">$181,624.90</td></tr></tfoot>
+    </table>
+
+    <h3>Transfers OUT to Rahul Checking (440031963711)</h3>
+    <table>
+        <thead><tr><th>Date</th><th class="right">Amount</th></tr></thead>
+        <tbody>
+            <tr><td>12/24/2025</td><td class="right">$11,458.66</td></tr>
+            <tr><td>12/29/2025</td><td class="right">$16,172.77</td></tr>
+            <tr><td>12/31/2025</td><td class="right">$6,979.77</td></tr>
+            <tr><td>01/06/2026</td><td class="right">$7,444.77</td></tr>
+            <tr><td>01/20/2026</td><td class="right">$7,575.77</td></tr>
+            <tr><td>01/27/2026</td><td class="right">$7,077.77</td></tr>
+            <tr><td>02/04/2026</td><td class="right">$12,505.77</td></tr>
+            <tr><td>02/17/2026</td><td class="right">$8,600.77</td></tr>
+            <tr><td>03/04/2026</td><td class="right">$7,788.77</td></tr>
+            <tr><td>03/11/2026</td><td class="right">$7,271.22</td></tr>
+            <tr><td>03/16/2026</td><td class="right">$5,006.77</td></tr>
+        </tbody>
+        <tfoot><tr><td>Subtotal</td><td class="right">$97,882.81</td></tr></tfoot>
+    </table>
+
+    <h3>Transfers OUT to SubTrust Checking (4400-42890044)</h3>
+    <table>
+        <thead><tr><th>Date</th><th class="right">Amount</th></tr></thead>
+        <tbody>
+            <tr><td>10/07/2025</td><td class="right">$15,002.77</td></tr>
+            <tr><td>01/29/2026</td><td class="right">$12,222.77</td></tr>
+            <tr><td>02/19/2026</td><td class="right">$8,458.77</td></tr>
+        </tbody>
+        <tfoot><tr><td>Subtotal</td><td class="right">$35,684.31</td></tr></tfoot>
+    </table>
+
+    <div class="note">
+        <strong>Cash situation:</strong> Emina's account has $0 cash and a $926 margin loan as of March 2026. All $125,128 cash disbursement plus $8,439 of her original cash has been transferred out. The 631 GLDM shares (current value ~$58,487) remain. To extract the remaining $10,865 available, some GLDM shares would need to be sold. Her original shares (GOOGL 39, NVDA 78, TSLA 47, IBIT 324) are all intact &mdash; no sales.
+    </div>
+
+    <h3>Current State (March 31, 2026)</h3>
+    <div class="detail-grid">
+        <span class="label">Account Value</span><span class="value">$112,300</span>
+        <span class="label">Cash</span><span class="value">$0.00</span>
+        <span class="label">Margin Loan</span><span class="value">($926.14)</span>
+        <span class="label">GOOGL &mdash; 39 shares</span><span class="value">$11,215</span>
+        <span class="label">NVDA &mdash; 78 shares</span><span class="value">$13,603</span>
+        <span class="label">TSLA &mdash; 47 shares</span><span class="value">$17,472</span>
+        <span class="label">IBIT &mdash; 324 shares</span><span class="value">$12,448</span>
+        <span class="label">GLDM &mdash; 631 shares</span><span class="value">$58,487</span>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- HANNAH DETAIL -->
+    <!-- ============================================================ -->
+    <h2>Hannah Sonnad &mdash; Detail</h2>
+
+    <h3>Pre-Disbursement Baseline</h3>
+    <div class="note note-info">
+        Pre-disbursement data estimated at ~$74&ndash;76K from the Jan 2026 statement chart. No 2025 statements available for account 5416-8830. Pre-existing holdings: CLH 3, NVDA 50, TSLA 40, IBIT 159, GLDM 156 shares.
+    </div>
+
+    <h3>Disbursements Received from SubTrust IRA</h3>
+    <table>
+        <thead><tr><th>Date</th><th>Type</th><th class="right">Amount</th></tr></thead>
+        <tbody>
+            <tr><td>10/27/2025</td><td>Cash (TO54168830)</td><td class="right">$18,000.77</td></tr>
+            <tr><td>11/07/2025</td><td>Cash (TO54168830)</td><td class="right">$12,001.77</td></tr>
+            <tr><td>12/01/2025</td><td>Cash (TO54168830)</td><td class="right">$12,002.77</td></tr>
+            <tr><td>12/11/2025</td><td>Cash (TO54168830)</td><td class="right">$11,007.77</td></tr>
+            <tr><td>12/26/2025</td><td>GLDM &mdash; 1,980 shares @ $89.5999</td><td class="right">$177,407.80</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">Total Disbursement</td><td class="right">$230,420.88</td></tr></tfoot>
+    </table>
+
+    <h3>Withdrawals by Hannah</h3>
+    <table>
+        <thead><tr><th>Date</th><th>Description</th><th class="right">Amount</th></tr></thead>
+        <tbody>
+            <tr><td>01/16/2026</td><td>MoneyLink Tfr to Credit Union of SO</td><td class="right">$500.00</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">Total</td><td class="right">$500.00</td></tr></tfoot>
+    </table>
+
+    <h3>Current State (March 31, 2026)</h3>
+    <div class="detail-grid">
+        <span class="label">Account Value</span><span class="value">$231,473</span>
+        <span class="label">Cash</span><span class="value">$2,928</span>
+        <span class="label">CLH &mdash; 3 shares</span><span class="value">$860</span>
+        <span class="label">NVDA &mdash; 50 shares</span><span class="value">$8,720</span>
+        <span class="label">TSLA &mdash; 40 shares</span><span class="value">$14,870</span>
+        <span class="label">IBIT &mdash; 159 shares</span><span class="value">$6,109</span>
+        <span class="label">GLDM &mdash; 2,136 shares (156 pre-existing + 1,980 disbursed)</span><span class="value">$197,986</span>
+    </div>
+    <p class="source">Zero sales across all months. Share counts unchanged from pre-disbursement (except GLDM addition).</p>
+
+    <!-- ============================================================ -->
+    <!-- HAYDN DETAIL -->
+    <!-- ============================================================ -->
+    <h2>Haydn Sonnad &mdash; Detail</h2>
+
+    <h3>Pre-Disbursement Baseline (Nov 30, 2025)</h3>
+    <div class="detail-grid">
+        <span class="label">Account Value</span><span class="value">$0.02</span>
+        <span class="label">Cash</span><span class="value">$0.02</span>
+        <span class="label">Shares</span><span class="value">None</span>
+    </div>
+    <div class="note note-info">
+        Account was effectively empty. The $13,500 deposit/withdrawal in November was Haydn's own money from a different source (account FR75457692, not SubTrust IRA), immediately transferred out to JPMorgan Chase. Net effect: $0.
+    </div>
+
+    <h3>Disbursement Received from SubTrust IRA</h3>
+    <table>
+        <thead><tr><th>Date</th><th>Type</th><th class="right">Amount</th></tr></thead>
+        <tbody>
+            <tr><td>12/26/2025</td><td>GLDM &mdash; 1,696 shares @ $89.60 (Journaled Shares)</td><td class="right">$151,961.60</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">Total Disbursement</td><td class="right">$151,961.60</td></tr></tfoot>
+    </table>
+
+    <h3>Withdrawals by Haydn</h3>
+    <p style="color:#64748b; font-size:0.9rem; margin-bottom:1rem;">None. Zero withdrawals, zero sales as of March 2026.</p>
+
+    <h3>Account Value at Year-End (Dec 31, 2025)</h3>
+    <div class="detail-grid">
+        <span class="label">Account Value</span><span class="value">$144,787.54</span>
+        <span class="label">Cash</span><span class="value">$0.02</span>
+        <span class="label">GLDM &mdash; 1,696 shares @ $85.37</span><span class="value">$144,787.52</span>
+        <span class="label">Unrealized Loss</span><span class="value">($7,174.08)</span>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FORMULA -->
+    <!-- ============================================================ -->
+    <h2>Calculation Method</h2>
+    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:1.25rem; font-size:0.9rem; margin-bottom:1.5rem;">
+        <p style="margin-bottom:0.75rem;"><strong>Goal:</strong> After paying their tax bill, each beneficiary is left with the same account value they had before any trust disbursements.</p>
+        <p style="font-family:monospace; background:#f1f5f9; padding:0.75rem; border-radius:6px; margin-bottom:0.75rem;">
+            Available to Take = Disbursement &minus; Tax Due &minus; Already Transferred to Rahul/Trust &minus; Holder Withdrawals
+        </p>
+        <p style="color:#64748b;">This can be taken as a combination of cash and in-kind GLDM share transfers. GLDM values fluctuate with the market &mdash; actual share quantities will depend on the price at the time of transfer.</p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SOURCE -->
+    <!-- ============================================================ -->
+    <h2>Data Sources</h2>
+    <table>
+        <thead><tr><th>Person</th><th>Statement Source</th><th>Date Range</th></tr></thead>
+        <tbody>
+            <tr><td>Emina</td><td>Schwab monthly statements (9729-7151)</td><td>Jan 2025 &ndash; Mar 2026</td></tr>
+            <tr><td>Hannah</td><td>Schwab monthly statements (5416-8830)</td><td>Jan 2026 &ndash; Mar 2026 (no 2025 pre-disb)</td></tr>
+            <tr><td>Haydn</td><td>Schwab monthly statements (2708-4944)</td><td>Nov 2025 &ndash; Mar 2026</td></tr>
+            <tr><td>Disbursements</td><td>SubTrust Trad IRA (6448-3403) transaction records</td><td>2025 full year</td></tr>
+            <tr><td>Tax amounts</td><td>K-1 worksheets (estimated by preparer)</td><td>2025 tax year</td></tr>
+        </tbody>
+    </table>
+
+    <p style="color:#94a3b8; font-size:0.75rem; margin-top:2rem; text-align:center;">
+        Generated April 9, 2026 &mdash; SubTrust of the Revocable Trust of Subhash Sonnad (EIN 87-6483184)
+    </p>
+
+    </div><!-- .container -->
+    </div><!-- #main-content -->
+</body>
+</html>
