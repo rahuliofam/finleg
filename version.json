@@ -1,12 +1,12 @@
 {
-  "version": "v260409.01 12:25a",
-  "release": 166,
-  "sha": "86d192c",
-  "fullSha": "86d192c0016bf9ca7988590dde6520038e71a5a1",
+  "version": "v260409.02 12:35p",
+  "release": 167,
+  "sha": "22bf514",
+  "fullSha": "22bf51418383d2c1495333e062efa16b471ee059",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm727z3",
-  "pushedAt": "2026-04-09 05:25:26+00",
-  "commits": [{"sha":"86d192c","message":"fix: subtrust-ira auth guard reads default supabase storage","author":"Rahul"}]
+  "machine": "runnervm35a4x",
+  "pushedAt": "2026-04-09 17:35:51+00",
+  "commits": [{"sha":"22bf514","message":"feat: broaden subtrust IRA report to include Robinhood distributions","author":"Rahul"}]
 }
