@@ -205,9 +205,14 @@ export default function FinancialLegalTab() {
           .from("document_index")
           .select("id,bucket,r2_key,filename,file_type,file_size,category,account_type,institution,account_name,account_number,account_holder,year,month,statement_date,is_closed,property,original_path,description,ai_metadata,extracted_text", { count: "exact" });
 
-        // Text search
+        // Text search — each term must appear in the filename (AND).
+        // Escape %/_ in user terms so they're treated as literals.
         if (query.trim()) {
-          q = q.textSearch("fts", query.trim(), { type: "websearch" });
+          const terms = query.trim().split(/\s+/);
+          for (const term of terms) {
+            const escaped = term.replace(/[\\%_]/g, (c) => `\\${c}`);
+            q = q.ilike("filename", `%${escaped}%`);
+          }
         }
 
         // Filters
