@@ -1,12 +1,12 @@
 {
-  "version": "v260408.01 11:25p",
-  "release": 164,
-  "sha": "d3c6b0f",
-  "fullSha": "d3c6b0fe0948e4a4c5fe02bc8ca38b640c4e50be",
+  "version": "v260408.02 11:36p",
+  "release": 165,
+  "sha": "a0e3d38",
+  "fullSha": "a0e3d38e9f69770300779ad74c0def1282e0b37e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-09 04:25:13+00",
-  "commits": [{"sha":"d3c6b0f","message":"fix: file vault search requires all terms in filename","author":"Rahul"}]
+  "machine": "runnervm727z3",
+  "pushedAt": "2026-04-09 04:36:50+00",
+  "commits": [{"sha":"a0e3d38","message":"fix: file vault search ranks filename matches above content matches","author":"Rahul"}]
 }
