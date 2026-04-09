@@ -1,12 +1,12 @@
 {
-  "version": "v260409.04 1:01p",
-  "release": 169,
-  "sha": "5f54b1b",
-  "fullSha": "5f54b1bf6926475152861b852a435d3e5da5c4fa",
+  "version": "v260409.05 1:07p",
+  "release": 170,
+  "sha": "6bdf9a2",
+  "fullSha": "6bdf9a2e86ec2dce1a7c3d09b50571c00197475e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-09 18:01:18+00",
-  "commits": [{"sha":"5f54b1b","message":"feat: resolve all SubTrust IRA beneficiary assignments per Schwab call","author":"Rahul"}]
+  "pushedAt": "2026-04-09 18:07:40+00",
+  "commits": [{"sha":"6bdf9a2","message":"feat: add dates to aggregate table and subtotals per beneficiary","author":"Rahul"}]
 }
