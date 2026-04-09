@@ -37,10 +37,11 @@ const DRY_RUN = args.includes('--dry-run');
 const SAMPLE = args.includes('--sample');
 const ACCOUNT_TYPE = getArg('--account-type');
 const INSTITUTION_FILTER = getArg('--institution');
+const ACCOUNT_HOLDER_FILTER = getArg('--account-holder');
 const CONCURRENCY = parseInt(getArg('--concurrency') || '2');
 const MODEL = 'sonnet';
 
-const ALL_TYPES = ['credit-card', 'checking', 'credit-line', 'brokerage', 'ira', 'crypto', 'heloc', 'auto-loan', 'mortgage', 'closed'];
+const ALL_TYPES = ['credit-card', 'checking', 'credit-line', 'brokerage', 'ira', 'trust', 'crypto', 'heloc', 'auto-loan', 'mortgage', 'closed'];
 
 function getArg(flag) {
   const idx = args.indexOf(flag);
@@ -53,7 +54,7 @@ function getArg(flag) {
 function getTableType(accountType) {
   if (accountType === 'credit-card' || accountType === 'credit-line') return 'cc';
   if (accountType === 'checking') return 'checking';
-  if (accountType === 'brokerage' || accountType === 'ira' || accountType === 'crypto') return 'investment';
+  if (accountType === 'brokerage' || accountType === 'ira' || accountType === 'trust' || accountType === 'crypto') return 'investment';
   if (accountType === 'heloc' || accountType === 'auto-loan' || accountType === 'mortgage') return 'loan';
   if (accountType === 'closed') return 'closed'; // determined at parse time
   return null;
@@ -325,6 +326,7 @@ async function fetchStatements() {
   q = q.in('account_type', accountTypes);
 
   if (INSTITUTION_FILTER) q = q.eq('institution', INSTITUTION_FILTER);
+  if (ACCOUNT_HOLDER_FILTER) q = q.eq('account_holder', ACCOUNT_HOLDER_FILTER);
 
   const { data, error } = await q;
   if (error) throw new Error(`Supabase query error: ${error.message}`);
