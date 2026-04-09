@@ -1,2 +1,7 @@
 src/app/devcontrol/sessions/page.tsx:generic-api-key:7
 src/app/devcontrol/tokens/page.tsx:generic-api-key:7
+public/tax/subtrust-ira-2025.html:jwt:14
+public/tax/k1-2025-hannah-sonnad.html:jwt:10
+public/tax/k1-2025-emina-sonnad.html:jwt:10
+public/tax/k1-2025-haydn-sonnad.html:jwt:10
+public/tax/k1-2025-jon-sheppard.html:jwt:10
