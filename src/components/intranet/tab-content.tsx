@@ -13,8 +13,12 @@ import { BackupsTab } from "@/components/devcontrol/backups-tab";
 import { PlanlistTab } from "@/components/devcontrol/planlist-tab";
 import { FlowMigTab } from "@/components/devcontrol/flow-mig-tab";
 import { TocTab } from "@/components/devcontrol/toc-tab";
+import { InventoryTab } from "@/components/devices/inventory-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
+  devices: {
+    inventory: InventoryTab,
+  },
   admin: {
     uploads: UploadsTab,
     users: UsersTab,
