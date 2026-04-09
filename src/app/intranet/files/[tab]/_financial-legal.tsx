@@ -201,61 +201,88 @@ export default function FinancialLegalTab() {
       setSearchError("");
       setOffset(newOffset);
       try {
-        let q = supabase
-          .from("document_index")
-          .select("id,bucket,r2_key,filename,file_type,file_size,category,account_type,institution,account_name,account_number,account_holder,year,month,statement_date,is_closed,property,original_path,description,ai_metadata,extracted_text", { count: "exact" });
+        const SELECT_COLS = "id,bucket,r2_key,filename,file_type,file_size,category,account_type,institution,account_name,account_number,account_holder,year,month,statement_date,is_closed,property,original_path,description,ai_metadata,extracted_text";
 
-        // Text search — each term must appear in the filename (AND).
-        // Escape %/_ in user terms so they're treated as literals.
-        if (query.trim()) {
-          const terms = query.trim().split(/\s+/);
-          for (const term of terms) {
-            const escaped = term.replace(/[\\%_]/g, (c) => `\\${c}`);
-            q = q.ilike("filename", `%${escaped}%`);
+        // Apply common filters/sorting to a query builder
+        const applyFiltersAndSort = (qb: ReturnType<typeof supabase.from>["select"] extends (...a: never) => infer R ? R : never) => {
+          let q = qb;
+          if (category) q = q.eq("category", category);
+          if (accountType) q = q.eq("account_type", accountType);
+          if (institution) q = q.eq("institution", institution);
+          if (holderFilter) q = q.eq("account_holder", holderFilter);
+          if (yearFilter) q = q.eq("year", parseInt(yearFilter));
+          if (format === "pdf") q = q.eq("file_type", "pdf");
+          else if (format === "spreadsheet") q = q.in("file_type", ["xlsx", "xls", "csv"]);
+          else if (format === "document") q = q.in("file_type", ["docx", "doc", "rtf", "txt"]);
+          else if (format === "image") q = q.in("file_type", ["jpg", "jpeg", "png"]);
+
+          const sortColMap: Record<string, string> = {
+            name: "filename", size: "file_size", year: "year",
+            institution: "institution", account_type: "account_type",
+            category: "category", account_holder: "account_holder", format: "file_type",
+          };
+          const sortCol = sortColMap[sortBy] || "year";
+          if (sortCol === "year") {
+            q = q.order("statement_date", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
+            q = q.order("year", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
+            q = q.order("month", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
+          } else {
+            q = q.order(sortCol, { ascending: sortOrder === "asc" });
           }
-        }
-
-        // Filters
-        if (category) q = q.eq("category", category);
-        if (accountType) q = q.eq("account_type", accountType);
-        if (institution) q = q.eq("institution", institution);
-        if (holderFilter) q = q.eq("account_holder", holderFilter);
-        if (yearFilter) q = q.eq("year", parseInt(yearFilter));
-
-        // Format filter maps to file_type values
-        if (format === "pdf") {
-          q = q.eq("file_type", "pdf");
-        } else if (format === "spreadsheet") {
-          q = q.in("file_type", ["xlsx", "xls", "csv"]);
-        } else if (format === "document") {
-          q = q.in("file_type", ["docx", "doc", "rtf", "txt"]);
-        } else if (format === "image") {
-          q = q.in("file_type", ["jpg", "jpeg", "png"]);
-        }
-
-        // Sorting
-        const sortColMap: Record<string, string> = {
-          name: "filename", size: "file_size", year: "year",
-          institution: "institution", account_type: "account_type",
-          category: "category", account_holder: "account_holder", format: "file_type",
+          return q;
         };
-        const sortCol = sortColMap[sortBy] || "year";
-        if (sortCol === "year") {
-          // Sort by statement_date first (most precise), then year/month as fallback
-          q = q.order("statement_date", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
-          q = q.order("year", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
-          q = q.order("month", { ascending: sortOrder === "asc", nullsFirst: sortOrder === "asc" });
-        } else {
-          q = q.order(sortCol, { ascending: sortOrder === "asc" });
+
+        const trimmed = query.trim();
+
+        if (!trimmed) {
+          // No query — single paginated server query
+          let q = supabase.from("document_index").select(SELECT_COLS, { count: "exact" });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          q = applyFiltersAndSort(q as any) as typeof q;
+          q = q.range(newOffset, newOffset + PAGE_SIZE - 1);
+          const { data, count, error } = await q;
+          if (error) throw error;
+          setResults((data as DocResult[]) || []);
+          setTotal(count || 0);
+          return;
         }
 
-        // Pagination
-        q = q.range(newOffset, newOffset + PAGE_SIZE - 1);
+        // Query present — fetch two buckets: (A) filename-AND matches, then
+        // (B) full-text matches (excluding A's ids), and merge so filename
+        // hits rank above content hits. Cap each bucket at 500 for sanity.
+        const FETCH_CAP = 500;
+        const terms = trimmed.split(/\s+/);
 
-        const { data, count, error } = await q;
-        if (error) throw error;
-        setResults((data as DocResult[]) || []);
-        setTotal(count || 0);
+        // Bucket A: filename ILIKE ALL terms
+        let qA = supabase.from("document_index").select(SELECT_COLS, { count: "exact" });
+        for (const term of terms) {
+          const escaped = term.replace(/[\\%_]/g, (c) => `\\${c}`);
+          qA = qA.ilike("filename", `%${escaped}%`);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        qA = applyFiltersAndSort(qA as any) as typeof qA;
+        qA = qA.range(0, FETCH_CAP - 1);
+        const { data: dataA, error: errA } = await qA;
+        if (errA) throw errA;
+        const filenameRows = (dataA as DocResult[]) || [];
+        const filenameIds = new Set(filenameRows.map((r) => r.id));
+
+        // Bucket B: full-text search, excluding bucket A
+        let qB = supabase.from("document_index").select(SELECT_COLS, { count: "exact" });
+        qB = qB.textSearch("fts", trimmed, { type: "websearch" });
+        if (filenameIds.size > 0) {
+          qB = qB.not("id", "in", `(${[...filenameIds].join(",")})`);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        qB = applyFiltersAndSort(qB as any) as typeof qB;
+        qB = qB.range(0, FETCH_CAP - 1);
+        const { data: dataB, error: errB } = await qB;
+        // FTS is best-effort — don't fail the whole search if it errors
+        const contentRows = errB ? [] : ((dataB as DocResult[]) || []);
+
+        const merged = [...filenameRows, ...contentRows];
+        setTotal(merged.length);
+        setResults(merged.slice(newOffset, newOffset + PAGE_SIZE));
       } catch (e: unknown) {
         setSearchError(e instanceof Error ? e.message : "Search failed");
         setResults([]);
