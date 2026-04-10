@@ -32,7 +32,7 @@ If you truly cannot tell what this document is, return:
  * Fetch the full email content from Resend API.
  */
 async function fetchEmailContent(emailId: string, apiKey: string, attempt = 1): Promise<any> {
-  const maxAttempts = 3;
+  const maxAttempts = 5;
   const res = await fetch(`${RESEND_API_URL}/emails/receiving/${emailId}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
@@ -47,7 +47,35 @@ async function fetchEmailContent(emailId: string, apiKey: string, attempt = 1): 
     throw new Error(`Failed to fetch email ${emailId}: ${res.status} ${text}`);
   }
 
-  return res.json();
+  const email = await res.json();
+
+  // Resend webhook fires before attachments are fully processed.
+  // If the email has no attachments yet, retry with increasing delays.
+  if ((!email.attachments || email.attachments.length === 0) && attempt < maxAttempts) {
+    const delay = attempt * 2000; // 2s, 4s, 6s, 8s
+    console.log(`No attachments on attempt ${attempt}, retrying in ${delay}ms...`);
+    await new Promise((r) => setTimeout(r, delay));
+    return fetchEmailContent(emailId, apiKey, attempt + 1);
+  }
+
+  return email;
+}
+
+/**
+ * Fetch attachments separately via the List Attachments endpoint.
+ * Fallback when the email response doesn't include attachments.
+ */
+async function fetchAttachmentsList(emailId: string, apiKey: string): Promise<any[]> {
+  const res = await fetch(
+    `${RESEND_API_URL}/emails/receiving/${emailId}/attachments`,
+    { headers: { Authorization: `Bearer ${apiKey}` } }
+  );
+  if (!res.ok) {
+    console.error(`List attachments failed: ${res.status}`);
+    return [];
+  }
+  const data = await res.json();
+  return data.data || [];
 }
 
 /**
@@ -578,12 +606,24 @@ serve(async (req: Request) => {
 
     console.log(`Received inbound email webhook, email_id: ${emailId}`);
 
-    // Fetch full email content
+    // Fetch full email content (retries if attachments not yet available)
     const email = await fetchEmailContent(emailId, resendKey);
     console.log(`Email from: ${email.from}, subject: ${email.subject}`);
 
     // Check if this email has processable attachments (images or PDFs)
-    const attachments = email.attachments || [];
+    let attachments = email.attachments || [];
+    console.log(`Email attachments from retrieve: ${attachments.length}`, JSON.stringify(attachments.map((a: any) => ({ id: a.id, ct: a.content_type, fn: a.filename, disp: a.content_disposition }))));
+
+    // Fallback: if no attachments from email retrieve, try the dedicated attachments endpoint
+    if (attachments.length === 0) {
+      console.log("No attachments from email retrieve, trying list attachments endpoint...");
+      const listedAttachments = await fetchAttachmentsList(emailId, resendKey);
+      console.log(`List attachments endpoint returned: ${listedAttachments.length}`, JSON.stringify(listedAttachments.map((a: any) => ({ id: a.id, ct: a.content_type, fn: a.filename, disp: a.content_disposition }))));
+      if (listedAttachments.length > 0) {
+        attachments = listedAttachments;
+      }
+    }
+
     const processableAttachments = attachments.filter((a: any) => {
       const type = a.content_type || a.type || "";
       return (
@@ -594,8 +634,14 @@ serve(async (req: Request) => {
       );
     });
 
+    console.log(`Processable attachments: ${processableAttachments.length} out of ${attachments.length} total`);
+
     if (processableAttachments.length === 0) {
       console.log("No processable attachments found, sending summary");
+      // Log all attachment types for debugging
+      if (attachments.length > 0) {
+        console.log("Non-processable attachment types:", attachments.map((a: any) => a.content_type || a.type).join(", "));
+      }
       try {
         await sendSummaryEmail(email, resendKey, [], []);
       } catch (fwdErr) {
