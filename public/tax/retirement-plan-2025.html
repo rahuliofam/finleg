@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Retirement Contributions & Distribution Strategy — Sonnad Family</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+    (function() {
+      const allowed = ['rahulioson@gmail.com', 'sonnad.phoebe@gmail.com', 'jackie61899280@gmail.com', 'hrsonnad@gmail.com', 'esonnad@gmail.com'];
+      const sb = window.supabase.createClient('https://gjdvzzxsrzuorguwkaih.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY', { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } });
+      sb.auth.getSession().then(function(res) {
+        var email = (res.data?.session?.user?.email || '').toLowerCase();
+        if (allowed.includes(email)) { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; }
+        else if (email) { document.getElementById('auth-gate').innerHTML = '<h2>Access Denied</h2><p>Signed in as ' + email + '</p>'; }
+        else { window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname); }
+      });
+    })();
+    </script>
+    <style>
+        @media print {
+            body { padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            @page { margin: 0.75in; size: letter; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 11pt;
+            color: #1a1a1a;
+            background: #f8f9fa;
+            padding: 1rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 { font-size: 16pt; color: #1e3a5f; margin-bottom: 0.25rem; }
+        .header h2 { font-size: 11pt; font-weight: normal; color: #666; }
+        .updated { font-size: 9pt; color: #999; margin-top: 0.5rem; }
+        .section { margin-bottom: 1.5rem; }
+        .section-title {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #fff;
+            background: #2563eb;
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+        .section-title.green { background: #16a34a; }
+        .section-title.amber { background: #d97706; }
+        .section-title.red { background: #dc2626; }
+        table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 0.5rem; }
+        td, th { padding: 0.35rem 0.5rem; border: 1px solid #ddd; vertical-align: top; }
+        th { background: #f1f5f9; text-align: left; font-weight: 600; color: #334155; }
+        .right { text-align: right; }
+        .amount { font-family: 'SF Mono', 'Consolas', monospace; text-align: right; }
+        .total-row { background: #f0f9ff; font-weight: 700; }
+        .changed { background: #fef3c7; }
+        .note { font-size: 9pt; color: #666; margin-top: 0.25rem; padding: 0.5rem; background: #f8fafc; border-left: 3px solid #2563eb; border-radius: 2px; }
+        .flag { font-size: 9pt; color: #991b1b; margin-top: 0.25rem; padding: 0.5rem; background: #fef2f2; border-left: 3px solid #dc2626; border-radius: 2px; }
+        .strategy { font-size: 10pt; padding: 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; margin-bottom: 1rem; }
+        .strategy strong { color: #166534; }
+        .action-item { display: flex; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid #f1f5f9; font-size: 10pt; }
+        .action-item:last-child { border-bottom: none; }
+        .priority { background: #2563eb; color: #fff; border-radius: 3px; padding: 0 0.4rem; font-size: 9pt; font-weight: 600; min-width: 1.5rem; text-align: center; }
+        .priority.high { background: #dc2626; }
+        .deadline { color: #666; font-size: 9pt; margin-left: auto; white-space: nowrap; }
+        .badge { display: inline-block; font-size: 8pt; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; }
+        .badge-ok { background: #dcfce7; color: #166534; }
+        .badge-warn { background: #fef3c7; color: #92400e; }
+        .badge-change { background: #dbeafe; color: #1e40af; }
+        #auth-gate { text-align: center; padding: 3rem; }
+        #main-content { display: none; }
+    </style>
+</head>
+<body>
+<div id="auth-gate"><p>Checking authorization...</p></div>
+<div id="main-content">
+<div class="container">
+
+    <div class="header">
+        <h1>2025 Retirement Contributions & Distribution Strategy</h1>
+        <h2>Sonnad Family — Updated with Actual Tax Documents</h2>
+        <div class="updated">Updated: April 9, 2026 &middot; Source: 2025 W-2s, 1099s, German Wage Certificate</div>
+    </div>
+
+    <!-- INCOME SUMMARY -->
+    <div class="section">
+        <div class="section-title">2025 Actual Earned Income — From Tax Documents</div>
+        <table>
+            <tr><th>Person</th><th>Source</th><th>Type</th><th class="right">Amount</th></tr>
+            <tr><td rowspan="3"><strong>Haydn</strong></td><td>Hive Technologies W-2 (via Sequoia One PEO)</td><td>W-2 wages</td><td class="amount">$24,910</td></tr>
+            <tr><td>Robinhood 1099 (ST + LT gains + Sec 1256)</td><td>Cap gains</td><td class="amount">$8,038</td></tr>
+            <tr class="changed"><td>Inherited IRA 1099-R (Schwab 7545-7692)</td><td>Death dist (code 4)</td><td class="amount">$13,500</td></tr>
+            <tr><td><strong>Emina</strong></td><td>Sharpist GmbH (Jan 1 – May 13, 2025)</td><td>German wages</td><td class="amount">$29,630</td></tr>
+            <tr><td rowspan="3"><strong>Hannah</strong></td><td>Kong Screen Printing W-2</td><td>W-2 wages</td><td class="amount">$11,355</td></tr>
+            <tr><td>Fever Labs 1099-NEC</td><td>SE income</td><td class="amount">$16,275</td></tr>
+            <tr><td>Other SE (Square, CD Baby, ASCAP, TuneCore)</td><td>SE income</td><td class="amount">~$8,571</td></tr>
+            <tr><td rowspan="2"><strong>Jackie</strong></td><td>Fever Labs 1099-NEC</td><td>SE income</td><td class="amount">$12,600</td></tr>
+            <tr><td>New Caps LLC W-2 (Burbank, CA)</td><td>W-2 wages</td><td class="amount">$2,026</td></tr>
+        </table>
+        <div class="note">German tax withheld on Emina: $8,381 (€7,797) — eligible for Foreign Tax Credit on US return.</div>
+    </div>
+
+    <!-- PLAN VS ACTUAL -->
+    <div class="section">
+        <div class="section-title amber">Original Plan vs Actual — Key Differences</div>
+        <table>
+            <tr><th>Item</th><th class="right">Plan Assumed</th><th class="right">Actual</th><th class="right">Difference</th><th>Impact</th></tr>
+            <tr class="changed"><td>Haydn W-2 income</td><td class="amount">$60,000</td><td class="amount">$24,910</td><td class="amount" style="color:#dc2626">-$35,090</td><td><span class="badge badge-change">More distrib room</span></td></tr>
+            <tr><td>Emina German wages</td><td class="amount">$29,630</td><td class="amount">$29,630</td><td class="amount">$0</td><td><span class="badge badge-ok">Confirmed</span></td></tr>
+            <tr class="changed"><td>Hannah earned income</td><td class="amount">$28,000</td><td class="amount">~$36,201</td><td class="amount" style="color:#16a34a">+$8,201</td><td><span class="badge badge-change">More 401k capacity</span></td></tr>
+            <tr class="changed"><td>Jackie earned income</td><td class="amount">$31,000</td><td class="amount">~$14,626</td><td class="amount" style="color:#dc2626">-$16,374</td><td><span class="badge badge-warn">Less 401k capacity</span></td></tr>
+        </table>
+    </div>
+
+    <!-- ROTH IRA -->
+    <div class="section">
+        <div class="section-title green">Roth IRA Contributions — $7,000 Each</div>
+        <table>
+            <tr><th>Person</th><th>Filing</th><th class="right">Earned Income</th><th>Eligible?</th><th class="right">Contribution</th><th>Deadline</th></tr>
+            <tr><td>Haydn</td><td>Single</td><td class="amount">$24,910</td><td><span class="badge badge-ok">Yes</span></td><td class="amount">$7,000</td><td>Apr 15, 2026</td></tr>
+            <tr><td>Emina</td><td>Single</td><td class="amount">$29,630</td><td><span class="badge badge-ok">Yes</span></td><td class="amount">$7,000</td><td>Apr 15, 2026</td></tr>
+            <tr><td>Hannah</td><td>MFJ</td><td class="amount">~$36,201</td><td><span class="badge badge-ok">Yes</span></td><td class="amount">$7,000</td><td>Apr 15, 2026</td></tr>
+            <tr><td>Jackie</td><td>MFJ</td><td class="amount">~$14,626</td><td><span class="badge badge-ok">Yes</span></td><td class="amount">$7,000</td><td>Apr 15, 2026</td></tr>
+            <tr class="total-row"><td colspan="4">Total Roth IRA</td><td class="amount">$28,000</td><td></td></tr>
+        </table>
+        <div class="note">Roth IRA requires earned income &ge; $7,000 and MAGI under phase-out limits. All four qualify. MFJ limit is $236,000 (2025).</div>
+    </div>
+
+    <!-- SOLO 401K -->
+    <div class="section">
+        <div class="section-title">Roth Solo 401(k) Contributions — Based on SE Income Only</div>
+        <table>
+            <tr><th></th><th class="right">Hannah</th><th class="right">Jackie</th></tr>
+            <tr><td>Total SE Income</td><td class="amount">~$24,846</td><td class="amount">$12,600</td></tr>
+            <tr><td>Less 1/2 SE Tax (7.65%)</td><td class="amount">-$1,901</td><td class="amount">-$964</td></tr>
+            <tr><td>Adjusted SE Income</td><td class="amount">~$22,945</td><td class="amount">~$11,636</td></tr>
+            <tr><td>Employee Deferral (up to $23,500)</td><td class="amount">$22,945</td><td class="amount">$11,636</td></tr>
+            <tr><td>Employer Profit-Sharing (20%)</td><td class="amount">~$4,589</td><td class="amount">~$2,327</td></tr>
+            <tr class="total-row"><td>Total Solo 401(k)</td><td class="amount">~$27,534</td><td class="amount">~$13,963</td></tr>
+        </table>
+        <table style="margin-top: 0.5rem;">
+            <tr><th></th><th class="right">Original Plan</th><th class="right">Updated</th><th class="right">Change</th></tr>
+            <tr><td>Hannah Solo 401(k)</td><td class="amount">$22,200</td><td class="amount">~$27,534</td><td class="amount" style="color:#16a34a">+$5,334</td></tr>
+            <tr class="changed"><td>Jackie Solo 401(k)</td><td class="amount">$24,800</td><td class="amount">~$13,963</td><td class="amount" style="color:#dc2626">-$10,837</td></tr>
+            <tr class="total-row"><td>Total Solo 401(k)</td><td class="amount">$47,000</td><td class="amount">~$41,497</td><td class="amount" style="color:#dc2626">-$5,503</td></tr>
+        </table>
+        <div class="note">Solo 401(k) contributions are based on <strong>net self-employment income only</strong>. W-2 wages (Kong, New Caps) do not count. Jackie's lower SE income from Fever Labs is the main reduction. Deadline: Oct 15, 2026 (with tax extension).</div>
+        <div class="flag" style="margin-top: 0.5rem;">Jackie must be added as a spouse participant to Hannah's existing Solo 401(k) plan at Schwab. Confirm plan allows Roth contributions.</div>
+    </div>
+
+    <!-- FAMILY TOTAL -->
+    <div class="section">
+        <div class="section-title">Family Retirement Contribution Summary</div>
+        <table>
+            <tr><th>Person</th><th class="right">Roth IRA</th><th class="right">Solo 401(k)</th><th class="right">Total</th><th>Notes</th></tr>
+            <tr><td>Rahul</td><td class="amount">$0</td><td class="amount">$0</td><td class="amount">$0</td><td>No earned income — $44K Roth conversion only</td></tr>
+            <tr><td>Haydn</td><td class="amount">$7,000</td><td class="amount">$0</td><td class="amount">$7,000</td><td>No SE income for Solo 401(k)</td></tr>
+            <tr><td>Emina</td><td class="amount">$7,000</td><td class="amount">$0</td><td class="amount">$7,000</td><td>German income qualifies for IRA</td></tr>
+            <tr><td>Hannah</td><td class="amount">$7,000</td><td class="amount">~$27,534</td><td class="amount">~$34,534</td><td>Existing Solo 401(k) at Schwab</td></tr>
+            <tr><td>Jackie</td><td class="amount">$7,000</td><td class="amount">~$13,963</td><td class="amount">~$20,963</td><td>Add as spouse to Hannah's plan</td></tr>
+            <tr class="total-row"><td>Family Total</td><td class="amount">$28,000</td><td class="amount">~$41,497</td><td class="amount">~$69,497</td><td>Was $75,000 in original plan</td></tr>
+        </table>
+    </div>
+
+    <!-- STRATEGIC INSIGHT -->
+    <div class="section">
+        <div class="section-title green">Key Strategic Insight</div>
+        <div class="strategy">
+            <strong>SubTrust Trad IRA must be emptied by 2031 (6 years).</strong> Hannah & Jackie can effectively transfer this forced-distribution money into 30+ years of tax-free growth:
+            <ol style="margin: 0.5rem 0 0 1.5rem; font-size: 10pt;">
+                <li>Take SubTrust distributions (taxed at 12–22%)</li>
+                <li>Live on distributions instead of SE income</li>
+                <li>Contribute all SE income to Roth Solo 401(k)</li>
+                <li><strong>Result:</strong> ~$41K/year shifted to tax-free vehicle — potentially $600K+ tax-free by retirement</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- SUBTRUST DISTRIBUTION TARGETS -->
+    <div class="section">
+        <div class="section-title">SubTrust Trad IRA Distribution Targets</div>
+        <table>
+            <tr><th>Person</th><th>Filing</th><th class="right">Other Income</th><th class="right">Max MAGI Target</th><th class="right">YTD Distrib</th><th class="right">Additional Capacity</th></tr>
+            <tr><td>Rahul</td><td>Single</td><td class="amount">$100,000</td><td class="amount">$144,000</td><td class="amount">$0</td><td class="amount">$44,000</td></tr>
+            <tr class="changed"><td>Haydn</td><td>Single</td><td class="amount">$46,448</td><td class="amount">$212,300</td><td class="amount">$0</td><td class="amount">$165,852</td></tr>
+            <tr><td>Emina</td><td>Single</td><td class="amount">$29,630</td><td class="amount">$212,300</td><td class="amount">$125,128</td><td class="amount">$57,542</td></tr>
+            <tr class="changed"><td>Hannah/Jackie</td><td>MFJ</td><td class="amount">$50,834</td><td class="amount">$294,000</td><td class="amount">$53,013</td><td class="amount">$190,153</td></tr>
+        </table>
+        <div class="note">Max MAGI targets include $6K EV credit buffer for Rahul and Hannah/Jackie. Haydn has no EV credit need — fills 24% bracket to $212,300.</div>
+    </div>
+
+    <!-- FLAGS -->
+    <div class="section">
+        <div class="section-title red">Critical Flags</div>
+        <div class="flag"><strong>1. Haydn is a CA resident</strong> — W-2 shows 4361 Oak Glen St, Calabasas CA 91302. California taxes IRA distributions at up to 9.3%. This significantly reduces the net benefit of SubTrust distributions to Haydn.</div>
+        <div class="flag" style="margin-top: 0.5rem;"><strong>2. Hannah address conflict</strong> — Schwab 1099 shows Calabasas CA, but Fever Labs 1099-NEC and Kong W-2 show 1407 Kirkwood Rd, Austin TX 78722. If TX resident: no state tax on distributions. Must confirm actual domicile.</div>
+        <div class="flag" style="margin-top: 0.5rem;"><strong>3. Jackie's Solo 401(k) capacity is much lower</strong> — Only $12,600 SE income (Fever Labs) vs $31,000 assumed. W-2 income from New Caps ($2,026) doesn't count for Solo 401(k).</div>
+        <div class="flag" style="margin-top: 0.5rem;"><strong>4. Hannah's Square Payroll ($7,951)</strong> — Need to confirm if this is W-2 or 1099. If W-2, it doesn't count for Solo 401(k). If 1099/SE, it boosts her Solo 401(k) further.</div>
+    </div>
+
+    <!-- ACTION ITEMS -->
+    <div class="section">
+        <div class="section-title amber">Action Items</div>
+        <div class="action-item"><span class="priority high">1</span><span>Fund Roth IRAs — $7,000 each for Haydn, Emina, Hannah, Jackie ($28K total)</span><span class="deadline">Apr 15, 2026</span></div>
+        <div class="action-item"><span class="priority high">2</span><span>Confirm Jackie is participant on Hannah's Solo 401(k) plan at Schwab</span><span class="deadline">ASAP</span></div>
+        <div class="action-item"><span class="priority high">3</span><span>Confirm Solo 401(k) plan allows Roth (designated Roth) contributions</span><span class="deadline">ASAP</span></div>
+        <div class="action-item"><span class="priority">4</span><span>Confirm Hannah's domicile — TX (no state tax) vs CA (9.3% state tax)</span><span class="deadline">Before filing</span></div>
+        <div class="action-item"><span class="priority">5</span><span>Verify Hannah's Square Payroll is 1099 or W-2</span><span class="deadline">Before filing</span></div>
+        <div class="action-item"><span class="priority">6</span><span>Fund Solo 401(k) Roth contributions (~$41.5K total)</span><span class="deadline">Oct 15, 2026</span></div>
+        <div class="action-item"><span class="priority">7</span><span>File tax extension to get Solo 401(k) contribution deadline to Oct 15</span><span class="deadline">Apr 15, 2026</span></div>
+        <div class="action-item"><span class="priority">8</span><span>Execute additional SubTrust distributions per capacity table above</span><span class="deadline">Dec 31, 2026</span></div>
+    </div>
+
+    <!-- INCOME SOURCE DETAIL -->
+    <div class="section">
+        <div class="section-title">Tax Document Detail</div>
+        <table>
+            <tr><th>Document</th><th>Person</th><th>Payer / Issuer</th><th class="right">Amount</th></tr>
+            <tr><td>W-2</td><td>Haydn</td><td>Hive Technologies (Sequoia One PEO, LLC, Tempe AZ)</td><td class="amount">$24,910.36</td></tr>
+            <tr><td>1099-R</td><td>Haydn</td><td>Charles Schwab — Inherited IRA (7545-7692)</td><td class="amount">$13,500.00</td></tr>
+            <tr><td>1099 Composite</td><td>Haydn</td><td>Robinhood — ST gains $3,208 + LT gains $4,662 + Sec 1256 $169</td><td class="amount">$8,038.30</td></tr>
+            <tr><td>German Wage Cert</td><td>Emina</td><td>Sharpist GmbH, Berlin (Jan 1 – May 13, 2025)</td><td class="amount">€27,557 / $29,630</td></tr>
+            <tr><td>W-2</td><td>Hannah</td><td>Kong Screen Printing LLC, Austin TX</td><td class="amount">$11,355.29</td></tr>
+            <tr><td>1099-NEC</td><td>Hannah</td><td>Fever Labs, Inc., New York NY</td><td class="amount">$16,275.00</td></tr>
+            <tr><td>Other SE</td><td>Hannah</td><td>Square Payroll $7,951 + CD Baby $334 + ASCAP $199 + TuneCore $87</td><td class="amount">~$8,571</td></tr>
+            <tr><td>1099-NEC</td><td>Jackie</td><td>Fever Labs, Inc., New York NY</td><td class="amount">$12,600.00</td></tr>
+            <tr><td>W-2</td><td>Jackie</td><td>New Caps, LLC, Burbank CA</td><td class="amount">$2,026.00</td></tr>
+            <tr><td>1099 Composite</td><td>Hannah</td><td>Charles Schwab — Brokerage (5416-8830)</td><td class="amount">$6.60 div</td></tr>
+            <tr><td>Account Summary</td><td>Hannah</td><td>Schwab — Solo 401(k) (Z3 6395-9362) — TSLA purchase $28,492</td><td class="amount">$0.24 int</td></tr>
+        </table>
+    </div>
+
+    <div style="text-align: center; font-size: 8pt; color: #999; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+        Prepared by Claude &middot; For tax planning purposes only &middot; Consult a qualified tax advisor before acting
+    </div>
+
+</div>
+</div>
+</body>
+</html>
