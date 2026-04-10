@@ -12,13 +12,13 @@
     (function() {
       const SUPABASE_URL = 'https://gjdvzzxsrzuorguwkaih.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY';
-      const ALLOWED_EMAIL = 'rahulioson@gmail.com';
+      const ALLOWED_EMAILS = ['rahulioson@gmail.com', 'sonnad.phoebe@gmail.com', 'jackie61899280@gmail.com', 'hrsonnad@gmail.com', 'esonnad@gmail.com'];
       const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' }
       });
       sb.auth.getSession().then(function(res) {
-        var email = res.data?.session?.user?.email;
-        if (email === ALLOWED_EMAIL) {
+        var email = (res.data?.session?.user?.email || '').toLowerCase();
+        if (ALLOWED_EMAILS.includes(email)) {
           document.getElementById('auth-gate').style.display = 'none';
           document.getElementById('main-content').style.display = 'block';
         } else if (email) {
