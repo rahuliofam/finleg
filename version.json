@@ -1,12 +1,12 @@
 {
-  "version": "v260409.18 7:20p",
-  "release": 183,
-  "sha": "2317e60",
-  "fullSha": "2317e6040995ee9c1757b03ab90d0bf2c6c0ca92",
+  "version": "v260410.01 5:16p",
+  "release": 184,
+  "sha": "d10914c",
+  "fullSha": "d10914ce568fc49ed76fcf4f5b6076125cc67b88",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-10 00:20:11+00",
-  "commits": [{"sha":"40103e8","message":"feat: add 2025 tax bills & disbursement summary page","author":"Rahul"},{"sha":"155856d","message":"feat: grant family access to disbursement summary page","author":"Rahul"},{"sha":"2317e60","message":"merge: resolve conflicts for disbursement page (take worktree version)","author":"Rahul"}]
+  "pushedAt": "2026-04-10 22:16:33+00",
+  "commits": [{"sha":"d10914c","message":"fix: retry attachment fetch in inbound email webhook","author":"Rahul"}]
 }
