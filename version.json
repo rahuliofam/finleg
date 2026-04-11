@@ -1,12 +1,12 @@
 {
-  "version": "v260410.02 10:42p",
-  "release": 185,
-  "sha": "dbe01ad",
-  "fullSha": "dbe01adb0005dc6362f1a11a88f33b677e20c962",
+  "version": "v260410.03 11:06p",
+  "release": 186,
+  "sha": "66d9810",
+  "fullSha": "66d98105ba5646a3533c6554cdd6d432ed7c839b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-11 03:42:32+00",
-  "commits": [{"sha":"dbe01ad","message":"fix: prefer Supabase over local.env for QB refresh token","author":"Rahul"}]
+  "pushedAt": "2026-04-11 04:06:43+00",
+  "commits": [{"sha":"66d9810","message":"feat: email document retrieval agent — email agent@finleg.net to request documents","author":"Rahul"}]
 }
