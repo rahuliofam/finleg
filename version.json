@@ -1,12 +1,12 @@
 {
-  "version": "v260411.01 12:01a",
-  "release": 188,
-  "sha": "f911c5b",
-  "fullSha": "f911c5b997fdbd2656cc18858bf6cb39e7213111",
+  "version": "v260411.02 1:16a",
+  "release": 189,
+  "sha": "445c2ee",
+  "fullSha": "445c2ee854cff7481b8a36f5fe0cb9b16c0a9052",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-11 05:01:23+00",
-  "commits": [{"sha":"f911c5b","message":"chore: add Kathy email alias (kssonnad@gmail.com)","author":"Rahul"}]
+  "pushedAt": "2026-04-11 06:16:06+00",
+  "commits": [{"sha":"445c2ee","message":"feat: add Hannah & Jackie financial snapshot page","author":"Rahul"}]
 }
