@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Snapshot — Hannah Sonnad & Jackie Giroux</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+    var PAGE_ID = 'hjfinshot';
+    var OWNER_EMAILS = ['sonnad.phoebe@gmail.com', 'rahulioson@gmail.com', 'jackie61899280@gmail.com'];
+    var _currentEmail = '';
+    var _isOwner = false;
+
+    (function() {
+      const sb = window.supabase.createClient('https://gjdvzzxsrzuorguwkaih.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY', { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } });
+      window._sb = sb;
+
+      sb.auth.getSession().then(async function(res) {
+        var email = (res.data?.session?.user?.email || '').toLowerCase();
+        _currentEmail = email;
+
+        if (!email) {
+          window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
+
+        // Owners always have access
+        if (OWNER_EMAILS.includes(email)) {
+          _isOwner = true;
+          grantAccess(sb);
+          return;
+        }
+
+        // Check if shared
+        var { data } = await sb.from('page_shares').select('id').eq('page_id', PAGE_ID).eq('shared_email', email);
+        if (data && data.length > 0) {
+          grantAccess(sb);
+        } else {
+          document.getElementById('auth-gate').innerHTML = '<h2 style="color:#dc2626;">Access Denied</h2><p style="margin-top:0.5rem;">Signed in as <strong>' + email + '</strong></p><p style="margin-top:0.5rem;color:#64748b;">Ask the page owner to share access with you.</p>';
+        }
+      });
+    })();
+
+    function grantAccess(sb) {
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+      if (_isOwner) {
+        document.getElementById('share-panel').style.display = 'block';
+        loadSharedEmails(sb);
+      }
+      loadLiveData(sb);
+    }
+
+    async function loadSharedEmails(sb) {
+      var { data } = await sb.from('page_shares').select('id, shared_email, created_at').eq('page_id', PAGE_ID).order('created_at', { ascending: true });
+      var list = document.getElementById('shared-list');
+      list.innerHTML = '';
+      if (!data || data.length === 0) {
+        list.innerHTML = '<li style="color:#94a3b8; font-style:italic;">No one else has access yet</li>';
+        return;
+      }
+      data.forEach(function(s) {
+        var li = document.createElement('li');
+        li.innerHTML = '<span>' + s.shared_email + '</span> <button onclick="revokeShare(\'' + s.id + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:9pt;" title="Revoke access">&times; remove</button>';
+        list.appendChild(li);
+      });
+    }
+
+    async function addShare() {
+      var input = document.getElementById('share-email');
+      var email = input.value.trim().toLowerCase();
+      if (!email || !email.includes('@')) { showShareMsg('Enter a valid email address', true); return; }
+      if (OWNER_EMAILS.includes(email)) { showShareMsg('That person already has access as an owner', true); return; }
+      var sb = window._sb;
+      var { error } = await sb.from('page_shares').upsert({ page_id: PAGE_ID, shared_email: email, shared_by: _currentEmail }, { onConflict: 'page_id,shared_email' });
+      if (error) { showShareMsg('Error: ' + error.message, true); return; }
+      input.value = '';
+      showShareMsg('Access granted to ' + email, false);
+      loadSharedEmails(sb);
+    }
+
+    async function revokeShare(id) {
+      var sb = window._sb;
+      await sb.from('page_shares').delete().eq('id', id);
+      loadSharedEmails(sb);
+      showShareMsg('Access revoked', false);
+    }
+
+    function showShareMsg(msg, isError) {
+      var el = document.getElementById('share-msg');
+      el.textContent = msg;
+      el.style.color = isError ? '#dc2626' : '#16a34a';
+      setTimeout(function() { el.textContent = ''; }, 4000);
+    }
+    </script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 11pt;
+            color: #1e293b;
+            background: #f8fafc;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .header h1 { font-size: 20pt; color: #0f172a; margin-bottom: 0.25rem; }
+        .header .subtitle { font-size: 11pt; color: #64748b; }
+        .header .as-of { font-size: 9pt; color: #94a3b8; margin-top: 0.5rem; }
+
+        .section { margin-bottom: 2rem; }
+        .section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #0f172a;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff;
+        }
+        .section-title.green { border-left-color: #22c55e; background: #f0fdf4; }
+        .section-title.purple { border-left-color: #8b5cf6; background: #f5f3ff; }
+        .section-title.amber { border-left-color: #f59e0b; background: #fffbeb; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 1rem; }
+        td, th { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        th { background: #f1f5f9; text-align: left; font-weight: 600; color: #475569; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.03em; }
+        .amount { font-family: 'SF Mono', 'Consolas', monospace; text-align: right; white-space: nowrap; }
+        .right { text-align: right; }
+        .total-row { font-weight: 700; border-top: 2px solid #334155; background: #f8fafc; }
+        .total-row td { padding-top: 0.6rem; }
+        .subtotal-row { font-weight: 600; background: #f1f5f9; }
+        .person-label { font-weight: 600; color: #1e40af; }
+        .acct-type { font-size: 9pt; color: #64748b; }
+        .badge {
+            display: inline-block;
+            font-size: 8pt;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-retirement { background: #dbeafe; color: #1e40af; }
+        .badge-taxable { background: #fef3c7; color: #92400e; }
+        .badge-cash { background: #d1fae5; color: #065f46; }
+        .badge-se { background: #ede9fe; color: #5b21b6; }
+        .badge-w2 { background: #dbeafe; color: #1e40af; }
+
+        .doc-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 9pt;
+        }
+        .doc-link:hover { text-decoration: underline; }
+        .doc-icon { margin-right: 0.25rem; }
+
+        .docs-section { margin-top: 0.5rem; }
+        .docs-section h4 { font-size: 10pt; color: #475569; margin-bottom: 0.4rem; }
+        .doc-list { list-style: none; padding: 0; }
+        .doc-list li { padding: 0.3rem 0; border-bottom: 1px solid #f1f5f9; }
+        .doc-list li:last-child { border-bottom: none; }
+
+        .note {
+            font-size: 9pt;
+            color: #64748b;
+            font-style: italic;
+            padding: 0.5rem 0.75rem;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+        .summary-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            text-align: center;
+        }
+        .summary-card .label { font-size: 9pt; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .summary-card .value { font-size: 22pt; font-weight: 700; color: #0f172a; font-family: 'SF Mono', monospace; }
+        .summary-card .sub { font-size: 9pt; color: #94a3b8; margin-top: 0.25rem; }
+
+        .footer { margin-top: 2rem; font-size: 9pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 1rem; text-align: center; }
+
+        @media print {
+            body { background: #fff; font-size: 10pt; }
+            .container { padding: 0; }
+            .no-print { display: none !important; }
+            .summary-card { border: 1px solid #ccc; }
+            @page { margin: 0.75in; size: letter; }
+        }
+        .print-btn {
+            position: fixed; top: 1rem; right: 1rem;
+            background: #1d4ed8; color: #fff; border: none;
+            padding: 0.5rem 1rem; border-radius: 0.25rem;
+            cursor: pointer; font-size: 10pt;
+        }
+        .print-btn:hover { background: #1e40af; }
+
+        .share-panel {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .share-panel h3 { font-size: 10pt; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        .share-row { display: flex; gap: 0.5rem; align-items: center; }
+        .share-row input {
+            flex: 1; padding: 0.4rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 4px;
+            font-size: 10pt; outline: none;
+        }
+        .share-row input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15); }
+        .share-row button {
+            background: #3b82f6; color: #fff; border: none; padding: 0.4rem 0.75rem;
+            border-radius: 4px; cursor: pointer; font-size: 10pt; white-space: nowrap;
+        }
+        .share-row button:hover { background: #2563eb; }
+        .shared-list { list-style: none; padding: 0; margin-top: 0.5rem; font-size: 10pt; }
+        .shared-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; border-bottom: 1px solid #f1f5f9; }
+        .shared-list li:last-child { border-bottom: none; }
+        .share-msg { font-size: 9pt; margin-top: 0.4rem; min-height: 1rem; }
+    </style>
+</head>
+<body>
+
+<div id="auth-gate" style="text-align:center; padding-top:4rem;"><p style="color:#94a3b8;">Checking authentication...</p></div>
+<div id="main-content" style="display:none;">
+
+<button class="print-btn no-print" onclick="window.print()">Print / PDF</button>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Hannah & Jackie — Financial Snapshot</h1>
+        <div class="subtitle">Combined assets, income, and supporting documents</div>
+        <div class="as-of">Data as of March 31, 2026 &middot; Generated April 11, 2026</div>
+    </div>
+
+    <!-- SHARE PANEL (owners only) -->
+    <div id="share-panel" class="share-panel no-print" style="display:none;">
+        <h3>Share this page</h3>
+        <div class="share-row">
+            <input type="email" id="share-email" placeholder="Enter a Gmail address to share with..." onkeydown="if(event.key==='Enter')addShare()">
+            <button onclick="addShare()">Grant Access</button>
+        </div>
+        <div id="share-msg" class="share-msg"></div>
+        <ul id="shared-list" class="shared-list"></ul>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="two-col" style="margin-bottom: 2rem;">
+        <div class="summary-card">
+            <div class="label">Total Assets</div>
+            <div class="value" id="total-assets">$526,171</div>
+            <div class="sub">All accounts combined</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">2025 Combined Earned Income</div>
+            <div class="value">$50,827</div>
+            <div class="sub">Hannah: $36,201 + Jackie: $14,626</div>
+        </div>
+    </div>
+
+    <!-- ===== CURRENT ASSETS ===== -->
+    <div class="section">
+        <div class="section-title">Current Assets — Hannah Sonnad</div>
+        <table>
+            <tr>
+                <th>Account</th>
+                <th>Institution</th>
+                <th>Type</th>
+                <th class="right">Balance</th>
+                <th>Statement</th>
+            </tr>
+            <tr>
+                <td><strong>Brokerage</strong> <span class="acct-type">(****8830)</span></td>
+                <td>Charles Schwab</td>
+                <td><span class="badge badge-taxable">Taxable</span></td>
+                <td class="amount">$231,472.64</td>
+                <td><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-brokerage-830/Brokerage%20Statement_2026-03-31_830.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Mar 2026</a></td>
+            </tr>
+            <tr>
+                <td><strong>Roth Trust IRA</strong> <span class="acct-type">(****9342)</span></td>
+                <td>Charles Schwab</td>
+                <td><span class="badge badge-retirement">Roth IRA</span></td>
+                <td class="amount">$99,598.42</td>
+                <td><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-roth-trust-342/Brokerage%20Statement_2026-03-31_342.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Mar 2026</a></td>
+            </tr>
+            <tr>
+                <td><strong>Inherited Trad IRA</strong> <span class="acct-type">(****3568)</span></td>
+                <td>Charles Schwab</td>
+                <td><span class="badge badge-retirement">Inh IRA</span></td>
+                <td class="amount">$87,042.39</td>
+                <td><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-inh-trad-ira-568/Brokerage%20Statement_2026-03-31_568.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Mar 2026</a></td>
+            </tr>
+            <tr>
+                <td><strong>Roth IRA</strong> <span class="acct-type">(****5170)</span></td>
+                <td>Charles Schwab</td>
+                <td><span class="badge badge-retirement">Roth IRA</span></td>
+                <td class="amount">$60,993.87</td>
+                <td><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-roth-ira-170/Brokerage%20Statement_2026-03-31_170.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Mar 2026</a></td>
+            </tr>
+            <tr>
+                <td><strong>Solo 401(k)</strong> <span class="acct-type">(****0362)</span></td>
+                <td>Charles Schwab</td>
+                <td><span class="badge badge-retirement">401(k)</span></td>
+                <td class="amount">$43,503.15</td>
+                <td><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-solo-401k-362/Brokerage%20Statement_2026-03-31_362.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Mar 2026</a></td>
+            </tr>
+            <tr>
+                <td><strong>Checking</strong> <span class="acct-type">(****6518)</span></td>
+                <td>Charles Schwab</td>
+                <td><span class="badge badge-cash">Cash</span></td>
+                <td class="amount">$3,560.16</td>
+                <td><a class="doc-link" href="https://files.finleg.net/financial-statements/bank-accounts/schwab-hannah-bank-518/Bank%20Statement_2026-03-31_518.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Mar 2026</a></td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3">Hannah Total</td>
+                <td class="amount">$526,170.63</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Current Assets — Jackie Giroux</div>
+        <table>
+            <tr>
+                <th>Account</th>
+                <th>Institution</th>
+                <th>Type</th>
+                <th class="right">Balance</th>
+                <th>Statement</th>
+            </tr>
+            <tr>
+                <td colspan="5" class="note" style="border: none;">No individual accounts on file. Jackie is being added as a spouse participant to Hannah's Solo 401(k). Joint finances are managed through Hannah's Schwab checking account.</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3">Jackie Total</td>
+                <td class="amount">$0.00</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <table>
+            <tr class="total-row">
+                <td colspan="3"><strong>Combined Total Assets</strong></td>
+                <td class="amount" style="font-size: 13pt;">$526,170.63</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ===== INCOME — LAST 3 YEARS ===== -->
+    <div class="section">
+        <div class="section-title green">Earned Income — 3-Year History</div>
+
+        <!-- 2025 -->
+        <h3 style="font-size: 11pt; color: #0f172a; margin: 1rem 0 0.5rem;">2025 Tax Year <span style="font-size:9pt; color:#64748b;">(from W-2s & 1099s)</span></h3>
+        <table>
+            <tr><th>Person</th><th>Source</th><th>Type</th><th class="right">Amount</th></tr>
+            <tr>
+                <td rowspan="3" class="person-label">Hannah</td>
+                <td>Kong Screen Printing</td>
+                <td><span class="badge badge-w2">W-2</span></td>
+                <td class="amount">$11,355</td>
+            </tr>
+            <tr>
+                <td>Fever Labs</td>
+                <td><span class="badge badge-se">1099-NEC</span></td>
+                <td class="amount">$16,275</td>
+            </tr>
+            <tr>
+                <td>Other SE (Square, CD Baby, ASCAP, TuneCore)</td>
+                <td><span class="badge badge-se">SE</span></td>
+                <td class="amount">~$8,571</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td></td>
+                <td colspan="2">Hannah 2025 Total</td>
+                <td class="amount">~$36,201</td>
+            </tr>
+            <tr>
+                <td rowspan="2" class="person-label">Jackie</td>
+                <td>Fever Labs</td>
+                <td><span class="badge badge-se">1099-NEC</span></td>
+                <td class="amount">$12,600</td>
+            </tr>
+            <tr>
+                <td>New Caps, LLC (Burbank, CA)</td>
+                <td><span class="badge badge-w2">W-2</span></td>
+                <td class="amount">$2,026</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td></td>
+                <td colspan="2">Jackie 2025 Total</td>
+                <td class="amount">$14,626</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="3">Combined 2025 Earned Income</td>
+                <td class="amount">~$50,827</td>
+            </tr>
+        </table>
+
+        <!-- 2024 & 2023 -->
+        <h3 style="font-size: 11pt; color: #0f172a; margin: 1rem 0 0.5rem;">2024 & 2023 Tax Years</h3>
+        <div class="note">
+            Tax returns for 2024 and 2023 have not yet been indexed in the document system.
+            Hannah and Jackie file jointly (MFJ). Prior-year income was estimated at ~$28,000&ndash;31,000 combined earned income per the 2025 retirement plan analysis.
+            Check with the tax preparer (Jason Kuennen, Tax Planning Solutions LLC) for filed returns.
+        </div>
+    </div>
+
+    <!-- ===== INVESTMENT INCOME ===== -->
+    <div class="section">
+        <div class="section-title purple">Investment Income — 2026 YTD (Jan&ndash;Mar)</div>
+        <table>
+            <tr><th>Account</th><th>Dividends</th><th>Interest</th><th class="right">Total Income</th></tr>
+            <tr>
+                <td>Hannah Roth Trust</td>
+                <td class="amount">$110.53</td>
+                <td class="amount">$0.00</td>
+                <td class="amount">$110.53</td>
+            </tr>
+            <tr>
+                <td>Hannah Brokerage</td>
+                <td class="amount">$0.00</td>
+                <td class="amount">$0.06</td>
+                <td class="amount">$0.06</td>
+            </tr>
+            <tr>
+                <td>Hannah Roth IRA</td>
+                <td class="amount">$0.00</td>
+                <td class="amount">$0.03</td>
+                <td class="amount">$0.03</td>
+            </tr>
+            <tr>
+                <td>Other accounts</td>
+                <td class="amount">$35.37</td>
+                <td class="amount">$0.24</td>
+                <td class="amount">$35.61</td>
+            </tr>
+            <tr class="total-row">
+                <td>2026 YTD Total</td>
+                <td class="amount">$145.90</td>
+                <td class="amount">$0.33</td>
+                <td class="amount">$146.23</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ===== OTHER INCOME (K-1 DISTRIBUTION) ===== -->
+    <div class="section">
+        <div class="section-title amber">Trust Distribution — 2025</div>
+        <table>
+            <tr><th>Source</th><th>Type</th><th class="right">Amount</th></tr>
+            <tr>
+                <td>Revocable Trust of Subhash Sonnad &rarr; Hannah (beneficiary)</td>
+                <td>GLDM in-kind transfer (1,980 shares @ $89.50)</td>
+                <td class="amount">$177,210.60</td>
+            </tr>
+            <tr>
+                <td>Revocable Trust of Subhash Sonnad &rarr; Hannah (beneficiary)</td>
+                <td>Cash distribution</td>
+                <td class="amount">$53,013.08</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="2">Total 2025 K-1 Distribution</td>
+                <td class="amount">$230,420.88</td>
+            </tr>
+        </table>
+        <div class="note">Distribution from SubTrust Traditional IRA (6448-3403) to Hannah Brokerage (5416-8830). 1099-R code 4 (Death). See K-1 worksheet for details.</div>
+    </div>
+
+    <!-- ===== CHECKING ACCOUNT ACTIVITY ===== -->
+    <div class="section">
+        <div class="section-title">Checking Account Activity — 2026 YTD</div>
+        <table>
+            <tr><th>Month</th><th class="right">Beginning Bal</th><th class="right">Deposits</th><th class="right">Withdrawals</th><th class="right">Ending Bal</th></tr>
+            <tr>
+                <td>January 2026</td>
+                <td class="amount">$1,074.78</td>
+                <td class="amount">$4,641.26</td>
+                <td class="amount">($2,173.53)</td>
+                <td class="amount">$3,527.53</td>
+            </tr>
+            <tr>
+                <td>February 2026</td>
+                <td class="amount">$3,527.53</td>
+                <td class="amount">$4,833.28</td>
+                <td class="amount">($5,149.82)</td>
+                <td class="amount">$3,211.01</td>
+            </tr>
+            <tr>
+                <td>March 2026</td>
+                <td class="amount">$3,211.01</td>
+                <td class="amount">$2,916.64</td>
+                <td class="amount">($2,567.51)</td>
+                <td class="amount">$3,560.16</td>
+            </tr>
+            <tr class="total-row">
+                <td>YTD Totals</td>
+                <td class="amount"></td>
+                <td class="amount">$12,391.18</td>
+                <td class="amount">($9,890.86)</td>
+                <td class="amount">$3,560.16</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ===== SUPPORTING DOCUMENTS ===== -->
+    <div class="section">
+        <div class="section-title">Supporting Documents</div>
+
+        <div class="two-col">
+            <div class="docs-section">
+                <h4>Tax Documents</h4>
+                <ul class="doc-list">
+                    <li><a class="doc-link" href="https://files.finleg.net/bookkeeping-docs/taxes/2025/sonnad-hannah/1099%20Composite%20and%20Year-End%20Summary%20-%202025_2026-02-06_830%20(1).PDF" target="_blank"><span class="doc-icon">&#128196;</span>Hannah 1099 Composite (2025) — Schwab Brokerage</a></li>
+                    <li><a class="doc-link" href="https://files.finleg.net/bookkeeping-docs/taxes/2025/2025%20-%201099%20AAP%20Contractors/2025_1099_Giroux%20Jacqueline.pdf" target="_blank"><span class="doc-icon">&#128196;</span>Jackie 1099-NEC (2025) — Fever Labs</a></li>
+                    <li><a class="doc-link" href="/public/tax/k1-2025-hannah-sonnad.html"><span class="doc-icon">&#128203;</span>K-1 Worksheet (2025) — Trust Distribution</a></li>
+                    <li><a class="doc-link" href="/public/tax/retirement-plan-2025.html"><span class="doc-icon">&#128203;</span>2025 Retirement Plan Analysis</a></li>
+                </ul>
+            </div>
+
+            <div class="docs-section">
+                <h4>Most Recent Statements (March 2026)</h4>
+                <ul class="doc-list">
+                    <li><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-brokerage-830/Brokerage%20Statement_2026-03-31_830.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Brokerage Statement (****8830)</a></li>
+                    <li><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-roth-trust-342/Brokerage%20Statement_2026-03-31_342.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Roth Trust IRA Statement (****9342)</a></li>
+                    <li><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-inh-trad-ira-568/Brokerage%20Statement_2026-03-31_568.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Inherited Trad IRA Statement (****3568)</a></li>
+                    <li><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-roth-ira-170/Brokerage%20Statement_2026-03-31_170.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Roth IRA Statement (****5170)</a></li>
+                    <li><a class="doc-link" href="https://files.finleg.net/financial-statements/brokerage/schwab-hannah-solo-401k-362/Brokerage%20Statement_2026-03-31_362.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Solo 401(k) Statement (****0362)</a></li>
+                    <li><a class="doc-link" href="https://files.finleg.net/financial-statements/bank-accounts/schwab-hannah-bank-518/Bank%20Statement_2026-03-31_518.PDF" target="_blank"><span class="doc-icon">&#128196;</span>Checking Statement (****6518)</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Confidential — for Hannah Sonnad & Jackie Giroux only</p>
+        <p>Source: finleg document system &middot; Accounts at Charles Schwab &middot; Tax preparer: Jason Kuennen, Tax Planning Solutions LLC</p>
+    </div>
+
+</div><!-- .container -->
+</div><!-- #main-content -->
+
+<script>
+// Live data loader — pulls latest balances from Supabase
+async function loadLiveData(sb) {
+    try {
+        // Fetch latest investment summaries
+        const { data: inv } = await sb.from('investment_statement_summaries')
+            .select('account_name, ending_value, statement_date')
+            .eq('account_holder', 'Hannah')
+            .order('statement_date', { ascending: false });
+
+        // Fetch latest checking
+        const { data: chk } = await sb.from('checking_statement_summaries')
+            .select('account_name, ending_balance, statement_date')
+            .eq('account_holder', 'Hannah')
+            .order('statement_date', { ascending: false })
+            .limit(1);
+
+        if (!inv || !chk) return;
+
+        // Get latest per account
+        const latest = {};
+        for (const r of inv) {
+            if (!latest[r.account_name]) latest[r.account_name] = r.ending_value;
+        }
+        const checkingBal = chk[0]?.ending_balance || 0;
+        const total = Object.values(latest).reduce((a, b) => a + b, 0) + checkingBal;
+
+        document.getElementById('total-assets').textContent = '$' + total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    } catch (e) {
+        console.warn('Live data load failed, using static values', e);
+    }
+}
+</script>
+
+</body>
+</html>
