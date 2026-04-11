@@ -1,12 +1,12 @@
 {
-  "version": "v260410.03 11:06p",
-  "release": 186,
-  "sha": "66d9810",
-  "fullSha": "66d98105ba5646a3533c6554cdd6d432ed7c839b",
+  "version": "v260410.04 11:56p",
+  "release": 187,
+  "sha": "bd23dd1",
+  "fullSha": "bd23dd16502ff1f735b5978863f04711aeb5e73e",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-11 04:06:43+00",
-  "commits": [{"sha":"66d9810","message":"feat: email document retrieval agent — email agent@finleg.net to request documents","author":"Rahul"}]
+  "pushedAt": "2026-04-11 04:56:24+00",
+  "commits": [{"sha":"bd23dd1","message":"fix: use Gemini Flash 2.5 for doc request parsing + sender email fallback","author":"Rahul"}]
 }
