@@ -53,5 +53,6 @@ INSERT INTO person_aliases (canonical_name, alias, notes) VALUES
   ('Rahul', 'rahchak@gmail.com', 'Email'),
   ('Hannah', 'sonnad.phoebe@gmail.com', 'Email'),
   ('Emina', 'esonnad@gmail.com', 'Email'),
-  ('Haydn', 'hrsonnad@gmail.com', 'Email')
+  ('Haydn', 'hrsonnad@gmail.com', 'Email'),
+  ('Kathy', 'kssonnad@gmail.com', 'Email')
 ON CONFLICT (alias) DO NOTHING;
