@@ -1,12 +1,12 @@
 {
-  "version": "v260410.01 5:16p",
-  "release": 184,
-  "sha": "d10914c",
-  "fullSha": "d10914ce568fc49ed76fcf4f5b6076125cc67b88",
+  "version": "v260410.02 10:42p",
+  "release": 185,
+  "sha": "dbe01ad",
+  "fullSha": "dbe01adb0005dc6362f1a11a88f33b677e20c962",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-10 22:16:33+00",
-  "commits": [{"sha":"d10914c","message":"fix: retry attachment fetch in inbound email webhook","author":"Rahul"}]
+  "pushedAt": "2026-04-11 03:42:32+00",
+  "commits": [{"sha":"dbe01ad","message":"fix: prefer Supabase over local.env for QB refresh token","author":"Rahul"}]
 }
