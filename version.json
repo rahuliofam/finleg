@@ -1,12 +1,12 @@
 {
-  "version": "v260410.04 11:56p",
-  "release": 187,
-  "sha": "bd23dd1",
-  "fullSha": "bd23dd16502ff1f735b5978863f04711aeb5e73e",
+  "version": "v260411.01 12:01a",
+  "release": 188,
+  "sha": "f911c5b",
+  "fullSha": "f911c5b997fdbd2656cc18858bf6cb39e7213111",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-11 04:56:24+00",
-  "commits": [{"sha":"bd23dd1","message":"fix: use Gemini Flash 2.5 for doc request parsing + sender email fallback","author":"Rahul"}]
+  "pushedAt": "2026-04-11 05:01:23+00",
+  "commits": [{"sha":"f911c5b","message":"chore: add Kathy email alias (kssonnad@gmail.com)","author":"Rahul"}]
 }
