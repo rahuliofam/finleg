@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { AwsClient } from "https://esm.sh/aws4fetch@1.0.20";
+
 const RESEND_API_URL = "https://api.resend.com";
 const FORWARD_TO = "rahchak@gmail.com";
 const FROM_ADDRESS = "agent@finleg.net";
@@ -578,6 +580,410 @@ function extractCategoryFromSubject(subject: string): string | null {
 }
 
 // ============================================================
+// Document Request Handler
+// ============================================================
+
+const DOC_REQUEST_PROMPT = `You are analyzing an email sent to a document retrieval agent. The sender is requesting a document from our file vault.
+
+Extract the following from the email body:
+- person_name: who the document belongs to (the person mentioned, NOT necessarily the sender)
+- doc_type: what type of document (e.g. "tax return", "bank statement", "1099", "credit report", "insurance", "brokerage statement", etc.)
+- year: the tax year or document year (number, e.g. 2023)
+- institution: if mentioned, the bank/brokerage/institution name
+- account_type: if mentioned (checking, credit-card, brokerage, ira, etc.)
+- any other filtering details
+
+If this does NOT look like a document request (it's spam, a forwarded receipt, etc.), set is_request to false.
+
+Return ONLY valid JSON, no markdown fences:
+{"is_request": true, "person_name": "...", "doc_type": "...", "year": 2023, "institution": null, "account_type": null, "search_keywords": ["tax", "return"]}`;
+
+/**
+ * Parse a document request from email body using Claude.
+ */
+async function parseDocumentRequest(
+  emailBody: string,
+  emailSubject: string,
+  anthropicKey: string
+): Promise<any> {
+  const res = await fetch(ANTHROPIC_API_URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": anthropicKey,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 512,
+      messages: [{
+        role: "user",
+        content: `Subject: ${emailSubject || "(none)"}\n\nBody:\n${emailBody.slice(0, 2000)}\n\n${DOC_REQUEST_PROMPT}`,
+      }],
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Claude API error: ${res.status} ${text}`);
+  }
+
+  const result = await res.json();
+  const text = result.content?.[0]?.text || "";
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return { is_request: false };
+
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch {
+    return { is_request: false };
+  }
+}
+
+/**
+ * Resolve a person name to canonical account_holder using person_aliases table.
+ * Also returns partial matches on the name for filename searching.
+ */
+async function resolvePersonName(
+  supabase: any,
+  personName: string
+): Promise<{ canonical: string | null; searchNames: string[] }> {
+  const nameLower = personName.toLowerCase().trim();
+
+  // Try exact alias match
+  const { data: aliasMatch } = await supabase
+    .from("person_aliases")
+    .select("canonical_name")
+    .eq("alias", nameLower)
+    .limit(1)
+    .single();
+
+  if (aliasMatch) {
+    // Get all aliases for this canonical name (for filename searching)
+    const { data: allAliases } = await supabase
+      .from("person_aliases")
+      .select("alias")
+      .eq("canonical_name", aliasMatch.canonical_name);
+
+    const searchNames = [
+      aliasMatch.canonical_name,
+      ...(allAliases || []).map((a: any) => a.alias),
+    ];
+    return { canonical: aliasMatch.canonical_name, searchNames };
+  }
+
+  // Try partial match (contains)
+  const { data: partialMatches } = await supabase
+    .from("person_aliases")
+    .select("canonical_name, alias")
+    .ilike("alias", `%${nameLower}%`)
+    .limit(5);
+
+  if (partialMatches?.length > 0) {
+    const canonical = partialMatches[0].canonical_name;
+    const { data: allAliases } = await supabase
+      .from("person_aliases")
+      .select("alias")
+      .eq("canonical_name", canonical);
+
+    const searchNames = [
+      canonical,
+      ...(allAliases || []).map((a: any) => a.alias),
+    ];
+    return { canonical, searchNames };
+  }
+
+  // No match — use the raw name for searching
+  return { canonical: null, searchNames: [personName] };
+}
+
+/**
+ * Search document_index for matching documents.
+ */
+async function searchDocuments(
+  supabase: any,
+  canonical: string | null,
+  searchNames: string[],
+  request: any
+): Promise<any[]> {
+  // Build the query — search by account_holder AND/OR filename
+  let query = supabase
+    .from("document_index")
+    .select("id, filename, bucket, r2_key, category, account_type, account_holder, year, institution, file_type, file_size")
+    .order("year", { ascending: false });
+
+  // Filter by year if specified
+  if (request.year) {
+    query = query.eq("year", request.year);
+  }
+
+  // Filter by doc_type mapping
+  const docType = (request.doc_type || "").toLowerCase();
+  if (docType.includes("tax return") || docType.includes("tax filing")) {
+    query = query.in("account_type", ["tax-return", "tax"]);
+  } else if (docType.includes("1099")) {
+    query = query.in("account_type", ["1099", "tax-1099"]);
+  } else if (docType.includes("bank statement") || docType.includes("checking")) {
+    query = query.eq("account_type", "checking");
+    query = query.eq("category", "statement");
+  } else if (docType.includes("credit card")) {
+    query = query.eq("account_type", "credit-card");
+    query = query.eq("category", "statement");
+  } else if (docType.includes("brokerage")) {
+    query = query.eq("account_type", "brokerage");
+    query = query.eq("category", "statement");
+  } else if (docType.includes("credit report")) {
+    query = query.eq("category", "credit-report");
+  } else if (docType.includes("insurance")) {
+    query = query.eq("category", "insurance");
+  }
+
+  // Filter by institution if specified
+  if (request.institution) {
+    query = query.ilike("institution", `%${request.institution}%`);
+  }
+
+  const { data: results, error } = await query.limit(50);
+  if (error || !results) return [];
+
+  // Score and filter results by person name relevance
+  const scored = results.map((doc: any) => {
+    let score = 0;
+    const filenameLower = (doc.filename || "").toLowerCase();
+    const holderLower = (doc.account_holder || "").toLowerCase();
+
+    // Check account_holder match
+    if (canonical && holderLower === canonical.toLowerCase()) {
+      score += 10;
+    }
+
+    // Check filename contains any of the search names
+    for (const name of searchNames) {
+      const nameParts = name.toLowerCase().split(" ");
+      if (filenameLower.includes(name.toLowerCase())) {
+        score += 8;
+      } else {
+        // Check individual name parts (e.g., "Sonnad Hannah" in filename)
+        const matchedParts = nameParts.filter((p: string) => p.length > 2 && filenameLower.includes(p));
+        score += matchedParts.length * 3;
+      }
+    }
+
+    return { ...doc, _score: score };
+  });
+
+  // Filter to docs with score > 0 and sort by score descending
+  return scored
+    .filter((d: any) => d._score > 0)
+    .sort((a: any, b: any) => b._score - a._score)
+    .slice(0, 5);
+}
+
+/**
+ * Download a file from R2 using S3-compatible API.
+ */
+async function downloadFromR2(
+  bucket: string,
+  r2Key: string
+): Promise<{ bytes: Uint8Array; contentType: string } | null> {
+  const accountId = Deno.env.get("R2_ACCOUNT_ID");
+  const accessKey = Deno.env.get("R2_ACCESS_KEY_ID");
+  const secretKey = Deno.env.get("R2_SECRET_ACCESS_KEY");
+
+  if (!accountId || !accessKey || !secretKey) {
+    console.error("R2 credentials not set");
+    return null;
+  }
+
+  const aws = new AwsClient({
+    accessKeyId: accessKey,
+    secretAccessKey: secretKey,
+    region: "auto",
+    service: "s3",
+  });
+
+  const url = `https://${accountId}.r2.cloudflarestorage.com/${bucket}/${r2Key}`;
+  const res = await aws.fetch(url);
+
+  if (!res.ok) {
+    console.error(`R2 download failed: ${res.status} for ${r2Key}`);
+    return null;
+  }
+
+  const arrayBuffer = await res.arrayBuffer();
+  return {
+    bytes: new Uint8Array(arrayBuffer),
+    contentType: res.headers.get("content-type") || "application/octet-stream",
+  };
+}
+
+/**
+ * Send a document retrieval response email.
+ */
+async function sendDocumentEmail(
+  to: string,
+  apiKey: string,
+  request: any,
+  documents: any[],
+  attachments: { filename: string; content: string; type: string }[]
+): Promise<void> {
+  let html = `<div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">`;
+  html += `<h2 style="margin-bottom: 4px;">📁 Document Request</h2>`;
+
+  if (documents.length === 0) {
+    html += `<p>I couldn't find any documents matching your request. Here's what I understood:</p>`;
+    html += `<ul>`;
+    html += `<li><strong>Person:</strong> ${request.person_name || "unknown"}</li>`;
+    html += `<li><strong>Document type:</strong> ${request.doc_type || "unknown"}</li>`;
+    if (request.year) html += `<li><strong>Year:</strong> ${request.year}</li>`;
+    html += `</ul>`;
+    html += `<p>Try being more specific, or reply with a correction.</p>`;
+  } else {
+    html += `<p>Found ${documents.length} matching document${documents.length > 1 ? "s" : ""}:</p>`;
+
+    for (const doc of documents) {
+      const sizeKb = doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : "—";
+      html += `<div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px;">`;
+      html += `<div style="font-weight: 600;">📄 ${doc.filename}</div>`;
+      html += `<div style="font-size: 13px; color: #666; margin-top: 4px;">`;
+      html += `${doc.category} · ${doc.account_type} · ${doc.year || "—"} · ${sizeKb}`;
+      html += `</div>`;
+      html += `</div>`;
+    }
+
+    if (attachments.length > 0) {
+      html += `<p style="color: #16a34a; font-weight: 600;">✅ ${attachments.length} file${attachments.length > 1 ? "s" : ""} attached to this email.</p>`;
+    }
+    if (attachments.length < documents.length) {
+      html += `<p style="color: #666; font-size: 13px;">Some files could not be attached (too large or unavailable). Contact admin for help.</p>`;
+    }
+  }
+
+  html += `<p style="margin-top: 16px; font-size: 13px; color: #999;">Sent by Finleg Document Agent</p>`;
+  html += `</div>`;
+
+  const emailPayload: any = {
+    from: FROM_ADDRESS,
+    to: [to],
+    bcc: [FORWARD_TO],
+    subject: documents.length > 0
+      ? `📁 ${request.doc_type || "Document"} — ${request.person_name || ""}${request.year ? ` (${request.year})` : ""}`
+      : `📁 Document not found — ${request.person_name || "unknown"}`,
+    html,
+  };
+
+  // Attach files (Resend supports base64 attachments)
+  if (attachments.length > 0) {
+    emailPayload.attachments = attachments.map((a) => ({
+      filename: a.filename,
+      content: a.content, // base64 string
+      content_type: a.type,
+    }));
+  }
+
+  const res = await fetch(`${RESEND_API_URL}/emails`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(emailPayload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to send document email: ${res.status} ${text}`);
+  }
+
+  const result = await res.json();
+  console.log(`Document email sent to ${to}, Resend ID: ${result.id}`);
+}
+
+/**
+ * Handle a document request email: parse intent, search, fetch from R2, reply.
+ */
+async function handleDocumentRequest(
+  supabase: any,
+  email: any,
+  emailBody: string,
+  fromAddress: string,
+  resendKey: string,
+  anthropicKey: string
+): Promise<boolean> {
+  // Parse the request with Claude
+  let request: any;
+  try {
+    request = await parseDocumentRequest(emailBody, email.subject || "", anthropicKey);
+  } catch (err) {
+    console.error("Failed to parse document request:", err);
+    return false;
+  }
+
+  if (!request.is_request) {
+    console.log("Email is not a document request");
+    return false;
+  }
+
+  console.log(`Document request parsed: ${JSON.stringify(request)}`);
+
+  // Resolve person name via aliases
+  const { canonical, searchNames } = await resolvePersonName(
+    supabase,
+    request.person_name || ""
+  );
+  console.log(`Person resolved: canonical="${canonical}", searchNames=${JSON.stringify(searchNames)}`);
+
+  // Search for matching documents
+  const documents = await searchDocuments(supabase, canonical, searchNames, request);
+  console.log(`Found ${documents.length} matching documents`);
+
+  // Download top results from R2 and prepare attachments
+  const attachments: { filename: string; content: string; type: string }[] = [];
+  const MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB limit for email
+  let totalSize = 0;
+
+  for (const doc of documents) {
+    if (totalSize > MAX_ATTACHMENT_SIZE) break;
+
+    try {
+      const downloaded = await downloadFromR2(doc.bucket, doc.r2_key);
+      if (downloaded && downloaded.bytes.length < MAX_ATTACHMENT_SIZE - totalSize) {
+        // Convert to base64
+        let binary = "";
+        const chunkSize = 8192;
+        for (let i = 0; i < downloaded.bytes.length; i += chunkSize) {
+          const chunk = downloaded.bytes.subarray(i, i + chunkSize);
+          binary += String.fromCharCode(...chunk);
+        }
+        const base64 = btoa(binary);
+
+        attachments.push({
+          filename: doc.filename,
+          content: base64,
+          type: downloaded.contentType,
+        });
+        totalSize += downloaded.bytes.length;
+      }
+    } catch (err) {
+      console.error(`Failed to download ${doc.r2_key}:`, err);
+    }
+  }
+
+  // Send the response email
+  await sendDocumentEmail(fromAddress, resendKey, request, documents, attachments);
+
+  // Log the activity
+  await logActivity(supabase, "document_request", "document_index", documents[0]?.id || "none", fromAddress, {
+    request,
+    canonical,
+    documents_found: documents.length,
+    documents_attached: attachments.length,
+  });
+
+  return true;
+}
+
+// ============================================================
 // Main handler
 // ============================================================
 serve(async (req: Request) => {
@@ -637,7 +1043,30 @@ serve(async (req: Request) => {
     console.log(`Processable attachments: ${processableAttachments.length} out of ${attachments.length} total`);
 
     if (processableAttachments.length === 0) {
-      console.log("No processable attachments found, sending summary");
+      console.log("No processable attachments found, checking for document request");
+
+      // Try to handle as a document request
+      const emailBodyText = email.text || email.html?.replace(/<[^>]+>/g, "") || "";
+      const senderAddress = typeof email.from === "string"
+        ? email.from
+        : email.from?.[0]?.address || email.from?.[0] || "";
+
+      if (emailBodyText.trim().length > 5 && supabase && anthropicKey) {
+        try {
+          const handled = await handleDocumentRequest(
+            supabase, email, emailBodyText, senderAddress, resendKey, anthropicKey
+          );
+          if (handled) {
+            return new Response(JSON.stringify({ success: true, type: "document_request" }), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+        } catch (docErr) {
+          console.error("Document request handling failed:", docErr);
+        }
+      }
+
       // Log all attachment types for debugging
       if (attachments.length > 0) {
         console.log("Non-processable attachment types:", attachments.map((a: any) => a.content_type || a.type).join(", "));
