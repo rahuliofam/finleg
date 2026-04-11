@@ -1,0 +1,10 @@
+import { ALL_TAB_SLUGS } from "@/types/intranet";
+import { TabContent } from "@/components/intranet/tab-content";
+
+export function generateStaticParams() {
+  return ALL_TAB_SLUGS.pages.map((tab) => ({ tab }));
+}
+
+export default function PagesTabPage() {
+  return <TabContent section="pages" />;
+}

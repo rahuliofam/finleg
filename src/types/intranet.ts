@@ -9,7 +9,8 @@ export type IntranetSection =
   | "zeni"
   | "howto"
   | "devcontrol"
-  | "my";
+  | "my"
+  | "pages";
 
 export interface TabDefinition {
   key: string;
@@ -35,6 +36,7 @@ export const SECTIONS: SectionDefinition[] = [
   { key: "zeni", label: "Zeni" },
   { key: "howto", label: "How It Works" },
   { key: "devcontrol", label: "DevControl" },
+  { key: "pages", label: "Pages" },
   { key: "admin", label: "Admin" },
 ];
 
@@ -115,6 +117,9 @@ export const DEFAULT_TABS: Record<IntranetSection, TabDefinition[]> = {
     { key: "overview", label: "Overview", defaultVisible: true },
     { key: "tax-forms", label: "Tax Forms", defaultVisible: true },
   ],
+  pages: [
+    { key: "all", label: "All Pages", defaultVisible: true },
+  ],
 };
 
 export const ALL_TAB_SLUGS: Record<IntranetSection, string[]> = {
@@ -129,4 +134,5 @@ export const ALL_TAB_SLUGS: Record<IntranetSection, string[]> = {
   howto: DEFAULT_TABS.howto.map((t) => t.key),
   devcontrol: DEFAULT_TABS.devcontrol.map((t) => t.key),
   my: DEFAULT_TABS.my.map((t) => t.key),
+  pages: DEFAULT_TABS.pages.map((t) => t.key),
 };

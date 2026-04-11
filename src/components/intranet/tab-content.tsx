@@ -13,6 +13,7 @@ import { BackupsTab } from "@/components/devcontrol/backups-tab";
 import { PlanlistTab } from "@/components/devcontrol/planlist-tab";
 import { FlowMigTab } from "@/components/devcontrol/flow-mig-tab";
 import { TocTab } from "@/components/devcontrol/toc-tab";
+import { PagesTab } from "@/components/intranet/pages-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
   admin: {
@@ -29,6 +30,9 @@ const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
     backups: BackupsTab,
     planlist: PlanlistTab,
     "flow-mig": FlowMigTab,
+  },
+  pages: {
+    all: PagesTab,
   },
 };
 
