@@ -1,12 +1,12 @@
 {
-  "version": "v260411.04 12:39p",
-  "release": 191,
-  "sha": "40ef09e",
-  "fullSha": "40ef09e1f18aa49d916926bde90bc65ef9810dd2",
+  "version": "v260411.05 6:02p",
+  "release": 192,
+  "sha": "a950342",
+  "fullSha": "a950342524de34fd2aff9a5e0376aee9d2170916",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-11 17:39:52+00",
-  "commits": [{"sha":"40ef09e","message":"fix: use r2-files.finleg.workers.dev for document links","author":"Rahul"}]
+  "pushedAt": "2026-04-11 23:02:37+00",
+  "commits": [{"sha":"a950342","message":"feat: add multi-year tax documents to Hannah/Jackie financial snapshot","author":"Rahul"}]
 }
