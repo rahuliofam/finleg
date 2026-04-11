@@ -49,12 +49,9 @@ if (!REALM_ID) {
 const basicAuth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
 
 async function getRefreshToken() {
-  // Try local.env first
-  if (process.env.QUICKBOOKS_REFRESH_TOKEN) {
-    return process.env.QUICKBOOKS_REFRESH_TOKEN;
-  }
-
-  // Fall back to Supabase
+  // Always prefer Supabase — it's the authoritative store.
+  // qb-sync and qb-writeback edge functions rotate the refresh token there,
+  // so local.env goes stale whenever those functions run.
   if (SUPABASE_SERVICE_KEY) {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/qb_tokens?realm_id=eq.${REALM_ID}&select=refresh_token`,
@@ -69,6 +66,12 @@ async function getRefreshToken() {
     if (rows.length > 0 && rows[0].refresh_token) {
       return rows[0].refresh_token;
     }
+  }
+
+  // Fall back to local.env only if Supabase is unavailable
+  if (process.env.QUICKBOOKS_REFRESH_TOKEN) {
+    console.log('   ⚠️  Using local.env token (Supabase unavailable) — may be stale');
+    return process.env.QUICKBOOKS_REFRESH_TOKEN;
   }
 
   return null;
