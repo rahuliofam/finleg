@@ -599,37 +599,33 @@ Return ONLY valid JSON, no markdown fences:
 {"is_request": true, "person_name": "...", "doc_type": "...", "year": 2023, "institution": null, "account_type": null, "search_keywords": ["tax", "return"]}`;
 
 /**
- * Parse a document request from email body using Claude.
+ * Parse a document request from email body using Gemini Flash 2.5.
  */
 async function parseDocumentRequest(
   emailBody: string,
   emailSubject: string,
-  anthropicKey: string
+  geminiKey: string
 ): Promise<any> {
-  const res = await fetch(ANTHROPIC_API_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": anthropicKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 512,
-      messages: [{
-        role: "user",
-        content: `Subject: ${emailSubject || "(none)"}\n\nBody:\n${emailBody.slice(0, 2000)}\n\n${DOC_REQUEST_PROMPT}`,
-      }],
-    }),
-  });
+  const prompt = `Subject: ${emailSubject || "(none)"}\n\nBody:\n${emailBody.slice(0, 2000)}\n\n${DOC_REQUEST_PROMPT}`;
+
+  const res = await fetch(
+    `${GEMINI_API_URL}/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+      }),
+    }
+  );
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Claude API error: ${res.status} ${text}`);
+    throw new Error(`Gemini API error: ${res.status} ${text}`);
   }
 
   const result = await res.json();
-  const text = result.content?.[0]?.text || "";
+  const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) return { is_request: false };
 
@@ -908,12 +904,12 @@ async function handleDocumentRequest(
   emailBody: string,
   fromAddress: string,
   resendKey: string,
-  anthropicKey: string
+  geminiKey: string
 ): Promise<boolean> {
-  // Parse the request with Claude
+  // Parse the request with Gemini Flash 2.5
   let request: any;
   try {
-    request = await parseDocumentRequest(emailBody, email.subject || "", anthropicKey);
+    request = await parseDocumentRequest(emailBody, email.subject || "", geminiKey);
   } catch (err) {
     console.error("Failed to parse document request:", err);
     return false;
@@ -926,11 +922,25 @@ async function handleDocumentRequest(
 
   console.log(`Document request parsed: ${JSON.stringify(request)}`);
 
-  // Resolve person name via aliases
-  const { canonical, searchNames } = await resolvePersonName(
-    supabase,
-    request.person_name || ""
-  );
+  // Resolve person name via aliases — try extracted name first, then sender email
+  let personToResolve = request.person_name || "";
+  let { canonical, searchNames } = await resolvePersonName(supabase, personToResolve);
+
+  // If no match from the extracted name, try the sender's email address
+  if (!canonical && fromAddress) {
+    const emailOnly = fromAddress.includes("<")
+      ? fromAddress.match(/<([^>]+)>/)?.[1] || fromAddress
+      : fromAddress;
+    console.log(`No match for "${personToResolve}", trying sender email: ${emailOnly}`);
+    const emailResult = await resolvePersonName(supabase, emailOnly.toLowerCase());
+    if (emailResult.canonical) {
+      canonical = emailResult.canonical;
+      searchNames = emailResult.searchNames;
+      // Update request.person_name for the response email
+      if (!request.person_name) request.person_name = canonical;
+    }
+  }
+
   console.log(`Person resolved: canonical="${canonical}", searchNames=${JSON.stringify(searchNames)}`);
 
   // Search for matching documents
@@ -1051,10 +1061,10 @@ serve(async (req: Request) => {
         ? email.from
         : email.from?.[0]?.address || email.from?.[0] || "";
 
-      if (emailBodyText.trim().length > 5 && supabase && anthropicKey) {
+      if (emailBodyText.trim().length > 5 && supabase && geminiKey) {
         try {
           const handled = await handleDocumentRequest(
-            supabase, email, emailBodyText, senderAddress, resendKey, anthropicKey
+            supabase, email, emailBodyText, senderAddress, resendKey, geminiKey
           );
           if (handled) {
             return new Response(JSON.stringify({ success: true, type: "document_request" }), {

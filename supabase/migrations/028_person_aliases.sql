@@ -47,5 +47,11 @@ INSERT INTO person_aliases (canonical_name, alias, notes) VALUES
   ('Tesloop', 'tesloop', 'Business entity'),
   ('Haydn', 'haydn', 'First name'),
   ('Haydn', 'haydn sonnad', 'Full name'),
-  ('Kathy', 'kathy', 'First name')
+  ('Kathy', 'kathy', 'First name'),
+  -- Email address aliases (for sender-based identity resolution)
+  ('Rahul', 'rahulioson@gmail.com', 'Email'),
+  ('Rahul', 'rahchak@gmail.com', 'Email'),
+  ('Hannah', 'sonnad.phoebe@gmail.com', 'Email'),
+  ('Emina', 'esonnad@gmail.com', 'Email'),
+  ('Haydn', 'hrsonnad@gmail.com', 'Email')
 ON CONFLICT (alias) DO NOTHING;
