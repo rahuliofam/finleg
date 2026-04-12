@@ -234,12 +234,31 @@
         .shared-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; border-bottom: 1px solid #f1f5f9; }
         .shared-list li:last-child { border-bottom: none; }
         .share-msg { font-size: 9pt; margin-top: 0.4rem; min-height: 1rem; }
+
+        .finleg-bar {
+            background: #0f3d1e;
+            color: #fff;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .finleg-bar img { height: 24px; width: auto; }
+        .finleg-bar .ver { font-size: 10px; color: rgba(134,239,172,0.6); font-family: monospace; }
+        @media print { .finleg-bar { background: #0f3d1e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; height: 36px; padding: 0 0.5rem; } .finleg-bar img { height: 18px; } }
     </style>
 </head>
 <body>
 
 <div id="auth-gate" style="text-align:center; padding-top:4rem;"><p style="color:#94a3b8;">Checking authentication...</p></div>
 <div id="main-content" style="display:none;">
+
+<div class="finleg-bar">
+    <img src="/finleg-logo-transparent.png" alt="Finleg">
+    <img src="/finleg-wordmark-white.png" alt="Finleg" style="height:22px;">
+    <span class="ver" id="version-label">loading...</span>
+</div>
 
 <button class="print-btn no-print" onclick="window.print()">Print / PDF</button>
 
@@ -603,6 +622,11 @@
 </div><!-- #main-content -->
 
 <script>
+// Load version from version.json
+fetch('/version.json').then(r => r.json()).then(d => {
+    document.getElementById('version-label').textContent = d.version || '';
+}).catch(() => { document.getElementById('version-label').textContent = ''; });
+
 // Live data loader — pulls latest balances from Supabase
 async function loadLiveData(sb) {
     try {
