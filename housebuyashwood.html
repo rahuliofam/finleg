@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>1402 Ashwood Rd — Home Purchase Analysis | FinLeg</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+    (function() {
+      const sb = window.supabase.createClient(
+        'https://gjdvzzxsrzuorguwkaih.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY',
+        { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } }
+      );
+      sb.auth.getSession().then(async function(res) {
+        var session = res.data?.session;
+        if (!session) {
+          window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
+        // Check if user is a registered finleg user in app_users table
+        var { data: appUser } = await sb.from('app_users').select('id, role, display_name').eq('email', session.user.email).single();
+        if (appUser) {
+          document.getElementById('auth-gate').style.display = 'none';
+          document.getElementById('main-content').style.display = 'block';
+          var nameEl = document.getElementById('user-name');
+          if (nameEl && appUser.display_name) nameEl.textContent = appUser.display_name;
+        } else {
+          document.getElementById('auth-gate').innerHTML = '<div style="text-align:center;padding:4rem 2rem;"><h2 style="color:#991b1b;margin-bottom:1rem;">Access Denied</h2><p style="color:#666;">Signed in as <strong>' + session.user.email + '</strong></p><p style="color:#999;margin-top:0.5rem;">This page is restricted to registered FinLeg users.</p></div>';
+        }
+      });
+    })();
+    </script>
+    <style>
+        :root {
+            --fl-green: #1B6B3A;
+            --fl-green-dark: #145530;
+            --fl-green-light: #e8f5ec;
+            --fl-bg: #f8faf9;
+            --fl-text: #1a1a2e;
+            --fl-muted: #64748b;
+            --fl-border: #e2e8f0;
+            --fl-card: #ffffff;
+            --fl-accent: #0369a1;
+            --fl-warning: #b45309;
+            --fl-danger: #991b1b;
+            --fl-success: #15803d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--fl-bg);
+            color: var(--fl-text);
+            line-height: 1.6;
+        }
+        .top-bar {
+            background: var(--fl-green);
+            color: #fff;
+            padding: 0.5rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        .top-bar a { color: #a7f3d0; text-decoration: none; }
+        .hero {
+            background: linear-gradient(135deg, #0f2419 0%, #1B6B3A 50%, #0f4c25 100%);
+            color: white;
+            padding: 3rem 2rem 2rem;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #a7f3d0, #1B6B3A, #a7f3d0);
+        }
+        .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .hero .subtitle { color: #a7f3d0; font-size: 1.1rem; }
+        .hero .price-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .hero .meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            color: #d1fae5;
+            flex-wrap: wrap;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .nav-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--fl-card);
+            border: 1px solid var(--fl-border);
+            border-radius: 12px;
+            padding: 0.35rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .nav-tab {
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            border: none;
+            background: none;
+            color: var(--fl-muted);
+            transition: all 0.2s;
+        }
+        .nav-tab:hover { background: var(--fl-green-light); color: var(--fl-green); }
+        .nav-tab.active { background: var(--fl-green); color: white; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--fl-green-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--fl-green-light);
+        }
+        .card {
+            background: var(--fl-card);
+            border: 1px solid var(--fl-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--fl-text);
+        }
+        .card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            color: var(--fl-green-dark);
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.5rem; }
+            .hero .price-badge { font-size: 1.4rem; }
+            .nav-tabs { flex-wrap: nowrap; }
+        }
+        .stat-card {
+            text-align: center;
+            padding: 1.25rem;
+        }
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--fl-green);
+        }
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--fl-muted);
+            margin-top: 0.25rem;
+        }
+        .checklist { list-style: none; }
+        .checklist li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--fl-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .check-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--fl-border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .check-box.done {
+            background: var(--fl-success);
+            border-color: var(--fl-success);
+            color: white;
+        }
+        .check-label { flex: 1; }
+        .check-label .check-title { font-weight: 500; }
+        .check-label .check-detail { font-size: 0.85rem; color: var(--fl-muted); margin-top: 0.15rem; }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-gray { background: #f1f5f9; color: #475569; }
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        table.data-table th {
+            text-align: left;
+            padding: 0.6rem 0.75rem;
+            background: var(--fl-green-light);
+            color: var(--fl-green-dark);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        table.data-table td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid var(--fl-border);
+        }
+        table.data-table tr:last-child td { border-bottom: none; }
+        table.data-table .right { text-align: right; }
+        table.data-table .bold { font-weight: 600; }
+        .callout {
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .callout-warning {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+        .callout-danger {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        .callout-info {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+        .callout-success {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            color: #166534;
+        }
+        .question-box {
+            background: #fefce8;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 0.75rem 0;
+        }
+        .question-box strong { color: #92400e; }
+        .question-box p { margin-top: 0.35rem; color: #78716c; font-size: 0.85rem; }
+        .link-list a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--fl-accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .link-list a:hover { text-decoration: underline; }
+        .mortgage-calc {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .mortgage-calc label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .mortgage-calc input, .mortgage-calc select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--fl-border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .mortgage-calc input:focus, .mortgage-calc select:focus {
+            outline: none;
+            border-color: var(--fl-green);
+            box-shadow: 0 0 0 3px rgba(27,107,58,0.1);
+        }
+        .calc-result {
+            background: var(--fl-green-light);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .calc-result .big-num {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--fl-green-dark);
+        }
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--fl-green-light);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.65rem;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--fl-green);
+            border: 2px solid var(--fl-green-light);
+        }
+        .timeline-item .tl-title { font-weight: 600; }
+        .timeline-item .tl-desc { font-size: 0.85rem; color: var(--fl-muted); margin-top: 0.15rem; }
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 8px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: var(--fl-green);
+            border-radius: 999px;
+            transition: width 0.5s;
+        }
+        #auth-gate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            font-size: 1.1rem;
+            color: var(--fl-muted);
+        }
+        #main-content { display: none; }
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--fl-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--fl-border);
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+<div id="auth-gate">Loading...</div>
+
+<div id="main-content">
+    <div class="top-bar">
+        <span><strong>FinLeg</strong> &mdash; Home Purchase Analysis</span>
+        <span id="user-name"></span>
+    </div>
+
+    <div class="hero">
+        <h1>1402 Ashwood Rd, Austin, TX 78722</h1>
+        <div class="subtitle">Cherrywood / Delwood &bull; Travis County</div>
+        <div class="price-badge">$599,900</div>
+        <div class="meta">
+            <span>4 Bed</span>
+            <span>2 Bath</span>
+            <span>1,752 sqft</span>
+            <span>Built 1948</span>
+            <span>Lot: 7,405 sqft</span>
+            <span>$342/sqft</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs" id="nav-tabs">
+            <button class="nav-tab active" data-section="overview">Overview</button>
+            <button class="nav-tab" data-section="checklist">Buyer Checklist</button>
+            <button class="nav-tab" data-section="financial">Financial Analysis</button>
+            <button class="nav-tab" data-section="market">Market Comps</button>
+            <button class="nav-tab" data-section="structural">Structural Analysis</button>
+            <button class="nav-tab" data-section="records">Records &amp; Permits</button>
+            <button class="nav-tab" data-section="documents">Your Documents</button>
+            <button class="nav-tab" data-section="offer">Offer Contract</button>
+            <button class="nav-tab" data-section="risks">10-Year Risks</button>
+            <button class="nav-tab" data-section="questions">Decision Questions</button>
+        </div>
+
+        <!-- ==================== OVERVIEW ==================== -->
+        <div class="section active" id="sec-overview">
+            <h2 class="section-title">Property Overview</h2>
+
+            <div class="grid-3">
+                <div class="card stat-card">
+                    <div class="stat-value">$599,900</div>
+                    <div class="stat-label">Listing Price</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-value">$686,615</div>
+                    <div class="stat-label">TCAD Appraised Value</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-value">$342/sqft</div>
+                    <div class="stat-label">Price per Sq Ft</div>
+                </div>
+            </div>
+
+            <div class="callout callout-success">
+                <strong>Below-Market Pricing:</strong> The listing price of $599,900 is $86,715 (12.6%) below TCAD appraised value of $686,615 and $342/sqft is below the Cherrywood median of $406/sqft. This suggests potential value, but investigate why.
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Property Details</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">Address</td><td>1402 Ashwood Rd, Austin, TX 78722</td></tr>
+                        <tr><td class="bold">Type</td><td>Single Family / Duplex-Convertible</td></tr>
+                        <tr><td class="bold">Bedrooms</td><td>4</td></tr>
+                        <tr><td class="bold">Bathrooms</td><td>2</td></tr>
+                        <tr><td class="bold">Living Area</td><td>1,752 sq ft</td></tr>
+                        <tr><td class="bold">Lot Size</td><td>~7,405 sq ft (0.17 acres)</td></tr>
+                        <tr><td class="bold">Year Built</td><td>1948 (78 years old)</td></tr>
+                        <tr><td class="bold">Subdivision</td><td>Delwood</td></tr>
+                        <tr><td class="bold">County</td><td>Travis</td></tr>
+                        <tr><td class="bold">ZIP</td><td>78722</td></tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>Your Team</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">Buyers</td><td>Jacqueline Giroux &amp; Hannah Sonnad</td></tr>
+                        <tr><td class="bold">Buyer's Agent</td><td>Alli Heller</td></tr>
+                        <tr><td class="bold">Brokerage</td><td>Spyglass Realty</td></tr>
+                        <tr><td class="bold">Agent Phone</td><td>(760) 803-6209</td></tr>
+                        <tr><td class="bold">Agent Email</td><td>alli@spyglassrealty.com</td></tr>
+                        <tr><td class="bold">License #</td><td>694604</td></tr>
+                        <tr><td class="bold">Broker Fee</td><td>3% (seller paying)</td></tr>
+                        <tr><td class="bold">Agreement Term</td><td>04/12/2026 - 07/31/2026</td></tr>
+                        <tr><td class="bold">Protection Period</td><td>60 days after term ends</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Neighborhood: Cherrywood / Delwood</h3>
+                <div class="grid-3">
+                    <div>
+                        <h4>Location Highlights</h4>
+                        <ul style="font-size:0.9rem; padding-left:1.25rem; color: var(--fl-muted);">
+                            <li>East Austin &mdash; ~2.5 miles to downtown</li>
+                            <li>Near UT Austin, Mueller development</li>
+                            <li>Walkable to Cherrywood Coffeehouse, Eastside Cafe</li>
+                            <li>Close to I-35, Airport Blvd</li>
+                            <li>Established neighborhood with mature trees</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Market Stats (78722)</h4>
+                        <ul style="font-size:0.9rem; padding-left:1.25rem; color: var(--fl-muted);">
+                            <li>Median sale price: ~$643,500</li>
+                            <li>Median $/sqft: $406</li>
+                            <li>Avg days on market: 72</li>
+                            <li>Price trend: down ~1% YoY</li>
+                            <li>Inventory: ~4.9 months</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Considerations</h4>
+                        <ul style="font-size:0.9rem; padding-left:1.25rem; color: var(--fl-muted);">
+                            <li>Gentrifying area &mdash; rapid change</li>
+                            <li>No HOA (typical for older neighborhoods)</li>
+                            <li>Flood zone status: verify with FEMA</li>
+                            <li>Some airport noise from ABIA approach</li>
+                            <li>Mixed residential/commercial nearby</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CHECKLIST ==================== -->
+        <div class="section" id="sec-checklist">
+            <h2 class="section-title">Buyer Checklist</h2>
+
+            <div class="callout callout-info">
+                <strong>Where You Are:</strong> You've signed the Buyer Representation Agreement with Spyglass Realty (Alli Heller) on 04/12/2026. Seller is paying the 3% buyer's agent commission. Next steps are below.
+            </div>
+
+            <div class="card">
+                <h3>Phase 1: Pre-Offer (Do These Now)</h3>
+                <ul class="checklist" id="checklist-1">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Sign Buyer Representation Agreement</div>
+                            <div class="check-detail"><span class="badge badge-green">DONE by Jackie</span> Signed 04/12/2026 via Jointly. Hannah still needs to sign.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Review &amp; sign IABS (Info About Brokerage Services)</div>
+                            <div class="check-detail"><span class="badge badge-green">DONE by Jackie</span> TREC-required disclosure. Both buyers should review.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Review &amp; sign Wire Fraud Warning</div>
+                            <div class="check-detail"><span class="badge badge-green">DONE by Jackie</span> Never wire money based on email instructions alone.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Review Lead Paint Disclosure</div>
+                            <div class="check-detail"><span class="badge badge-yellow">PENDING</span> Required for pre-1978 homes. This home was built 1948 &mdash; lead paint is very likely.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Get mortgage pre-approval finalized</div>
+                            <div class="check-detail"><span class="badge badge-yellow">IN PROGRESS</span> Both Jackie and Hannah have submitted mortgage application materials. Follow up with lender on formal pre-approval letter.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Hannah signs all Jointly documents</div>
+                            <div class="check-detail"><span class="badge badge-red">ACTION NEEDED</span> Hannah Sonnad needs to sign the representation agreement, IABS, and wire fraud warning.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Tour the property in person</div>
+                            <div class="check-detail">Schedule a showing through Alli. Take photos/video of everything including foundation, plumbing, electrical panel, roof, attic.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Research seller's disclosure (if available)</div>
+                            <div class="check-detail">Ask Alli for the seller's disclosure statement. Texas law requires sellers to disclose known defects.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Determine offer price strategy</div>
+                            <div class="check-detail">Listed at $599,900 vs TCAD $686,615. Discuss offer strategy with Alli including contingencies, option period, and earnest money.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Phase 2: Making an Offer</h3>
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Submit offer using TREC 1-4 contract</div>
+                            <div class="check-detail">Texas uses standardized TREC contract forms. Your agent will prepare this.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Determine earnest money amount</div>
+                            <div class="check-detail">Typically 1-2% of purchase price ($6,000-$12,000). Shows good faith. Deposited with title company.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Set option fee &amp; option period</div>
+                            <div class="check-detail">Typically $100-$500 for 5-10 day option period. Gives you unrestricted right to terminate during that time.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Include financing contingency</div>
+                            <div class="check-detail">Protects you if mortgage falls through. Standard in Texas contracts.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Negotiate seller concessions</div>
+                            <div class="check-detail">Consider asking seller to contribute toward closing costs (up to 3-6% depending on loan type).</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Decide on closing date</div>
+                            <div class="check-detail">Typically 30-45 days from contract execution. Coordinate with lender timeline.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Phase 3: Under Contract</h3>
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Schedule home inspection</div>
+                            <div class="check-detail"><span class="badge badge-red">CRITICAL</span> For a 1948 home, get a thorough inspection. Budget $400-$600. Do this during option period.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Get specialized inspections</div>
+                            <div class="check-detail">Foundation ($300-$500), sewer scope ($150-$300), lead paint ($300-$500), roof, termite/pest, electrical panel evaluation.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Order appraisal (lender will arrange)</div>
+                            <div class="check-detail">Lender requires this to ensure property value supports loan amount. Cost: $400-$600.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Title search &amp; title insurance</div>
+                            <div class="check-detail">Title company researches chain of ownership. Seller typically pays for owner's title policy in Texas.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Get homeowner's insurance quotes</div>
+                            <div class="check-detail">Expected range: $3,200-$5,000/year for this home. Shop multiple providers. Lender requires proof before closing.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Check flood zone status</div>
+                            <div class="check-detail">Verify with FEMA flood maps. If in a flood zone, flood insurance will be required.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Survey (if required)</div>
+                            <div class="check-detail">Existing survey may be acceptable. If not, new survey costs $400-$700.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Negotiate repairs after inspection</div>
+                            <div class="check-detail">Use inspection findings to request repairs or price reduction. Especially important for a 1948 home.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Phase 4: Closing</h3>
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Review closing disclosure (3 days before closing)</div>
+                            <div class="check-detail">Lender must provide this at least 3 business days before closing. Compare to loan estimate.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Final walk-through</div>
+                            <div class="check-detail">24-48 hours before closing. Verify agreed repairs were completed. Check all systems work.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Wire closing funds</div>
+                            <div class="check-detail"><span class="badge badge-red">WIRE FRAUD ALERT</span> Verify wiring instructions by calling title company at a known number. NEVER use email instructions alone.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Sign closing documents</div>
+                            <div class="check-detail">Both Jackie and Hannah must sign. Bring valid government-issued photo ID.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">File homestead exemption</div>
+                            <div class="check-detail">File with Travis CAD after closing. Saves ~$2,000+/year in property taxes. Deadline: April 30 of year after purchase.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Set up utilities</div>
+                            <div class="check-detail">Austin Energy, Austin Water, Texas Gas Service, internet. Schedule transfers for closing day.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== FINANCIAL ANALYSIS ==================== -->
+        <div class="section" id="sec-financial">
+            <h2 class="section-title">Financial Analysis</h2>
+
+            <div class="card">
+                <h3>Mortgage Calculator</h3>
+                <div class="mortgage-calc">
+                    <div>
+                        <label for="calc-price">Purchase Price ($)</label>
+                        <input type="number" id="calc-price" value="599900">
+                    </div>
+                    <div>
+                        <label for="calc-down">Down Payment (%)</label>
+                        <input type="number" id="calc-down" value="20" min="0" max="100" step="0.5">
+                    </div>
+                    <div>
+                        <label for="calc-rate">Interest Rate (%)</label>
+                        <input type="number" id="calc-rate" value="6.37" min="0" max="15" step="0.01">
+                    </div>
+                    <div>
+                        <label for="calc-term">Loan Term</label>
+                        <select id="calc-term">
+                            <option value="30" selected>30-Year Fixed</option>
+                            <option value="15">15-Year Fixed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result" id="calc-result">
+                    <div style="font-size:0.8rem; color: var(--fl-muted);">Estimated Monthly Payment (P&I)</div>
+                    <div class="big-num" id="calc-monthly">$2,992</div>
+                    <div style="font-size:0.85rem; color: var(--fl-muted); margin-top:0.5rem;">
+                        Loan Amount: <span id="calc-loan">$479,920</span> &bull; Down Payment: <span id="calc-down-amt">$119,980</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Total Monthly Housing Cost Estimate</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Expense</th><th class="right">20% Down</th><th class="right">10% Down</th><th class="right">5% Down</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Mortgage P&I (30yr @ 6.37%)</td>
+                            <td class="right">$2,992</td>
+                            <td class="right">$3,366</td>
+                            <td class="right">$3,553</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Property Tax (est. w/ homestead)</td>
+                            <td class="right">$780</td>
+                            <td class="right">$780</td>
+                            <td class="right">$780</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Homeowner's Insurance</td>
+                            <td class="right">$330</td>
+                            <td class="right">$330</td>
+                            <td class="right">$330</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">PMI (if applicable)</td>
+                            <td class="right">$0</td>
+                            <td class="right">$270</td>
+                            <td class="right">$285</td>
+                        </tr>
+                        <tr style="background: var(--fl-green-light);">
+                            <td class="bold" style="font-size:1rem;">Total Monthly</td>
+                            <td class="right bold" style="font-size:1rem;">$4,102</td>
+                            <td class="right bold" style="font-size:1rem;">$4,746</td>
+                            <td class="right bold" style="font-size:1rem;">$4,948</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-info" style="margin-top:1rem;">
+                    <strong>Property Tax Detail:</strong> Travis County combined rate is ~$2.07/$100 of taxable value. With homestead exemption ($100K school + 20% county), estimated annual tax on this property is ~$9,360/yr ($780/mo). Without homestead: ~$12,400/yr.
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Current Mortgage Rates (April 2026)</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">30-Year Fixed</td><td class="right">6.37%</td></tr>
+                        <tr><td class="bold">15-Year Fixed</td><td class="right">5.74%</td></tr>
+                        <tr><td class="bold">FHA 30-Year</td><td class="right">5.88%</td></tr>
+                        <tr><td class="bold">VA 30-Year</td><td class="right">5.75%</td></tr>
+                    </table>
+                    <div style="font-size:0.8rem; color:var(--fl-muted); margin-top:0.75rem;">
+                        Source: Freddie Mac PMMS, April 9, 2026. Rates change daily.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Upfront Cash Needed</h3>
+                    <table class="data-table">
+                        <tr><td></td><th class="right">20% Down</th><th class="right">10% Down</th></tr>
+                        <tr><td class="bold">Down Payment</td><td class="right">$119,980</td><td class="right">$59,990</td></tr>
+                        <tr><td class="bold">Closing Costs (est. 2-3%)</td><td class="right">$15,000</td><td class="right">$15,000</td></tr>
+                        <tr><td class="bold">Option Fee</td><td class="right">$300</td><td class="right">$300</td></tr>
+                        <tr><td class="bold">Earnest Money (1%)</td><td class="right">$6,000</td><td class="right">$6,000</td></tr>
+                        <tr><td class="bold">Inspections</td><td class="right">$2,000</td><td class="right">$2,000</td></tr>
+                        <tr style="background: var(--fl-green-light);">
+                            <td class="bold">Total Cash Needed</td>
+                            <td class="right bold">~$143,280</td>
+                            <td class="right bold">~$83,290</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Loan Type Comparison</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Feature</th><th>Conventional</th><th>FHA</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="bold">Min Down Payment</td><td>3-5%</td><td>3.5%</td></tr>
+                        <tr><td class="bold">Credit Score Required</td><td>620+</td><td>580+</td></tr>
+                        <tr><td class="bold">PMI/MIP</td><td>Removable at 20% equity</td><td>For life of loan (unless refi)</td></tr>
+                        <tr><td class="bold">Property Condition</td><td>Flexible</td><td>Must meet FHA minimum standards</td></tr>
+                        <tr><td class="bold">Rate (current)</td><td>6.37%</td><td>5.88%</td></tr>
+                        <tr><td class="bold">Best For</td><td>Strong credit, 20%+ down</td><td>Lower credit or smaller down payment</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-warning" style="margin-top:1rem;">
+                    <strong>FHA Caution for 1948 Home:</strong> FHA has strict property condition requirements. A 78-year-old home may have issues (peeling paint, electrical, plumbing) that would need to be fixed before FHA would approve the loan. Conventional may be more practical.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Long-Term Affordability Scenarios</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Combined Gross Income</th><th class="right">Monthly (Pre-Tax)</th><th class="right">28% DTI Max</th><th class="right">Affordable?</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>$120,000/yr</td><td class="right">$10,000</td><td class="right">$2,800</td><td class="right"><span class="badge badge-red">Tight at 20% down</span></td></tr>
+                        <tr><td>$150,000/yr</td><td class="right">$12,500</td><td class="right">$3,500</td><td class="right"><span class="badge badge-yellow">Manageable at 20% down</span></td></tr>
+                        <tr><td>$180,000/yr</td><td class="right">$15,000</td><td class="right">$4,200</td><td class="right"><span class="badge badge-green">Comfortable at 20% down</span></td></tr>
+                        <tr><td>$200,000/yr</td><td class="right">$16,667</td><td class="right">$4,667</td><td class="right"><span class="badge badge-green">Very comfortable</span></td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-top:0.75rem;">The 28% front-end DTI ratio is a common guideline. Lenders may approve up to 36-43% total DTI (including all debts). Your actual approval will depend on credit scores, employment stability, and total debt load.</p>
+            </div>
+
+            <div class="card">
+                <h3>5-Year Cost Projection</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Year</th><th class="right">Mortgage P&I</th><th class="right">Property Tax</th><th class="right">Insurance</th><th class="right">Maintenance (1.5%)</th><th class="right">Annual Total</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Year 1</td><td class="right">$35,904</td><td class="right">$9,360</td><td class="right">$3,960</td><td class="right">$9,000</td><td class="right bold">$58,224</td></tr>
+                        <tr><td>Year 2</td><td class="right">$35,904</td><td class="right">$9,640</td><td class="right">$4,158</td><td class="right">$6,000</td><td class="right bold">$55,702</td></tr>
+                        <tr><td>Year 3</td><td class="right">$35,904</td><td class="right">$9,929</td><td class="right">$4,366</td><td class="right">$6,000</td><td class="right bold">$56,199</td></tr>
+                        <tr><td>Year 4</td><td class="right">$35,904</td><td class="right">$10,227</td><td class="right">$4,584</td><td class="right">$6,000</td><td class="right bold">$56,715</td></tr>
+                        <tr><td>Year 5</td><td class="right">$35,904</td><td class="right">$10,534</td><td class="right">$4,814</td><td class="right">$6,000</td><td class="right bold">$57,252</td></tr>
+                        <tr style="background:var(--fl-green-light);">
+                            <td class="bold">5-Year Total</td><td class="right bold">$179,520</td><td class="right bold">$49,690</td><td class="right bold">$21,882</td><td class="right bold">$33,000</td><td class="right bold" style="font-size:1.05rem;">$284,092</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.8rem; color:var(--fl-muted); margin-top:0.5rem;">*Year 1 maintenance higher due to expected repairs on 1948 home. Assumes 3% annual tax increase, 5% insurance increase. Maintenance based on 1-1.5% of home value annually.</p>
+            </div>
+        </div>
+
+        <!-- ==================== MARKET COMPS ==================== -->
+        <div class="section" id="sec-market">
+            <h2 class="section-title">Market Comparable Analysis</h2>
+
+            <div class="grid-3">
+                <div class="card stat-card">
+                    <div class="stat-value">$643,500</div>
+                    <div class="stat-label">Cherrywood Median Sale Price</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-value">$406/sqft</div>
+                    <div class="stat-label">Cherrywood Median $/sqft</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-value">72 days</div>
+                    <div class="stat-label">Avg Days on Market</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Price Positioning Analysis</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Metric</th><th class="right">This Property</th><th class="right">Area Median</th><th class="right">Difference</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">List Price</td>
+                            <td class="right">$599,900</td>
+                            <td class="right">$643,500</td>
+                            <td class="right"><span class="badge badge-green">-6.8% below</span></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Price per sqft</td>
+                            <td class="right">$342</td>
+                            <td class="right">$406</td>
+                            <td class="right"><span class="badge badge-green">-15.8% below</span></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">TCAD Appraised</td>
+                            <td class="right">$686,615</td>
+                            <td class="right">$675,023</td>
+                            <td class="right"><span class="badge badge-yellow">+1.7% above</span></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Austin Metro Median</td>
+                            <td class="right">$599,900</td>
+                            <td class="right">$565,000</td>
+                            <td class="right"><span class="badge badge-yellow">+6.2% above</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-success">
+                <strong>Potential Value:</strong> At $342/sqft, this property is priced 15.8% below the Cherrywood median of $406/sqft. However, investigate why &mdash; it could indicate deferred maintenance, structural issues, or motivated seller.
+            </div>
+
+            <div class="card">
+                <h3>Cherrywood Market Trends (78722)</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr><td class="bold">Median Home Price (12-mo)</td><td class="right">$643,500</td></tr>
+                        <tr><td class="bold">YoY Price Change</td><td class="right">-1.0%</td></tr>
+                        <tr><td class="bold">Median $/sqft</td><td class="right">$406 (+2.4% YoY)</td></tr>
+                        <tr><td class="bold">Active Listings</td><td class="right">~9 houses</td></tr>
+                        <tr><td class="bold">Price Range</td><td class="right">$455,000 - $899,000</td></tr>
+                        <tr><td class="bold">Market Inventory</td><td class="right">~4.9 months</td></tr>
+                        <tr><td class="bold">Market Type</td><td class="right">Balanced (shifting to buyer's market)</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-top:0.5rem;">
+                    Sources: Redfin, Zillow, NeighborhoodScout. Data as of April 2026.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>What to Ask Alli (Your Agent) for Comps</h3>
+                <div class="callout callout-info">
+                    <p>Request a formal CMA (Comparative Market Analysis) from Alli at Spyglass Realty. Ask specifically for:</p>
+                    <ul style="margin-top:0.5rem; padding-left:1.25rem; font-size:0.9rem;">
+                        <li>Homes sold within 0.5 miles in the last 6 months</li>
+                        <li>3-4 bed, 1-2 bath homes in the $450K-$750K range</li>
+                        <li>Similar age homes (1940s-1960s) that have or haven't been renovated</li>
+                        <li>Days on market and sale-to-list price ratios</li>
+                        <li>Any price reductions on this specific listing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Comparable Listing Resources</h3>
+                <div class="link-list">
+                    <a href="https://www.redfin.com/zipcode/78722/recently-sold" target="_blank">Redfin - Recently Sold in 78722</a>
+                    <a href="https://www.zillow.com/austin-tx-78722/" target="_blank">Zillow - 78722 Listings</a>
+                    <a href="https://www.redfin.com/neighborhood/351581/TX/Austin/Cherrywood/housing-market" target="_blank">Redfin - Cherrywood Market Stats</a>
+                    <a href="https://www.zillow.com/home-values/10221/austin-tx/" target="_blank">Zillow - Austin Housing Market Trends</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STRUCTURAL ANALYSIS ==================== -->
+        <div class="section" id="sec-structural">
+            <h2 class="section-title">Structural &amp; Condition Analysis</h2>
+
+            <div class="callout callout-danger">
+                <strong>Year Built: 1948 (78 years old)</strong> &mdash; This home pre-dates many modern building codes and materials. Budget for significant inspection and potential remediation costs. A thorough inspection is not optional.
+            </div>
+
+            <div class="card">
+                <h3>High-Priority Concerns for 1948 Homes</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Issue</th><th>Likelihood</th><th>Est. Repair Cost</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Lead-Based Paint</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>$5,000 - $20,000+</td>
+                            <td>Get lead paint inspection ($300-$500). Required disclosure for pre-1978 homes.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Foundation Issues</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>$5,000 - $30,000+</td>
+                            <td>Hire structural engineer ($300-$500). Look for cracks, uneven floors, sticking doors.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Galvanized/Cast Iron Plumbing</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>$8,000 - $40,000</td>
+                            <td>Static test + sewer scope ($150-$300). Interior corrosion can't be seen visually.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Outdated Electrical</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>$5,000 - $15,000</td>
+                            <td>Check for cloth wiring, ungrounded outlets, 60-amp panel. May have Federal Pacific/Zinsco panels.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Asbestos (insulation, tiles, siding)</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>$3,000 - $15,000</td>
+                            <td>Test before any renovation. Common in floor tiles, pipe insulation, popcorn ceilings.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Roof Condition</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>$8,000 - $20,000</td>
+                            <td>Check age, material, condition. Hail damage common in Austin. Inspect attic for leaks.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">HVAC System Age</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>$6,000 - $15,000</td>
+                            <td>Central AC likely added after construction. Check age, efficiency, ductwork condition.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Wood Rot / Termites</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>$2,000 - $10,000</td>
+                            <td>Termite inspection required by most lenders. Check wood framing, pier & beam subfloor.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Foundation (Austin-Specific)</h3>
+                    <p style="font-size:0.9rem; color:var(--fl-muted);">Austin sits on expansive clay soils that shrink and swell with moisture changes. This is the #1 cause of foundation problems in Central Texas.</p>
+                    <h4>What to Look For During Tour:</h4>
+                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
+                        <li>Cracks in interior/exterior walls (especially diagonal)</li>
+                        <li>Doors and windows that stick or won't close</li>
+                        <li>Uneven or sloping floors</li>
+                        <li>Gaps between walls and ceiling/floor</li>
+                        <li>Cracks in foundation visible from outside</li>
+                        <li>If pier & beam: check crawl space for moisture</li>
+                    </ul>
+                    <h4>Recommended Inspections:</h4>
+                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
+                        <li>Structural engineer evaluation ($300-$500)</li>
+                        <li>Check for previous foundation work (permits)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Plumbing (Critical for 1948)</h3>
+                    <p style="font-size:0.9rem; color:var(--fl-muted);">1948 homes typically have galvanized steel water supply lines and cast iron drain lines. Both degrade over time.</p>
+                    <h4>Key Risks:</h4>
+                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
+                        <li>Steel pipes corrode internally &rarr; low pressure, rusty water</li>
+                        <li>Cast iron drains crack &rarr; sewer leaks under slab</li>
+                        <li>Tree roots can infiltrate damaged pipes</li>
+                        <li>Under-slab repairs: $25,000-$40,000</li>
+                        <li>Repiping entire house: $8,000-$15,000 (PEX)</li>
+                    </ul>
+                    <h4>Recommended Inspections:</h4>
+                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
+                        <li>Hydrostatic (static) plumbing test</li>
+                        <li>Sewer camera scope ($150-$300)</li>
+                        <li>Check water pressure at all fixtures</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Estimated Worst-Case Repair Budget</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Repair</th><th class="right">Low End</th><th class="right">High End</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Foundation repair</td><td class="right">$5,000</td><td class="right">$30,000</td><td>Only if issues found</td></tr>
+                        <tr><td>Replumb (PEX)</td><td class="right">$8,000</td><td class="right">$15,000</td><td>Common for homes this age</td></tr>
+                        <tr><td>Electrical panel + partial rewire</td><td class="right">$5,000</td><td class="right">$15,000</td><td>200-amp upgrade + grounding</td></tr>
+                        <tr><td>Roof replacement</td><td class="right">$8,000</td><td class="right">$20,000</td><td>If older than 15-20 years</td></tr>
+                        <tr><td>HVAC replacement</td><td class="right">$6,000</td><td class="right">$15,000</td><td>If older than 15 years</td></tr>
+                        <tr><td>Lead paint remediation</td><td class="right">$5,000</td><td class="right">$20,000</td><td>Encapsulation or removal</td></tr>
+                        <tr style="background:var(--fl-green-light);">
+                            <td class="bold">Total Potential</td>
+                            <td class="right bold">$37,000</td>
+                            <td class="right bold">$115,000</td>
+                            <td class="bold">Inspection will narrow this</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-warning" style="margin-top:1rem;">
+                    <strong>Negotiation Leverage:</strong> Use inspection findings to negotiate the purchase price down or request seller credits. For a home priced below market, the seller may be pricing in some known issues.
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== RECORDS ==================== -->
+        <div class="section" id="sec-records">
+            <h2 class="section-title">City &amp; County Records</h2>
+
+            <div class="card">
+                <h3>Online Records You Can Access Now</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Record Type</th><th>Where to Find</th><th>What to Look For</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Property Tax &amp; Appraisal</td>
+                            <td><a href="https://traviscad.org/propertysearch/" target="_blank">Travis CAD Property Search</a></td>
+                            <td>Current appraised value, tax history, exemptions, legal description, ownership history</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Tax Payment History</td>
+                            <td><a href="https://tax-office.traviscountytx.gov/properties/taxes/account-search" target="_blank">Travis County Tax Office</a></td>
+                            <td>Tax amounts paid, delinquencies, payment history</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Deed Records</td>
+                            <td><a href="https://countyclerk.traviscountytx.gov/departments/recording/real-property/" target="_blank">Travis County Clerk</a></td>
+                            <td>Chain of ownership, liens, easements, deed restrictions</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Building Permits</td>
+                            <td><a href="https://abc.austintexas.gov/web/permit/public-search-other" target="_blank">City of Austin Permit Search</a></td>
+                            <td>Past renovations, additions, electrical/plumbing work, code violations</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Flood Zone Map</td>
+                            <td><a href="https://msc.fema.gov/portal/search" target="_blank">FEMA Flood Map Service</a></td>
+                            <td>Flood zone designation (affects insurance requirements)</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Code Violations</td>
+                            <td><a href="https://www.austintexas.gov/department/code-compliance" target="_blank">Austin Code Compliance</a></td>
+                            <td>Open or resolved code violations on the property</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Records to Request from Your Agent or Title Company</h3>
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Seller's Property Disclosure</div>
+                            <div class="check-detail">Required in Texas. Seller must disclose known defects, flooding history, foundation repairs, etc.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Title Commitment / Abstract</div>
+                            <div class="check-detail">Shows ownership history, liens, easements, restrictions. Title company provides this during escrow.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Property Survey</div>
+                            <div class="check-detail">Shows exact boundaries, structures, easements. Existing survey may be available from seller.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">HOA Documents (if any)</div>
+                            <div class="check-detail">Unlikely for Delwood, but confirm. If yes, request financials, reserves, CC&Rs.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done')"></div>
+                        <div class="check-label">
+                            <div class="check-title">Permit History for Renovations</div>
+                            <div class="check-detail">Look for unpermitted work. Major renovations without permits can create liability and insurance issues.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>How to Search TCAD for This Property</h3>
+                <div class="callout callout-info">
+                    <ol style="font-size:0.9rem; padding-left:1.25rem;">
+                        <li>Go to <a href="https://traviscad.org/propertysearch/" target="_blank">traviscad.org/propertysearch</a></li>
+                        <li>Enter "1402 Ashwood" in the property address field</li>
+                        <li>Click the matching result to see: appraised value, taxable value, exemptions, improvement details, land value, building specs (sqft, year built, rooms), and prior year values</li>
+                        <li>Note the <strong>Property ID</strong> number for use in other searches</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Austin-Specific Programs to Investigate</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <td class="bold">Homestead Exemption</td>
+                            <td>File after closing. Saves ~$2,000+/year. Apply at <a href="https://traviscad.org/homesteadexemptions/" target="_blank">traviscad.org</a></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Down Payment Assistance</td>
+                            <td>Austin offers up to $40,000 for qualifying buyers. Income limits apply. See <a href="https://www.austintexas.gov/homebuyer" target="_blank">austintexas.gov/homebuyer</a></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Texas First-Time Buyer Programs</td>
+                            <td>TDHCA offers below-market rates and DPA. See <a href="https://www.tdhca.state.tx.us/" target="_blank">tdhca.state.tx.us</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== DOCUMENTS ==================== -->
+        <div class="section" id="sec-documents">
+            <h2 class="section-title">Your Documents</h2>
+
+            <div class="card">
+                <h3>Signed Documents (via Jointly)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Document</th><th>Status</th><th>Jackie</th><th>Hannah</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Buyer Representation Agreement (TXR-1501)</td>
+                            <td><span class="badge badge-yellow">Draft</span></td>
+                            <td><span class="badge badge-green">Signed</span></td>
+                            <td><span class="badge badge-red">Pending</span></td>
+                            <td>04/12/2026</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Information About Brokerage Services (IABS)</td>
+                            <td><span class="badge badge-yellow">Draft</span></td>
+                            <td><span class="badge badge-green">Signed</span></td>
+                            <td><span class="badge badge-red">Pending</span></td>
+                            <td>04/12/2026</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Lead Paint Disclosure (EPA pamphlet)</td>
+                            <td><span class="badge badge-yellow">Draft</span></td>
+                            <td><span class="badge badge-green">Received</span></td>
+                            <td><span class="badge badge-red">Pending</span></td>
+                            <td>04/12/2026</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Wire Fraud Warning (TXR-2517)</td>
+                            <td><span class="badge badge-yellow">Draft</span></td>
+                            <td><span class="badge badge-green">Signed</span></td>
+                            <td><span class="badge badge-red">Pending</span></td>
+                            <td>04/12/2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-danger" style="margin-top:1rem;">
+                    <strong>Action Required:</strong> Hannah Sonnad needs to sign all four documents in Jointly. Check the email from notifications@jointly.com for the signing link.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Key Agreement Terms</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr><td class="bold">Broker Fee</td><td>3% of purchase price (seller pays &mdash; confirmed by Alli with listing agent Luke)</td></tr>
+                        <tr><td class="bold">Agreement Term</td><td>April 12, 2026 &ndash; July 31, 2026</td></tr>
+                        <tr><td class="bold">Market Area</td><td>Travis County, Texas</td></tr>
+                        <tr><td class="bold">Protection Period</td><td>60 days after agreement ends</td></tr>
+                        <tr><td class="bold">Intermediary Status</td><td>Yes (checked) &mdash; Broker may act as intermediary if property is Spyglass listing</td></tr>
+                        <tr><td class="bold">Exclusive Representation</td><td>Yes &mdash; must work only through Spyglass for Travis County purchases during term</td></tr>
+                        <tr><td class="bold">Mediation Required</td><td>Yes &mdash; before litigation for any disputes</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Pre-Qualification Letter</h3>
+                <table class="data-table">
+                    <tr><td class="bold">Status</td><td><span class="badge badge-yellow">Pre-Qualification (Conditional)</span> &mdash; NOT a full pre-approval</td></tr>
+                    <tr><td class="bold">Lender</td><td>Nations Lending <span class="badge badge-blue">Spyglass Affiliated</span></td></tr>
+                    <tr><td class="bold">Mortgage Banker</td><td>Nossi Creeger (NMLS: 741376)</td></tr>
+                    <tr><td class="bold">Phone</td><td>(512) 965-7945</td></tr>
+                    <tr><td class="bold">Date Issued</td><td>04/12/2026</td></tr>
+                    <tr><td class="bold">Sale Price</td><td>$599,900.00</td></tr>
+                    <tr><td class="bold">Qualifying Rate</td><td>6.75%</td></tr>
+                    <tr><td class="bold">Term</td><td>30 Years</td></tr>
+                    <tr><td class="bold">Max LTV</td><td>80% (20% down required)</td></tr>
+                    <tr><td class="bold">Loan Type</td><td>Conventional</td></tr>
+                    <tr><td class="bold">Items Reviewed</td><td>Application (signed), credit report, credit score, income, cash for down payment, debts, other assets &mdash; all in writing</td></tr>
+                </table>
+                <div class="callout callout-danger" style="margin-top:1rem;">
+                    <strong>Rate Mismatch Alert:</strong> Your prequal letter qualifies you at <strong>6.75%</strong>, but your purchase contract caps the rate at <strong>6.5%</strong>. If your actual locked rate comes in between 6.5% and 6.75%, you'd qualify for the loan but the contract's financing contingency might not protect you. Discuss with Nossi and Alli whether the contract rate cap should be amended to match.
+                </div>
+                <div class="callout callout-warning" style="margin-top:0.5rem;">
+                    <strong>Pre-Qualification vs Pre-Approval:</strong> This letter states it is "not an approval for the loan." Full approval still requires: (1) income/asset verification, (2) appraisal, (3) title/survey, (4) rates remaining available, (5) financial status staying the same. Push Nossi for a full underwritten pre-approval for a stronger position.
+                </div>
+                <div class="callout callout-info" style="margin-top:0.5rem;">
+                    <strong>Affiliated Lender Notice:</strong> Nations Lending has a Marketing Service Agreement with Spyglass Realty. You are NOT required to use them. Consider getting competing quotes from 2-3 other lenders (credit unions, local banks) to ensure best rate and terms.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Mortgage Application Materials Submitted</h3>
+                <div class="grid-2">
+                    <div>
+                        <h4>Jackie Giroux (18 documents)</h4>
+                        <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
+                            <li>2024 Tax Return</li>
+                            <li>2025 1099-NEC (Fever Labs)</li>
+                            <li>1099 Miscellaneous Income 2025</li>
+                            <li>Independent Contractor Paystub</li>
+                            <li>W-9 (Kirkwood)</li>
+                            <li>Background check documents (5)</li>
+                            <li>Download confirmations (4)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Hannah Sonnad (27 documents)</h4>
+                        <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
+                            <li>2023 &amp; 2024 Tax Returns</li>
+                            <li>K-1 Worksheet 2025</li>
+                            <li>Kong W-2</li>
+                            <li>Kong Paystubs (3)</li>
+                            <li>Fever Labs 1099</li>
+                            <li>Bank statements &mdash; last 60 days (20 files)</li>
+                            <li>Subhash Revocable Trust document</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== OFFER CONTRACT ==================== -->
+        <div class="section" id="sec-offer">
+            <h2 class="section-title">Offer Contract Analysis</h2>
+
+            <div class="callout callout-info">
+                <strong>Contract Type:</strong> TREC 1-4 One to Four Family Residential Contract (Resale), TREC NO. 20-18. This is the standard Texas residential purchase contract.
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Deal Summary</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">Seller</td><td>Thelma Jane Hall</td></tr>
+                        <tr><td class="bold">Buyers</td><td>Jacqueline Giroux &amp; Hannah Sonnad</td></tr>
+                        <tr><td class="bold">Sale Price</td><td>$599,900.00</td></tr>
+                        <tr><td class="bold">Down Payment (20%)</td><td>$119,980.00</td></tr>
+                        <tr><td class="bold">Loan Amount</td><td>$479,920.00</td></tr>
+                        <tr><td class="bold">Loan Type</td><td>Conventional, 30-year fixed</td></tr>
+                        <tr><td class="bold">Max Interest Rate</td><td>6.5%</td></tr>
+                        <tr><td class="bold">Max Origination</td><td>1% of loan</td></tr>
+                        <tr><td class="bold">Closing Date</td><td>Monday, June 1, 2026</td></tr>
+                        <tr><td class="bold">Property Condition</td><td>"As Is" (Buyer accepts)</td></tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>Key Financial Terms</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">Earnest Money</td><td>$17,997.00 (3%)</td></tr>
+                        <tr><td class="bold">Option Fee</td><td>$500.00</td></tr>
+                        <tr><td class="bold">Option Period</td><td>5 days from effective date</td></tr>
+                        <tr><td class="bold">Financing Approval</td><td>21 days to obtain</td></tr>
+                        <tr><td class="bold">Title Company</td><td>Independence Title</td></tr>
+                        <tr><td class="bold">Escrow Agent</td><td>Carol Bellomy</td></tr>
+                        <tr><td class="bold">Escrow Address</td><td>3409 Executive Center Dr, Ste 150, Austin 78731</td></tr>
+                        <tr><td class="bold">Home Warranty</td><td>Seller pays up to $725</td></tr>
+                        <tr><td class="bold">Survey</td><td>Seller furnishes within 3 days</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="callout callout-danger">
+                <strong>Critical Flags in This Contract:</strong>
+                <ul style="margin-top:0.5rem; padding-left:1.25rem;">
+                    <li><strong>Lead paint inspection WAIVED</strong> &mdash; On a 1948 home, you opted out of the right to inspect for lead paint. The seller has no knowledge of lead hazards, and has no reports. Consider whether to request this inspection during the option period anyway.</li>
+                    <li><strong>"As Is" acceptance</strong> &mdash; You accepted the property in its current condition. You can still inspect and terminate during the option period, but cannot require the seller to make repairs.</li>
+                    <li><strong>Max rate 6.5% vs current 6.37%</strong> &mdash; Only 0.13% margin. If rates rise before closing on June 1, you could lose financing protection. Monitor rates closely.</li>
+                    <li><strong>Existing tenant with lease</strong> &mdash; There is at least one residential lease that will be assigned to you. You have 4 days after receiving copies to review and potentially terminate.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Existing Tenant / Lease Details</h3>
+                <div class="callout callout-warning">
+                    <strong>This property has an existing residential lease.</strong> Per the Addendum Regarding Residential Leases (TXR 1953, TREC 51-1):
+                    <ul style="margin-top:0.5rem; padding-left:1.25rem; font-size:0.9rem;">
+                        <li>Option B selected: Existing leases will be <strong>assigned and assumed by Buyer</strong> at closing</li>
+                        <li>Buyer has NOT yet received copies of the leases (option b checked)</li>
+                        <li>Seller must provide copies within 3 days of effective date</li>
+                        <li>You have <strong>4 days</strong> after receiving leases to terminate the contract if unacceptable</li>
+                        <li>Security deposits will transfer to you at closing</li>
+                    </ul>
+                </div>
+                <div class="question-box">
+                    <strong>Questions to ask Alli immediately:</strong>
+                    <p>1. What are the lease terms (monthly rent, duration, expiration date)? 2. Is the tenant month-to-month or on a fixed-term lease? 3. What is the tenant's payment history? 4. Will you be able to occupy the property, or will you be a landlord?</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Listing Agent / Seller Side</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">Listing Broker</td><td>Luke Graves Realty</td></tr>
+                        <tr><td class="bold">License #</td><td>517331</td></tr>
+                        <tr><td class="bold">Listing Agent</td><td>Luke Graves</td></tr>
+                        <tr><td class="bold">Phone</td><td>(512) 771-7819</td></tr>
+                        <tr><td class="bold">Email</td><td>luke@lukegravesrealty.com</td></tr>
+                        <tr><td class="bold">Address</td><td>7706 Mullen Dr, Austin 78757</td></tr>
+                        <tr><td class="bold">Represents</td><td>Seller only</td></tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>Buyer's Agent Side</h3>
+                    <table class="data-table">
+                        <tr><td class="bold">Buyer's Broker</td><td>Spyglass Realty</td></tr>
+                        <tr><td class="bold">License #</td><td>588051</td></tr>
+                        <tr><td class="bold">Agent</td><td>Alli Heller (#694604)</td></tr>
+                        <tr><td class="bold">Phone</td><td>(760) 803-6209</td></tr>
+                        <tr><td class="bold">Email</td><td>alli@spyglassrealty.com</td></tr>
+                        <tr><td class="bold">Supervisor</td><td>Ryan Rodenbeck (#528651)</td></tr>
+                        <tr><td class="bold">Commission</td><td>3% paid by listing broker</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Affiliated Business Disclosure</h3>
+                <p style="font-size:0.9rem; color:var(--fl-muted); margin-bottom:0.75rem;">Spyglass Realty has referral/marketing relationships with these entities. You are NOT required to use any of them.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Entity</th><th>Service</th><th>Relationship</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Nations Lending</td><td>Financing</td><td>Marketing Service Agreement</td></tr>
+                        <tr><td>Cascade Roofing</td><td>Roofing &amp; Construction</td><td>Referral Agreement</td></tr>
+                        <tr><td>Legacy Elite Solutions</td><td>Insurance</td><td>Referral Agreement</td></tr>
+                        <tr><td>Achosa Home Warranty</td><td>Residential Service Contracts</td><td>Referral Agreement</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Critical Deadlines Timeline</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="tl-title">Day 0: Contract Effective Date</div>
+                        <div class="tl-desc">When both parties (seller &amp; buyers) sign. Clock starts on all deadlines.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">Day 3: Earnest Money + Option Fee Due</div>
+                        <div class="tl-desc">$17,997 earnest + $500 option fee to Carol Bellomy at Independence Title. <span class="badge badge-red">Do NOT use email wiring instructions.</span></div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">Day 3: Seller Provides Survey + Lease Copies</div>
+                        <div class="tl-desc">Seller must furnish existing survey and all residential lease documents.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">Day 5: Option Period Ends</div>
+                        <div class="tl-desc">Last day to terminate for any reason (by 5:00 PM). After this, you lose $500 option fee but keep earnest money. <span class="badge badge-red">Get inspection done before this date!</span></div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">Day 4-7 after receiving leases: Lease Review Deadline</div>
+                        <div class="tl-desc">4 days after receiving lease copies to review and potentially terminate.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">Day 21: Financing Approval Deadline</div>
+                        <div class="tl-desc">Must obtain buyer approval from lender. If denied, can terminate with earnest money refund by providing lender's written denial.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">Day ~45: Title Commitment Deadline</div>
+                        <div class="tl-desc">Within 20 days of title company receiving contract. Review for exceptions, objections (5-day objection window).</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="tl-title">June 1, 2026: Closing Date</div>
+                        <div class="tl-desc">Final walk-through 24-48 hrs before. Sign documents, wire funds, receive keys. Possession upon closing and funding.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 10-YEAR RISKS ==================== -->
+        <div class="section" id="sec-risks">
+            <h2 class="section-title">10-Year Risk Forecast</h2>
+
+            <div class="callout callout-info">
+                <strong>How to read this:</strong> Each risk is rated by likelihood (how probable it is to occur within 10 years), severity (financial and quality-of-life impact), and timeframe (when it's most likely to emerge). Use this to budget reserves and prioritize inspections.
+            </div>
+
+            <!-- STRUCTURAL RISKS -->
+            <div class="card">
+                <h3>Structural &amp; Building Risks</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:20%">Problem</th><th style="width:8%">Likelihood</th><th style="width:10%">When</th><th style="width:12%">Cost Range</th><th>Implications &amp; What to Do</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Foundation movement / settling</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>$5K-$30K+</td>
+                            <td>Austin's expansive clay soil causes ongoing foundation movement. Symptoms: sticking doors, wall cracks, uneven floors. Pier shimming or new piers required. Drought years accelerate damage. Maintain consistent soil moisture around perimeter.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Cast iron drain line failure</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>Yrs 1-5</td>
+                            <td>$8K-$40K</td>
+                            <td>78-year-old cast iron drains are at or past end of life. Under-slab failures require tunneling or slab cuts. Tree roots accelerate breakdown. Sewer backups into home are possible. If not already replaced, budget for full re-pipe. Get sewer scope immediately during option period.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Galvanized water supply failure</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>Yrs 1-3</td>
+                            <td>$8K-$15K</td>
+                            <td>Internal corrosion reduces water pressure and produces rust-colored water. Can burst without warning causing water damage. PEX re-pipe is the standard fix. May already be partially replaced &mdash; verify at inspection.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Electrical system failure / fire risk</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>Yrs 1-5</td>
+                            <td>$5K-$20K</td>
+                            <td>1948 wiring likely uses cloth insulation (fire hazard), ungrounded 2-prong outlets, and possibly a Federal Pacific or Zinsco panel (known fire risks). May not support modern load (EV charger, HVAC). Panel upgrade to 200A + partial rewire recommended.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Roof replacement needed</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 2-7</td>
+                            <td>$10K-$25K</td>
+                            <td>Composition shingle roofs last 15-25 years in Austin. Hail damage from Central TX storms may trigger earlier replacement. Check current roof age &amp; material. Hail damage claims may make the property harder to insure.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">HVAC system replacement</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 3-8</td>
+                            <td>$8K-$18K</td>
+                            <td>AC systems last 12-18 years in Austin's heat. If current system is 10+ years old, expect replacement. Ductwork in older homes often has leaks and poor insulation. Consider upgrading to heat pump for efficiency.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Wood rot / termite damage</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>$2K-$15K</td>
+                            <td>Subterranean termites are common in Austin. Pier &amp; beam homes are especially vulnerable. Annual termite bonds ($200-$400/yr) recommended. Prior damage may be hidden behind walls.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Water heater failure</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>Yrs 1-5</td>
+                            <td>$1.5K-$4K</td>
+                            <td>Tank water heaters last 8-12 years. A sudden failure can cause significant water damage. Tankless upgrade ($3-4K) eliminates this recurring risk.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ENVIRONMENTAL / HEALTH RISKS -->
+            <div class="card">
+                <h3>Environmental &amp; Health Risks</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:20%">Problem</th><th style="width:8%">Likelihood</th><th style="width:10%">When</th><th style="width:12%">Cost Range</th><th>Implications &amp; What to Do</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Lead paint exposure</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>Ongoing</td>
+                            <td>$5K-$25K</td>
+                            <td><strong>You waived the lead inspection in the contract.</strong> A 1948 home almost certainly has lead paint. Intact paint is not hazardous, but any renovation, sanding, or deterioration releases lead dust. Dangerous for children under 6 and pregnant women. Any future renovation requires EPA-certified lead-safe contractors (costs 20-50% more). Consider getting tested independently.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Asbestos in materials</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>During renovations</td>
+                            <td>$3K-$20K</td>
+                            <td>Common in 1940s homes in: floor tiles (9x9"), pipe insulation, duct tape, popcorn ceilings, siding. Harmless if undisturbed. Becomes hazardous during demolition/renovation. Professional abatement required before any remodeling work.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Mold from plumbing leaks</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>$2K-$15K</td>
+                            <td>Old plumbing + Austin humidity = mold risk. Slow leaks behind walls can go undetected for months. Health impacts include respiratory issues. Remediation is expensive and disruptive. Good ventilation and prompt leak repair are essential.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Radon gas</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>Ongoing</td>
+                            <td>$1K-$2.5K</td>
+                            <td>Travis County is generally low-risk for radon, but some homes test high. Easy to test ($15-$50 DIY kit). Mitigation system is affordable if needed.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FINANCIAL RISKS -->
+            <div class="card">
+                <h3>Financial &amp; Market Risks</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:20%">Problem</th><th style="width:8%">Likelihood</th><th style="width:10%">When</th><th style="width:12%">Impact</th><th>Implications &amp; What to Do</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Property tax increases</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>+3-8%/yr</td>
+                            <td>Travis County taxes are high (~$2.07/$100) and assessed values can jump significantly in gentrifying areas. Homestead exemption caps increases at 10%/yr on appraised value but doesn't cap rate changes. Budget for $800-$1,200/mo in property tax within 5 years. Protest annually via TCAD.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Insurance cost spikes / coverage denial</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>+10-25%/yr</td>
+                            <td>Texas homeowners insurance is rising 10-20%/yr statewide. Older homes and prior hail claims make this worse. Insurers may refuse to cover old roofs or require replacement before issuing a policy. If you file a hail claim, premiums can double or insurer drops you.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Market value decline</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 1-5</td>
+                            <td>-5 to -15%</td>
+                            <td>Austin median prices are down ~1% YoY with 4.9 months inventory (approaching buyer's market). A recession or tech layoffs could push prices down further. At $599,900 you're below TCAD value, providing some cushion. Plan to stay 5+ years to ride out any dip.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Interest rate risk (locked at 6.5% max)</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Pre-closing</td>
+                            <td>Deal-breaking</td>
+                            <td>Your contract caps rate at 6.5%, current is 6.37%. Only 0.13% margin. If rates spike before you lock, you may not qualify or may need to renegotiate. Lock your rate ASAP after contract is fully executed. If rates rise above 6.5%, you can terminate under the financing contingency.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Major repair costs exceeding reserves</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 1-3</td>
+                            <td>$20K-$80K</td>
+                            <td>A 1948 "As Is" home can have multiple systems needing concurrent repair. If plumbing, electrical, AND roof all need work in Year 1, costs could reach $40-$60K. Ensure you have reserves beyond the down payment. A HELOC may not be available immediately.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Tenant issues / eviction costs</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 1-2</td>
+                            <td>$2K-$10K</td>
+                            <td>You're inheriting a tenant. If the lease terms are unfavorable, you may need to wait for expiration. If tenant stops paying, Texas eviction takes 3-8 weeks + legal fees. Lost rent during vacancy adds up. Review lease terms carefully during the 4-day review window.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Appraisal comes in low</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>Pre-closing</td>
+                            <td>Renegotiation</td>
+                            <td>Since you're paying $599,900 vs TCAD $686,615, appraisal should come in at or above contract price. However, comparable sales in the area could drag it down. If appraisal is low, lender reduces loan amount and you'd need more cash or renegotiate price.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LEGAL / CO-OWNERSHIP RISKS -->
+            <div class="card">
+                <h3>Legal &amp; Co-Ownership Risks</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:20%">Problem</th><th style="width:8%">Likelihood</th><th style="width:10%">When</th><th style="width:12%">Impact</th><th>Implications &amp; What to Do</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Co-ownership dispute</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 2-10</td>
+                            <td>$5K-$50K+</td>
+                            <td>As unmarried co-owners, disagreements about selling, renovation spending, or expense sharing can become legal disputes. Without a written co-ownership agreement, a partition lawsuit may be the only resolution (forced sale). <strong>Get a co-ownership agreement drafted by an attorney before closing.</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">One owner wants to sell, other doesn't</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Yrs 3-10</td>
+                            <td>Relationship + financial</td>
+                            <td>Life changes (job relocation, relationship changes, financial strain) may create misaligned goals. A buyout clause in your co-ownership agreement should specify: how property is valued, financing options for buyout, timeline, and what happens if neither can afford to buy the other out.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Title or lien issues discovered post-closing</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>$2K-$20K</td>
+                            <td>Title insurance (paid by seller via Independence Title) protects against undiscovered liens, ownership disputes, or easement issues. Review the title commitment carefully before closing. Flag any exceptions you don't understand.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Landlord liability (tenant injury)</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>While tenanted</td>
+                            <td>$5K-$100K+</td>
+                            <td>As landlord (inheriting tenant), you're liable for injuries caused by property conditions. Lead paint, tripping hazards, faulty electrical all create liability. Landlord insurance (umbrella policy) is essential. Budget $300-$500/yr.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Zoning or land use changes</td>
+                            <td><span class="badge badge-gray">Low</span></td>
+                            <td>Yrs 3-10</td>
+                            <td>Variable</td>
+                            <td>East Austin is rapidly changing. Zoning changes could allow denser development nearby (positive for value, negative for neighborhood character). Austin's Land Development Code rewrites have been contentious. Stay informed via neighborhood association.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- WEATHER / CLIMATE RISKS -->
+            <div class="card">
+                <h3>Weather &amp; Climate Risks (Austin-Specific)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:20%">Problem</th><th style="width:8%">Likelihood</th><th style="width:10%">When</th><th style="width:12%">Cost Range</th><th>Implications &amp; What to Do</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Hail damage to roof/siding</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>Any year</td>
+                            <td>$5K-$25K</td>
+                            <td>Central Texas averages 3-5 significant hail events per decade. Can destroy roof, damage siding, break windows. Insurance deductibles for hail can be 1-2% of home value ($6K-$12K). Some insurers exclude hail or require separate deductible. Choose insurance carefully.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Extreme heat / record summers</td>
+                            <td><span class="badge badge-red">Very High</span></td>
+                            <td>Every year</td>
+                            <td>$200-$500/mo summer bills</td>
+                            <td>Austin summers regularly exceed 100&deg;F for weeks. A 1948 home likely has poor insulation and single-pane windows. Summer electricity bills can reach $400-$600/mo. Improving insulation ($2-5K) and upgrading windows ($10-20K) pays back over time. Older HVAC runs harder and fails sooner.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Winter freeze event (Uri-style)</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Any winter</td>
+                            <td>$5K-$30K</td>
+                            <td>Winter Storm Uri (2021) caused massive pipe bursts in older Austin homes. A 1948 home with original plumbing and minimal insulation is extremely vulnerable. Pipe insulation, heat tape, and knowing your shutoff valve location are essential. If pipes have already been replaced with PEX, risk is lower.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Flash flooding</td>
+                            <td><span class="badge badge-yellow">Moderate</span></td>
+                            <td>Any year</td>
+                            <td>$10K-$50K+</td>
+                            <td>Austin is "Flash Flood Alley." Even if not in a FEMA flood zone, localized street flooding can affect properties. Check the property's elevation relative to nearby creeks and drainage. Standard homeowners insurance does NOT cover flood damage. Separate flood policy: $400-$800/yr.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Drought &rarr; foundation damage</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>Yrs 1-10</td>
+                            <td>$5K-$30K</td>
+                            <td>Multi-year droughts cause clay soil to shrink dramatically, pulling away from foundations. Water restrictions may prevent foundation watering. Soaker hoses around the perimeter during drought are critical. This is the #1 cause of foundation claims in Travis County.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="card">
+                <h3>10-Year Reserve Budget Recommendation</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Category</th><th class="right">Optimistic</th><th class="right">Realistic</th><th class="right">Worst Case</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="bold">Plumbing (repipe + sewer)</td><td class="right">$0</td><td class="right">$15,000</td><td class="right">$40,000</td></tr>
+                        <tr><td class="bold">Electrical (panel + partial rewire)</td><td class="right">$2,000</td><td class="right">$8,000</td><td class="right">$20,000</td></tr>
+                        <tr><td class="bold">Foundation repairs</td><td class="right">$0</td><td class="right">$8,000</td><td class="right">$30,000</td></tr>
+                        <tr><td class="bold">Roof replacement</td><td class="right">$0</td><td class="right">$15,000</td><td class="right">$25,000</td></tr>
+                        <tr><td class="bold">HVAC replacement</td><td class="right">$0</td><td class="right">$12,000</td><td class="right">$18,000</td></tr>
+                        <tr><td class="bold">Lead/asbestos remediation</td><td class="right">$0</td><td class="right">$5,000</td><td class="right">$25,000</td></tr>
+                        <tr><td class="bold">Water heater</td><td class="right">$0</td><td class="right">$2,000</td><td class="right">$4,000</td></tr>
+                        <tr><td class="bold">Ongoing maintenance (10 yrs)</td><td class="right">$40,000</td><td class="right">$60,000</td><td class="right">$90,000</td></tr>
+                        <tr><td class="bold">Insurance deductibles (hail, etc.)</td><td class="right">$0</td><td class="right">$6,000</td><td class="right">$12,000</td></tr>
+                        <tr style="background:var(--fl-green-light);">
+                            <td class="bold" style="font-size:1rem;">10-Year Total Reserve</td>
+                            <td class="right bold" style="font-size:1rem;">$42,000</td>
+                            <td class="right bold" style="font-size:1rem;">$131,000</td>
+                            <td class="right bold" style="font-size:1rem;">$264,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-warning" style="margin-top:1rem;">
+                    <strong>True Cost of Ownership:</strong> At the realistic estimate, this home will cost roughly $131,000 in repairs and maintenance over 10 years on top of your $599,900 purchase price &mdash; bringing total investment to ~$731,000. This is common for 78-year-old homes and is likely already reflected in the below-market pricing. The key question is whether you have the cash reserves and risk tolerance for unexpected large expenses in the first few years.
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DECISION QUESTIONS ==================== -->
+        <div class="section" id="sec-questions">
+            <h2 class="section-title">Decision Questions for Jackie &amp; Hannah</h2>
+
+            <div class="callout callout-info">
+                <strong>Purpose:</strong> These are questions you need to answer together to determine if this is the right home. Discuss these before making an offer.
+            </div>
+
+            <div class="card">
+                <h3>Affordability &amp; Finances</h3>
+                <div class="question-box">
+                    <strong>Q1: What is your combined gross annual income?</strong>
+                    <p>This determines your monthly housing budget. The 28% rule suggests no more than 28% of gross income on housing. At 20% down, total monthly cost is ~$4,100.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q2: How much liquid cash do you have available for down payment + closing costs?</strong>
+                    <p>At 20% down, you need ~$143K cash. At 10%, ~$83K. Consider keeping 3-6 months of expenses as emergency fund on top of this.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q3: How will you hold title?</strong>
+                    <p>As unmarried co-buyers, you need to decide: Joint Tenancy, Tenancy in Common, or LLC? Each has different implications for survivorship, taxes, and exit. <strong>Consult a real estate attorney.</strong></p>
+                </div>
+                <div class="question-box">
+                    <strong>Q4: What is your plan if one person wants to sell or move out?</strong>
+                    <p>Consider a co-ownership agreement covering: buyout terms, sale triggers, expense sharing, maintenance responsibilities. Have an attorney draft this.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q5: Are you comfortable with $6,000-$9,000/year in maintenance on a 1948 home?</strong>
+                    <p>Older homes cost 1-1.5% of value per year to maintain. First-year costs could be significantly higher if major systems need updating.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Property &amp; Location</h3>
+                <div class="question-box">
+                    <strong>Q6: Does the layout work for both of you?</strong>
+                    <p>4 bed / 2 bath at 1,752 sqft. Is there enough space? How would bedrooms be allocated? Any need for a home office?</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q7: Are you comfortable with the commute from East Austin?</strong>
+                    <p>Research drive times to both of your workplaces during rush hour. Check transit options (CapMetro bus routes).</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q8: What is your risk tolerance for a 78-year-old home?</strong>
+                    <p>The low price may reflect needed work. Are you willing to invest $30K-$100K+ in repairs/upgrades? Or would a newer home with fewer surprises be better?</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q9: Is the duplex potential a feature or complication?</strong>
+                    <p>This property may have duplex conversion potential. Would you want to rent part out? This affects financing, insurance, and zoning considerations.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q10: Do you plan to have children? Lead paint is a serious concern.</strong>
+                    <p>Pre-1978 homes very likely have lead paint. If children under 6 will live here, lead remediation ($5K-$20K) should be a non-negotiable. The EPA pamphlet in your documents covers this in detail.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Strategy &amp; Timing</h3>
+                <div class="question-box">
+                    <strong>Q11: What is your maximum offer price?</strong>
+                    <p>Listed at $599,900. TCAD appraised at $686,615. In a balanced market with 72-day average, you likely have room to negotiate. Discuss strategy with Alli.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q12: How long do you plan to stay?</strong>
+                    <p>With closing costs and transaction costs, you generally need to stay 5+ years to break even vs renting. Longer stays justify bigger renovation investments.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q13: Have you seen other properties, or is this your first?</strong>
+                    <p>Your agreement runs through 07/31/2026. Don't rush. See at least 3-5 properties before committing, even if this one feels right.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q14: Do you want to make the offer contingent on the sale of any other property?</strong>
+                    <p>If either of you owns property that needs to be sold first, this affects offer strength and timeline.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Legal &amp; Administrative</h3>
+                <div class="question-box">
+                    <strong>Q15: Have you retained a real estate attorney?</strong>
+                    <p>Strongly recommended for co-buyer situations. The attorney can review contracts, draft a co-ownership agreement, and advise on title holding. Budget $1,500-$3,000.</p>
+                </div>
+                <div class="question-box">
+                    <strong>Q16: Do you have a will or estate plan?</strong>
+                    <p>As co-owners, if something happens to one of you, what happens to the property? This should be addressed in your estate planning.</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <div class="footer">
+        <p>FinLeg &mdash; 1402 Ashwood Rd Purchase Analysis</p>
+        <p style="margin-top:0.25rem;">Generated April 12, 2026. This analysis is for informational purposes only and does not constitute legal, financial, or real estate advice. Consult qualified professionals before making purchase decisions.</p>
+    </div>
+</div><!-- /main-content -->
+
+<script>
+// Tab navigation
+document.getElementById('nav-tabs').addEventListener('click', function(e) {
+    if (!e.target.classList.contains('nav-tab')) return;
+    const sectionId = e.target.dataset.section;
+
+    // Update tabs
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+
+    // Update sections
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + sectionId).classList.add('active');
+
+    // Scroll to top of container
+    document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+});
+
+// Mortgage calculator
+function calcMortgage() {
+    const price = parseFloat(document.getElementById('calc-price').value) || 0;
+    const downPct = parseFloat(document.getElementById('calc-down').value) || 0;
+    const rate = parseFloat(document.getElementById('calc-rate').value) || 0;
+    const years = parseInt(document.getElementById('calc-term').value) || 30;
+
+    const downAmt = price * (downPct / 100);
+    const loan = price - downAmt;
+    const monthlyRate = (rate / 100) / 12;
+    const n = years * 12;
+
+    let monthly = 0;
+    if (monthlyRate > 0 && n > 0) {
+        monthly = loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+    }
+
+    document.getElementById('calc-monthly').textContent = '$' + Math.round(monthly).toLocaleString();
+    document.getElementById('calc-loan').textContent = '$' + Math.round(loan).toLocaleString();
+    document.getElementById('calc-down-amt').textContent = '$' + Math.round(downAmt).toLocaleString();
+}
+
+['calc-price', 'calc-down', 'calc-rate', 'calc-term'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calcMortgage);
+    document.getElementById(id).addEventListener('change', calcMortgage);
+});
+
+// Persist checklist state in localStorage
+const STORAGE_KEY = 'ashwood-checklist-state';
+function saveChecklistState() {
+    const boxes = document.querySelectorAll('.check-box');
+    const state = Array.from(boxes).map(b => b.classList.contains('done'));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function loadChecklistState() {
+    try {
+        const state = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!state) return;
+        const boxes = document.querySelectorAll('.check-box');
+        state.forEach((done, i) => {
+            if (boxes[i] && done) boxes[i].classList.add('done');
+        });
+    } catch(e) {}
+}
+
+// Override check-box click to also persist
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('check-box')) {
+        setTimeout(saveChecklistState, 50);
+    }
+});
+
+// Load saved state on page load
+loadChecklistState();
+</script>
+
+</body>
+</html>
