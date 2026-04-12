@@ -37,7 +37,7 @@ R2_ACCOUNT="${R2_ACCOUNT_ID:-}"
 R2_ENDPOINT="https://${R2_ACCOUNT}.r2.cloudflarestorage.com"
 SUPABASE_URL="${SUPABASE_URL:-https://gjdvzzxsrzuorguwkaih.supabase.co}"
 SUPABASE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
-AWS=/usr/local/bin/aws
+AWS="${AWS_CLI:-$(command -v aws)}"
 START_TIME=$(date +%s)
 
 # Buckets to sync
