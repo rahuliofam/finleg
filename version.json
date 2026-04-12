@@ -1,12 +1,12 @@
 {
-  "version": "v260412.06 4:33p",
-  "release": 201,
-  "sha": "5921c41",
-  "fullSha": "5921c41e308b1bfc64f955a5044e888f0849883e",
+  "version": "v260412.07 4:39p",
+  "release": 202,
+  "sha": "7324b76",
+  "fullSha": "7324b76077c520d9ee9458e9f4334ede109d2c9d",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 21:33:03+00",
-  "commits": [{"sha":"5921c41","message":"feat: add D1 backup, alert monitoring, and verification drill scripts","author":"Rahul"}]
+  "pushedAt": "2026-04-12 21:39:34+00",
+  "commits": [{"sha":"7324b76","message":"fix: backup scripts - resilient error handling and email unicode fix","author":"Rahul"}]
 }
