@@ -1,12 +1,12 @@
 {
-  "version": "v260412.07 4:39p",
-  "release": 202,
-  "sha": "7324b76",
-  "fullSha": "7324b76077c520d9ee9458e9f4334ede109d2c9d",
+  "version": "v260412.08 5:51p",
+  "release": 203,
+  "sha": "0f04f66",
+  "fullSha": "0f04f66a01cddbb694b8f065432cbb4495718e23",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 21:39:34+00",
-  "commits": [{"sha":"7324b76","message":"fix: backup scripts - resilient error handling and email unicode fix","author":"Rahul"}]
+  "pushedAt": "2026-04-12 22:51:19+00",
+  "commits": [{"sha":"13f865e","message":"fix: backup scripts - resilient error handling and email unicode fix","author":"Rahul"},{"sha":"787edb4","message":"feat: add GitHub mirror backup + D1 cards to backups dashboard","author":"Rahul"},{"sha":"0f04f66","message":"Merge branch 'silly-neumann'","author":"Rahul"}]
 }
