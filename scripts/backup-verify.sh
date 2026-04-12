@@ -139,13 +139,11 @@ for table in "${CRITICAL_TABLES[@]}"; do
   fi
 done
 
-# Check for COPY/INSERT data statements
+# Check for COPY/INSERT data statements and count rows
 for table in "${CRITICAL_TABLES[@]}"; do
   if grep -q "COPY public\.$table" "$SQL_FILE" 2>/dev/null || grep -q "INSERT.*$table" "$SQL_FILE" 2>/dev/null; then
-    # Count approximate rows
-    ROW_COUNT=$(grep -c "^" <(sed -n "/COPY public\.$table/,/^\\\\\./p" "$SQL_FILE" 2>/dev/null) 2>/dev/null || echo "0")
-    ROW_COUNT=$((ROW_COUNT - 2))  # subtract COPY header and \. terminator
-    [ "$ROW_COUNT" -lt 0 ] && ROW_COUNT=0
+    # Count rows between COPY header and \. terminator using awk
+    ROW_COUNT=$(awk "/^COPY public\\.$table /{found=1;next} /^\\\\\./{if(found){print NR;found=0}} found{count++} END{print count+0}" "$SQL_FILE" 2>/dev/null || echo "0")
     REPORT="$REPORT\n  📊 $table: ~$ROW_COUNT rows"
   fi
 done
@@ -165,9 +163,7 @@ MIN_COUNTS="document_index:1500 qb_general_ledger:9000 app_users:3 releases:80"
 for entry in $MIN_COUNTS; do
   TABLE=$(echo "$entry" | cut -d: -f1)
   MIN=$(echo "$entry" | cut -d: -f2)
-  ACTUAL=$(grep -c "^" <(sed -n "/COPY public\.$TABLE/,/^\\\\\./p" "$SQL_FILE" 2>/dev/null) 2>/dev/null || echo "0")
-  ACTUAL=$((ACTUAL - 2))
-  [ "$ACTUAL" -lt 0 ] && ACTUAL=0
+  ACTUAL=$(awk "/^COPY public\\.$TABLE /{found=1;next} /^\\\\\./{if(found){found=0}} found{count++} END{print count+0}" "$SQL_FILE" 2>/dev/null || echo "0")
 
   if [ "$ACTUAL" -ge "$MIN" ]; then
     REPORT="$REPORT\n  ✅ $TABLE: $ACTUAL rows (min: $MIN)"
@@ -250,10 +246,16 @@ if [ -n "$RESEND_KEY" ]; then
   [ "$STATUS" = "warning" ] && EMOJI="⚠️"
 
   HOSTNAME_STR=$(hostname)
+  # Write report/errors to temp files to avoid shell escaping issues with python3 heredocs
+  REPORT_TMP="$TMPDIR/verify-report-$$.txt"
+  ERRORS_TMP="$TMPDIR/verify-errors-$$.txt"
+  echo -e "$REPORT" > "$REPORT_TMP"
+  echo -e "$ERRORS" > "$ERRORS_TMP"
+
   EMAIL_JSON=$(python3 -c "
-import json
-report = '''$(echo -e "$REPORT")'''
-errors = '''$(echo -e "$ERRORS")'''
+import json, html
+with open('$REPORT_TMP') as f: report = html.escape(f.read())
+with open('$ERRORS_TMP') as f: errors = html.escape(f.read())
 body = '<h2>$EMOJI Finleg Backup Verification Report</h2>'
 body += '<p><b>Backup:</b> $LATEST_KEY<br><b>Size:</b> $SQL_SIZE<br><b>Duration:</b> ${DURATION}s</p>'
 body += '<pre style=\"background:#f5f5f5;padding:12px;border-radius:4px;\">' + report + '</pre>'
@@ -267,6 +269,7 @@ print(json.dumps({
     'html': body
 }))
 ")
+  rm -f "$REPORT_TMP" "$ERRORS_TMP"
 
   curl -sf "https://api.resend.com/emails" \
     -H "Authorization: Bearer $RESEND_KEY" \

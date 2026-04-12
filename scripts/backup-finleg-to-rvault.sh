@@ -16,10 +16,17 @@
 # Cron example (every Sunday 5am local — after Hostinger DB backup at 3am UTC):
 #   0 5 * * 0 /Users/alpaca/scripts/backup-finleg-to-rvault.sh >> /Users/alpaca/logs/finleg-backup.log 2>&1
 
-set -euo pipefail
+set -uo pipefail
 
 # ── config ───────────────────────────────────────────────────────────
-BACKUP_ROOT="/Volumes/RVAULT20/BackupsRS/finleg"
+# Find RVAULT20 mount (case-insensitive — macOS fskit mounts as lowercase)
+if [ -d "/Volumes/RVAULT20" ]; then
+  BACKUP_ROOT="/Volumes/RVAULT20/BackupsRS/finleg"
+elif [ -d "/Volumes/rvault20" ]; then
+  BACKUP_ROOT="/Volumes/rvault20/BackupsRS/finleg"
+else
+  BACKUP_ROOT=""
+fi
 LOG_PREFIX="[$(date '+%Y-%m-%d %H:%M:%S')]"
 
 # Load env
@@ -64,8 +71,8 @@ fi
 
 [ -x "$AWS" ] || { echo "$LOG_PREFIX ERROR: aws CLI not found at $AWS" >&2; exit 1; }
 
-if [ ! -d "$BACKUP_ROOT" ]; then
-  echo "$LOG_PREFIX ERROR: RVAULT20 not mounted or $BACKUP_ROOT missing" >&2
+if [ -z "$BACKUP_ROOT" ]; then
+  echo "$LOG_PREFIX ERROR: RVAULT20 not mounted" >&2
   exit 1
 fi
 
@@ -85,21 +92,25 @@ fi
 
 # ── sync R2 buckets ──────────────────────────────────────────────────
 echo "$LOG_PREFIX Starting finleg backup to RVAULT20"
+SYNC_FAILURES=0
 
 for bucket in "${BUCKETS[@]}"; do
   DEST="$BACKUP_ROOT/r2/$bucket"
   mkdir -p "$DEST"
   echo "$LOG_PREFIX Syncing $bucket..."
 
-  AWS_ACCESS_KEY_ID="$R2_ACCESS" \
-  AWS_SECRET_ACCESS_KEY="$R2_SECRET" \
-  $AWS s3 sync "s3://$bucket/" "$DEST/" \
-    --endpoint-url "$R2_ENDPOINT" \
-    --no-progress \
-    --size-only
-
-  COUNT=$(find "$DEST" -type f | wc -l | tr -d ' ')
-  echo "$LOG_PREFIX   $bucket: $COUNT files synced"
+  if AWS_ACCESS_KEY_ID="$R2_ACCESS" \
+     AWS_SECRET_ACCESS_KEY="$R2_SECRET" \
+     $AWS s3 sync "s3://$bucket/" "$DEST/" \
+       --endpoint-url "$R2_ENDPOINT" \
+       --no-progress \
+       --size-only; then
+    COUNT=$(find "$DEST" -type f | wc -l | tr -d ' ')
+    echo "$LOG_PREFIX   $bucket: $COUNT files synced"
+  else
+    echo "$LOG_PREFIX   WARNING: $bucket sync had errors (continuing)"
+    SYNC_FAILURES=$((SYNC_FAILURES + 1))
+  fi
 done
 
 # ── copy latest DB backup to supabase folder ─────────────────────────
@@ -133,6 +144,9 @@ echo "$LOG_PREFIX Backup complete."
 # ── log to Supabase ──────────────────────────────────────────────────
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
+STATUS="success"
+[ "$SYNC_FAILURES" -gt 0 ] && STATUS="warning"
+
 # Build file counts JSON
 COUNTS_JSON="{"
 for bucket in "${BUCKETS[@]}"; do
@@ -140,13 +154,13 @@ for bucket in "${BUCKETS[@]}"; do
   COUNTS_JSON="$COUNTS_JSON\"$bucket\":$CNT,"
 done
 TOTAL_SIZE=$(du -sh "$BACKUP_ROOT" 2>/dev/null | cut -f1)
-COUNTS_JSON="${COUNTS_JSON}\"total_size\":\"$TOTAL_SIZE\",\"db_dump\":\"${LATEST_DUMP:-none}\"}"
+COUNTS_JSON="${COUNTS_JSON}\"total_size\":\"$TOTAL_SIZE\",\"db_dump\":\"${LATEST_DUMP:-none}\",\"sync_failures\":$SYNC_FAILURES}"
 
 if [ -n "$SUPABASE_KEY" ]; then
   curl -sf "$SUPABASE_URL/rest/v1/backup_logs" \
     -H "apikey: $SUPABASE_KEY" \
     -H "Authorization: Bearer $SUPABASE_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"source\":\"alpaca-mac\",\"backup_type\":\"r2-to-rvault\",\"status\":\"success\",\"duration_seconds\":$DURATION,\"details\":$COUNTS_JSON}" \
+    -d "{\"source\":\"alpaca-mac\",\"backup_type\":\"r2-to-rvault\",\"status\":\"$STATUS\",\"duration_seconds\":$DURATION,\"details\":$COUNTS_JSON}" \
     >/dev/null 2>&1 || echo "$LOG_PREFIX Warning: failed to log backup to Supabase"
 fi
