@@ -1,12 +1,12 @@
 {
-  "version": "v260411.07 7:13p",
-  "release": 194,
-  "sha": "70d40e5",
-  "fullSha": "70d40e5f919c041e9b6fcc9e0537ba027d29cc38",
-  "actor": "rsonnad",
+  "version": "v260411.08 7:36p",
+  "release": 195,
+  "sha": "1f5ea87",
+  "fullSha": "1f5ea87b291240e371934e2708d4518358a1bb6e",
+  "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 00:13:08+00",
-  "commits": [{"sha":"70d40e5","message":"feat: add email-triggered Claude Code agent automation","author":"Rahul"}]
+  "pushedAt": "2026-04-12 00:36:34+00",
+  "commits": [{"sha":"1f5ea87","message":"feat: grant jackie and phoebe access to K-1 Hannah Sonnad page","author":"Jacqueline Giroux"}]
 }
