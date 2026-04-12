@@ -1026,6 +1026,32 @@ serve(async (req: Request) => {
     const email = await fetchEmailContent(emailId, resendKey);
     console.log(`Email from: ${email.from}, subject: ${email.subject}`);
 
+    // Check if this is an agent prompt email — forward to agent-prompt-handler
+    const emailBodyForPromptCheck = email.text || email.html?.replace(/<[^>]+>/g, "") || "";
+    if (/prompt:\s/i.test(emailBodyForPromptCheck)) {
+      console.log("Detected agent prompt email, forwarding to agent-prompt-handler");
+      try {
+        const agentUrl = `${supabaseUrl}/functions/v1/agent-prompt-handler`;
+        const agentRes = await fetch(agentUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${supabaseKey}`,
+          },
+          body: JSON.stringify({ email }),
+        });
+        const agentResult = await agentRes.json();
+        console.log("Agent prompt handler response:", JSON.stringify(agentResult));
+        return new Response(JSON.stringify({ success: true, type: "agent_prompt", ...agentResult }), {
+          status: agentRes.status,
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (agentErr) {
+        console.error("Agent prompt handler forwarding failed:", agentErr);
+        // Fall through to normal processing
+      }
+    }
+
     // Check if this email has processable attachments (images or PDFs)
     let attachments = email.attachments || [];
     console.log(`Email attachments from retrieve: ${attachments.length}`, JSON.stringify(attachments.map((a: any) => ({ id: a.id, ct: a.content_type, fn: a.filename, disp: a.content_disposition }))));

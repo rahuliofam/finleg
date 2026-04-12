@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.finleg.agent-runner</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/paca/finleg/scripts/agent-runner.sh</string>
+        <string>--once</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>60</integer>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/paca/finleg</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>/Users/paca</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/paca/.finleg-agent/runner.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/paca/.finleg-agent/runner-error.log</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
