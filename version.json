@@ -1,12 +1,12 @@
 {
-  "version": "v260412.02 4:01p",
-  "release": 197,
-  "sha": "4dc91b9",
-  "fullSha": "4dc91b9f7d88d578d1ccd9798ff04d03cd0cf306",
+  "version": "v260412.03 4:02p",
+  "release": 198,
+  "sha": "68e6dc0",
+  "fullSha": "68e6dc07e64ada545865a48b20143755eb769505",
   "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 21:01:04+00",
-  "commits": [{"sha":"4dc91b9","message":"feat: add 1402 Ashwood Rd home purchase analysis page","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-12 21:02:40+00",
+  "commits": [{"sha":"68e6dc0","message":"fix: move housebuyashwood.html to public/ for Next.js static serving","author":"Jacqueline Giroux"}]
 }
