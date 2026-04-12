@@ -15,7 +15,7 @@ interface BackupLog {
 }
 
 const SOURCE_LABELS: Record<string, string> = { hostinger: "Hostinger VPS", "alpaca-mac": "Alpaca Mac" };
-const TYPE_LABELS: Record<string, string> = { "db-to-r2": "DB → R2", "r2-to-rvault": "R2 → RVAULT20" };
+const TYPE_LABELS: Record<string, string> = { "db-to-r2": "DB → R2", "r2-to-rvault": "R2 → RVAULT20", "d1-to-rvault": "D1 → RVAULT20", "github-to-rvault": "GitHub → RVAULT20", "verify-drill": "verify-drill" };
 
 function fmtDuration(s: number | null) {
   if (!s) return "—";
@@ -41,17 +41,21 @@ export function BackupsTab() {
 
   const lastDb = logs.find((l) => l.backup_type === "db-to-r2");
   const lastRvault = logs.find((l) => l.backup_type === "r2-to-rvault");
+  const lastD1 = logs.find((l) => l.backup_type === "d1-to-rvault");
+  const lastGithub = logs.find((l) => l.backup_type === "github-to-rvault");
   const dbDays = lastDb ? daysSince(lastDb.created_at) : null;
   const rvaultDays = lastRvault ? daysSince(lastRvault.created_at) : null;
+  const d1Days = lastD1 ? daysSince(lastD1.created_at) : null;
+  const githubDays = lastGithub ? daysSince(lastGithub.created_at) : null;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 mb-1">Backups</h1>
-        <p className="text-sm text-slate-500">Weekly automated backups of Supabase database and Cloudflare R2 file storage.</p>
+        <p className="text-sm text-slate-500">Automated backups of Supabase, Cloudflare R2, D1, and GitHub to RVAULT20.</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-slate-200 p-5 bg-white">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-slate-800">Database → R2</h3>
@@ -92,6 +96,46 @@ export function BackupsTab() {
                   Total: {String(lastRvault.details.total_size || "—")} · {String(lastRvault.details["financial-statements"] || 0)} + {String(lastRvault.details["bookkeeping-docs"] || 0)} + {String(lastRvault.details["legal-docs"] || 0)} files
                 </p>
               )}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-slate-200 p-5 bg-white">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-slate-800">D1 → RVAULT20</h3>
+            <span className="text-xs text-slate-400">Alpaca Mac</span>
+          </div>
+          <p className="text-sm text-slate-500 mb-2">Cloudflare D1 claude-sessions export to external drive</p>
+          <p className="text-xs text-slate-400">Schedule: 1st Sunday of month 6:00 AM</p>
+          {lastD1 && (
+            <div className="mt-3 pt-3 border-t border-slate-100">
+              <p className="text-sm">
+                Last: <span className="font-medium text-slate-700">{fmtDate(lastD1.created_at)}</span>
+                <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${d1Days !== null && d1Days > 35 ? "bg-amber-100 text-amber-800" : "text-slate-400"}`}>
+                  {d1Days === 0 ? "today" : d1Days === 1 ? "1 day ago" : `${d1Days} days ago`}
+                </span>
+              </p>
+              {lastD1.details && <p className="text-xs text-slate-400 mt-1">{String(lastD1.details.size || "—")} · {String(lastD1.details.rows || 0)} rows</p>}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-slate-200 p-5 bg-white">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-slate-800">GitHub → RVAULT20</h3>
+            <span className="text-xs text-slate-400">Alpaca Mac</span>
+          </div>
+          <p className="text-sm text-slate-500 mb-2">Bare mirror clone of finleg repo to external drive</p>
+          <p className="text-xs text-slate-400">Schedule: Sundays 5:30 AM local</p>
+          {lastGithub && (
+            <div className="mt-3 pt-3 border-t border-slate-100">
+              <p className="text-sm">
+                Last: <span className="font-medium text-slate-700">{fmtDate(lastGithub.created_at)}</span>
+                <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${githubDays !== null && githubDays > 8 ? "bg-amber-100 text-amber-800" : "text-slate-400"}`}>
+                  {githubDays === 0 ? "today" : githubDays === 1 ? "1 day ago" : `${githubDays} days ago`}
+                </span>
+              </p>
+              {lastGithub.details && <p className="text-xs text-slate-400 mt-1">{String(lastGithub.details.total_size || "—")} · {String(lastGithub.details.repos || 0)} repos</p>}
             </div>
           )}
         </div>

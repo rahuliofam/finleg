@@ -103,9 +103,10 @@ print((now - last).days)
   fi
 }
 
-check_backup "db-to-r2"      9  "Database → R2 (Hostinger)"
-check_backup "r2-to-rvault"  9  "R2 → RVAULT20 (Alpaca Mac)"
-check_backup "d1-to-rvault"  35 "D1 Sessions → RVAULT20"
+check_backup "db-to-r2"          9  "Database → R2 (Hostinger)"
+check_backup "r2-to-rvault"     9  "R2 → RVAULT20 (Alpaca Mac)"
+check_backup "d1-to-rvault"     35 "D1 Sessions → RVAULT20"
+check_backup "github-to-rvault" 9  "GitHub → RVAULT20 (Alpaca Mac)"
 
 # Also check if RVAULT20 is mounted
 if [ -d "/Volumes/RVAULT20" ] || [ -d "/Volumes/rvault20" ]; then
