@@ -1,12 +1,12 @@
 {
-  "version": "v260411.06 7:10p",
-  "release": 193,
-  "sha": "08a1ef9",
-  "fullSha": "08a1ef9659542a9252f689cb2b4fb75d0b39bcba",
+  "version": "v260411.07 7:13p",
+  "release": 194,
+  "sha": "70d40e5",
+  "fullSha": "70d40e5f919c041e9b6fcc9e0537ba027d29cc38",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 00:10:13+00",
-  "commits": [{"sha":"08a1ef9","message":"feat: add finleg header bar with version to all standalone pages","author":"Rahul"}]
+  "pushedAt": "2026-04-12 00:13:08+00",
+  "commits": [{"sha":"70d40e5","message":"feat: add email-triggered Claude Code agent automation","author":"Rahul"}]
 }
