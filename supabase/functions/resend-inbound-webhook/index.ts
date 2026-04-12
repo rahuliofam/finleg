@@ -705,7 +705,7 @@ async function searchDocuments(
   // Build the query — search by account_holder AND/OR filename
   let query = supabase
     .from("document_index")
-    .select("id, filename, bucket, r2_key, category, account_type, account_holder, year, institution, file_type, file_size")
+    .select("id, filename, bucket, r2_key, category, account_type, account_holder, account_number, year, institution, file_type, file_size")
     .order("year", { ascending: false });
 
   // Filter by year if specified
@@ -835,14 +835,26 @@ async function sendDocumentEmail(
     html += `</ul>`;
     html += `<p>Try being more specific, or reply with a correction.</p>`;
   } else {
+    // Build summary from first document's metadata (all docs in a request typically share these)
+    const sample = documents[0];
+    html += `<div style="background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 12px; margin-bottom: 16px;">`;
+    if (sample.account_holder) html += `<div><strong>Account holder:</strong> ${sample.account_holder}</div>`;
+    if (sample.institution) html += `<div><strong>Institution:</strong> ${sample.institution}</div>`;
+    if (sample.account_type) html += `<div><strong>Account type:</strong> ${sample.account_type}</div>`;
+    if (sample.account_number) html += `<div><strong>Account:</strong> ····${sample.account_number}</div>`;
+    html += `</div>`;
+
     html += `<p>Found ${documents.length} matching document${documents.length > 1 ? "s" : ""}:</p>`;
 
     for (const doc of documents) {
       const sizeKb = doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : "—";
+      const meta: string[] = [doc.category, doc.account_type, doc.year || "—", sizeKb].filter(Boolean);
       html += `<div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px;">`;
       html += `<div style="font-weight: 600;">📄 ${doc.filename}</div>`;
       html += `<div style="font-size: 13px; color: #666; margin-top: 4px;">`;
-      html += `${doc.category} · ${doc.account_type} · ${doc.year || "—"} · ${sizeKb}`;
+      html += meta.join(" · ");
+      if (doc.institution && doc.institution !== sample.institution) html += ` · ${doc.institution}`;
+      if (doc.account_number && doc.account_number !== sample.account_number) html += ` · ····${doc.account_number}`;
       html += `</div>`;
       html += `</div>`;
     }
@@ -863,7 +875,7 @@ async function sendDocumentEmail(
     to: [to],
     bcc: [FORWARD_TO],
     subject: documents.length > 0
-      ? `📁 ${request.doc_type || "Document"} — ${request.person_name || ""}${request.year ? ` (${request.year})` : ""}`
+      ? `📁 ${request.doc_type || "Document"} — ${request.person_name || ""}${documents[0]?.institution ? ` · ${documents[0].institution}` : ""}${request.year ? ` (${request.year})` : ""}`
       : `📁 Document not found — ${request.person_name || "unknown"}`,
     html,
   };
