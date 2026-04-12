@@ -19,15 +19,21 @@
           window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname);
           return;
         }
-        // Check if user is a registered finleg user in app_users table
-        var { data: appUser } = await sb.from('app_users').select('id, role, display_name').eq('email', session.user.email).single();
-        if (appUser) {
+        // Allow specific emails for this page or registered app_users
+        var allowedEmails = ['jackie61899280@gmail.com', 'sonnad.phoebe@gmail.com', 'rahulioson@gmail.com'];
+        var email = session.user.email;
+        var allowed = allowedEmails.includes(email);
+        if (!allowed) {
+          var { data: appUser } = await sb.from('app_users').select('id').eq('email', email).single();
+          allowed = !!appUser;
+        }
+        if (allowed) {
           document.getElementById('auth-gate').style.display = 'none';
           document.getElementById('main-content').style.display = 'block';
           var nameEl = document.getElementById('user-name');
-          if (nameEl && appUser.display_name) nameEl.textContent = appUser.display_name;
+          if (nameEl) nameEl.textContent = email;
         } else {
-          document.getElementById('auth-gate').innerHTML = '<div style="text-align:center;padding:4rem 2rem;"><h2 style="color:#991b1b;margin-bottom:1rem;">Access Denied</h2><p style="color:#666;">Signed in as <strong>' + session.user.email + '</strong></p><p style="color:#999;margin-top:0.5rem;">This page is restricted to registered FinLeg users.</p></div>';
+          document.getElementById('auth-gate').innerHTML = '<div style="text-align:center;padding:4rem 2rem;"><h2 style="color:#991b1b;margin-bottom:1rem;">Access Denied</h2><p style="color:#666;">Signed in as <strong>' + email + '</strong></p><p style="color:#999;margin-top:0.5rem;">This page is restricted to authorized users.</p></div>';
         }
       });
     })();
