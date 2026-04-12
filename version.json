@@ -1,12 +1,12 @@
 {
-  "version": "v260412.03 4:02p",
-  "release": 198,
-  "sha": "68e6dc0",
-  "fullSha": "68e6dc07e64ada545865a48b20143755eb769505",
-  "actor": "jackie61899280",
+  "version": "v260412.04 4:06p",
+  "release": 199,
+  "sha": "5f89e1f",
+  "fullSha": "5f89e1fa898d7ca6b49b0af95c4e8b5be760a958",
+  "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 21:02:40+00",
-  "commits": [{"sha":"68e6dc0","message":"fix: move housebuyashwood.html to public/ for Next.js static serving","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-12 21:06:40+00",
+  "commits": [{"sha":"5f89e1f","message":"fix: use dynamic aws CLI path in RVAULT backup script","author":"Rahul"}]
 }
