@@ -10,7 +10,8 @@
       const sb = window.supabase.createClient('https://gjdvzzxsrzuorguwkaih.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY', { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } });
       sb.auth.getSession().then(function(res) {
         var email = res.data?.session?.user?.email;
-        if (email === 'rahulioson@gmail.com') { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; }
+        var allowed = ['rahulioson@gmail.com','jackie61899280@gmail.com','sonnad.phoebe@gmail.com'];
+        if (allowed.indexOf(email) !== -1) { document.getElementById('auth-gate').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; }
         else if (email) { document.getElementById('auth-gate').innerHTML = '<h2>Access Denied</h2><p>Signed in as ' + email + '</p>'; }
         else { window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname); }
       });
