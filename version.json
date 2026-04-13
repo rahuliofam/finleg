@@ -1,12 +1,12 @@
 {
-  "version": "v260413.02 2:10p",
-  "release": 205,
-  "sha": "6cce960",
-  "fullSha": "6cce960f6c1fcfc380429bbeed3998a3fe9d6d0b",
+  "version": "v260413.03 3:03p",
+  "release": 206,
+  "sha": "422531f",
+  "fullSha": "422531f451409042e3d6df55c337cc65a730b111",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-13 19:10:23+00",
-  "commits": [{"sha":"6cce960","message":"fix: wrap nav tabs into two rows on housebuyashwood page","author":"Rahul"}]
+  "pushedAt": "2026-04-13 20:03:06+00",
+  "commits": [{"sha":"422531f","message":"feat: add bottom-line 10-year equity comparison matrix on Investment ROI tab","author":"Rahul"}]
 }
