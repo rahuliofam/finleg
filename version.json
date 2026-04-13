@@ -1,12 +1,12 @@
 {
-  "version": "v260413.03 3:03p",
-  "release": 206,
-  "sha": "422531f",
-  "fullSha": "422531f451409042e3d6df55c337cc65a730b111",
+  "version": "v260413.04 3:55p",
+  "release": 207,
+  "sha": "97a84ec",
+  "fullSha": "97a84ec6c769968b8f76e0b8a74f574c4c613c7b",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-13 20:03:06+00",
-  "commits": [{"sha":"422531f","message":"feat: add bottom-line 10-year equity comparison matrix on Investment ROI tab","author":"Rahul"}]
+  "pushedAt": "2026-04-13 20:55:43+00",
+  "commits": [{"sha":"97a84ec","message":"feat: add Ashwood house analysis and obituary to intranet pages index","author":"Rahul"}]
 }
