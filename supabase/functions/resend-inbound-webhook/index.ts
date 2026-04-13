@@ -405,6 +405,83 @@ Return ONLY valid JSON, no markdown.`,
 }
 
 /**
+ * Check if an email body contains an inline receipt/invoice and parse it.
+ * Returns parsed receipt data or null if no inline receipt detected.
+ */
+async function parseInlineReceipt(
+  emailHtml: string,
+  emailText: string,
+  emailSubject: string,
+  anthropicKey: string
+): Promise<any | null> {
+  const body = emailHtml || emailText || "";
+  if (body.length < 50) return null;
+
+  const content: any[] = [
+    {
+      type: "text",
+      text: `Analyze this email body. Does it contain an inline receipt, invoice, or bill (e.g. an HTML table with line items, prices, totals)?
+
+If YES, extract receipt data as JSON:
+{
+  "is_receipt": true,
+  "vendor": "company/person name",
+  "amount": 0.00,
+  "date": "YYYY-MM-DD",
+  "category": "best category (e.g. Professional Services, Supplies, etc.)",
+  "tax": 0.00,
+  "payment_method": "if visible",
+  "line_items": [{"description": "item", "amount": 0.00, "quantity": 1}],
+  "confidence": 0.95
+}
+
+If NO (just a regular email, newsletter, notification, etc.), return:
+{"is_receipt": false}
+
+Email subject: "${emailSubject}"
+
+Email body:
+${body.slice(0, 4000)}
+
+Return ONLY valid JSON, no markdown.`,
+    },
+  ];
+
+  const res = await fetch(ANTHROPIC_API_URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": anthropicKey,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 1024,
+      messages: [{ role: "user", content }],
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Claude API error (inline receipt): ${res.status} ${text}`);
+  }
+
+  const result = await res.json();
+  const text = result.content?.[0]?.text || "";
+
+  try {
+    const parsed = JSON.parse(text);
+    if (parsed.is_receipt && parsed.confidence > 0.5) {
+      return parsed;
+    }
+    return null;
+  } catch {
+    console.error("Failed to parse inline receipt response:", text);
+    return null;
+  }
+}
+
+/**
  * Store attachment in Supabase Storage and return the public URL.
  */
 async function storeAttachment(
@@ -1120,6 +1197,58 @@ serve(async (req: Request) => {
       if (attachments.length > 0) {
         console.log("Non-processable attachment types:", attachments.map((a: any) => a.content_type || a.type).join(", "));
       }
+
+      // Before giving up, check if the email body itself contains an inline receipt
+      if (anthropicKey && supabase) {
+        try {
+          const inlineParsed = await parseInlineReceipt(
+            email.html || "", email.text || "", email.subject || "", anthropicKey
+          );
+          if (inlineParsed) {
+            console.log(`Inline receipt found (no attachments path): ${inlineParsed.vendor} $${inlineParsed.amount}`);
+            const fromAddr = typeof email.from === "string"
+              ? email.from : email.from?.[0]?.address || email.from?.[0] || "";
+            const cat = extractCategoryFromSubject(email.subject) || inlineParsed.category || null;
+
+            const { data: inserted } = await supabase.from("receipts").insert({
+              email_from: fromAddr,
+              email_subject: email.subject || null,
+              email_date: email.created_at || new Date().toISOString(),
+              email_id: emailId,
+              attachment_url: null,
+              attachment_filename: "(inline in email body)",
+              attachment_content_type: "text/html",
+              parsed_vendor: inlineParsed.vendor || null,
+              parsed_amount: inlineParsed.amount || null,
+              parsed_date: inlineParsed.date || null,
+              parsed_category: cat,
+              parsed_line_items: inlineParsed.line_items || null,
+              parsed_tax: inlineParsed.tax || null,
+              parsed_payment_method: inlineParsed.payment_method || null,
+              ai_confidence: inlineParsed.confidence || 0,
+              ai_raw_response: inlineParsed,
+              user_category: extractCategoryFromSubject(email.subject),
+              user_notes: null,
+              status: "parsed",
+              error_message: null,
+            }).select("id").single();
+
+            if (inserted) {
+              const inlineReceipts = [{
+                id: inserted.id, vendor: inlineParsed.vendor,
+                amount: inlineParsed.amount, matched: false, source: "inline",
+              }];
+              await sendSummaryEmail(email, resendKey, [], inlineReceipts);
+              return new Response(JSON.stringify({ success: true, receipts: 1, statements: 0, source: "inline_body" }), {
+                status: 200, headers: { "Content-Type": "application/json" },
+              });
+            }
+          }
+        } catch (inlineErr) {
+          console.error("Inline receipt check failed:", inlineErr);
+        }
+      }
+
       try {
         await sendSummaryEmail(email, resendKey, [], []);
       } catch (fwdErr) {
@@ -1370,6 +1499,88 @@ serve(async (req: Request) => {
       } catch (attachErr: any) {
         console.error("Error processing attachment:", attachErr);
         processedStatements.push({ error: String(attachErr), stack: attachErr?.stack?.slice(0, 500) });
+      }
+    }
+
+    // ── Inline receipt detection: check if the email body itself contains a receipt ──
+    if (anthropicKey && supabase) {
+      try {
+        const inlineParsed = await parseInlineReceipt(
+          email.html || "",
+          email.text || "",
+          email.subject || "",
+          anthropicKey
+        );
+        if (inlineParsed) {
+          console.log(`Inline receipt detected: ${inlineParsed.vendor} $${inlineParsed.amount}`);
+          const category = userCategory || inlineParsed.category || null;
+
+          const receiptRecord = {
+            email_from: fromLine,
+            email_subject: email.subject || null,
+            email_date: email.created_at || new Date().toISOString(),
+            email_id: emailId,
+            attachment_url: null,
+            attachment_filename: "(inline in email body)",
+            attachment_content_type: "text/html",
+            parsed_vendor: inlineParsed.vendor || null,
+            parsed_amount: inlineParsed.amount || null,
+            parsed_date: inlineParsed.date || null,
+            parsed_category: category,
+            parsed_line_items: inlineParsed.line_items || null,
+            parsed_tax: inlineParsed.tax || null,
+            parsed_payment_method: inlineParsed.payment_method || null,
+            ai_confidence: inlineParsed.confidence || 0,
+            ai_raw_response: inlineParsed,
+            user_category: userCategory,
+            user_notes: null,
+            status: "parsed",
+            error_message: null,
+          };
+
+          const { data: insertedReceipt, error: insertError } = await supabase
+            .from("receipts")
+            .insert(receiptRecord)
+            .select("id")
+            .single();
+
+          if (!insertError && insertedReceipt) {
+            let receiptMatched = false;
+            if (inlineParsed.amount && inlineParsed.date) {
+              const match = await tryMatchTransaction(
+                supabase, inlineParsed.amount, inlineParsed.date, inlineParsed.vendor
+              );
+              if (match) {
+                receiptMatched = true;
+                await supabase.from("receipts").update({
+                  matched_qb_txn_id: match.qb_txn_id,
+                  match_confidence: match.confidence,
+                  match_method: match.confidence >= 0.8 ? "exact_amount" : "fuzzy",
+                  status: "matched",
+                }).eq("id", insertedReceipt.id);
+                await supabase.from("qb_transactions").update({
+                  receipt_id: insertedReceipt.id,
+                  our_category: category,
+                  category_confidence: inlineParsed.confidence,
+                  category_source: userCategory ? "human" : "ai",
+                  review_status: match.confidence >= 0.8 ? "auto_categorized" : "needs_review",
+                }).eq("id", match.qb_txn_id);
+              }
+            }
+            await logActivity(supabase, "receipt_parsed", "receipt", insertedReceipt.id, "ai", {
+              vendor: inlineParsed.vendor, amount: inlineParsed.amount,
+              confidence: inlineParsed.confidence, category, from: fromLine, source: "inline_body",
+            });
+            processedReceipts.push({
+              id: insertedReceipt.id, vendor: inlineParsed.vendor,
+              amount: inlineParsed.amount, matched: receiptMatched, source: "inline",
+            });
+          } else if (insertError) {
+            console.error("Failed to insert inline receipt:", insertError);
+          }
+        }
+      } catch (inlineErr) {
+        console.error("Inline receipt parsing failed:", inlineErr);
       }
     }
 
