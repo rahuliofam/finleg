@@ -1,12 +1,12 @@
 {
-  "version": "v260413.01 1:10p",
-  "release": 204,
-  "sha": "ef22b6c",
-  "fullSha": "ef22b6c9a11b00d05a7293169dcc96fa85f08273",
-  "actor": "jackie61899280",
+  "version": "v260413.02 2:10p",
+  "release": 205,
+  "sha": "6cce960",
+  "fullSha": "6cce960f6c1fcfc380429bbeed3998a3fe9d6d0b",
+  "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-13 18:10:52+00",
-  "commits": [{"sha":"ef22b6c","message":"feat: add Investment ROI comparison + Why Buy This House tab","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-13 19:10:23+00",
+  "commits": [{"sha":"6cce960","message":"fix: wrap nav tabs into two rows on housebuyashwood page","author":"Rahul"}]
 }
