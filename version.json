@@ -1,12 +1,12 @@
 {
-  "version": "v260412.08 5:51p",
-  "release": 203,
-  "sha": "0f04f66",
-  "fullSha": "0f04f66a01cddbb694b8f065432cbb4495718e23",
-  "actor": "rsonnad",
+  "version": "v260413.01 1:10p",
+  "release": 204,
+  "sha": "ef22b6c",
+  "fullSha": "ef22b6c9a11b00d05a7293169dcc96fa85f08273",
+  "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-12 22:51:19+00",
-  "commits": [{"sha":"13f865e","message":"fix: backup scripts - resilient error handling and email unicode fix","author":"Rahul"},{"sha":"787edb4","message":"feat: add GitHub mirror backup + D1 cards to backups dashboard","author":"Rahul"},{"sha":"0f04f66","message":"Merge branch 'silly-neumann'","author":"Rahul"}]
+  "pushedAt": "2026-04-13 18:10:52+00",
+  "commits": [{"sha":"ef22b6c","message":"feat: add Investment ROI comparison + Why Buy This House tab","author":"Jacqueline Giroux"}]
 }
