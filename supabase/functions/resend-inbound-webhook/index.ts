@@ -34,7 +34,7 @@ If you truly cannot tell what this document is, return:
  * Fetch the full email content from Resend API.
  */
 async function fetchEmailContent(emailId: string, apiKey: string, attempt = 1): Promise<any> {
-  const maxAttempts = 5;
+  const maxAttempts = 8;
   const res = await fetch(`${RESEND_API_URL}/emails/receiving/${emailId}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
@@ -42,8 +42,8 @@ async function fetchEmailContent(emailId: string, apiKey: string, attempt = 1): 
   if (!res.ok) {
     const text = await res.text();
     if (attempt < maxAttempts) {
-      console.log(`Fetch attempt ${attempt} failed (${res.status}), retrying in 2s...`);
-      await new Promise((r) => setTimeout(r, 2000));
+      console.log(`Fetch attempt ${attempt} failed (${res.status}), retrying in 3s...`);
+      await new Promise((r) => setTimeout(r, 3000));
       return fetchEmailContent(emailId, apiKey, attempt + 1);
     }
     throw new Error(`Failed to fetch email ${emailId}: ${res.status} ${text}`);
@@ -54,8 +54,8 @@ async function fetchEmailContent(emailId: string, apiKey: string, attempt = 1): 
   // Resend webhook fires before attachments are fully processed.
   // If the email has no attachments yet, retry with increasing delays.
   if ((!email.attachments || email.attachments.length === 0) && attempt < maxAttempts) {
-    const delay = attempt * 2000; // 2s, 4s, 6s, 8s
-    console.log(`No attachments on attempt ${attempt}, retrying in ${delay}ms...`);
+    const delay = attempt * 3000; // 3s, 6s, 9s, 12s, 15s, 18s, 21s (~84s total)
+    console.log(`No attachments on attempt ${attempt}/${maxAttempts}, retrying in ${delay}ms...`);
     await new Promise((r) => setTimeout(r, delay));
     return fetchEmailContent(emailId, apiKey, attempt + 1);
   }
@@ -1056,24 +1056,37 @@ serve(async (req: Request) => {
     let attachments = email.attachments || [];
     console.log(`Email attachments from retrieve: ${attachments.length}`, JSON.stringify(attachments.map((a: any) => ({ id: a.id, ct: a.content_type, fn: a.filename, disp: a.content_disposition }))));
 
-    // Fallback: if no attachments from email retrieve, try the dedicated attachments endpoint
+    // Fallback: if no attachments from email retrieve, try the dedicated attachments endpoint with retries
     if (attachments.length === 0) {
       console.log("No attachments from email retrieve, trying list attachments endpoint...");
-      const listedAttachments = await fetchAttachmentsList(emailId, resendKey);
-      console.log(`List attachments endpoint returned: ${listedAttachments.length}`, JSON.stringify(listedAttachments.map((a: any) => ({ id: a.id, ct: a.content_type, fn: a.filename, disp: a.content_disposition }))));
-      if (listedAttachments.length > 0) {
-        attachments = listedAttachments;
+      for (let listAttempt = 1; listAttempt <= 4; listAttempt++) {
+        const listedAttachments = await fetchAttachmentsList(emailId, resendKey);
+        console.log(`List attachments attempt ${listAttempt} returned: ${listedAttachments.length}`, JSON.stringify(listedAttachments.map((a: any) => ({ id: a.id, ct: a.content_type, fn: a.filename, disp: a.content_disposition }))));
+        if (listedAttachments.length > 0) {
+          attachments = listedAttachments;
+          break;
+        }
+        if (listAttempt < 4) {
+          const delay = listAttempt * 5000;
+          console.log(`No attachments from list endpoint, retrying in ${delay}ms...`);
+          await new Promise((r) => setTimeout(r, delay));
+        }
       }
     }
 
     const processableAttachments = attachments.filter((a: any) => {
-      const type = a.content_type || a.type || "";
-      return (
+      const type = (a.content_type || a.type || "").toLowerCase();
+      const fname = (a.filename || "").toLowerCase();
+      // Match by MIME type
+      if (
         type.startsWith("image/") ||
         type === "application/pdf" ||
         type.includes("jpeg") ||
         type.includes("png")
-      );
+      ) return true;
+      // Fallback: match by file extension when MIME is generic (e.g. application/octet-stream)
+      if (/\.(jpe?g|png|gif|webp|heic|tiff?|bmp|pdf)$/i.test(fname)) return true;
+      return false;
     });
 
     console.log(`Processable attachments: ${processableAttachments.length} out of ${attachments.length} total`);
