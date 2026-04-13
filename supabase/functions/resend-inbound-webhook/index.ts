@@ -1099,9 +1099,31 @@ serve(async (req: Request) => {
 
     console.log(`Received inbound email webhook, email_id: ${emailId}`);
 
+    // Debug logger — writes to email_webhook_log table for visibility
+    const debugLog = async (stage: string, details: any) => {
+      try {
+        if (supabase) {
+          await supabase.from("email_webhook_log").insert({ email_id: emailId, stage, details });
+        }
+      } catch (_) { /* non-critical */ }
+    };
+
+    await debugLog("webhook_received", { payload_keys: Object.keys(payload?.data || {}) });
+
     // Fetch full email content (retries if attachments not yet available)
     const email = await fetchEmailContent(emailId, resendKey);
     console.log(`Email from: ${email.from}, subject: ${email.subject}`);
+
+    await debugLog("email_fetched", {
+      from: email.from, subject: email.subject,
+      has_html: !!(email.html), html_length: (email.html || "").length,
+      has_text: !!(email.text), text_length: (email.text || "").length,
+      attachment_count: (email.attachments || []).length,
+      attachments: (email.attachments || []).map((a: any) => ({
+        id: a.id, filename: a.filename, content_type: a.content_type, type: a.type,
+        content_disposition: a.content_disposition, size: a.size,
+      })),
+    });
 
     // Check if this is an agent prompt email — forward to agent-prompt-handler
     const emailBodyForPromptCheck = email.text || email.html?.replace(/<[^>]+>/g, "") || "";
@@ -1167,6 +1189,12 @@ serve(async (req: Request) => {
     });
 
     console.log(`Processable attachments: ${processableAttachments.length} out of ${attachments.length} total`);
+    await debugLog("attachments_filtered", {
+      total: attachments.length,
+      processable: processableAttachments.length,
+      all_types: attachments.map((a: any) => ({ fn: a.filename, ct: a.content_type || a.type })),
+      processable_files: processableAttachments.map((a: any) => a.filename),
+    });
 
     if (processableAttachments.length === 0) {
       console.log("No processable attachments found, checking for document request");
@@ -1199,11 +1227,17 @@ serve(async (req: Request) => {
       }
 
       // Before giving up, check if the email body itself contains an inline receipt
+      await debugLog("checking_inline_receipt", {
+        has_anthropic_key: !!anthropicKey, has_supabase: !!supabase,
+        html_length: (email.html || "").length, text_length: (email.text || "").length,
+        html_preview: (email.html || "").slice(0, 500),
+      });
       if (anthropicKey && supabase) {
         try {
           const inlineParsed = await parseInlineReceipt(
             email.html || "", email.text || "", email.subject || "", anthropicKey
           );
+          await debugLog("inline_receipt_result", { result: inlineParsed });
           if (inlineParsed) {
             console.log(`Inline receipt found (no attachments path): ${inlineParsed.vendor} $${inlineParsed.amount}`);
             const fromAddr = typeof email.from === "string"
@@ -1246,6 +1280,7 @@ serve(async (req: Request) => {
           }
         } catch (inlineErr) {
           console.error("Inline receipt check failed:", inlineErr);
+          await debugLog("inline_receipt_error", { error: String(inlineErr), stack: (inlineErr as any)?.stack?.slice(0, 500) });
         }
       }
 
