@@ -10,6 +10,22 @@ interface PageEntry {
 
 const PAGES: PageEntry[] = [
   {
+    title: "1402 Ashwood Rd — Purchase Analysis",
+    summary:
+      "Full house-buying analysis for 1402 Ashwood Rd, Austin TX ($599,900). Includes market comps, structural analysis, financial modeling, investment ROI comparison (house vs. equities), 10-year risk assessment, and buyer checklist.",
+    date: "2026-04-13",
+    url: "/housebuyashwood.html",
+    category: "Real Estate",
+  },
+  {
+    title: "Subhash Sonnad — Obituary",
+    summary:
+      "Memorial page for Subhash Sonnad. Life history, family, and legacy.",
+    date: "2026-03-01",
+    url: "/subhash-sonnad-obituary.html",
+    category: "Family",
+  },
+  {
     title: "Hannah & Jackie — Financial Snapshot",
     summary:
       "Combined assets, income (3-year history), and supporting documents for Hannah Sonnad & Jackie Giroux. Includes all Schwab account balances, 2025 earned income breakdown, K-1 trust distributions, and links to statements.",
@@ -86,6 +102,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   Financial: "bg-blue-100 text-blue-700",
   Tax: "bg-amber-100 text-amber-700",
   "Tax & Retirement": "bg-purple-100 text-purple-700",
+  "Real Estate": "bg-green-100 text-green-700",
+  Family: "bg-rose-100 text-rose-700",
 };
 
 function formatDate(dateStr: string): string {
@@ -102,8 +120,8 @@ export function PagesTab() {
     <div>
       <h1 className="text-2xl font-bold text-slate-900 mb-1">Pages</h1>
       <p className="text-sm text-slate-500 mb-6">
-        Standalone pages created for tax worksheets, financial snapshots, and
-        other documents.
+        Standalone pages — tax worksheets, financial snapshots, real estate
+        analysis, and family documents.
       </p>
 
       <div className="space-y-3">
