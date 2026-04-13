@@ -14,8 +14,12 @@ import { PlanlistTab } from "@/components/devcontrol/planlist-tab";
 import { FlowMigTab } from "@/components/devcontrol/flow-mig-tab";
 import { TocTab } from "@/components/devcontrol/toc-tab";
 import { PagesTab } from "@/components/intranet/pages-tab";
+import { DirectoryTab } from "@/components/intranet/associates/directory-tab";
 
 const TAB_COMPONENTS: Record<string, Record<string, React.ComponentType>> = {
+  associates: {
+    directory: DirectoryTab,
+  },
   admin: {
     uploads: UploadsTab,
     users: UsersTab,

@@ -33,6 +33,7 @@ export interface SectionDefinition {
 export const SECTIONS: SectionDefinition[] = [
   { key: "files", label: "File Vault" },
   { key: "bookkeeping", label: "Bookkeeping" },
+  { key: "associates", label: "Associates" },
   { key: "zeni", label: "Zeni" },
   { key: "howto", label: "How It Works" },
   { key: "devcontrol", label: "DevControl" },
