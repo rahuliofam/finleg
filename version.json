@@ -1,12 +1,12 @@
 {
-  "version": "v260413.04 3:55p",
-  "release": 207,
-  "sha": "97a84ec",
-  "fullSha": "97a84ec6c769968b8f76e0b8a74f574c4c613c7b",
+  "version": "v260413.05 3:59p",
+  "release": 208,
+  "sha": "2450c8b",
+  "fullSha": "2450c8b8abdebaafc31f84a76977c125c6269505",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-13 20:55:43+00",
-  "commits": [{"sha":"97a84ec","message":"feat: add Ashwood house analysis and obituary to intranet pages index","author":"Rahul"}]
+  "pushedAt": "2026-04-13 20:59:38+00",
+  "commits": [{"sha":"2450c8b","message":"feat: add contacts directory under Associates with Mark Stevens seed data","author":"Rahul"}]
 }
