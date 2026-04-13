@@ -108,13 +108,13 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
         .nav-tabs {
             display: flex;
+            flex-wrap: wrap;
             gap: 0.25rem;
             background: var(--fl-card);
             border: 1px solid var(--fl-border);
             border-radius: 12px;
             padding: 0.35rem;
             margin-bottom: 2rem;
-            overflow-x: auto;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -170,7 +170,7 @@
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .hero h1 { font-size: 1.5rem; }
             .hero .price-badge { font-size: 1.4rem; }
-            .nav-tabs { flex-wrap: nowrap; }
+            .nav-tabs { flex-wrap: wrap; }
         }
         .stat-card {
             text-align: center;
