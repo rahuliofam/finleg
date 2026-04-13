@@ -2494,6 +2494,32 @@
                 <div class="grid-3" id="roi-summary-cards"></div>
             </div>
 
+            <!-- ===== Bottom Line Comparison Matrix ===== -->
+            <div class="card" style="border:2px solid var(--fl-green);">
+                <h3 style="font-size:1.15rem;">Bottom Line — 10-Year Net Equity Comparison</h3>
+                <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:1rem;">
+                    How much equity you actually end up with after 10 years. House = home value minus remaining mortgage minus cumulative extra ownership costs (vs. renting). Stocks = portfolio value after 15% capital gains tax on profits.
+                </p>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:0.88rem;text-align:center;" id="tbl-bottomline">
+                        <thead>
+                            <tr>
+                                <th style="padding:0.7rem;background:var(--fl-green-dark);color:white;border-radius:8px 0 0 0;"></th>
+                                <th colspan="3" style="padding:0.7rem;background:var(--fl-accent);color:white;border-radius:0 8px 0 0;">Stocks Annual Return</th>
+                            </tr>
+                            <tr style="background:var(--fl-green-light);">
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-green-dark);">House Appreciation →</th>
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">10%</th>
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">15%</th>
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">20%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-bottomline-body"></tbody>
+                    </table>
+                </div>
+                <div id="bottomline-legend" style="margin-top:1rem;font-size:0.8rem;color:var(--fl-muted);"></div>
+            </div>
+
             <!-- ===== Link to Why Buy tab ===== -->
             <div class="card" style="border-left:4px solid var(--fl-green);background:var(--fl-green-light);text-align:center;padding:1.5rem;">
                 <p style="font-size:0.95rem;color:var(--fl-green-dark);font-weight:600;">Looking for the case in favor of buying?</p>
@@ -2760,6 +2786,76 @@ loadChecklistState();
             html += '</table></div>';
         });
         roiDiv.innerHTML = html;
+    }
+
+    // ====== BOTTOM LINE 10-YEAR MATRIX ======
+    var blBody = document.getElementById('tbl-bottomline-body');
+    if (blBody) {
+        var BL_HOUSE = [0.04, 0.05, 0.06];
+        var BL_STOCK = [0.10, 0.15, 0.20];
+        var BL_YR = 10;
+        var months10 = BL_YR * 12;
+        var bal10 = remainingBalance(months10);
+        var cumExtra = EXTRA_OWN_COST * BL_YR;
+        var CAP_GAINS_TAX = 0.15;
+
+        var html = '';
+        BL_HOUSE.forEach(function(hr) {
+            var houseEquity = PRICE * Math.pow(1 + hr, BL_YR) - bal10;
+            var houseNet = houseEquity - cumExtra; // net of extra ownership costs
+            html += '<tr style="border-bottom:1px solid var(--fl-border);">';
+            html += '<td style="padding:0.7rem;font-weight:700;background:var(--fl-green-light);color:var(--fl-green-dark);text-align:left;">House at ' + (hr * 100) + '%</td>';
+
+            BL_STOCK.forEach(function(sr) {
+                var stockGross = CASH * Math.pow(1 + sr, BL_YR);
+                var stockProfit = stockGross - CASH;
+                var stockNet = CASH + stockProfit * (1 - CAP_GAINS_TAX); // after cap gains tax
+
+                var diff = houseNet - stockNet;
+                var diffPerMonth = diff / months10;
+                var winner = diff > 0 ? 'house' : 'stocks';
+                var absDiff = Math.abs(diff);
+                var absMonthly = Math.abs(diffPerMonth);
+
+                var cellColor = diff > 0 ? '#065f46' : '#1e40af';
+                var cellBg = diff > 0 ? '#ecfdf5' : '#eff6ff';
+                var label = diff > 0 ? 'House wins' : 'Stocks win';
+
+                html += '<td style="padding:0.7rem;background:' + cellBg + ';">';
+                html += '<div style="font-weight:700;font-size:1rem;color:' + cellColor + ';">' + label + '</div>';
+                html += '<div style="font-size:0.82rem;color:var(--fl-muted);margin-top:0.25rem;">by ' + fmt(absDiff) + '</div>';
+                html += '<div style="font-size:0.78rem;color:' + cellColor + ';font-weight:600;margin-top:0.2rem;">≈ ' + fmt(absMonthly) + '/mo extra</div>';
+                html += '</td>';
+            });
+            html += '</tr>';
+        });
+
+        // Summary row: house net equity & stock net values
+        html += '<tr style="background:var(--fl-green-light);border-top:2px solid var(--fl-green);">';
+        html += '<td style="padding:0.6rem;font-size:0.8rem;font-weight:600;color:var(--fl-muted);text-align:left;">Net equity after 10yr</td>';
+        BL_STOCK.forEach(function(sr) {
+            var stockGross = CASH * Math.pow(1 + sr, BL_YR);
+            var stockProfit = stockGross - CASH;
+            var stockNet = CASH + stockProfit * (1 - CAP_GAINS_TAX);
+            html += '<td style="padding:0.6rem;font-size:0.8rem;color:var(--fl-accent);font-weight:600;">Stocks: ' + fmt(stockNet) + '</td>';
+        });
+        html += '</tr>';
+
+        blBody.innerHTML = html;
+
+        // Legend with house net values
+        var legendDiv = document.getElementById('bottomline-legend');
+        if (legendDiv) {
+            var lhtml = '<strong>House net equity after 10 years:</strong> ';
+            BL_HOUSE.forEach(function(hr, i) {
+                var houseEquity = PRICE * Math.pow(1 + hr, BL_YR) - bal10;
+                var houseNet = houseEquity - cumExtra;
+                if (i > 0) lhtml += ' · ';
+                lhtml += '<span style="color:var(--fl-green-dark);font-weight:600;">' + (hr*100) + '%: ' + fmt(houseNet) + '</span>';
+            });
+            lhtml += '<br><span style="font-size:0.75rem;">House equity = home value − mortgage balance − cumulative extra cost of owning vs. renting (' + fmt(cumExtra) + '). Stocks after 15% capital gains tax on profits.</span>';
+            legendDiv.innerHTML = lhtml;
+        }
     }
 })();
 </script>
