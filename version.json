@@ -1,12 +1,12 @@
 {
-  "version": "v260414.07 6:21p",
-  "release": 216,
-  "sha": "7869be3",
-  "fullSha": "7869be30f7478d323739a20a0868203da19494ef",
+  "version": "v260414.08 6:31p",
+  "release": 217,
+  "sha": "f1b1982",
+  "fullSha": "f1b198281de3c5455392d114e9f26ef6299f7ab5",
   "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 23:21:32+00",
-  "commits": [{"sha":"7869be3","message":"feat: refresh buyer checklist with enriched phases, subtasks, and specific action items","author":"Haydn"}]
+  "pushedAt": "2026-04-14 23:31:07+00",
+  "commits": [{"sha":"f1b1982","message":"feat: add agent compensation explainer callout to Ashwood page","author":"Haydn"}]
 }
