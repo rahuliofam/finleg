@@ -1,12 +1,12 @@
 {
-  "version": "v260414.03 5:05p",
-  "release": 212,
-  "sha": "43094be",
-  "fullSha": "43094be4968ffdae993f1c9bae67f537ebac7015",
+  "version": "v260414.04 5:21p",
+  "release": 213,
+  "sha": "abc4a4c",
+  "fullSha": "abc4a4c952ffcc1a0c4135acb2ebe60b3046fda0",
   "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 22:05:28+00",
-  "commits": [{"sha":"43094be","message":"feat: add Timeline tab and overhaul Structural Analysis into Inspection Details","author":"Haydn"}]
+  "pushedAt": "2026-04-14 22:21:06+00",
+  "commits": [{"sha":"abc4a4c","message":"feat: add transaction documents with expandable detail cards to Your Documents tab","author":"Haydn"}]
 }
