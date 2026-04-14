@@ -426,6 +426,7 @@
             <button class="nav-tab" data-section="records">Records &amp; Permits</button>
             <button class="nav-tab" data-section="documents">Your Documents</button>
             <button class="nav-tab" data-section="offer">Offer Contract</button>
+            <button class="nav-tab" data-section="offerrisk">Offer Risk Analysis</button>
             <button class="nav-tab" data-section="risks">10-Year Risks</button>
             <button class="nav-tab" data-section="questions">Decision Questions</button>
             <button class="nav-tab" data-section="invest">Investment ROI</button>
@@ -1970,6 +1971,461 @@
                         <div class="tl-desc">Final walk-through 24-48 hrs before. Sign documents, wire funds, receive keys. Possession upon closing and funding.</div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- ==================== OFFER RISK ANALYSIS ==================== -->
+        <div class="section" id="sec-offerrisk">
+            <h2 class="section-title">Offer Risk Analysis</h2>
+
+            <div class="callout callout-danger">
+                <strong>Purpose:</strong> This tab identifies every scenario in your signed contract where you could lose money, fail to get deposits refunded, or face unexpected financial exposure. Each risk includes the contract clause, the dollar amount at stake, and what triggers it.
+            </div>
+
+            <!-- MONEY AT RISK SUMMARY -->
+            <div class="card">
+                <h3>Money at Risk — Summary</h3>
+                <p style="font-size:0.9rem; color:var(--fl-muted); margin-bottom:0.75rem;">These are the funds you've committed that could be lost or trapped under specific contract scenarios.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Item</th><th>Amount</th><th>When at Risk</th><th>Refundable?</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Option Fee</td>
+                            <td>$500</td>
+                            <td>Due within 3 days of effective date</td>
+                            <td><span class="badge badge-red">Never refunded</span> — credited to sale price if you close</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Earnest Money</td>
+                            <td>$17,997</td>
+                            <td>Due within 3 days of effective date</td>
+                            <td><span class="badge badge-yellow">Conditional</span> — refundable only via valid termination paths (see below)</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Down Payment</td>
+                            <td>$119,980</td>
+                            <td>Due at closing (June 1, 2026)</td>
+                            <td>Not at risk until closing day wire</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Inspection / Appraisal Costs</td>
+                            <td>~$1,000–$2,500</td>
+                            <td>During option period</td>
+                            <td><span class="badge badge-red">Never refunded</span> — sunk cost regardless of outcome</td>
+                        </tr>
+                        <tr style="background: var(--fl-green-light);">
+                            <td class="bold" style="color:var(--fl-danger);">Total at Risk Before Closing</td>
+                            <td class="bold" style="color:var(--fl-danger);">$18,497–$20,997</td>
+                            <td colspan="2">Option fee is always lost if you walk. Earnest money depends on how and when you terminate.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- EARNEST MONEY REFUND PATHS -->
+            <div class="card">
+                <h3>Earnest Money ($17,997) — When You Get It Back vs. Lose It</h3>
+
+                <h4 style="color:var(--fl-success); margin: 1rem 0 0.5rem;"><span style="font-size:1.1rem;">&#10003;</span> Scenarios Where Earnest Money IS Refunded</h4>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:22%">Scenario</th><th style="width:18%">Contract Clause</th><th style="width:15%">Deadline</th><th>Details &amp; Requirements</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Option period termination</td>
+                            <td>Paragraph 5</td>
+                            <td>Within 5 days of effective date (by 5:00 PM)</td>
+                            <td>You can terminate for <strong>any reason</strong> during the option period. You lose the $500 option fee but get $17,997 earnest money back. This is your strongest exit ramp.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Financing denied (Buyer Approval)</td>
+                            <td>Third Party Financing Addendum ¶3A</td>
+                            <td>Within 21 days of effective date</td>
+                            <td>If your lender denies the loan, you may terminate by giving seller: (1) notice of termination, and (2) a copy of the lender's written denial. Earnest money refunded. <span class="badge badge-yellow">Must provide written proof from lender.</span></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Property doesn't meet lender requirements</td>
+                            <td>Third Party Financing Addendum ¶3B</td>
+                            <td>3rd day before closing</td>
+                            <td>If the property fails appraisal, insurability, or other lender underwriting requirements, you may terminate with earnest money refund. Must provide seller notice + copy of lender's statement.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Title defects / objections</td>
+                            <td>Paragraph 6B</td>
+                            <td>Within 5 days of receiving commitment</td>
+                            <td>If the title commitment reveals unacceptable exceptions (liens, easements, etc.) and seller can't cure within the Cure Period, you can terminate and get earnest money back.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Commitment not delivered in time</td>
+                            <td>Paragraph 6B</td>
+                            <td>20 days after title co. receives contract</td>
+                            <td>If title company fails to deliver the commitment and exception documents on time, and you don't get them by the Closing Date (extendable up to 15 days), you may terminate.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Survey problems</td>
+                            <td>Paragraph 6C</td>
+                            <td>Per survey delivery schedule</td>
+                            <td>If the survey reveals encroachments, boundary disputes, or other issues and seller fails to deliver a survey by the required date, you may terminate.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Lease review — unacceptable terms</td>
+                            <td>Residential Leases Addendum (TXR 1953) ¶3</td>
+                            <td>4 days after receiving lease copies</td>
+                            <td>Seller hasn't delivered lease copies yet. Once received, you have 4 days to review. If terms are unacceptable, you can terminate with earnest money refund.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Seller default</td>
+                            <td>Paragraph 15</td>
+                            <td>Any time before closing</td>
+                            <td>If seller fails to comply with the contract (refuses to close, can't deliver clear title, etc.), you may terminate and receive earnest money back, plus pursue damages.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Casualty loss — property destroyed</td>
+                            <td>Paragraph 14</td>
+                            <td>Before closing</td>
+                            <td>If the property is damaged by fire or casualty and seller can't restore it, you may terminate with earnest money refund.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="color:var(--fl-danger); margin: 1.5rem 0 0.5rem;"><span style="font-size:1.1rem;">&#10007;</span> Scenarios Where Earnest Money IS NOT Refunded</h4>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:22%">Scenario</th><th style="width:18%">Contract Clause</th><th>What Happens</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Buyer default — you simply walk away</td>
+                            <td>Paragraph 15</td>
+                            <td>If you fail to close without a valid termination reason, seller can keep earnest money as liquidated damages. Seller may also pursue specific performance (force you to buy).</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Missed termination deadlines</td>
+                            <td>Various</td>
+                            <td>Every termination right has a deadline. If you discover a problem but miss the notice window (e.g., financing denial after day 21, lease objection after the 4-day window), you lose the right to terminate with refund.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Financing falls through after approval period</td>
+                            <td>Third Party Financing Addendum</td>
+                            <td>The financing contingency protects you only within the specified period. If your loan falls through after buyer approval was deemed obtained (or deadline passed), you may not be able to terminate with refund.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Cold feet / change of mind (after option period)</td>
+                            <td>Paragraph 15</td>
+                            <td>After the option period expires, you cannot terminate without cause. Deciding you don't want the house is not a valid termination reason — earnest money at risk.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PRE-QUALIFICATION RISK -->
+            <div class="card">
+                <h3>Pre-Qualification Letter — Not a Loan Approval</h3>
+                <div class="callout callout-warning">
+                    <strong>Your Nations Lending pre-qualification is conditional — it is explicitly NOT a loan approval.</strong>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:30%">Item</th><th>Status / Risk</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="bold">Lender</td><td>Nations Lending (Nossi Creeger, NMLS 741376)</td></tr>
+                        <tr><td class="bold">Loan amount</td><td>$479,920 (80% LTV)</td></tr>
+                        <tr><td class="bold">Rate</td><td>Max 6.75% (contract says max 6.5% — <span class="badge badge-red">mismatch</span>)</td></tr>
+                        <tr><td class="bold">Signed application received?</td><td><span class="badge badge-red">No</span></td></tr>
+                        <tr><td class="bold">Credit report reviewed?</td><td><span class="badge badge-red">No</span></td></tr>
+                        <tr><td class="bold">Credit score reviewed?</td><td><span class="badge badge-red">No</span></td></tr>
+                        <tr><td class="bold">What was reviewed?</td><td>Income, cash for down payment, debts, other assets — <em>verbally provided only</em></td></tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-danger" style="margin-top:1rem;">
+                    <strong>Rate Cap Mismatch:</strong> The pre-qualification letter states a max rate of <strong>6.75%</strong>, but the contract's Third Party Financing Addendum caps the rate at <strong>6.75%</strong> as well. The existing Offer Contract tab references 6.5% — verify which cap actually applies. If your actual contract cap is 6.5% and rates rise above that before closing, you could lose financing protection and need to either accept a higher rate out-of-pocket or terminate.
+                </div>
+                <div class="question-box">
+                    <strong>Action items for financing:</strong>
+                    <p>1. Submit the formal loan application immediately — the pre-qual is based on unverified verbal information. 2. Confirm the exact interest rate cap in your signed contract (6.5% vs 6.75%). 3. Lock your rate as soon as possible to avoid rate risk before the June 1 closing. 4. Get a full pre-approval (not just pre-qualification) to reduce the risk of denial.</p>
+                </div>
+            </div>
+
+            <!-- SELLER DISCLOSURE RISKS -->
+            <div class="card">
+                <h3>Seller Disclosure Red Flags</h3>
+                <p style="font-size:0.9rem; color:var(--fl-muted); margin-bottom:0.75rem;">Items from the Seller's Disclosure Notice (SDN) that create financial risk or warrant further investigation.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:22%">Disclosure Item</th><th style="width:12%">Risk Level</th><th style="width:15%">Potential Cost</th><th>Analysis</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Previous flooding from reservoir breach</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>$5K–$50K+</td>
+                            <td>Seller disclosed "Yes" to previous flooding from reservoir failure/breach. The 1994 note mentions "outbuilding/garage minor water penetration — installed french drains." While french drains were installed, this confirms the property HAS flooded before. No current flood insurance. <strong>You should obtain flood insurance immediately after closing and investigate FEMA flood zone status.</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Lead-based paint — inspection waived</td>
+                            <td><span class="badge badge-red">High</span></td>
+                            <td>$5K–$25K remediation</td>
+                            <td>Built 1948 — pre-1978 home almost certainly has lead paint. Seller has no knowledge of hazards and no reports. <strong>You waived your right to a lead inspection.</strong> If lead is found later (especially with children in the home), remediation is expensive and legally complex.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Previous roof repairs + new roof 2024</td>
+                            <td><span class="badge badge-yellow">Medium</span></td>
+                            <td>$0–$15K</td>
+                            <td>Seller disclosed previous roof repairs and notes "New roof 2024 — hail damage." This means the roof was replaced via insurance claim. Check: was it a full replacement or partial? Is it a composition overlay on old shingles? Get documentation of the roofing work and warranty. Insurance claims history may make the property harder to insure.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Previous structural repairs</td>
+                            <td><span class="badge badge-yellow">Medium</span></td>
+                            <td>$5K–$30K</td>
+                            <td>Seller disclosed previous other structural repairs. On a 1948 home with Austin's expansive clay soil, this could indicate ongoing foundation issues. Get a structural engineer's report during the option period — not just a home inspector.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Termite / WDI damage needing repair</td>
+                            <td><span class="badge badge-yellow">Medium</span></td>
+                            <td>$2K–$15K</td>
+                            <td>Seller disclosed termite or wood-destroying insect damage needing repair. Get a WDI inspection to determine current extent. Treatment may be needed, and structural wood damage repair can be costly on older homes.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">No flood insurance currently</td>
+                            <td><span class="badge badge-yellow">Medium</span></td>
+                            <td>$1K–$3K/yr</td>
+                            <td>Despite previous flooding history, seller has no flood insurance. Your lender may require it depending on flood zone. Even if not required, given the flooding disclosure, you should carry it. Budget $1K–$3K annually.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Propane gas service area</td>
+                            <td><span class="badge badge-green">Low</span></td>
+                            <td>$500–$2K/yr</td>
+                            <td>Property is in a propane service area (Texas Gas Service for natural gas noted in utilities). Verify which systems use propane vs. natural gas. Propane costs more and requires tank maintenance.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Groundwater conservation / subsidence district</td>
+                            <td><span class="badge badge-green">Low</span></td>
+                            <td>Varies</td>
+                            <td>May affect future water usage rules or well drilling. Minimal financial risk for residential use but worth noting for any future development plans.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- HOA / POA RISK -->
+            <div class="card">
+                <h3>HOA / Property Owners Association Risk</h3>
+                <div class="callout callout-warning">
+                    <strong>Mandatory POA membership required.</strong> Per contract Paragraph 7D(3), the property is subject to mandatory membership in a property owners association.
+                </div>
+                <table class="data-table">
+                    <tbody>
+                        <tr><td class="bold" style="width:30%">Mandatory membership?</td><td><span class="badge badge-red">Yes</span></td></tr>
+                        <tr><td class="bold">Current assessments</td><td>Yes — amount not specified in contract. Verify with HOA directly.</td></tr>
+                        <tr><td class="bold">Assessment changes</td><td>Contract warns: <strong>"the amount of the assessments is subject to change"</strong></td></tr>
+                        <tr><td class="bold">Foreclosure risk</td><td>Contract warns: <strong>"Your failure to pay the assessments could result in enforcement of the association's lien on and the foreclosure of the Property"</strong></td></tr>
+                        <tr><td class="bold">Resale certificate</td><td>Required — contains assessment amounts, frequency, reserves, and any pending litigation. <span class="badge badge-yellow">Request and review before closing.</span></td></tr>
+                    </tbody>
+                </table>
+                <div class="question-box">
+                    <strong>Ask Alli to obtain:</strong>
+                    <p>1. The HOA resale certificate with current assessment amount and frequency. 2. Whether any special assessments are planned or pending. 3. The HOA's financial statements and reserve fund status. 4. Any pending litigation involving the HOA. 5. Rules regarding leasing/tenant restrictions (critical since you're inheriting a tenant).</p>
+                </div>
+            </div>
+
+            <!-- LEASE ASSIGNMENT RISK -->
+            <div class="card">
+                <h3>Existing Lease — Assignment Risk</h3>
+                <div class="callout callout-warning">
+                    <strong>You are inheriting an existing tenant.</strong> The Addendum Regarding Residential Leases (TXR 1953) governs this.
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:30%">Item</th><th>Status / Risk</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="bold">Assignment type</td><td>Option B: Existing leases assigned to buyer at closing</td></tr>
+                        <tr><td class="bold">Lease copies received?</td><td><span class="badge badge-red">No — not yet delivered</span></td></tr>
+                        <tr><td class="bold">Seller delivery deadline</td><td>3 days after effective date (April 16, 2026)</td></tr>
+                        <tr><td class="bold">Your review window</td><td>4 days after receiving copies</td></tr>
+                        <tr><td class="bold">Termination right</td><td>If lease terms are unacceptable, you can terminate with earnest money refund within the 4-day window</td></tr>
+                        <tr><td class="bold">Security deposit</td><td>Transfers to you at closing — you become responsible for returning it per Texas Property Code</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-danger" style="margin-top:1rem;">
+                    <strong>Key risks with the existing lease:</strong>
+                    <ul style="margin-top:0.5rem; padding-left:1.25rem;">
+                        <li><strong>Below-market rent:</strong> If the tenant's rent is below market, you're locked into that rate until the lease expires</li>
+                        <li><strong>Long-term lease:</strong> A multi-year lease could prevent you from occupying or renovating for years</li>
+                        <li><strong>Problem tenant:</strong> You inherit any tenant issues — late payments, property damage, disputes</li>
+                        <li><strong>Eviction costs:</strong> If tenant doesn't comply with lease terms, eviction in Texas can cost $2K–$5K+ and take 1–3 months</li>
+                        <li><strong>Security deposit liability:</strong> You become liable for the full security deposit return, even if seller didn't maintain it properly</li>
+                        <li><strong>HOA lease restrictions:</strong> The HOA may have rules about tenants that conflict with the existing lease</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CRITICAL DEADLINES RISK MAP -->
+            <div class="card">
+                <h3>Deadline Risk Map — Miss These, Lose Money</h3>
+                <p style="font-size:0.9rem; color:var(--fl-muted); margin-bottom:0.75rem;">Every termination right expires. Missing a deadline means losing your exit ramp and potentially your earnest money.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:12%">Day</th><th style="width:15%">Date (est.)</th><th style="width:25%">Deadline</th><th style="width:12%">$ at Risk</th><th>If You Miss It</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Day 0</td>
+                            <td>Apr 13, 2026</td>
+                            <td>Contract effective date</td>
+                            <td>—</td>
+                            <td>All clocks start running</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Day 3</td>
+                            <td>Apr 16</td>
+                            <td>Earnest money + option fee due</td>
+                            <td>$18,497</td>
+                            <td>Failure to deliver = seller can terminate the contract</td>
+                        </tr>
+                        <tr style="background: #fef2f2;">
+                            <td class="bold" style="color:var(--fl-danger);">Day 5</td>
+                            <td style="color:var(--fl-danger);">Apr 18</td>
+                            <td style="color:var(--fl-danger);"><strong>Option period expires (5 PM)</strong></td>
+                            <td style="color:var(--fl-danger);">$17,997</td>
+                            <td style="color:var(--fl-danger);"><strong>You lose the unrestricted right to terminate.</strong> After this, you need a contractual reason to exit with refund.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Day ~7</td>
+                            <td>Apr ~20</td>
+                            <td>Lease review deadline (4 days after receiving copies)</td>
+                            <td>$17,997</td>
+                            <td>Lose right to terminate based on unacceptable lease terms</td>
+                        </tr>
+                        <tr style="background: #fef2f2;">
+                            <td class="bold" style="color:var(--fl-danger);">Day 21</td>
+                            <td style="color:var(--fl-danger);">May 4</td>
+                            <td style="color:var(--fl-danger);"><strong>Financing approval deadline</strong></td>
+                            <td style="color:var(--fl-danger);">$17,997</td>
+                            <td style="color:var(--fl-danger);"><strong>If financing falls through after this, you may not be able to terminate with refund.</strong> Buyer approval deemed obtained if not terminated by this date.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Day ~45</td>
+                            <td>May ~28</td>
+                            <td>Title objection period (5 days after commitment)</td>
+                            <td>$17,997</td>
+                            <td>Waive right to object to title exceptions — stuck with whatever encumbrances exist</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Day ~46</td>
+                            <td>May 29</td>
+                            <td>Property approval termination (3 days before closing)</td>
+                            <td>$17,997</td>
+                            <td>Last day to terminate if property doesn't meet lender requirements</td>
+                        </tr>
+                        <tr style="background: #fef2f2;">
+                            <td class="bold" style="color:var(--fl-danger);">Day 49</td>
+                            <td style="color:var(--fl-danger);">Jun 1, 2026</td>
+                            <td style="color:var(--fl-danger);"><strong>Closing date</strong></td>
+                            <td style="color:var(--fl-danger);">$599,900</td>
+                            <td style="color:var(--fl-danger);"><strong>Full commitment.</strong> After closing, the property is yours with all its issues. No more exit ramps.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- WORST CASE SCENARIO -->
+            <div class="card">
+                <h3>Worst-Case Financial Exposure Scenarios</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width:25%">Scenario</th><th style="width:15%">Money Lost</th><th>How It Happens</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-success);">Best exit: terminate in option period</td>
+                            <td>$500 + inspection costs</td>
+                            <td>You walk away during the first 5 days. Lose option fee and any inspection/appraisal costs. Earnest money fully refunded.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Financing denied (within deadline)</td>
+                            <td>$500 + sunk costs</td>
+                            <td>Lender denies your loan within 21 days. You provide written proof and terminate. Lose option fee only.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-warning);">Financing denied (after deadline)</td>
+                            <td>$18,497+</td>
+                            <td>Lender denies the loan after the 21-day financing window. You may not have a contractual right to terminate with refund. Earnest money + option fee potentially lost.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Buyer default — walk away after option period</td>
+                            <td>$18,497+</td>
+                            <td>You decide not to close without a valid contractual reason. Seller keeps earnest money. Could also pursue specific performance (court order forcing you to buy).</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Close and discover major hidden defects</td>
+                            <td>$20K–$100K+</td>
+                            <td>After closing, you discover foundation issues, sewer line failure, electrical hazards, or flooding. Contract is "As Is" — seller has no repair obligation. Your only recourse is if seller knowingly concealed defects (hard to prove).</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color:var(--fl-danger);">Close with problem tenant + below-market lease</td>
+                            <td>$5K–$20K</td>
+                            <td>Inherited tenant has a long-term lease at below-market rent, stops paying, or causes property damage. Eviction costs + lost rent + repair costs.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AFFILIATED BUSINESS DISCLOSURE -->
+            <div class="card">
+                <h3>Affiliated Business Relationships — Conflict of Interest Note</h3>
+                <div class="callout callout-info">
+                    <strong>Your broker (Spyglass Realty) has financial relationships with vendors recommended to you.</strong> You are not required to use any of them.
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Entity</th><th>Service</th><th>Relationship</th><th>Risk</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Nations Lending</td>
+                            <td>Your mortgage lender</td>
+                            <td>Marketing Service Agreement</td>
+                            <td><span class="badge badge-yellow">Medium</span> — Spyglass benefits from this referral. Shop other lenders for comparison rates.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Cascade Roofing</td>
+                            <td>Roofing</td>
+                            <td>Referral Agreement</td>
+                            <td><span class="badge badge-green">Low</span> — Get independent roof inspection regardless</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Legacy Elite Solutions</td>
+                            <td>Insurance</td>
+                            <td>Referral Agreement</td>
+                            <td><span class="badge badge-yellow">Medium</span> — Shop insurance independently. Flood history may affect rates.</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Achosa Home Warranty</td>
+                            <td>Home Warranty</td>
+                            <td>Referral Agreement</td>
+                            <td><span class="badge badge-green">Low</span> — Compare warranty providers before selecting</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- BOTTOM LINE -->
+            <div class="callout callout-danger">
+                <strong style="font-size:1.1rem;">Bottom Line: Your Immediate Action Items</strong>
+                <ol style="margin-top:0.75rem; padding-left:1.25rem; line-height:2;">
+                    <li><strong>Day 1–2 (Apr 13–14):</strong> Schedule a comprehensive home inspection, sewer scope, foundation inspection, and WDI inspection — all must complete before Day 5</li>
+                    <li><strong>Day 1–3 (Apr 13–16):</strong> Wire $18,497 (earnest + option fee) to Independence Title. Verify wiring instructions by phone — never by email alone</li>
+                    <li><strong>Day 1–3:</strong> Submit formal loan application to Nations Lending. The pre-qual is based on unverified verbal info only</li>
+                    <li><strong>Day 3 (Apr 16):</strong> Demand lease copies from seller — your 4-day review clock doesn't start until you receive them</li>
+                    <li><strong>Day 5 (Apr 18 by 5PM):</strong> <span class="badge badge-red">HARD DEADLINE</span> — Decide whether to proceed based on inspections. After this, your $17,997 earnest money is at risk</li>
+                    <li><strong>Day 21 (May 4):</strong> Ensure financing is approved or terminate with written denial before this date</li>
+                    <li><strong>Ongoing:</strong> Confirm the rate cap in your signed contract (6.5% vs 6.75%) and consider locking your rate immediately</li>
+                </ol>
             </div>
         </div>
 
