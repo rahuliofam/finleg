@@ -1,12 +1,12 @@
 {
-  "version": "v260414.02 1:21p",
-  "release": 211,
-  "sha": "37470aa",
-  "fullSha": "37470aacc9160c36db7c96b23d24c5337aa6e708",
-  "actor": "rsonnad",
+  "version": "v260414.03 5:05p",
+  "release": 212,
+  "sha": "43094be",
+  "fullSha": "43094be4968ffdae993f1c9bae67f537ebac7015",
+  "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 18:21:40+00",
-  "commits": [{"sha":"3fd0e73","message":"feat: move Bottom Line card to top of Investment ROI tab on Ashwood page","author":"Rahul"},{"sha":"37470aa","message":"Merge pull request #41 from rahuliofam/gallant-joliot","author":"Rahul"}]
+  "pushedAt": "2026-04-14 22:05:28+00",
+  "commits": [{"sha":"43094be","message":"feat: add Timeline tab and overhaul Structural Analysis into Inspection Details","author":"Haydn"}]
 }
