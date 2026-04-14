@@ -371,6 +371,209 @@
             border-radius: 999px;
             transition: width 0.5s;
         }
+        /* ===== Unified Timeline ===== */
+        .utl { position: relative; padding: 0; }
+        .utl-line {
+            position: absolute;
+            left: 140px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--fl-border);
+            z-index: 0;
+        }
+        .utl-today-marker {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            z-index: 2;
+        }
+        .utl-today-marker::before {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: var(--fl-danger);
+        }
+        .utl-today-marker::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: var(--fl-danger);
+        }
+        .utl-today-label {
+            background: var(--fl-danger);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+        }
+        .utl-event {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+            margin-bottom: 0.5rem;
+            z-index: 1;
+        }
+        .utl-date {
+            width: 120px;
+            flex-shrink: 0;
+            text-align: right;
+            padding-right: 1.25rem;
+            padding-top: 1rem;
+        }
+        .utl-date-main {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--fl-text);
+            line-height: 1.2;
+        }
+        .utl-date-day {
+            font-size: 0.75rem;
+            color: var(--fl-muted);
+            margin-top: 0.15rem;
+        }
+        .utl-dot-col {
+            width: 40px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            padding-top: 1.15rem;
+        }
+        .utl-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--fl-border);
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        .utl-dot.dot-milestone { background: var(--fl-green); box-shadow: 0 0 0 2px var(--fl-green); }
+        .utl-dot.dot-financial { background: var(--fl-accent); box-shadow: 0 0 0 2px var(--fl-accent); }
+        .utl-dot.dot-risk { background: var(--fl-danger); box-shadow: 0 0 0 2px var(--fl-danger); }
+        .utl-dot.dot-action { background: var(--fl-warning); box-shadow: 0 0 0 2px var(--fl-warning); }
+        .utl-card-wrap {
+            flex: 1;
+            min-width: 0;
+            padding: 0.25rem 0 0.25rem 1rem;
+        }
+        .utl-card {
+            background: var(--fl-card);
+            border: 1px solid var(--fl-border);
+            border-radius: 10px;
+            padding: 0.85rem 1.1rem;
+            cursor: pointer;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .utl-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+        .utl-card-head {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .utl-card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--fl-text);
+        }
+        .utl-card-badges {
+            display: flex;
+            gap: 0.35rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .utl-cat {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .utl-cat-milestone { background: #dcfce7; color: #166534; }
+        .utl-cat-financial { background: #dbeafe; color: #1e40af; }
+        .utl-cat-risk { background: #fee2e2; color: #991b1b; }
+        .utl-cat-action { background: #fef9c3; color: #854d0e; }
+        .utl-money {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #fef2f2;
+            color: var(--fl-danger);
+        }
+        .utl-chevron {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: var(--fl-muted);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .utl-card.open .utl-chevron { transform: rotate(180deg); }
+        .utl-details {
+            display: none;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--fl-border);
+            font-size: 0.85rem;
+            color: var(--fl-muted);
+            line-height: 1.7;
+        }
+        .utl-card.open .utl-details { display: block; }
+        .utl-details strong { color: var(--fl-text); }
+        /* Past events */
+        .utl-event.utl-past .utl-card {
+            opacity: 0.55;
+            background: #f8faf9;
+        }
+        .utl-event.utl-past .utl-date-main { color: var(--fl-muted); }
+        /* Imminent events (within 3 days) */
+        .utl-event.utl-imminent .utl-card {
+            border-color: var(--fl-danger);
+            box-shadow: 0 0 0 2px rgba(153,27,27,0.12);
+        }
+        @keyframes utl-pulse {
+            0%, 100% { box-shadow: 0 0 0 2px rgba(153,27,27,0.12); }
+            50% { box-shadow: 0 0 0 4px rgba(153,27,27,0.18); }
+        }
+        .utl-event.utl-imminent .utl-card { animation: utl-pulse 2s ease-in-out infinite; }
+        /* Legend */
+        .utl-legend {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+        }
+        .utl-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .utl-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        @media (max-width: 768px) {
+            .utl-line { display: none; }
+            .utl-event { flex-direction: column; gap: 0; }
+            .utl-date { width: auto; text-align: left; padding: 0 0 0.25rem 0; display: flex; gap: 0.5rem; align-items: baseline; }
+            .utl-dot-col { display: none; }
+            .utl-card-wrap { padding-left: 0; }
+        }
+
         #auth-gate {
             display: flex;
             align-items: center;
@@ -418,11 +621,12 @@
         <!-- Navigation Tabs -->
         <div class="nav-tabs" id="nav-tabs">
             <button class="nav-tab active" data-section="overview">Overview</button>
+            <button class="nav-tab" data-section="timeline">Timeline</button>
             <button class="nav-tab" data-section="whybuy">Why Buy This House</button>
             <button class="nav-tab" data-section="checklist">Buyer Checklist</button>
             <button class="nav-tab" data-section="financial">Financial Analysis</button>
             <button class="nav-tab" data-section="market">Market Comps</button>
-            <button class="nav-tab" data-section="structural">Structural Analysis</button>
+            <button class="nav-tab" data-section="structural">Inspection Details</button>
             <button class="nav-tab" data-section="records">Records &amp; Permits</button>
             <button class="nav-tab" data-section="documents">Your Documents</button>
             <button class="nav-tab" data-section="offer">Offer Contract</button>
@@ -522,6 +726,465 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- ==================== TIMELINE ==================== -->
+        <div class="section" id="sec-timeline">
+            <h2 class="section-title">Transaction Timeline</h2>
+
+            <div class="callout callout-info">
+                <strong>All key dates in one place.</strong> Click any card to expand details. Dates marked with ~ are estimated based on when prior steps complete. Past events are dimmed; upcoming deadlines within 3 days pulse red.
+            </div>
+
+            <div class="utl-legend">
+                <div class="utl-legend-item"><div class="utl-legend-dot" style="background:var(--fl-green)"></div> Milestone</div>
+                <div class="utl-legend-item"><div class="utl-legend-dot" style="background:var(--fl-accent)"></div> Financial</div>
+                <div class="utl-legend-item"><div class="utl-legend-dot" style="background:var(--fl-danger)"></div> Risk / Deadline</div>
+                <div class="utl-legend-item"><div class="utl-legend-dot" style="background:var(--fl-warning)"></div> Action Item</div>
+            </div>
+
+            <div class="utl">
+                <div class="utl-line"></div>
+
+                <!-- 1. Buyer Rep Agreement -->
+                <div class="utl-event" data-date="2026-04-12">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 12</div>
+                        <div class="utl-date-day">Pre-contract</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-milestone"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Buyer Rep Agreement Signed</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-milestone">Milestone</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>Jackie signed</strong> the Buyer Representation Agreement with Spyglass Realty (Alli Heller) via Jointly on 04/12/2026. Term runs through 07/31/2026.<br><br>
+                                <strong>Action:</strong> Hannah still needs to sign the representation agreement, IABS, and wire fraud warning.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Contract Effective Date -->
+                <div class="utl-event" data-date="2026-04-13">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 13</div>
+                        <div class="utl-date-day">Day 0</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-milestone"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Contract Effective Date</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-milestone">Milestone</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Both parties (seller Thelma Jane Hall &amp; buyers Jackie &amp; Hannah) have signed the TREC 1-4 contract. <strong>All deadlines count from this date.</strong><br><br>
+                                Purchase price: <strong>$599,900</strong> | Loan: $479,920 (30-yr fixed, max 6.5%) | Closing target: June 1, 2026.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Schedule Inspections -->
+                <div class="utl-event" data-date="2026-04-14">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 13&ndash;14</div>
+                        <div class="utl-date-day">Day 1&ndash;2</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-action"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Schedule All Inspections</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-action">Action</span>
+                                    <span class="utl-money">~$1K&ndash;$2.5K sunk cost</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                For a 1948 home, you need <strong>all of these before Day 5</strong>:<br>
+                                &bull; General home inspection ($400&ndash;$600)<br>
+                                &bull; Sewer scope ($150&ndash;$300) &mdash; cast iron drains are at end of life<br>
+                                &bull; Foundation / structural engineer ($300&ndash;$500)<br>
+                                &bull; WDI / termite inspection &mdash; seller disclosed prior damage<br>
+                                &bull; Electrical panel evaluation<br><br>
+                                <strong>These costs are sunk regardless of outcome.</strong> But skipping them on this home is far riskier.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3b. GreenWorks Inspection -->
+                <div class="utl-event" data-date="2026-04-15">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 15</div>
+                        <div class="utl-date-day">Day 2 &bull; 12:30 PM</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-action"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">GreenWorks Home Inspection</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-action">Action</span>
+                                    <span class="utl-money">$757.11</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>Comprehensive inspection at 12:30 PM CST.</strong> Both buyers should attend and walk with the inspector.<br><br>
+                                <strong>Included services:</strong> Licensed home inspection (above TREC standards), infrared thermal imaging, foundation elevation map, system &amp; structural evaluation, sprinkler/irrigation, sewer line camera, air quality readings, termite inspection (90-day guarantee), CLUE insurance history, energy report, repair estimate report.<br><br>
+                                <strong>Reports expected within 24 hours</strong> (by Apr 16). Review immediately &mdash; option period expires Apr 18 at 5 PM.<br><br>
+                                <strong>Bring:</strong> Phone/camera, notepad, flashlight, comfortable clothes for crawl spaces. Budget 3&ndash;4 hours.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Wire Earnest Money -->
+                <div class="utl-event" data-date="2026-04-16">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 13&ndash;16</div>
+                        <div class="utl-date-day">Day 1&ndash;3</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-financial"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Wire Earnest Money + Option Fee</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-financial">Financial</span>
+                                    <span class="utl-money">$18,497</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>$17,997 earnest money</strong> (3%) + <strong>$500 option fee</strong> to Carol Bellomy at Independence Title (3409 Executive Center Dr, Ste 150, Austin 78731).<br><br>
+                                <span style="color:var(--fl-danger);font-weight:600;">WIRE FRAUD ALERT:</span> Verify wiring instructions by calling title company at a known number. NEVER use email instructions alone.<br><br>
+                                <strong>If not delivered by Day 3:</strong> Seller can terminate the contract.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Submit Loan Application -->
+                <div class="utl-event" data-date="2026-04-16">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 13&ndash;16</div>
+                        <div class="utl-date-day">Day 1&ndash;3</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-action"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Submit Formal Loan Application</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-action">Action</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Your Nations Lending pre-qualification is based on <strong>unverified verbal information only</strong>. No signed application, credit report, or credit score has been reviewed.<br><br>
+                                Submit the formal application to Nossi Creeger (NMLS 741376) immediately. Also <strong>confirm the rate cap</strong> &mdash; pre-qual says 6.75% but contract may cap at 6.5%.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Earnest Money Due -->
+                <div class="utl-event" data-date="2026-04-16">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 16</div>
+                        <div class="utl-date-day">Day 3</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-financial"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Earnest Money + Option Fee Due</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-financial">Financial</span>
+                                    <span class="utl-money">$18,497 deadline</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>Hard deadline.</strong> Both earnest money ($17,997) and option fee ($500) must be deposited with the escrow agent by this date.<br><br>
+                                <strong>Option fee:</strong> Never refunded &mdash; credited to sale price if you close.<br>
+                                <strong>Earnest money:</strong> Conditionally refundable via valid termination paths.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Seller Provides Survey + Lease Copies -->
+                <div class="utl-event" data-date="2026-04-16">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 16</div>
+                        <div class="utl-date-day">Day 3</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-milestone"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Seller Provides Survey + Lease Copies</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-milestone">Milestone</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Seller must furnish the existing survey and <strong>all residential lease documents</strong> within 3 days of the effective date.<br><br>
+                                <strong>Critical:</strong> There is an existing tenant. You have NOT yet received lease copies. Your 4-day review clock starts when you receive them. If seller misses this deadline, demand copies immediately through Alli.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Option Period Expires -->
+                <div class="utl-event" data-date="2026-04-18">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 18</div>
+                        <div class="utl-date-day">Day 5</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-risk"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Option Period Expires (5:00 PM)</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-risk">Hard Deadline</span>
+                                    <span class="utl-money">$17,997 at risk after</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>This is your strongest exit ramp.</strong> Before 5:00 PM on this date, you can terminate for <strong>any reason</strong>. You lose the $500 option fee but get $17,997 earnest money back.<br><br>
+                                <strong>After this date:</strong> You need a valid contractual reason to terminate with refund (financing denial, title defects, etc.). Your $17,997 earnest money is at risk.<br><br>
+                                <strong>Contract clause:</strong> Paragraph 5.<br>
+                                <strong>Must complete before this date:</strong> All inspections, sewer scope, foundation assessment, and your go/no-go decision.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Lease Review Deadline -->
+                <div class="utl-event" data-date="2026-04-20">
+                    <div class="utl-date">
+                        <div class="utl-date-main">~Apr 20</div>
+                        <div class="utl-date-day">~Day 7</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-risk"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Lease Review Deadline</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-risk">Deadline</span>
+                                    <span class="utl-money">$17,997 at risk</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>4 days after receiving lease copies</strong> (estimated ~Apr 20 if seller delivers on Day 3). If lease terms are unacceptable, you can terminate with earnest money refund within this window.<br><br>
+                                <strong>Contract clause:</strong> Residential Leases Addendum (TXR 1953) &sect;3.<br><br>
+                                <strong>Key risks to evaluate:</strong> Below-market rent, long-term fixed lease, tenant payment history, HOA lease restrictions, security deposit liability.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. Financing Approval Deadline -->
+                <div class="utl-event" data-date="2026-05-04">
+                    <div class="utl-date">
+                        <div class="utl-date-main">May 4</div>
+                        <div class="utl-date-day">Day 21</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-risk"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Financing Approval Deadline</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-risk">Hard Deadline</span>
+                                    <span class="utl-money">$17,997 at risk after</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Must obtain buyer approval from lender by this date. If denied, you may terminate by providing: (1) notice of termination, and (2) a copy of the lender's <strong>written denial</strong>. Earnest money refunded.<br><br>
+                                <strong>Contract clause:</strong> Third Party Financing Addendum &sect;3A.<br><br>
+                                <strong>If you miss this deadline:</strong> Buyer approval is deemed obtained. If financing falls through after this date, you may NOT be able to terminate with refund. Your $17,997 is at risk.<br><br>
+                                <strong>Rate risk:</strong> Contract caps at 6.5%, current rate is 6.37% &mdash; only 0.13% margin. Lock your rate before this date.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. Title Commitment + Objection -->
+                <div class="utl-event" data-date="2026-05-28">
+                    <div class="utl-date">
+                        <div class="utl-date-main">~May 28</div>
+                        <div class="utl-date-day">~Day 45</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-risk"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Title Commitment + Objection Window</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-risk">Deadline</span>
+                                    <span class="utl-money">$17,997 at risk</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Title company must deliver the commitment within <strong>20 days of receiving the contract</strong>. You then have <strong>5 days to object</strong> to any title exceptions (liens, easements, encumbrances).<br><br>
+                                <strong>Contract clause:</strong> Paragraph 6B.<br><br>
+                                If title defects are found and seller can't cure them within the Cure Period, you can terminate with earnest money refund. <strong>If you miss the objection window, you waive the right to object.</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. Property Approval Termination -->
+                <div class="utl-event" data-date="2026-05-29">
+                    <div class="utl-date">
+                        <div class="utl-date-main">May 29</div>
+                        <div class="utl-date-day">Day 46</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-risk"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Property Approval Termination Deadline</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-risk">Deadline</span>
+                                    <span class="utl-money">$17,997 at risk</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>3 days before closing.</strong> Last day to terminate if the property fails appraisal, insurability, or other lender underwriting requirements.<br><br>
+                                <strong>Contract clause:</strong> Third Party Financing Addendum &sect;3B.<br><br>
+                                Must provide seller notice + copy of lender's statement. After this date, this exit ramp closes.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 13. Closing Disclosure Review -->
+                <div class="utl-event" data-date="2026-05-29">
+                    <div class="utl-date">
+                        <div class="utl-date-main">~May 29</div>
+                        <div class="utl-date-day">~Day 46</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-financial"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Closing Disclosure Review</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-financial">Financial</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Lender must provide the Closing Disclosure at least <strong>3 business days before closing</strong>. Compare every line to your original Loan Estimate.<br><br>
+                                <strong>Watch for:</strong> Changes in interest rate, loan terms, closing costs, prepaid items, escrow amounts. Any significant discrepancy should be flagged immediately.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 14. Final Walk-Through -->
+                <div class="utl-event" data-date="2026-05-31">
+                    <div class="utl-date">
+                        <div class="utl-date-main">May 30&ndash;31</div>
+                        <div class="utl-date-day">Day 47&ndash;48</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-action"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Final Walk-Through</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-action">Action</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                <strong>24&ndash;48 hours before closing.</strong> Verify the property is in the same condition as when you made the offer.<br><br>
+                                <strong>Check:</strong> All systems work (HVAC, plumbing, electrical), no new damage, any agreed repairs completed, tenant situation as expected, all seller's belongings removed (unless lease applies).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 15. Closing Day -->
+                <div class="utl-event" data-date="2026-06-01">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Jun 1</div>
+                        <div class="utl-date-day">Day 49</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-milestone"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Closing Day</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-milestone">Milestone</span>
+                                    <span class="utl-money">$599,900 full commitment</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                Sign documents at Independence Title, wire remaining funds, receive keys. Possession upon closing and funding.<br><br>
+                                <strong>Both Jackie and Hannah must sign.</strong> Bring valid government-issued photo ID.<br><br>
+                                <strong>Wire closing funds:</strong> Verify wiring instructions by calling title company at a known number.<br><br>
+                                <strong>After closing:</strong> The property is yours with all its issues. No more exit ramps. Existing tenant lease and security deposits transfer to you.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 16. Homestead Exemption -->
+                <div class="utl-event" data-date="2027-04-30">
+                    <div class="utl-date">
+                        <div class="utl-date-main">Apr 30, 2027</div>
+                        <div class="utl-date-day">Post-closing</div>
+                    </div>
+                    <div class="utl-dot-col"><div class="utl-dot dot-action"></div></div>
+                    <div class="utl-card-wrap">
+                        <div class="utl-card" onclick="this.classList.toggle('open')">
+                            <div class="utl-card-head">
+                                <span class="utl-card-title">Homestead Exemption Filing Deadline</span>
+                                <div class="utl-card-badges">
+                                    <span class="utl-cat utl-cat-action">Action</span>
+                                    <span class="utl-money">~$2,070/yr savings</span>
+                                </div>
+                                <span class="utl-chevron">&#9660;</span>
+                            </div>
+                            <div class="utl-details">
+                                File homestead exemption with Travis Central Appraisal District by April 30 of the year after purchase.<br><br>
+                                <strong>Saves ~$2,070/year</strong> in property taxes. Also caps appraised value increases at 10%/year, protecting against tax spikes in a gentrifying area like Cherrywood.<br><br>
+                                <strong>Don't forget:</strong> This is a one-time filing but missing the deadline means paying full taxes for the year.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /utl -->
         </div>
 
         <!-- ==================== WHY BUY THIS HOUSE ==================== -->
@@ -1454,136 +2117,452 @@
             </div>
         </div>
 
-        <!-- ==================== STRUCTURAL ANALYSIS ==================== -->
+        <!-- ==================== INSPECTION DETAILS ==================== -->
         <div class="section" id="sec-structural">
-            <h2 class="section-title">Structural &amp; Condition Analysis</h2>
+            <h2 class="section-title">Inspection Details</h2>
 
+            <!-- ===== A. INSPECTION OVERVIEW ===== -->
             <div class="callout callout-danger">
-                <strong>Year Built: 1948 (78 years old)</strong> &mdash; This home pre-dates many modern building codes and materials. Budget for significant inspection and potential remediation costs. A thorough inspection is not optional.
+                <strong>Inspection is tomorrow &mdash; Apr 15, 2026 at 12:30 PM CST.</strong> Option period expires Apr 18 at 5:00 PM. You have ~3 days from inspection to make a go/no-go decision.
             </div>
 
             <div class="card">
-                <h3>High-Priority Concerns for 1948 Homes</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Issue</th><th>Likelihood</th><th>Est. Repair Cost</th><th>Action</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="bold">Lead-Based Paint</td>
-                            <td><span class="badge badge-red">Very High</span></td>
-                            <td>$5,000 - $20,000+</td>
-                            <td>Get lead paint inspection ($300-$500). Required disclosure for pre-1978 homes.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Foundation Issues</td>
-                            <td><span class="badge badge-red">High</span></td>
-                            <td>$5,000 - $30,000+</td>
-                            <td>Hire structural engineer ($300-$500). Look for cracks, uneven floors, sticking doors.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Galvanized/Cast Iron Plumbing</td>
-                            <td><span class="badge badge-red">Very High</span></td>
-                            <td>$8,000 - $40,000</td>
-                            <td>Static test + sewer scope ($150-$300). Interior corrosion can't be seen visually.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Outdated Electrical</td>
-                            <td><span class="badge badge-red">High</span></td>
-                            <td>$5,000 - $15,000</td>
-                            <td>Check for cloth wiring, ungrounded outlets, 60-amp panel. May have Federal Pacific/Zinsco panels.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Asbestos (insulation, tiles, siding)</td>
-                            <td><span class="badge badge-yellow">Moderate</span></td>
-                            <td>$3,000 - $15,000</td>
-                            <td>Test before any renovation. Common in floor tiles, pipe insulation, popcorn ceilings.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Roof Condition</td>
-                            <td><span class="badge badge-yellow">Moderate</span></td>
-                            <td>$8,000 - $20,000</td>
-                            <td>Check age, material, condition. Hail damage common in Austin. Inspect attic for leaks.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">HVAC System Age</td>
-                            <td><span class="badge badge-yellow">Moderate</span></td>
-                            <td>$6,000 - $15,000</td>
-                            <td>Central AC likely added after construction. Check age, efficiency, ductwork condition.</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Wood Rot / Termites</td>
-                            <td><span class="badge badge-yellow">Moderate</span></td>
-                            <td>$2,000 - $10,000</td>
-                            <td>Termite inspection required by most lenders. Check wood framing, pier & beam subfloor.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Foundation (Austin-Specific)</h3>
-                    <p style="font-size:0.9rem; color:var(--fl-muted);">Austin sits on expansive clay soils that shrink and swell with moisture changes. This is the #1 cause of foundation problems in Central Texas.</p>
-                    <h4>What to Look For During Tour:</h4>
-                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
-                        <li>Cracks in interior/exterior walls (especially diagonal)</li>
-                        <li>Doors and windows that stick or won't close</li>
-                        <li>Uneven or sloping floors</li>
-                        <li>Gaps between walls and ceiling/floor</li>
-                        <li>Cracks in foundation visible from outside</li>
-                        <li>If pier & beam: check crawl space for moisture</li>
-                    </ul>
-                    <h4>Recommended Inspections:</h4>
-                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
-                        <li>Structural engineer evaluation ($300-$500)</li>
-                        <li>Check for previous foundation work (permits)</li>
-                    </ul>
+                <h3>GreenWorks Inspection &mdash; Appointment Details</h3>
+                <div class="grid-2">
+                    <div>
+                        <table class="data-table">
+                            <tr><td class="bold">Inspector</td><td>GreenWorks Inspections &amp; Engineering</td></tr>
+                            <tr><td class="bold">Date &amp; Time</td><td>Tuesday, Apr 15, 2026 &bull; 12:30 PM CST</td></tr>
+                            <tr><td class="bold">Cost</td><td>$757.11 (sunk cost regardless of outcome)</td></tr>
+                            <tr><td class="bold">Duration</td><td>~3&ndash;4 hours for a 1,752 sqft / 1948 home</td></tr>
+                            <tr><td class="bold">Report Delivery</td><td>Digital report within 24 hours (by Apr 16)</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 style="margin-top:0;">What to Bring</h4>
+                        <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted); line-height:1.8;">
+                            <li>Phone / camera for your own photos</li>
+                            <li>Notepad for inspector comments</li>
+                            <li>Flashlight (crawl spaces, attic)</li>
+                            <li>Comfortable clothes &amp; closed-toe shoes</li>
+                            <li>Copy of seller&rsquo;s disclosure for reference</li>
+                            <li>This checklist (screenshot or bookmark this tab)</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="card">
-                    <h3>Plumbing (Critical for 1948)</h3>
-                    <p style="font-size:0.9rem; color:var(--fl-muted);">1948 homes typically have galvanized steel water supply lines and cast iron drain lines. Both degrade over time.</p>
-                    <h4>Key Risks:</h4>
-                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
-                        <li>Steel pipes corrode internally &rarr; low pressure, rusty water</li>
-                        <li>Cast iron drains crack &rarr; sewer leaks under slab</li>
-                        <li>Tree roots can infiltrate damaged pipes</li>
-                        <li>Under-slab repairs: $25,000-$40,000</li>
-                        <li>Repiping entire house: $8,000-$15,000 (PEX)</li>
-                    </ul>
-                    <h4>Recommended Inspections:</h4>
-                    <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted);">
-                        <li>Hydrostatic (static) plumbing test</li>
-                        <li>Sewer camera scope ($150-$300)</li>
-                        <li>Check water pressure at all fixtures</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Estimated Worst-Case Repair Budget</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Repair</th><th class="right">Low End</th><th class="right">High End</th><th>Notes</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Foundation repair</td><td class="right">$5,000</td><td class="right">$30,000</td><td>Only if issues found</td></tr>
-                        <tr><td>Replumb (PEX)</td><td class="right">$8,000</td><td class="right">$15,000</td><td>Common for homes this age</td></tr>
-                        <tr><td>Electrical panel + partial rewire</td><td class="right">$5,000</td><td class="right">$15,000</td><td>200-amp upgrade + grounding</td></tr>
-                        <tr><td>Roof replacement</td><td class="right">$8,000</td><td class="right">$20,000</td><td>If older than 15-20 years</td></tr>
-                        <tr><td>HVAC replacement</td><td class="right">$6,000</td><td class="right">$15,000</td><td>If older than 15 years</td></tr>
-                        <tr><td>Lead paint remediation</td><td class="right">$5,000</td><td class="right">$20,000</td><td>Encapsulation or removal</td></tr>
-                        <tr style="background:var(--fl-green-light);">
-                            <td class="bold">Total Potential</td>
-                            <td class="right bold">$37,000</td>
-                            <td class="right bold">$115,000</td>
-                            <td class="bold">Inspection will narrow this</td>
-                        </tr>
-                    </tbody>
-                </table>
                 <div class="callout callout-warning" style="margin-top:1rem;">
-                    <strong>Negotiation Leverage:</strong> Use inspection findings to negotiate the purchase price down or request seller credits. For a home priced below market, the seller may be pricing in some known issues.
+                    <strong>Both Jackie and Hannah should attend.</strong> Walk with the inspector the entire time. Ask questions in real-time &mdash; the walk-through conversation is often more valuable than the written report. Don&rsquo;t let the inspector rush through any area.
                 </div>
+            </div>
+
+            <!-- ===== B. COVERAGE: INCLUDED vs NOT INCLUDED ===== -->
+            <div class="card">
+                <h3>What&rsquo;s Included vs. What&rsquo;s Not</h3>
+                <div class="grid-2">
+                    <div>
+                        <h4 style="color:var(--fl-success); margin-top:0;">Included in GreenWorks Package</h4>
+                        <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted); line-height:1.9;">
+                            <li>Licensed Professional Home Inspection</li>
+                            <li>Above &amp; Beyond TREC Standards</li>
+                            <li>System &amp; Structural Evaluation</li>
+                            <li>Infrared Thermal Imaging</li>
+                            <li>Foundation Elevation Map</li>
+                            <li>Sewer Line Camera Inspection</li>
+                            <li>Sprinkler &amp; Irrigation Inspection</li>
+                            <li>Air Quality Readings</li>
+                            <li>90-Day Termite Guarantee</li>
+                            <li>Insurance Claims History (C.L.U.E.)</li>
+                            <li>Energy Report</li>
+                            <li>Repair Estimate Report</li>
+                            <li>Digital Photo Reports &amp; Summary</li>
+                            <li>Online Home Management Platform</li>
+                            <li>GreenWorks HomeHub Utility Setup</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color:var(--fl-danger); margin-top:0;">NOT Included &mdash; May Need Separately</h4>
+                        <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted); line-height:1.9;">
+                            <li><strong>Lead paint testing</strong> &mdash; waived in contract but strongly recommended for a 1948 home ($300&ndash;$500)</li>
+                            <li><strong>Asbestos testing</strong> &mdash; needed before any renovation ($200&ndash;$400)</li>
+                            <li><strong>Mold testing / protocol</strong> &mdash; order if thermal imaging flags moisture ($300&ndash;$600)</li>
+                            <li><strong>Radon testing</strong> &mdash; low risk in Travis County, optional ($15&ndash;$50 DIY kit)</li>
+                            <li><strong>Structural engineer (PE stamp)</strong> &mdash; if foundation map shows movement ($300&ndash;$500)</li>
+                            <li><strong>Independent roof certification</strong> &mdash; if questions about 2024 replacement ($150&ndash;$300)</li>
+                            <li><strong>Soil testing</strong> &mdash; if drainage or expansive clay concerns ($200&ndash;$400)</li>
+                        </ul>
+                        <div class="callout callout-info" style="margin-top:0.75rem;">
+                            <strong>Pool/Spa vs. Septic:</strong> Your package includes one choice. Select <strong>Pool &amp; Spa</strong> if the property has one, otherwise skip both &mdash; there is no septic system (city sewer).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== C. COMPREHENSIVE INSPECTION CHECKLIST ===== -->
+            <div class="card">
+                <h3>Comprehensive Inspection Checklist</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:1rem;">For each system: what to look for, risk level based on seller disclosures and property age, estimated cost if repair needed, and what to do if findings are questionable.</p>
+
+                <!-- 1. Foundation -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem;">1. Foundation &amp; Structure</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Foundation elevation / movement</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$30K+</td><td>GreenWorks provides elevation map. Look for &gt;1&Prime; differential across the slab. Seller disclosed previous structural repairs.</td><td>Order structural engineer ($300&ndash;$500) for PE-stamped assessment. Active movement = potential deal-breaker.</td></tr>
+                        <tr><td class="bold">Exterior cracks</td><td><span class="badge badge-red">High</span></td><td>Incl. above</td><td>Diagonal cracks &gt; 1/4&Prime;, stair-step cracks in brick/mortar, separation at corners. Austin clay soil causes seasonal movement.</td><td>Hairline cracks are cosmetic. Wide or active cracks need engineer. Photograph and measure width for reference.</td></tr>
+                        <tr><td class="bold">Interior signs</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Sticking doors/windows, sloping floors, wall-ceiling gaps, cracked drywall, out-of-plumb door frames.</td><td>Some settling is normal for 78 years. Pattern of multiple symptoms = structural concern. Ask inspector if active or historical.</td></tr>
+                        <tr><td class="bold">Crawl space (if pier &amp; beam)</td><td><span class="badge badge-yellow">Medium</span></td><td>$2K&ndash;$10K</td><td>Moisture, standing water, wood rot, pier condition, beam deflection, pest evidence, proper ventilation.</td><td>Moisture barrier may be needed. Rotted beams need sistering or replacement. Check if accessible to inspector.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 2. Plumbing Supply -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">2. Plumbing &mdash; Supply Lines</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Pipe material (galvanized steel?)</td><td><span class="badge badge-red">Very High</span></td><td>$8K&ndash;$15K</td><td>1948 home almost certainly had galvanized. May be partially replaced with PEX/copper. Ask inspector what % is original.</td><td>If &gt;50% original galvanized: budget for full PEX repipe. Get plumber bid. Major negotiation leverage.</td></tr>
+                        <tr><td class="bold">Water pressure</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Test every faucet. Low pressure = corroded galvanized pipes. Run multiple fixtures simultaneously.</td><td>Low pressure confirms pipe degradation. Document with video for negotiation.</td></tr>
+                        <tr><td class="bold">Water heater</td><td><span class="badge badge-yellow">Medium</span></td><td>$1.5K&ndash;$4K</td><td>Check age (label on unit), type (tank/tankless), capacity, signs of rust or corrosion, T&amp;P valve, drip pan.</td><td>If &gt;10 years old: budget replacement. Leaking = urgent. Tankless upgrade ($3&ndash;$4K) eliminates recurring risk.</td></tr>
+                        <tr><td class="bold">Under-sink leaks</td><td><span class="badge badge-green">Low</span></td><td>$100&ndash;$500</td><td>Check all cabinets under sinks for moisture, mold, warped wood, bucket catches.</td><td>Active leaks need repair. Water damage may indicate longer-term problem.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 3. Plumbing Drain/Sewer -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">3. Plumbing &mdash; Drain / Sewer Lines</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Sewer camera scope</td><td><span class="badge badge-red">Very High</span></td><td>$8K&ndash;$40K</td><td><strong>Included in GreenWorks package.</strong> 78-year cast iron drains at or past end of life. Camera reveals cracks, root intrusion, bellying, offsets, blockages.</td><td>Request a copy of the sewer video. If cast iron is failing: get plumber bid for replacement. Under-slab failure = $25K&ndash;$40K. Potential deal-breaker.</td></tr>
+                        <tr><td class="bold">French drain condition</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$8K</td><td>Seller disclosed french drains installed 1994 (32 years old) after reservoir flooding. Check if functional or clogged.</td><td>French drains have 15&ndash;25 year lifespan. Likely need replacement. Factor into drainage budget.</td></tr>
+                        <tr><td class="bold">Drain flow / backups</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Slow drains in any fixture, gurgling sounds, sewer odor. Run water in all fixtures during inspection.</td><td>Slow drains + old cast iron = imminent replacement needed. Document which fixtures affected.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 4. Electrical -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">4. Electrical System</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Panel brand &amp; amperage</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$5K</td><td>Check for Federal Pacific (FPE) or Zinsco panels &mdash; both are <strong>known fire hazards</strong> and should be replaced regardless. Check if 100A, 150A, or 200A service.</td><td>FPE/Zinsco = replace immediately ($2K&ndash;$4K). Under 200A = may need upgrade for modern loads (HVAC, EV charger, etc.).</td></tr>
+                        <tr><td class="bold">Wiring type</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$20K</td><td>1948 may have cloth-insulated wiring (fire hazard), knob-and-tube remnants, or aluminum. Ask inspector to identify type at panel and in attic.</td><td>Cloth wiring = partial rewire recommended. Knob-and-tube = full rewire. Aluminum = pigtailing or rewire. Major negotiation item.</td></tr>
+                        <tr><td class="bold">Grounding &amp; outlets</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$3K</td><td>Check for ungrounded 2-prong outlets, missing GFCIs in kitchen/bath/exterior, proper AFCI protection in bedrooms.</td><td>Upgrading outlets is not urgent but affects resale. GFCIs in wet areas are safety-critical and cheap to add ($50&ndash;$100 each).</td></tr>
+                        <tr><td class="bold">Capacity for modern loads</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$5K</td><td>Can the system handle HVAC, EV charger, modern kitchen appliances, and potential duplex conversion?</td><td>Ask inspector about available capacity. If limited: panel upgrade + new circuits needed. Factor into renovation budget.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 5. Roof & Attic -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">5. Roof &amp; Attic</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">2024 replacement verification</td><td><span class="badge badge-yellow">Medium</span></td><td>$0&ndash;$25K</td><td>Seller disclosed &ldquo;New roof 2024 &mdash; hail damage.&rdquo; Verify: full tear-off or overlay? Composition shingles? Warranty documentation?</td><td>If overlay on old shingles: reduced lifespan. Request contractor name and warranty. Insurance claim may make future claims harder.</td></tr>
+                        <tr><td class="bold">Attic inspection</td><td><span class="badge badge-yellow">Medium</span></td><td>$0&ndash;$5K</td><td>Proper ventilation, insulation type and depth, signs of leaks (stains, mold), wiring condition, pest evidence, structural integrity of rafters/trusses.</td><td>Poor ventilation = premature roof failure and moisture issues. Missing insulation = high energy costs. Thermal imaging will reveal gaps.</td></tr>
+                        <tr><td class="bold">Flashing &amp; penetrations</td><td><span class="badge badge-green">Low</span></td><td>$200&ndash;$1K</td><td>Chimney flashing, vent boots, skylights (if any), gutter connections. These are the most common leak points even on new roofs.</td><td>Flashing repairs are inexpensive. If new roof was installed poorly, this is where it shows first.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 6. HVAC -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">6. HVAC System</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">System age &amp; type</td><td><span class="badge badge-yellow">Medium</span></td><td>$8K&ndash;$18K</td><td>AC units last 12&ndash;18 years in Austin heat. Check manufacture date on nameplate. Note make, model, tonnage, SEER rating.</td><td>If &gt;15 years: budget replacement in 1&ndash;3 years. If &gt;20 years: replace soon. Consider heat pump upgrade for efficiency.</td></tr>
+                        <tr><td class="bold">Ductwork</td><td><span class="badge badge-yellow">Medium</span></td><td>$2K&ndash;$6K</td><td>Thermal imaging will reveal duct leaks and insulation gaps. Older homes often have poorly sealed, uninsulated ducts in attic/crawl space.</td><td>Duct sealing + insulation is high-ROI ($2K&ndash;$4K). Reduces energy costs 15&ndash;25%. Check energy report from GreenWorks.</td></tr>
+                        <tr><td class="bold">Both heating &amp; cooling</td><td><span class="badge badge-green">Low</span></td><td>$500&ndash;$3K</td><td>Test both modes during inspection. Check temperature differential (should be 15&ndash;20&deg;F). Check filter condition, thermostat type, all vents.</td><td>Poor temperature differential = refrigerant issue or failing compressor. Dirty filter = maintenance neglect. Smart thermostat is cheap upgrade.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 7. Windows & Doors -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">7. Windows &amp; Doors</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Window type &amp; condition</td><td><span class="badge badge-yellow">Medium</span></td><td>$5K&ndash;$15K</td><td>Original 1948 single-pane vs. replaced double-pane. Check seals, operation, condensation between panes, rot in wood frames.</td><td>Single-pane = poor energy efficiency, high utility bills. Replacement is expensive but may qualify for energy credits. Not urgent.</td></tr>
+                        <tr><td class="bold">Exterior door condition</td><td><span class="badge badge-green">Low</span></td><td>$500&ndash;$3K</td><td>Weatherstripping, locks, deadbolts, thresholds, frame condition. Check all entry points including tenant unit.</td><td>Security and weatherproofing items. Low cost to address but important for livability and insurance.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 8. Exterior -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">8. Exterior &amp; Site</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Grading &amp; drainage</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$10K</td><td>Ground should slope AWAY from foundation. Seller disclosed previous flooding from reservoir breach. French drains installed 1994. Check if functional.</td><td>Poor grading + flood history = serious concern. May need re-grading, new french drains, or sump pump. Check FEMA flood zone status. Budget flood insurance ($1K&ndash;$3K/yr).</td></tr>
+                        <tr><td class="bold">Siding &amp; exterior walls</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$15K</td><td>Material type (wood, fiber cement, brick?), condition, paint condition, rot, gaps. Thermal imaging reveals insulation voids behind walls.</td><td>Wood siding on a 1948 home may contain lead paint (test separately). Rotted sections need replacement. Repainting is carpenter-friendly.</td></tr>
+                        <tr><td class="bold">Trees near foundation</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$5K</td><td>Large trees within 20 ft of foundation can cause root damage to pipes and foundation movement via soil moisture changes.</td><td>Tree removal or root barriers may be needed. Consult arborist if large trees are close to structure.</td></tr>
+                        <tr><td class="bold">Driveway, walkways, fencing</td><td><span class="badge badge-green">Low</span></td><td>$1K&ndash;$5K</td><td>Cracking, heaving, trip hazards, fence condition. Cosmetic but affects curb appeal and safety.</td><td>Low priority. Factor into renovation budget. Carpenter advantage for fence/deck work.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 9. Environmental -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">9. Environmental Hazards</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Lead-based paint</td><td><span class="badge badge-red">Very High</span></td><td>$5K&ndash;$25K</td><td><strong>Not included in GreenWorks.</strong> 1948 home almost certainly has lead paint. You waived the lead inspection in the contract, but can still test independently during option period. Critical if children will be in the home.</td><td><strong>Strongly recommend independent lead test ($300&ndash;$500).</strong> Intact paint is safe. Renovation disturbs paint &mdash; EPA-certified contractors cost 20&ndash;50% more. Encapsulation ($5K) is cheaper than removal ($15K+).</td></tr>
+                        <tr><td class="bold">Asbestos</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$20K</td><td><strong>Not included.</strong> Common in 1940s homes: floor tiles (9x9&Prime;), pipe insulation, duct tape, popcorn ceilings, siding. Harmless if undisturbed.</td><td>Test before any renovation ($200&ndash;$400). Professional abatement required before demolition. Not a deal-breaker if no immediate renovation planned.</td></tr>
+                        <tr><td class="bold">Air quality</td><td><span class="badge badge-green">Low</span></td><td>$0&ndash;$2K</td><td><strong>Included in GreenWorks.</strong> Checks for VOCs, particulates, CO levels. Thermal imaging may reveal moisture that causes mold.</td><td>If elevated readings: investigate source (mold, off-gassing, ventilation). Mold protocol testing is $300&ndash;$600 additional.</td></tr>
+                        <tr><td class="bold">Termite / WDI</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$15K</td><td><strong>GreenWorks includes 90-day guarantee.</strong> Seller disclosed prior termite/WDI damage. Look for active infestation AND extent of structural damage from prior infestation.</td><td>Active infestation = treatment ($500&ndash;$2K). Structural damage from prior = repair ($2K&ndash;$15K). Annual termite bond recommended ($200&ndash;$400/yr). Ask about prior treatment records.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 10. Flooding -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">10. Flooding &amp; Drainage History</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Previous flooding</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$50K+</td><td>Seller disclosed &ldquo;Yes&rdquo; to previous flooding from reservoir failure/breach. 1994 note: &ldquo;outbuilding/garage minor water penetration &mdash; installed french drains.&rdquo;</td><td>Verify FEMA flood zone status. Obtain flood insurance immediately after closing ($1K&ndash;$3K/yr). Check for residual moisture or mold in lower areas. French drains are 32 years old &mdash; likely need replacement.</td></tr>
+                        <tr><td class="bold">Current flood insurance</td><td><span class="badge badge-red">High</span></td><td>$1K&ndash;$3K/yr</td><td>Seller has NO flood insurance currently. Despite flooding history.</td><td>Your lender may require it depending on zone. Even if not required, carry it given the disclosure. Budget annually.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 11. Tenant Areas -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">11. Tenant-Occupied Areas</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">Full access to all units</td><td><span class="badge badge-red">High</span></td><td>&mdash;</td><td>Property has existing tenant. <strong>Ensure inspector has access to ALL areas</strong> including tenant-occupied spaces. Coordinate with Alli + listing agent beforehand.</td><td>If tenant denies access: red flag. Any area not inspected is an unknown risk. May need to schedule separate access.</td></tr>
+                        <tr><td class="bold">Tenant unit condition</td><td><span class="badge badge-yellow">Medium</span></td><td>$2K&ndash;$10K</td><td>General condition, any tenant-caused damage, maintenance issues, appliance condition, separate utility meters?</td><td>Damage costs may be recoverable from security deposit. Check if units have separate electrical/water meters (affects landlord costs).</td></tr>
+                        <tr><td class="bold">Unit separation / code</td><td><span class="badge badge-yellow">Medium</span></td><td>$5K&ndash;$20K</td><td>For a multi-family property: fire separation between units, separate egress, smoke/CO detectors in each unit, permitted conversion?</td><td>Unpermitted duplex conversion = liability. Check city permit records. May need upgrades for code compliance. Affects insurance and financing.</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- 12. Sprinkler/Irrigation -->
+                <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">12. Sprinkler &amp; Irrigation</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
+                    <tbody>
+                        <tr><td class="bold">System function</td><td><span class="badge badge-green">Low</span></td><td>$500&ndash;$3K</td><td><strong>Included in GreenWorks package.</strong> Test all zones, heads, controller, backflow preventer. Important for Austin &mdash; consistent soil moisture protects foundation.</td><td>Non-functional system = foundation risk from dry soil. Repair or replace controller/heads. Maintaining moisture around perimeter reduces clay shrinkage.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ===== D. INSPECTION PHASES & TIMELINE ===== -->
+            <div class="card">
+                <h3>Inspection Phases &amp; Timeline</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:1rem;">Your option period is only 5 days. Here&rsquo;s how to use them efficiently.</p>
+
+                <div class="grid-3">
+                    <div style="background:var(--fl-green-light); border-radius:10px; padding:1rem;">
+                        <h4 style="color:var(--fl-green-dark); margin-top:0;">Phase 1: GreenWorks</h4>
+                        <p style="font-size:0.8rem; color:var(--fl-muted); font-weight:600;">Apr 15 (12:30 PM)</p>
+                        <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
+                            <li>Full home inspection</li>
+                            <li>Sewer camera scope</li>
+                            <li>Foundation elevation map</li>
+                            <li>Thermal imaging</li>
+                            <li>Air quality + termite</li>
+                            <li>Irrigation inspection</li>
+                        </ul>
+                        <p style="font-size:0.8rem; color:var(--fl-green-dark); font-weight:600; margin-top:0.5rem;">Reports by Apr 16</p>
+                    </div>
+                    <div style="background:#eff6ff; border-radius:10px; padding:1rem;">
+                        <h4 style="color:#1e40af; margin-top:0;">Phase 2: Specialists</h4>
+                        <p style="font-size:0.8rem; color:var(--fl-muted); font-weight:600;">Apr 15&ndash;17 (as needed)</p>
+                        <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
+                            <li>Structural engineer ($300&ndash;$500)</li>
+                            <li>Lead paint test ($300&ndash;$500)</li>
+                            <li>Asbestos test ($200&ndash;$400)</li>
+                            <li>Mold protocol ($300&ndash;$600)</li>
+                            <li>Plumber bids (if sewer fails)</li>
+                            <li>Electrician bids (if needed)</li>
+                        </ul>
+                        <p style="font-size:0.8rem; color:#1e40af; font-weight:600; margin-top:0.5rem;">Only order what Phase 1 flags</p>
+                    </div>
+                    <div style="background:#fef2f2; border-radius:10px; padding:1rem;">
+                        <h4 style="color:var(--fl-danger); margin-top:0;">Phase 3: Decision</h4>
+                        <p style="font-size:0.8rem; color:var(--fl-muted); font-weight:600;">Apr 17&ndash;18 (by 5 PM!)</p>
+                        <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
+                            <li>Compile all reports</li>
+                            <li>Calculate total repair costs</li>
+                            <li>Decide: proceed, negotiate, or terminate</li>
+                            <li>If terminating: Alli files notice</li>
+                        </ul>
+                        <p style="font-size:0.8rem; color:var(--fl-danger); font-weight:700; margin-top:0.5rem;">HARD DEADLINE: Apr 18, 5 PM</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== E. DELIVERABLES TRACKER ===== -->
+            <div class="card">
+                <h3>Inspection Deliverables Tracker</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:0.75rem;">Check off each deliverable as you receive it from GreenWorks. All should arrive within 24 hours of inspection.</p>
+                <ul class="checklist" id="checklist-inspection">
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Digital Photo Report</div><div class="check-detail">Full walkthrough with annotated photos of every finding</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Repair Estimate Report</div><div class="check-detail">Itemized cost estimates for every deficiency &mdash; use this for negotiation</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Foundation Elevation Map</div><div class="check-detail">Shows elevation differentials across the slab. &gt;1&Prime; differential = concern</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Sewer Line Video</div><div class="check-detail">Camera footage of drain lines &mdash; request a copy of the full video file</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">C.L.U.E. Insurance Claims History</div><div class="check-detail">Past insurance claims on this property &mdash; reveals undisclosed damage history</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Thermal Imaging Report</div><div class="check-detail">Infrared scans showing moisture, insulation gaps, electrical hotspots</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Air Quality Readings</div><div class="check-detail">VOC levels, particulates, CO &mdash; flag if above EPA thresholds</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Termite / WDI Report + 90-Day Guarantee</div><div class="check-detail">Active infestation check + guarantee document. Verify prior damage extent.</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Energy Report</div><div class="check-detail">Insulation levels, efficiency ratings, estimated utility costs</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Digital Report Summary</div><div class="check-detail">Executive summary of all findings &mdash; share with Alli for negotiation prep</div></div></li>
+                </ul>
+            </div>
+
+            <!-- ===== F. NEGOTIATION LEVERAGE & STRATEGY ===== -->
+            <div class="card">
+                <h3>Negotiation Leverage &amp; Strategy</h3>
+
+                <div class="callout callout-info">
+                    <strong>&ldquo;As Is&rdquo; Does Not Mean &ldquo;As Priced&rdquo;</strong><br>
+                    Your contract accepts the property in its current condition &mdash; you <strong>cannot require</strong> the seller to make repairs. But you absolutely CAN:
+                    <ol style="margin-top:0.5rem; padding-left:1.25rem; font-size:0.9rem; line-height:1.8;">
+                        <li><strong>Negotiate a price reduction</strong> based on inspection findings</li>
+                        <li><strong>Request seller credits at closing</strong> to offset repair costs</li>
+                        <li><strong>Terminate during the option period</strong> &mdash; your strongest leverage (lose only $500)</li>
+                        <li><strong>Use findings to inform your appraisal/lender</strong> &mdash; low appraisal = more leverage</li>
+                    </ol>
+                </div>
+
+                <h4>Who Does What &mdash; Responsibility Matrix</h4>
+                <div style="overflow-x:auto;">
+                <table class="data-table" style="font-size:0.8rem;">
+                    <thead>
+                        <tr><th style="width:20%">Action</th><th>Buyer (You)</th><th>Agent (Alli)</th><th>Inspector (GreenWorks)</th><th>Lender (Nossi)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="bold">Attend inspection</td><td>Be present, take notes &amp; photos</td><td>Should attend</td><td>Conducts inspection</td><td>&mdash;</td></tr>
+                        <tr><td class="bold">Review reports</td><td>Read every page carefully</td><td>Reviews for negotiation leverage</td><td>Delivers reports within 24hr</td><td>Reviews for underwriting</td></tr>
+                        <tr><td class="bold">Identify deal-breakers</td><td>Flag personal concerns</td><td>Flag negotiation items</td><td>Flags safety/code issues</td><td>Flags lender requirements</td></tr>
+                        <tr><td class="bold">Request price reduction</td><td>Decides target amount</td><td><strong>Drafts amendment, leads negotiation</strong></td><td>Provides repair estimates as evidence</td><td>&mdash;</td></tr>
+                        <tr><td class="bold">Request seller credit</td><td>Decides amount</td><td><strong>Drafts amendment</strong></td><td>&mdash;</td><td>Must approve credit structure</td></tr>
+                        <tr><td class="bold">Terminate (option period)</td><td><strong>Makes final decision</strong></td><td>Files notice by 5 PM Apr 18</td><td>&mdash;</td><td>&mdash;</td></tr>
+                        <tr><td class="bold">Order specialist follow-up</td><td>Approves cost</td><td>Coordinates property access</td><td>May recommend specialists</td><td>&mdash;</td></tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <h4 style="margin-top:1.5rem;">Strategy by Finding Severity</h4>
+                <table class="data-table">
+                    <thead><tr><th style="width:18%">Severity</th><th style="width:12%">Cost Range</th><th>Strategy</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-green">Cosmetic</span></td>
+                            <td>$0&ndash;$5K</td>
+                            <td>Don&rsquo;t negotiate on &ldquo;As Is&rdquo; deals for cosmetic items. Factor into your personal renovation budget. Jackie&rsquo;s carpenter skills make these low-cost.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-yellow">System Repair</span></td>
+                            <td>$5K&ndash;$20K</td>
+                            <td><strong>Request seller credit</strong> at closing equal to 50&ndash;75% of GreenWorks repair estimate. Alli presents the repair estimate report as evidence. Common examples: HVAC replacement, partial replumb, panel upgrade.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-red">Major / Safety</span></td>
+                            <td>$20K+</td>
+                            <td><strong>Three options:</strong> (1) Request significant price reduction with repair bids as evidence. (2) Terminate during option period &mdash; lose only $500. (3) Leverage for other concessions (extended option, seller-funded repairs pre-closing, reduced price + credits).</td>
+                        </tr>
+                        <tr style="background:#fef2f2;">
+                            <td><span class="badge badge-red">Deal-Breaker</span></td>
+                            <td>$50K+</td>
+                            <td><strong>Terminate during option period.</strong> $500 option fee is cheap insurance against: active foundation failure, major sewer collapse under slab, extensive hidden water damage, active termite structural damage, electrical fire hazards.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top:1.5rem;">Leverage Points Specific to This Deal</h4>
+                <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted); line-height:1.9;">
+                    <li><strong>Below-market pricing:</strong> Property at $342/sqft vs. Cherrywood median $406/sqft (15.8% below) &mdash; seller may be pricing in known issues</li>
+                    <li><strong>&ldquo;As Is&rdquo; signals:</strong> Seller chose &ldquo;As Is&rdquo; rather than making repairs &mdash; suggests awareness of issues. Use inspection to quantify what they already know.</li>
+                    <li><strong>Seller disclosures support your case:</strong> Flooding history, structural repairs, termite damage, hail damage roof claim &mdash; all documented by the seller themselves</li>
+                    <li><strong>Individual seller:</strong> Thelma Jane Hall is an individual, not an investor. May prefer to negotiate price rather than have the deal fall through.</li>
+                    <li><strong>Buyer&rsquo;s market trend:</strong> 4.9 months inventory in Cherrywood, shifting to buyer&rsquo;s market. 72 average days on market. Leverage is moving your direction.</li>
+                    <li><strong>Carpenter advantage:</strong> Jackie&rsquo;s skills reduce your actual repair costs by 30&ndash;50% &mdash; but negotiate based on <em>market</em> repair costs, not your discounted costs</li>
+                </ul>
+            </div>
+
+            <!-- ===== G. QUESTIONS TO ASK THE INSPECTOR ===== -->
+            <div class="card">
+                <h3>Top Questions to Ask During the Walk-Through</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:0.75rem;">Ask these during the inspection, not after. The in-person conversation is more valuable than the written report.</p>
+                <ol style="font-size:0.9rem; padding-left:1.25rem; line-height:2.2;">
+                    <li><strong>What are the top 3 most expensive items you&rsquo;d fix first?</strong></li>
+                    <li>Is the foundation showing <strong>active movement</strong> or just historical settling?</li>
+                    <li>What percentage of the plumbing is <strong>original cast iron / galvanized</strong>?</li>
+                    <li>What&rsquo;s the <strong>electrical panel brand, age, and amperage</strong>? Is it safe?</li>
+                    <li>Is the 2024 roof a <strong>full tear-off replacement or overlay</strong>?</li>
+                    <li>Any signs of <strong>active water intrusion or moisture</strong> (thermal imaging)?</li>
+                    <li>What&rsquo;s the <strong>HVAC system age</strong> and estimated remaining life?</li>
+                    <li>Any <strong>safety hazards</strong> that need immediate attention?</li>
+                    <li>Did thermal imaging reveal <strong>hidden moisture or insulation gaps</strong>?</li>
+                    <li>Based on your experience, what&rsquo;s a <strong>realistic repair budget</strong> for this home in the first 1&ndash;3 years?</li>
+                    <li>Is there anything about this property that <strong>concerns you more than usual</strong>?</li>
+                    <li>Have you inspected other homes <strong>on this street or in Cherrywood</strong>? Any patterns?</li>
+                </ol>
+            </div>
+
+            <!-- ===== H. POST-INSPECTION DECISION FRAMEWORK ===== -->
+            <div class="card">
+                <h3>Post-Inspection Decision Framework</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:1rem;">After receiving all reports, use this framework to guide your decision by Apr 18 at 5 PM.</p>
+
+                <table class="data-table">
+                    <thead><tr><th style="width:22%">Total Estimated Repairs</th><th style="width:15%">Action</th><th>Details</th></tr></thead>
+                    <tbody>
+                        <tr style="background:#f0fdf4;">
+                            <td class="bold" style="color:var(--fl-success);">Under $15K</td>
+                            <td><span class="badge badge-green">Proceed</span></td>
+                            <td>Factor into budget. Normal for a 78-year-old home. Jackie&rsquo;s skills reduce actual costs. Minor items don&rsquo;t warrant negotiation on an &ldquo;As Is&rdquo; deal.</td>
+                        </tr>
+                        <tr style="background:#fefce8;">
+                            <td class="bold" style="color:var(--fl-warning);">$15K &ndash; $40K</td>
+                            <td><span class="badge badge-yellow">Negotiate</span></td>
+                            <td>Request price reduction or seller credits. Alli presents GreenWorks repair estimates. Target 50&ndash;75% of estimated costs. Proceed if seller agrees to reasonable adjustment.</td>
+                        </tr>
+                        <tr style="background:#fff7ed;">
+                            <td class="bold" style="color:var(--fl-warning);">$40K &ndash; $80K</td>
+                            <td><span class="badge badge-yellow">Serious negotiation</span></td>
+                            <td>Significant issues found. Consider if Jackie&rsquo;s carpenter skills meaningfully offset costs. Request substantial price reduction ($20K&ndash;$40K). Be prepared to walk if seller won&rsquo;t move.</td>
+                        </tr>
+                        <tr style="background:#fef2f2;">
+                            <td class="bold" style="color:var(--fl-danger);">Over $80K</td>
+                            <td><span class="badge badge-red">Likely terminate</span></td>
+                            <td>At this level, the &ldquo;below market&rdquo; pricing is fully consumed by repairs. Strongly consider termination. $500 option fee is cheap insurance against a money pit.</td>
+                        </tr>
+                        <tr style="background:#fef2f2;">
+                            <td class="bold" style="color:var(--fl-danger);">Any single deal-breaker</td>
+                            <td><span class="badge badge-red">Terminate</span></td>
+                            <td><strong>Terminate immediately</strong> for: active foundation failure, major sewer collapse under slab, extensive hidden water/mold damage, active structural termite damage, electrical fire hazards (FPE panel + cloth wiring).</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="callout callout-danger" style="margin-top:1rem;">
+                    <strong>Remember:</strong> The option period is your <strong>one true exit ramp</strong>. After Apr 18 at 5 PM, your $17,997 earnest money is at risk. Don&rsquo;t let optimism or momentum push you past a decision deadline. If you need more time for specialist follow-ups, ask Alli to negotiate an option period extension <strong>before</strong> the deadline.
+                </div>
+            </div>
+
+            <!-- ===== ESTIMATED REPAIR BUDGET (KEPT FROM ORIGINAL) ===== -->
+            <div class="card">
+                <h3>Pre-Inspection Repair Budget Estimate</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:0.75rem;">Based on property age, seller disclosures, and typical 1948 Austin home issues. GreenWorks report will narrow these ranges significantly.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>System</th><th class="right">Low End</th><th class="right">High End</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Foundation repair</td><td class="right">$5,000</td><td class="right">$30,000</td><td>Previous repairs disclosed. Elevation map will clarify.</td></tr>
+                        <tr><td>Replumb supply (PEX)</td><td class="right">$8,000</td><td class="right">$15,000</td><td>Near-certain for 78-year galvanized pipes</td></tr>
+                        <tr><td>Sewer line replacement</td><td class="right">$8,000</td><td class="right">$40,000</td><td>Under-slab work is worst case. Sewer scope will reveal.</td></tr>
+                        <tr><td>Electrical panel + rewire</td><td class="right">$5,000</td><td class="right">$20,000</td><td>200A upgrade + partial rewire for cloth wiring</td></tr>
+                        <tr><td>HVAC replacement</td><td class="right">$8,000</td><td class="right">$18,000</td><td>If system is &gt;15 years old</td></tr>
+                        <tr><td>Lead paint remediation</td><td class="right">$5,000</td><td class="right">$25,000</td><td>Encapsulation ($5K) vs removal ($15K+)</td></tr>
+                        <tr><td>Drainage / french drains</td><td class="right">$3,000</td><td class="right">$10,000</td><td>32-year-old french drains likely need replacement</td></tr>
+                        <tr><td>Termite treatment + damage</td><td class="right">$2,000</td><td class="right">$15,000</td><td>Prior damage disclosed. Extent TBD.</td></tr>
+                        <tr style="background:var(--fl-green-light);">
+                            <td class="bold">Total Potential Range</td>
+                            <td class="right bold">$44,000</td>
+                            <td class="right bold">$173,000</td>
+                            <td class="bold">Inspection will narrow this dramatically</td>
+                        </tr>
+                        <tr style="background:#dcfce7;">
+                            <td class="bold">With carpenter discount (30&ndash;50%)</td>
+                            <td class="right bold">$22,000</td>
+                            <td class="right bold">$121,000</td>
+                            <td class="bold">Jackie&rsquo;s skills reduce labor significantly</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -3106,6 +4085,50 @@ document.addEventListener('click', function(e) {
 
 // Load saved state on page load
 loadChecklistState();
+
+// ====== TIMELINE: today marker + past/imminent styling ======
+(function() {
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var threeDays = 3 * 24 * 60 * 60 * 1000;
+    var events = document.querySelectorAll('.utl-event[data-date]');
+    var todayInserted = false;
+    var utlContainer = document.querySelector('.utl');
+    if (!utlContainer || !events.length) return;
+
+    events.forEach(function(ev) {
+        var dateStr = ev.getAttribute('data-date');
+        var evDate = new Date(dateStr + 'T00:00:00');
+
+        // Insert "TODAY" marker before the first future event
+        if (!todayInserted && evDate >= today) {
+            var marker = document.createElement('div');
+            marker.className = 'utl-today-marker';
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            marker.innerHTML = '<span class="utl-today-label">TODAY &mdash; ' + months[now.getMonth()] + ' ' + now.getDate() + '</span>';
+            ev.parentNode.insertBefore(marker, ev);
+            todayInserted = true;
+        }
+
+        if (evDate < today) {
+            ev.classList.add('utl-past');
+        } else {
+            var diff = evDate - today;
+            if (diff <= threeDays) {
+                ev.classList.add('utl-imminent');
+            }
+        }
+    });
+
+    // If all events are in the past, put marker at the end
+    if (!todayInserted) {
+        var marker = document.createElement('div');
+        marker.className = 'utl-today-marker';
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        marker.innerHTML = '<span class="utl-today-label">TODAY &mdash; ' + months[now.getMonth()] + ' ' + now.getDate() + '</span>';
+        utlContainer.appendChild(marker);
+    }
+})();
 
 // ====== INVESTMENT ROI CALCULATIONS ======
 (function() {
