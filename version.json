@@ -1,12 +1,12 @@
 {
-  "version": "v260414.01 1:05p",
-  "release": 210,
-  "sha": "ae20e54",
-  "fullSha": "ae20e5411dbbcf77732709aa71dcb9b085a067e8",
-  "actor": "hrsonnad",
+  "version": "v260414.02 1:21p",
+  "release": 211,
+  "sha": "37470aa",
+  "fullSha": "37470aacc9160c36db7c96b23d24c5337aa6e708",
+  "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 18:05:21+00",
-  "commits": [{"sha":"ae20e54","message":"feat: grant hrsonnad@gmail.com access to Ashwood house page","author":"Haydn"}]
+  "pushedAt": "2026-04-14 18:21:40+00",
+  "commits": [{"sha":"3fd0e73","message":"feat: move Bottom Line card to top of Investment ROI tab on Ashwood page","author":"Rahul"},{"sha":"37470aa","message":"Merge pull request #41 from rahuliofam/gallant-joliot","author":"Rahul"}]
 }
