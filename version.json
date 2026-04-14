@@ -1,12 +1,12 @@
 {
-  "version": "v260414.09 6:32p",
-  "release": 218,
-  "sha": "1201f24",
-  "fullSha": "1201f242e39a9d73761790c5eec3ad264c4967ac",
-  "actor": "jackie61899280",
+  "version": "v260414.10 6:35p",
+  "release": 219,
+  "sha": "91f49e0",
+  "fullSha": "91f49e04c963a844594e0fb8b6ff9e99ef83ffb4",
+  "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 23:32:45+00",
-  "commits": [{"sha":"1201f24","message":"feat: add closing team contacts + CRN Law attorney to documents tab","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-14 23:35:24+00",
+  "commits": [{"sha":"91f49e0","message":"fix: update option period deadline from Apr 18 to Apr 20 (7-day period)","author":"Haydn"}]
 }
