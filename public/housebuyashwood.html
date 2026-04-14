@@ -2824,6 +2824,32 @@
         <div class="section" id="sec-invest">
             <h2 class="section-title">House vs. Equities — Investment ROI Comparison</h2>
 
+            <!-- ===== Bottom Line Comparison Matrix ===== -->
+            <div class="card" style="border:2px solid var(--fl-green);">
+                <h3 style="font-size:1.15rem;">Bottom Line — 10-Year Net Equity Comparison</h3>
+                <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:1rem;">
+                    How much equity you actually end up with after 10 years. House = home value minus remaining mortgage minus cumulative extra ownership costs (vs. renting). Stocks = portfolio value after 15% capital gains tax on profits.
+                </p>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:0.88rem;text-align:center;" id="tbl-bottomline">
+                        <thead>
+                            <tr>
+                                <th style="padding:0.7rem;background:var(--fl-green-dark);color:white;border-radius:8px 0 0 0;"></th>
+                                <th colspan="3" style="padding:0.7rem;background:var(--fl-accent);color:white;border-radius:0 8px 0 0;">Stocks Annual Return</th>
+                            </tr>
+                            <tr style="background:var(--fl-green-light);">
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-green-dark);">House Appreciation →</th>
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">10%</th>
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">15%</th>
+                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">20%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-bottomline-body"></tbody>
+                    </table>
+                </div>
+                <div id="bottomline-legend" style="margin-top:1rem;font-size:0.8rem;color:var(--fl-muted);"></div>
+            </div>
+
             <div class="card" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%); border-color: var(--fl-green);">
                 <h3>Assumptions</h3>
                 <div class="grid-2">
@@ -2948,32 +2974,6 @@
                 <h3>Return on Cash Deployed — Summary</h3>
                 <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:1rem;">Percentage return on your $143,280 initial cash at each time horizon.</p>
                 <div class="grid-3" id="roi-summary-cards"></div>
-            </div>
-
-            <!-- ===== Bottom Line Comparison Matrix ===== -->
-            <div class="card" style="border:2px solid var(--fl-green);">
-                <h3 style="font-size:1.15rem;">Bottom Line — 10-Year Net Equity Comparison</h3>
-                <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:1rem;">
-                    How much equity you actually end up with after 10 years. House = home value minus remaining mortgage minus cumulative extra ownership costs (vs. renting). Stocks = portfolio value after 15% capital gains tax on profits.
-                </p>
-                <div style="overflow-x:auto;">
-                    <table style="width:100%;border-collapse:collapse;font-size:0.88rem;text-align:center;" id="tbl-bottomline">
-                        <thead>
-                            <tr>
-                                <th style="padding:0.7rem;background:var(--fl-green-dark);color:white;border-radius:8px 0 0 0;"></th>
-                                <th colspan="3" style="padding:0.7rem;background:var(--fl-accent);color:white;border-radius:0 8px 0 0;">Stocks Annual Return</th>
-                            </tr>
-                            <tr style="background:var(--fl-green-light);">
-                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-green-dark);">House Appreciation →</th>
-                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">10%</th>
-                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">15%</th>
-                                <th style="padding:0.6rem;font-weight:700;color:var(--fl-accent);">20%</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-bottomline-body"></tbody>
-                    </table>
-                </div>
-                <div id="bottomline-legend" style="margin-top:1rem;font-size:0.8rem;color:var(--fl-muted);"></div>
             </div>
 
             <!-- ===== Link to Why Buy tab ===== -->
