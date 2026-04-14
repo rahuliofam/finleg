@@ -1,12 +1,12 @@
 {
-  "version": "v260414.05 5:50p",
-  "release": 214,
-  "sha": "a4fbf71",
-  "fullSha": "a4fbf71dd26bc016b55df8cbc6a9c0bbeef05af2",
+  "version": "v260414.06 6:00p",
+  "release": 215,
+  "sha": "8429421",
+  "fullSha": "8429421684f469e763295042ebf989f23ed6e200",
   "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 22:50:06+00",
-  "commits": [{"sha":"a4fbf71","message":"feat: add expandable deep-dive panels and risk callouts to Inspection Details","author":"Haydn"}]
+  "pushedAt": "2026-04-14 23:00:13+00",
+  "commits": [{"sha":"8429421","message":"fix: update Ashwood house-buy page to reflect married buyers","author":"Haydn"}]
 }
