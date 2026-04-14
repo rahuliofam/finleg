@@ -1,12 +1,12 @@
 {
-  "version": "v260414.04 5:21p",
-  "release": 213,
-  "sha": "abc4a4c",
-  "fullSha": "abc4a4c952ffcc1a0c4135acb2ebe60b3046fda0",
+  "version": "v260414.05 5:50p",
+  "release": 214,
+  "sha": "a4fbf71",
+  "fullSha": "a4fbf71dd26bc016b55df8cbc6a9c0bbeef05af2",
   "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 22:21:06+00",
-  "commits": [{"sha":"abc4a4c","message":"feat: add transaction documents with expandable detail cards to Your Documents tab","author":"Haydn"}]
+  "pushedAt": "2026-04-14 22:50:06+00",
+  "commits": [{"sha":"a4fbf71","message":"feat: add expandable deep-dive panels and risk callouts to Inspection Details","author":"Haydn"}]
 }
