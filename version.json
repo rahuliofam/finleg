@@ -1,12 +1,12 @@
 {
-  "version": "v260414.10 6:35p",
-  "release": 219,
-  "sha": "91f49e0",
-  "fullSha": "91f49e04c963a844594e0fb8b6ff9e99ef83ffb4",
-  "actor": "hrsonnad",
+  "version": "v260414.11 6:51p",
+  "release": 220,
+  "sha": "3b5097e",
+  "fullSha": "3b5097e7ea09b198dae6f747ef00aa4acc3bf053",
+  "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 23:35:24+00",
-  "commits": [{"sha":"91f49e0","message":"fix: update option period deadline from Apr 18 to Apr 20 (7-day period)","author":"Haydn"}]
+  "pushedAt": "2026-04-14 23:51:01+00",
+  "commits": [{"sha":"3b5097e","message":"feat: add CRN Law attorney to checklist timeline for Apr 15","author":"Jacqueline Giroux"}]
 }
