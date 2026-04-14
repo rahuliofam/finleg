@@ -1,12 +1,12 @@
 {
-  "version": "v260414.08 6:31p",
-  "release": 217,
-  "sha": "f1b1982",
-  "fullSha": "f1b198281de3c5455392d114e9f26ef6299f7ab5",
-  "actor": "hrsonnad",
+  "version": "v260414.09 6:32p",
+  "release": 218,
+  "sha": "1201f24",
+  "fullSha": "1201f242e39a9d73761790c5eec3ad264c4967ac",
+  "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 23:31:07+00",
-  "commits": [{"sha":"f1b1982","message":"feat: add agent compensation explainer callout to Ashwood page","author":"Haydn"}]
+  "pushedAt": "2026-04-14 23:32:45+00",
+  "commits": [{"sha":"1201f24","message":"feat: add closing team contacts + CRN Law attorney to documents tab","author":"Jacqueline Giroux"}]
 }
