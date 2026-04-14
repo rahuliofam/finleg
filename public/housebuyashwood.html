@@ -532,6 +532,64 @@
         }
         .utl-card.open .utl-details { display: block; }
         .utl-details strong { color: var(--fl-text); }
+        /* Inspection expandable cards */
+        .insp-card {
+            background: var(--fl-card);
+            border: 1px solid var(--fl-border);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .insp-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+        .insp-card-head {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .insp-card-head .insp-title { font-weight: 600; font-size: 0.88rem; color: var(--fl-text); }
+        .insp-card-head .insp-cost { font-size: 0.78rem; color: var(--fl-muted); margin-left: auto; }
+        .insp-chevron {
+            font-size: 0.7rem;
+            color: var(--fl-muted);
+            transition: transform 0.2s;
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        .insp-card.open .insp-chevron { transform: rotate(180deg); }
+        .insp-details {
+            display: none;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--fl-border);
+            font-size: 0.84rem;
+            color: var(--fl-muted);
+            line-height: 1.7;
+        }
+        .insp-card.open .insp-details { display: block; }
+        .insp-details strong { color: var(--fl-text); }
+        .insp-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem 1.5rem;
+        }
+        .insp-field-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--fl-green-dark);
+            margin-bottom: 0.2rem;
+        }
+        .insp-field { margin-bottom: 0.25rem; }
+        .insp-sources { font-size: 0.78rem; color: var(--fl-muted); font-style: italic; margin-top: 0.5rem; }
+        .insp-sources a { color: var(--fl-green); text-decoration: underline; }
+        @media (max-width: 768px) {
+            .insp-detail-grid { grid-template-columns: 1fr; }
+            .insp-card-head { font-size: 0.82rem; }
+        }
         /* Past events */
         .utl-event.utl-past .utl-card {
             opacity: 0.55;
@@ -675,6 +733,57 @@
             color: var(--fl-muted);
         }
         #main-content { display: none; }
+
+        /* Stakeholder & Scorecard styles */
+        .stakeholder-buyer { border-left: 4px solid var(--fl-green); }
+        .stakeholder-seller { border-left: 4px solid var(--fl-danger); }
+        .stakeholder-neutral { border-left: 4px solid var(--fl-accent); }
+        .stakeholder-missing { border-left: 4px solid var(--fl-warning); border-left-style: dashed; }
+        .scorecard-item {
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            padding: 0.75rem 0; border-bottom: 1px solid var(--fl-border);
+        }
+        .scorecard-item:last-child { border-bottom: none; }
+        .scorecard-status { flex-shrink: 0; min-width: 100px; padding-top: 0.1rem; }
+        .scorecard-content { flex: 1; }
+        .scorecard-content .sc-title { font-weight: 600; font-size: 0.95rem; }
+        .scorecard-content .sc-expected { font-size: 0.85rem; color: var(--fl-muted); margin-top: 0.2rem; line-height: 1.5; }
+        .scorecard-content .sc-why { font-size: 0.83rem; color: var(--fl-warning); margin-top: 0.35rem; font-style: italic; }
+        .scorecard-content .sc-ask {
+            background: #fefce8; border: 1px solid #fde68a; border-radius: 6px;
+            padding: 0.5rem 0.75rem; margin-top: 0.5rem; font-size: 0.83rem;
+        }
+        .status-select {
+            padding: 0.2rem 0.4rem; border-radius: 6px; font-size: 0.75rem;
+            font-weight: 600; border: 1px solid var(--fl-border); cursor: pointer;
+            background: white; margin-bottom: 0.25rem;
+        }
+        .sc-badge {
+            display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 600;
+        }
+        .sc-badge-done { background: #dcfce7; color: #166534; }
+        .sc-badge-concern { background: #fee2e2; color: #991b1b; }
+        .sc-badge-unknown { background: #f1f5f9; color: #475569; }
+        .sc-badge-not-done { background: #fef9c3; color: #854d0e; }
+        .phase-dot {
+            display: inline-block; width: 10px; height: 10px;
+            border-radius: 50%; margin-right: 0.25rem; vertical-align: middle;
+        }
+        .phase-active { background: var(--fl-success); }
+        .phase-oncall { background: var(--fl-warning); }
+        .phase-inactive { background: var(--fl-border); }
+        .sh-expand { cursor: pointer; user-select: none; }
+        .sh-expand .sh-chevron { display: inline-block; transition: transform 0.2s; font-size: 0.8rem; margin-right: 0.3rem; }
+        .sh-expand.open .sh-chevron { transform: rotate(90deg); }
+        .sh-expand-body { display: none; margin-top: 0.75rem; }
+        .sh-expand.open + .sh-expand-body,
+        .sh-expand.open .sh-expand-body { display: block; }
+        @media (max-width: 768px) {
+            .scorecard-item { flex-direction: column; }
+            .scorecard-status { min-width: auto; }
+        }
+
         .footer {
             text-align: center;
             padding: 2rem;
@@ -725,6 +834,7 @@
             <button class="nav-tab" data-section="offerrisk">Offer Risk Analysis</button>
             <button class="nav-tab" data-section="risks">10-Year Risks</button>
             <button class="nav-tab" data-section="questions">Decision Questions</button>
+            <button class="nav-tab" data-section="stakeholders">Stakeholders</button>
             <button class="nav-tab" data-section="invest">Investment ROI</button>
         </div>
 
@@ -2273,15 +2383,296 @@
                     </div>
                     <div>
                         <h4 style="color:var(--fl-danger); margin-top:0;">NOT Included &mdash; May Need Separately</h4>
-                        <ul style="font-size:0.85rem; padding-left:1.25rem; color:var(--fl-muted); line-height:1.9;">
-                            <li><strong>Lead paint testing</strong> &mdash; waived in contract but strongly recommended for a 1948 home ($300&ndash;$500)</li>
-                            <li><strong>Asbestos testing</strong> &mdash; needed before any renovation ($200&ndash;$400)</li>
-                            <li><strong>Mold testing / protocol</strong> &mdash; order if thermal imaging flags moisture ($300&ndash;$600)</li>
-                            <li><strong>Radon testing</strong> &mdash; low risk in Travis County, optional ($15&ndash;$50 DIY kit)</li>
-                            <li><strong>Structural engineer (PE stamp)</strong> &mdash; if foundation map shows movement ($300&ndash;$500)</li>
-                            <li><strong>Independent roof certification</strong> &mdash; if questions about 2024 replacement ($150&ndash;$300)</li>
-                            <li><strong>Soil testing</strong> &mdash; if drainage or expansive clay concerns ($200&ndash;$400)</li>
-                        </ul>
+                        <p style="font-size:0.8rem; color:var(--fl-muted); margin-bottom:0.75rem;">Click each item for full details &mdash; who to call, how long it takes, and how it fits your Apr 18 deadline.</p>
+
+                        <!-- 1. Lead Paint Testing -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Lead Paint Testing</span>
+                                <span class="badge badge-red">Very High</span>
+                                <span class="insp-cost">$300&ndash;$500</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        This 1948 home predates the 1978 federal lead paint ban by 30 years &mdash; it almost certainly contains lead-based paint on interior and exterior surfaces. You <strong>waived the lead paint inspection addendum</strong> in the contract, but you can still order independent testing during the option period. This is <strong>strongly recommended</strong>, especially if children will occupy the home or if any renovation is planned. Disturbing lead paint (sanding, scraping, demolition) creates toxic lead dust that causes serious health effects.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        An <strong>EPA-certified lead inspector or risk assessor</strong> &mdash; not a general home inspector. In Texas, lead inspectors must be licensed through the Texas DSHS (Department of State Health Services). Search for DSHS-licensed lead firms in Austin or ask GreenWorks for a referral.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>XRF gun testing</strong> (recommended): 2&ndash;4 hours on-site, results available <strong>same day</strong>. This is the method you need given your tight timeline.<br>
+                                        <strong>Paint chip lab analysis</strong>: 3&ndash;5 business days for results &mdash; too slow for the Apr 18 deadline. Avoid this method.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-yellow" style="font-size:0.72rem;">Tight but feasible</span><br>
+                                        If XRF testing is booked for <strong>Apr 15&ndash;16</strong>, results are available same day. That leaves Apr 16&ndash;17 to evaluate findings before the Apr 18 5 PM option deadline.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>Near-100% probability</strong> this home contains lead paint. Undisturbed intact paint is safe to live with. However, any renovation triggers the <strong>EPA RRP Rule</strong> (Renovation, Repair, and Painting), which requires EPA-certified contractors &mdash; adding a <strong>20&ndash;50% cost premium</strong> to renovation work. Encapsulation costs ~$5K vs. full removal at $15K&ndash;$25K.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &ldquo;Waived in Contract&rdquo; Means</div>
+                                        The standard Texas contract includes a Lead-Based Paint Addendum giving buyers 10 days to test. Your contract waived this addendum, meaning the <strong>seller is not obligated to allow extra time</strong> for lead testing. However, you can still test during your existing option period at your own expense &mdash; it just means lead findings <strong>cannot extend your inspection window</strong> beyond Apr 18.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: EPA RRP Rule (40 CFR 745) &bull; Texas DSHS Lead Program &bull; HUD Guidelines for Evaluation and Control of Lead-Based Paint Hazards</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Asbestos Testing -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Asbestos Testing</span>
+                                <span class="badge badge-yellow">Medium</span>
+                                <span class="insp-cost">$200&ndash;$400</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        Asbestos was widely used in building materials through the 1970s. In a 1948 home, common locations include: <strong>9&times;9-inch floor tiles</strong> (the size itself is a red flag), pipe insulation wrap, duct tape and mastic, popcorn/textured ceilings, exterior siding, and window glazing compound. Asbestos is <strong>harmless when undisturbed</strong> (encapsulated in solid material), but becomes a serious lung cancer and mesothelioma risk when fibers are released during renovation or demolition.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        A <strong>Texas DSHS-licensed asbestos inspector</strong>. This is a separate specialty from both general home inspection and lead inspection. The inspector takes small samples of suspect materials and sends them to an accredited lab.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>On-site sampling:</strong> 1&ndash;2 hours to collect samples from suspect materials.<br>
+                                        <strong>Lab results:</strong> 2&ndash;5 business days. Rush processing is available at some labs for an additional fee.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-yellow" style="font-size:0.72rem;">May miss deadline</span><br>
+                                        If samples are collected Apr 15, results may arrive Apr 17&ndash;22 &mdash; potentially <strong>after the Apr 18 option deadline</strong>. However, if no immediate renovation is planned, testing can be done <strong>post-closing</strong>. Only rush this if you plan to renovate at move-in.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>Medium risk.</strong> Asbestos is only dangerous when disturbed. If the home has original 9&times;9 floor tiles, pipe wrap, or textured ceilings, <strong>assume asbestos until tested</strong>. Professional abatement costs $3K&ndash;$20K depending on scope and location. Covering over asbestos tiles (e.g., installing new flooring on top) is legal and far cheaper than removal.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Decision Guide</div>
+                                        <strong>Planning renovation before move-in?</strong> Order testing immediately &mdash; abatement adds significant cost and time to any project. <strong>Living with existing finishes?</strong> Test at your convenience post-closing. Don&rsquo;t let this item delay your option-period decision unless renovation is imminent.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: TDSHS Asbestos Program &bull; EPA NESHAP Regulations &bull; OSHA Standard 1926.1101</div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Mold Testing -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Mold Testing / Protocol</span>
+                                <span class="badge badge-yellow">Medium</span>
+                                <span class="insp-cost">$300&ndash;$600</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        A mold protocol goes beyond visual inspection to identify mold species and measure airborne spore counts. <strong>Order only if</strong> the GreenWorks thermal imaging reveals moisture intrusion. This home has <strong>disclosed flooding history</strong> (1994 reservoir breach) and <strong>32-year-old french drains</strong>, making hidden moisture a real possibility, especially in crawl spaces, behind walls, and in the attic.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        A <strong>TDSHS-licensed mold assessor</strong> (Texas law requires licensure). Important: the assessor and the remediator <strong>must be different companies</strong> &mdash; Texas law prohibits the same firm from doing both.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>On-site assessment:</strong> 1&ndash;2 hours for air sampling and surface testing.<br>
+                                        <strong>Lab results:</strong> 2&ndash;3 business days for spore identification and counts.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-red" style="font-size:0.72rem;">Very tight</span><br>
+                                        This is <strong>conditional</strong> &mdash; only needed if GreenWorks flags moisture on Apr 15. If ordered same day, results arrive <strong>Apr 17&ndash;18</strong>. Cutting it extremely close to the deadline. Have a mold assessor on standby before the inspection.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>Conditional but potentially high.</strong> If thermal imaging is clean, skip this. If moisture is found, this becomes high priority because mold remediation costs $3K&ndash;$10K+ and indicates ongoing water intrusion that must be resolved. The flooding history and aging french drains increase the probability of hidden moisture.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Decision Guide</div>
+                                        <strong>Before inspection:</strong> Identify a licensed mold assessor you can call same-day. <strong>During inspection:</strong> Watch the thermal imaging scan closely for any cold spots, moisture signatures, or temperature anomalies in walls and ceilings. <strong>If flagged:</strong> Call the assessor immediately.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: TDSHS Mold Assessment &amp; Remediation Rules (Chapter 295) &bull; ACAC Standards</div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Radon Testing -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Radon Testing</span>
+                                <span class="badge badge-green">Low</span>
+                                <span class="insp-cost">$15&ndash;$50 DIY</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        Radon is a naturally occurring radioactive gas that seeps up from soil and is the second leading cause of lung cancer. However, Travis County is classified as <strong>EPA Zone 3 (low risk)</strong>, with average levels well below the 4 pCi/L action threshold. A slab-on-grade home (no basement) has even lower risk than pier-and-beam construction.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        <strong>DIY option:</strong> Short-term test kits available at Home Depot, Lowe&rsquo;s, or online ($15&ndash;$30). Place in lowest livable area for 48&ndash;96 hours, then mail to lab.<br>
+                                        <strong>Professional option:</strong> Certified radon measurement professional ($100&ndash;$200) with continuous radon monitor for faster, more accurate results.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>DIY kit:</strong> 48&ndash;96 hours of closed-house testing + 1&ndash;2 weeks for mail-in lab results.<br>
+                                        <strong>Professional CRM:</strong> 48 hours with immediate digital results.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-green" style="font-size:0.72rem;">Lowest priority</span><br>
+                                        A 48-hour professional test started Apr 15 finishes Apr 17 &mdash; feasible but this is the <strong>lowest priority</strong> of all 7 items given the low county risk. If you test, a professional CRM is the only method that returns results before Apr 18.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>Low.</strong> Travis County data shows minimal radon risk. Slab-on-grade construction further reduces exposure. This is an optional comfort measure rather than a safety necessity. If levels are elevated (&gt;4 pCi/L), mitigation systems cost $800&ndash;$1,500 and are highly effective.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Decision Guide</div>
+                                        <strong>Skip this</strong> unless you have specific health concerns about radon exposure. Money and attention are better spent on lead testing, sewer scope review, and foundation assessment for this particular home.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: EPA Radon Zone Map &bull; Texas Radon Program &bull; WHO Radon and Health Guidelines</div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Structural Engineer -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Structural Engineer (PE Stamp)</span>
+                                <span class="badge badge-red">High</span>
+                                <span class="insp-cost">$300&ndash;$500</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        A licensed Professional Engineer provides a <strong>legally stamped assessment</strong> of the foundation and structure. This goes far beyond what a general inspector can offer &mdash; a PE assessment is the standard used by lenders, insurers, and courts. Needed <strong>only if</strong> the GreenWorks elevation map shows differential movement exceeding 1 inch across the slab. The seller has <strong>disclosed previous structural repairs</strong> on this 78-year-old home in Austin&rsquo;s expansive clay soil &mdash; the PE determines whether movement is <strong>historical (stable)</strong> or <strong>active (ongoing)</strong>.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        A <strong>licensed Texas Professional Engineer (PE)</strong> specializing in residential structural or geotechnical engineering. Not a general contractor, not a home inspector. The PE stamp carries legal weight for insurance claims and loan underwriting. Ask GreenWorks or your realtor for referrals to residential foundation PEs in Austin.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>On-site visit:</strong> 1&ndash;2 hours.<br>
+                                        <strong>Verbal assessment:</strong> Usually available <strong>same day</strong> after the visit.<br>
+                                        <strong>Written PE-stamped report:</strong> 2&ndash;5 business days. The verbal is what you need for the option deadline; the written report follows for documentation.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-red" style="font-size:0.72rem;">Critical if needed</span><br>
+                                        Schedule as soon as GreenWorks report is available (evening of Apr 15 or morning of Apr 16). Verbal assessment within 24 hours of visit. If foundation is actively moving, this is a <strong>potential deal-breaker</strong> that must be known before Apr 18.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>High (conditional).</strong> Austin&rsquo;s expansive clay soil (Vertisol) causes seasonal movement in nearly every slab foundation. Some movement is normal. The critical question is <strong>magnitude and direction</strong>. Greater than 1-inch differential = concern. Active ongoing movement = potential deal-breaker or major price negotiation ($5K&ndash;$30K+ for foundation repair with piers).
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Decision Guide</div>
+                                        <strong>Watch the GreenWorks elevation map closely.</strong> If it shows &lt;1&Prime; differential and no active cracking, you likely don&rsquo;t need the PE. If it shows &gt;1&Prime; or the inspector notes active concerns, <strong>call a PE that same evening</strong>. The seller&rsquo;s disclosure of prior structural repairs makes this the #2 most important follow-up after the sewer scope.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: Texas Board of Professional Engineers (TBPE) &bull; Foundation Performance Association Guidelines</div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Roof Certification -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Independent Roof Certification</span>
+                                <span class="badge badge-yellow">Low&ndash;Med</span>
+                                <span class="insp-cost">$150&ndash;$300</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        The seller disclosed <strong>&ldquo;New roof 2024 &mdash; hail damage&rdquo;</strong> (insurance claim replacement). An independent roof certification answers critical questions: Was it a <strong>full tear-off or overlay</strong> on old shingles? What warranty exists and is it <strong>transferable</strong> to a new owner? Was the work <strong>permitted</strong> through the City of Austin? An independent inspector verifies quality separately from the installer.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        A <strong>certified roofing inspector</strong> or a reputable roofing contractor who did NOT install the current roof. <strong>HAAG-certified inspectors</strong> are the gold standard for insurance-related roof evaluations. They can identify workmanship issues, material defects, and whether the installation meets manufacturer specifications (required for warranty validity).
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>On-site inspection:</strong> 1&ndash;2 hours.<br>
+                                        <strong>Written report:</strong> Same day or next day. This is one of the fastest turnaround items.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-green" style="font-size:0.72rem;">Easy to fit</span><br>
+                                        Can be scheduled for Apr 16&ndash;17 with report available before the Apr 18 deadline. Low scheduling pressure.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>Low&ndash;Medium.</strong> The roof was replaced in 2024, so it should be in good condition. The risks are: (1) <strong>overlay vs. tear-off</strong> &mdash; if shingles were laid over old ones, lifespan is significantly reduced; (2) <strong>warranty validity</strong> &mdash; improper installation voids manufacturer warranty; (3) <strong>insurance history</strong> &mdash; a prior hail claim can make future claims harder or raise premiums.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Decision Guide</div>
+                                        <strong>Ask the seller&rsquo;s agent for:</strong> roofing contractor name, permit number, warranty documentation, and insurance claim details. If these are provided and complete, the independent certification becomes less urgent. If documentation is missing or vague, schedule the independent inspection.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: HAAG Engineering Certification Standards &bull; Manufacturer Warranty Requirements &bull; City of Austin Building Permits</div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Soil Testing -->
+                        <div class="insp-card" onclick="this.classList.toggle('open')">
+                            <div class="insp-card-head">
+                                <span class="insp-title">Soil Testing</span>
+                                <span class="badge badge-green">Low</span>
+                                <span class="insp-cost">$200&ndash;$400</span>
+                                <span class="insp-chevron">&#9660;</span>
+                            </div>
+                            <div class="insp-details">
+                                <div class="insp-detail-grid">
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">What &amp; Why</div>
+                                        Austin sits on <strong>expansive clay soil (Vertisol)</strong> that dramatically shrinks and swells with moisture changes. Combined with disclosed drainage issues and the 1994 flooding, soil conditions directly affect foundation stability and long-term maintenance strategy (watering schedule, root barriers, drainage systems). Testing quantifies the <strong>plasticity index (PI)</strong> of the soil, which tells you how reactive it is.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Who Performs It</div>
+                                        A <strong>geotechnical engineering firm</strong>. Often the same PE firm that handles foundation assessments. They drill small soil borings and send samples to a lab for classification and plasticity testing.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">How Long It Takes</div>
+                                        <strong>On-site boring/sampling:</strong> 1&ndash;2 hours.<br>
+                                        <strong>Lab results:</strong> 5&ndash;10 business days. This is the slowest turnaround of all 7 items.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Timeline Impact</div>
+                                        <span class="badge badge-blue" style="font-size:0.72rem;">Post-closing</span><br>
+                                        Results will <strong>not arrive before Apr 18</strong> option deadline. This is a post-closing informational test to guide long-term maintenance planning, not a go/no-go decision factor.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Risk Assessment</div>
+                                        <strong>Low for the purchase decision.</strong> The soil IS expansive clay &mdash; that is essentially a given in this part of Austin. Testing quantifies how reactive it is and informs a maintenance strategy: foundation watering schedules, proper grading, tree root barriers, and drainage system requirements. Useful for long-term ownership but not a deal-breaker factor.
+                                    </div>
+                                    <div class="insp-field">
+                                        <div class="insp-field-label">Decision Guide</div>
+                                        <strong>Defer to post-closing</strong> unless the PE assessment reveals unusual foundation concerns. This test is most useful when combined with a PE report to develop a comprehensive foundation maintenance plan. Budget the $200&ndash;$400 for the first few months of ownership.
+                                    </div>
+                                </div>
+                                <div class="insp-sources">Sources: USDA Soil Survey (Travis County) &bull; ASCE 7 Foundation Design Standards &bull; Texas A&amp;M AgriLife Extension Soil Resources</div>
+                            </div>
+                        </div>
                         <div class="callout callout-info" style="margin-top:0.75rem;">
                             <strong>Pool/Spa vs. Septic:</strong> Your package includes one choice. Select <strong>Pool &amp; Spa</strong> if the property has one, otherwise skip both &mdash; there is no septic system (city sewer).
                         </div>
@@ -2305,6 +2696,9 @@
                         <tr><td class="bold">Crawl space (if pier &amp; beam)</td><td><span class="badge badge-yellow">Medium</span></td><td>$2K&ndash;$10K</td><td>Moisture, standing water, wood rot, pier condition, beam deflection, pest evidence, proper ventilation.</td><td>Moisture barrier may be needed. Rotted beams need sistering or replacement. Check if accessible to inspector.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout callout-danger" style="margin-top:0.75rem;">
+                    <strong>CRITICAL FOR THIS HOME:</strong> Seller disclosed previous structural repairs on a 78-year-old slab in Austin&rsquo;s expansive clay soil. The GreenWorks <strong>elevation map is the single most important data point</strong> from tomorrow&rsquo;s inspection. If it shows &gt;1&Prime; differential, order a PE structural assessment <strong>immediately</strong> (evening of Apr 15). Active foundation movement at this home&rsquo;s age and soil conditions = potential deal-breaker or $15K&ndash;$30K negotiation item. Have a PE&rsquo;s number ready before you walk in.
+                </div>
 
                 <!-- 2. Plumbing Supply -->
                 <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">2. Plumbing &mdash; Supply Lines</h4>
@@ -2317,6 +2711,9 @@
                         <tr><td class="bold">Under-sink leaks</td><td><span class="badge badge-green">Low</span></td><td>$100&ndash;$500</td><td>Check all cabinets under sinks for moisture, mold, warped wood, bucket catches.</td><td>Active leaks need repair. Water damage may indicate longer-term problem.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout callout-danger" style="margin-top:0.75rem;">
+                    <strong>1948 GALVANIZED PIPE ALERT:</strong> This is the highest-probability expensive repair. Nearly all 1948 homes were built with galvanized steel supply lines, which corrode from the inside over 50&ndash;70 years, restricting flow and eventually failing. Ask the inspector to <strong>identify pipe material at the water heater connection and under every sink</strong>. If predominantly original galvanized, a full PEX repipe ($8K&ndash;$15K) should be budgeted and used as <strong>major negotiation leverage</strong>. Run multiple faucets simultaneously during the inspection to test for pressure drops.
+                </div>
 
                 <!-- 3. Plumbing Drain/Sewer -->
                 <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">3. Plumbing &mdash; Drain / Sewer Lines</h4>
@@ -2328,6 +2725,9 @@
                         <tr><td class="bold">Drain flow / backups</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Slow drains in any fixture, gurgling sounds, sewer odor. Run water in all fixtures during inspection.</td><td>Slow drains + old cast iron = imminent replacement needed. Document which fixtures affected.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout callout-danger" style="margin-top:0.75rem;">
+                    <strong>SEWER SCOPE IS YOUR MOST IMPORTANT INCLUDED TEST:</strong> 78-year-old cast iron drain lines are at or past end-of-life. Under-slab sewer line failure is the <strong>single most expensive possible repair</strong> on this home ($25K&ndash;$40K). The sewer camera scope is included in your GreenWorks package &mdash; <strong>request a copy of the full video</strong>, not just the summary report. If the camera reveals cracking, root intrusion, bellying, or significant corrosion, get a licensed plumber&rsquo;s bid <strong>before Apr 18</strong>. This finding alone could justify walking away or negotiating a $20K+ price reduction.
+                </div>
 
                 <!-- 4. Electrical -->
                 <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">4. Electrical System</h4>
@@ -2340,6 +2740,9 @@
                         <tr><td class="bold">Capacity for modern loads</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$5K</td><td>Can the system handle HVAC, EV charger, modern kitchen appliances, and potential duplex conversion?</td><td>Ask inspector about available capacity. If limited: panel upgrade + new circuits needed. Factor into renovation budget.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout callout-warning" style="margin-top:0.75rem;">
+                    <strong>1948 WIRING CHECK:</strong> Ask the inspector to identify wiring type <strong>at the panel and in the attic</strong>. Federal Pacific (FPE) or Zinsco panels are <strong>known fire hazards</strong> requiring immediate replacement &mdash; no exceptions. Cloth-insulated wiring (common in 1940s homes) is a fire risk and requires partial or full rewire. Knob-and-tube remnants require full rewire. This is a <strong>safety issue</strong>, not just a maintenance item &mdash; it affects insurability, and some carriers will decline coverage until the panel/wiring is updated.
+                </div>
 
                 <!-- 5. Roof & Attic -->
                 <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">5. Roof &amp; Attic</h4>
@@ -2396,6 +2799,11 @@
                         <tr><td class="bold">Termite / WDI</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$15K</td><td><strong>GreenWorks includes 90-day guarantee.</strong> Seller disclosed prior termite/WDI damage. Look for active infestation AND extent of structural damage from prior infestation.</td><td>Active infestation = treatment ($500&ndash;$2K). Structural damage from prior = repair ($2K&ndash;$15K). Annual termite bond recommended ($200&ndash;$400/yr). Ask about prior treatment records.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout callout-danger" style="margin-top:0.75rem;">
+                    <strong>LEAD + TERMITE DOUBLE RISK:</strong> This 1948 home has <strong>near-certain lead paint AND seller-disclosed prior termite/WDI damage</strong>. Both hazards are already present &mdash; the questions are extent and cost.<br><br>
+                    <strong>Lead paint:</strong> Order XRF testing for Apr 15&ndash;16 ($300&ndash;$500, same-day results). Intact paint is safe to live with, but any renovation triggers the EPA RRP rule requiring certified contractors at 20&ndash;50% cost premium.<br><br>
+                    <strong>Termites:</strong> The GreenWorks 90-day guarantee covers <strong>treatment of active infestation only</strong> &mdash; it does <strong>NOT</strong> cover structural repair from prior damage. Ask the inspector specifically: &ldquo;Is there structural damage from the prior infestation, and how extensive is it?&rdquo; Prior termite damage repair can run $2K&ndash;$15K depending on which structural members were compromised. Also request the seller&rsquo;s prior treatment records and ask if the home has an active termite bond.
+                </div>
 
                 <!-- 10. Flooding -->
                 <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">10. Flooding &amp; Drainage History</h4>
@@ -2406,6 +2814,9 @@
                         <tr><td class="bold">Current flood insurance</td><td><span class="badge badge-red">High</span></td><td>$1K&ndash;$3K/yr</td><td>Seller has NO flood insurance currently. Despite flooding history.</td><td>Your lender may require it depending on zone. Even if not required, carry it given the disclosure. Budget annually.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout callout-warning" style="margin-top:0.75rem;">
+                    <strong>FLOOD HISTORY + NO CURRENT INSURANCE:</strong> Seller disclosed previous flooding from a 1994 reservoir breach but currently carries <strong>no flood insurance</strong>. The french drains installed in response are now <strong>32 years old</strong> &mdash; well past the typical 15&ndash;25 year lifespan and likely degraded or non-functional. Three action items: (1) Verify <strong>FEMA flood zone status</strong> before closing &mdash; your lender may require flood insurance regardless; (2) Budget <strong>$1K&ndash;$3K/yr</strong> for flood insurance even if not in a high-risk zone given the disclosure; (3) Budget <strong>$3K&ndash;$8K</strong> for french drain replacement in the first 1&ndash;2 years of ownership.
+                </div>
 
                 <!-- 11. Tenant Areas -->
                 <h4 style="border-bottom:2px solid var(--fl-green-light); padding-bottom:0.35rem; margin-top:1.5rem;">11. Tenant-Occupied Areas</h4>
@@ -4328,6 +4739,772 @@
             </div>
         </div>
 
+        <!-- ==================== STAKEHOLDERS & PERFORMANCE ==================== -->
+        <div class="section" id="sec-stakeholders">
+            <h2 class="section-title">Stakeholders &amp; Performance</h2>
+
+            <!-- ===== A. STATUS DASHBOARD ===== -->
+            <div class="grid-3">
+                <div class="stat-card">
+                    <div class="stat-value" style="color:var(--fl-green);">Option Period</div>
+                    <div class="stat-label">Current Phase</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color:var(--fl-danger);" id="option-countdown">~4 days</div>
+                    <div class="stat-label">Until Option Expires (Apr 18, 5 PM)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color:var(--fl-warning);">6 of 10</div>
+                    <div class="stat-label">Stakeholders Engaged</div>
+                </div>
+            </div>
+
+            <div class="callout callout-danger" style="margin-top:1rem;">
+                <strong>&#9888; MSA Disclosure Alert:</strong> Spyglass Realty (Alli Heller&rsquo;s brokerage) has a <strong>Marketing Service Agreement (MSA)</strong> with Nations Lending (your lender). This means Spyglass may receive marketing fees or referral compensation when their clients use Nations Lending. Under RESPA, this relationship <strong>must be disclosed to you in writing</strong>. If you have not received a written MSA disclosure, ask Alli about it immediately. This also raises the question of whether you were encouraged to compare other lenders.
+            </div>
+
+            <!-- ===== B. STAKEHOLDER DIRECTORY ===== -->
+            <h3 style="margin-top:2rem; margin-bottom:1rem; color:var(--fl-green-dark);">Stakeholder Directory</h3>
+
+            <div class="grid-2">
+                <!-- YOUR TEAM -->
+                <div class="card stakeholder-buyer">
+                    <h3 style="margin-bottom:0.75rem;">&#128994; Your Team (Working for You)</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Role</th><th>Name / Company</th><th>Contact</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Buyer&rsquo;s Agent</strong></td>
+                                <td>Alli Heller<br><span style="font-size:0.8rem;color:var(--fl-muted);">Spyglass Realty &bull; License #694604</span></td>
+                                <td style="font-size:0.85rem;">760-803-6209</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lender / Mortgage Banker</strong></td>
+                                <td>Nossi Creeger<br><span style="font-size:0.8rem;color:var(--fl-muted);">Nations Lending &bull; NMLS #741376</span><br><span class="badge badge-yellow" style="font-size:0.7rem;">MSA with Spyglass</span></td>
+                                <td style="font-size:0.85rem;">&mdash;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SELLER'S SIDE -->
+                <div class="card stakeholder-seller">
+                    <h3 style="margin-bottom:0.75rem;">&#128308; Seller&rsquo;s Side</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Role</th><th>Name / Company</th><th>Contact</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Listing Agent</strong></td>
+                                <td>Luke Graves<br><span style="font-size:0.8rem;color:var(--fl-muted);">Luke Graves Realty &bull; License #517331</span></td>
+                                <td style="font-size:0.85rem;">512-771-7819</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Seller</strong></td>
+                                <td>Thelma Jane Hall<br><span style="font-size:0.8rem;color:var(--fl-muted);">Individual (not investor)</span></td>
+                                <td style="font-size:0.85rem;">Via listing agent</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- NEUTRAL / THIRD PARTY -->
+                <div class="card stakeholder-neutral">
+                    <h3 style="margin-bottom:0.75rem;">&#128309; Neutral / Third Party</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Role</th><th>Name / Company</th><th>Details</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Title / Escrow</strong></td>
+                                <td>Carol Bellomy<br><span style="font-size:0.8rem;color:var(--fl-muted);">Independence Title</span></td>
+                                <td style="font-size:0.85rem;">3409 Executive Center Dr, Ste 150, Austin 78731</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Inspector</strong></td>
+                                <td>GreenWorks Inspections &amp; Engineering</td>
+                                <td style="font-size:0.85rem;">Scheduled Apr 15, 12:30 PM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Appraiser</strong></td>
+                                <td><em>TBD &mdash; Lender orders</em></td>
+                                <td style="font-size:0.85rem;">Typically ordered after financing approval</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- NOT YET ENGAGED -->
+                <div class="card stakeholder-missing">
+                    <h3 style="margin-bottom:0.75rem;">&#9888; Not Yet Engaged (Recommended)</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Role</th><th>Why Needed</th><th>When to Engage</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Real Estate Attorney</strong></td>
+                                <td style="font-size:0.85rem;">Strongly recommended for unmarried co-buyers. Reviews contracts, drafts co-ownership agreement, advises on title holding (JTWROS vs TIC). Cost: $500&ndash;$1,500.</td>
+                                <td style="font-size:0.85rem;"><span class="badge badge-red">ASAP</span><br>Before option period ends</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Insurance Agent</strong></td>
+                                <td style="font-size:0.85rem;">Homeowner&rsquo;s insurance must be bound before closing. For a 1948 home, shop early &mdash; some carriers decline older homes or charge significantly more. Get quotes for HO-3 policy.</td>
+                                <td style="font-size:0.85rem;"><span class="badge badge-yellow">This week</span><br>During option period</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tax Advisor / CPA</strong></td>
+                                <td style="font-size:0.85rem;">Advises on homestead exemption (saves ~$1,800+/yr on property taxes), mortgage interest deduction, co-buyer tax implications. Filing deadline: Apr 30, 2027.</td>
+                                <td style="font-size:0.85rem;"><span class="badge badge-gray">Pre-closing</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Survey Company</strong></td>
+                                <td style="font-size:0.85rem;">New survey may be required by title company or lender. Verifies property boundaries, easements, encroachments. Cost: $400&ndash;$700.</td>
+                                <td style="font-size:0.85rem;"><span class="badge badge-gray">If required</span><br>Lender/title will advise</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PHASE ACTIVITY TABLE -->
+            <div class="card" style="margin-top:1.25rem;">
+                <h3 style="margin-bottom:0.75rem;">Stakeholder Activity by Phase</h3>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Stakeholder</th>
+                                <th style="text-align:center;">Option Period<br><span style="font-size:0.7rem;font-weight:400;">Apr 13&ndash;18</span></th>
+                                <th style="text-align:center;">Financing<br><span style="font-size:0.7rem;font-weight:400;">Apr 18&ndash;May 4</span></th>
+                                <th style="text-align:center;">Pre-Closing<br><span style="font-size:0.7rem;font-weight:400;">May 4&ndash;31</span></th>
+                                <th style="text-align:center;">Closing<br><span style="font-size:0.7rem;font-weight:400;">Jun 1</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Alli Heller (Agent)</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td></tr>
+                            <tr><td>Nossi Creeger (Lender)</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>On-call</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Primary</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td></tr>
+                            <tr><td>GreenWorks (Inspector)</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Primary</td><td style="text-align:center;"><span class="phase-dot phase-inactive"></span>&mdash;</td><td style="text-align:center;"><span class="phase-dot phase-inactive"></span>&mdash;</td><td style="text-align:center;"><span class="phase-dot phase-inactive"></span>&mdash;</td></tr>
+                            <tr><td>Carol Bellomy (Title)</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>Receives $</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>Title work</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Primary</td></tr>
+                            <tr><td>Luke Graves (Listing)</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>Access</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>Negotiate</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>On-call</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Active</td></tr>
+                            <tr><td>Attorney <em>(recommended)</em></td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Review</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>On-call</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Co-own agmt</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Review</td></tr>
+                            <tr><td>Insurance Agent <em>(needed)</em></td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>Quote</td><td style="text-align:center;"><span class="phase-dot phase-oncall"></span>Compare</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Bind</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Proof</td></tr>
+                            <tr><td>Appraiser</td><td style="text-align:center;"><span class="phase-dot phase-inactive"></span>&mdash;</td><td style="text-align:center;"><span class="phase-dot phase-active"></span>Appraisal</td><td style="text-align:center;"><span class="phase-dot phase-inactive"></span>&mdash;</td><td style="text-align:center;"><span class="phase-dot phase-inactive"></span>&mdash;</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== C. PERFORMANCE SCORECARDS ===== -->
+            <h3 style="margin-top:2rem; margin-bottom:0.5rem; color:var(--fl-green-dark);">Performance Scorecards</h3>
+
+            <div class="callout callout-info" style="margin-bottom:1.25rem;">
+                <strong>How to use:</strong> Each item below represents something your stakeholder should have done (or should be doing). Use the dropdown to mark each as <strong>Done</strong>, <strong>Unknown</strong>, <strong>Not Done</strong>, or <strong>Concern</strong>. Your selections are saved automatically. Items pre-marked as &ldquo;Concern&rdquo; are based on evidence (or lack thereof) from available documents.
+            </div>
+
+            <div id="scorecard-agent-summary" class="callout callout-warning" style="margin-bottom:1.25rem;">
+                <strong>Agent Summary:</strong> <span id="scorecard-summary">Evaluate items below to generate summary</span>
+            </div>
+
+            <!-- BUYER'S AGENT SCORECARD -->
+            <div class="card" style="margin-bottom:1.25rem;">
+                <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Buyer&rsquo;s Agent: Alli Heller, Spyglass Realty</h3>
+                <div class="sh-expand-body">
+
+                    <!-- a) Pre-Offer Phase -->
+                    <h4 style="margin:1rem 0 0.5rem;color:var(--fl-green-dark);">a) Pre-Offer Phase</h4>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-pre-01"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Provided market comps before offer</div>
+                            <div class="sc-expected">Agent should present 3&ndash;5 comparable sales within 0.5 miles, same era, with price/sqft analysis before you decided on offer price.</div>
+                            <div class="sc-why">Why: Without comps you cannot know if $599,900 is fair. Your Market Comps tab shows detailed comparable data, suggesting this was done.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-pre-02"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Explained all contract terms and contingencies</div>
+                            <div class="sc-expected">Agent should walk through every paragraph of the TREC 1-4 contract: option period, financing contingency, title objection, survey, closing timeline, and all addenda.</div>
+                            <div class="sc-why">Why: The detailed Offer Contract tab suggests thorough explanation occurred. But confirm: did Alli explain each section verbally, or did you just receive the documents?</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-pre-03"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Negotiated effectively on price</div>
+                            <div class="sc-expected">Agent should negotiate price, option period length, closing cost credits, and closing timeline. Your offer is $599,900 vs TCAD appraised $686,615 &mdash; 12.6% below assessed value.</div>
+                            <div class="sc-why">Why: Strong pricing suggests good negotiation, though TCAD values don&rsquo;t always reflect market. The 5-day option period is short for a 78-year-old home.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-pre-04"><option value="done">Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern" selected>Concern</option></select>
+                            <br><span class="sc-badge sc-badge-concern">Concern</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Disclosed the Spyglass &harr; Nations Lending MSA relationship</div>
+                            <div class="sc-expected">Under RESPA (Real Estate Settlement Procedures Act), any affiliated business arrangement must be disclosed in writing. The agent must explain that Spyglass Realty may receive compensation when you use Nations Lending, and that you are <strong>not required</strong> to use Nations.</div>
+                            <div class="sc-why">Why: This is a legal requirement. If undisclosed, it&rsquo;s a RESPA violation. More importantly, you deserve to know whether your lender referral was based on your best interest or a business relationship.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Can you provide me with the written MSA/Affiliated Business Arrangement disclosure for Spyglass Realty and Nations Lending? Were you required to refer us to Nations, or was it a recommendation?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-pre-05"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Evaluated property condition before offer</div>
+                            <div class="sc-expected">For a 1948 home, agent should have flagged likely issues (galvanized plumbing, original electrical, foundation age, lead paint, asbestos) before you submitted your offer so you could factor repair costs into your price.</div>
+                            <div class="sc-why">Why: Understanding likely repair costs ($40K&ndash;$80K for a home this age) should inform your offer price and option period negotiation strategy.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Before we offered, did you assess the likely condition issues for a 78-year-old home? Were any estimated repair costs factored into our offer price?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-pre-06"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Buyer representation agreement explained and signed</div>
+                            <div class="sc-expected">As of NAR rule changes (Aug 2024), buyer rep agreements are mandatory before touring homes. The agreement should clearly state: compensation amount/structure, term dates, duties, and cancellation rights. Signed Apr 12, term through Jul 31, 2026.</div>
+                            <div class="sc-why">Why: Confirmed signed. Verify both Jackie and Hannah have signed (timeline notes Hannah still needs to sign).</div>
+                            <div class="sc-ask"><strong>Check:</strong> Has Hannah signed the buyer rep agreement? The timeline indicates it was pending as of Apr 12.</div>
+                        </div>
+                    </div>
+
+                    <!-- b) Option Period Management -->
+                    <h4 style="margin:1.5rem 0 0.5rem;color:var(--fl-danger);">b) Option Period Management <span class="badge badge-red">CRITICAL &mdash; ACTIVE NOW</span></h4>
+                    <div class="callout callout-danger" style="margin-bottom:0.75rem;">The option period is your <strong>only window</strong> to terminate for <strong>any reason</strong> and get your $17,997 earnest money back. It expires <strong>April 18 at 5:00 PM</strong>. Every item below should be happening RIGHT NOW.</div>
+
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-01"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Scheduled inspections promptly</div>
+                            <div class="sc-expected">Inspections should be scheduled within 24 hours of contract execution for a 5-day option period. GreenWorks is scheduled for Apr 15 at 12:30 PM (Day 2) &mdash; this is prompt.</div>
+                            <div class="sc-why">Why: With only 5 days, every hour counts. Day 2 inspection leaves only ~3 days for results review and negotiation.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-02"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Coordinating inspection access with listing agent</div>
+                            <div class="sc-expected">Agent should confirm property access, ensure utilities are on, coordinate with tenant (property has existing tenant with lease), and arrange for you to attend if desired.</div>
+                            <div class="sc-why">Why: Inspection quality depends on access. Tenant occupied properties need advance coordination. Utility access is essential for testing systems.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Is the tenant aware of the inspection? Will utilities be on? Can we attend?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Clearly explained option period deadline and consequences</div>
+                            <div class="sc-expected">Agent must ensure you understand: (1) Option expires Apr 18 at 5 PM sharp, (2) after that you can only terminate for specific contractual reasons (financing denial, title defects), (3) your $17,997 earnest money becomes at risk, (4) the $500 option fee is non-refundable regardless.</div>
+                            <div class="sc-why">Why: This is the most consequential deadline in the entire transaction. Misunderstanding it could cost you $17,997.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Can you walk us through exactly what happens if we don&rsquo;t terminate by April 18 at 5 PM? What rights do we retain and what do we lose?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-04"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Preparing repair amendment / negotiation strategy</div>
+                            <div class="sc-expected">After inspection results (expected Apr 16), agent should: categorize issues by severity, estimate costs, determine which to request seller repair vs. price credit vs. accept as-is, and draft an Amendment to the contract if needed.</div>
+                            <div class="sc-why">Why: The negotiation strategy should be ready to execute within hours of receiving the inspection report &mdash; there&rsquo;s no time to waste in a 5-day option period.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Once we get the inspection report, what&rsquo;s your plan for repair negotiations? How quickly can we send an amendment? What&rsquo;s our strategy for prioritizing requests?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-05"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Advising on deal-breakers vs. negotiable issues</div>
+                            <div class="sc-expected">For a 1948 home, agent should pre-brief you on which findings are deal-breakers (active foundation failure, compromised sewer main, knob-and-tube wiring, severe water damage) vs. negotiable (cosmetic issues, deferred maintenance, minor plumbing) vs. expected for age (some foundation movement, older systems).</div>
+                            <div class="sc-why">Why: First-time buyers often over-react or under-react to inspection findings. Good agent guidance prevents both panic and complacency.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-06"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Explained termination rights and process</div>
+                            <div class="sc-expected">Agent should explain: how to formally terminate (written notice before deadline), that option fee ($500) is always forfeited, that earnest money ($17,997) is returned if you terminate during option period, and the exact process for delivering termination notice.</div>
+                            <div class="sc-why">Why: If the inspection reveals serious issues, you need to know exactly how to exercise your termination right &mdash; including who to notify and in what form.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-opt-07"><option value="done">Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern" selected>Concern</option></select>
+                            <br><span class="sc-badge sc-badge-concern">Concern</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Recommended specialized inspections beyond general</div>
+                            <div class="sc-expected">For a 78-year-old home, a general inspection is not enough. Best practice includes: <strong>foundation specialist</strong> (pier &amp; beam + slab areas), <strong>sewer scope</strong> (camera inspection of main line), <strong>electrical panel evaluation</strong> (for outdated wiring), <strong>HVAC specialist</strong> (system age/condition), <strong>roof certification</strong>, and potentially <strong>lead paint / asbestos testing</strong> (pre-1978 home).</div>
+                            <div class="sc-why">Why: GreenWorks does comprehensive general inspections with thermal imaging and sewer camera, which is excellent. However, if significant issues are found in foundation, electrical, or plumbing, specialist follow-ups may be needed and must happen within the option period.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;If GreenWorks finds potential foundation, sewer, or electrical issues, do we have specialist inspectors on standby who can come out before April 18? Have you lined anyone up?&rdquo;</div>
+                        </div>
+                    </div>
+
+                    <!-- c) Financing Coordination -->
+                    <h4 style="margin:1.5rem 0 0.5rem;color:var(--fl-green-dark);">c) Financing Coordination</h4>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fin-01"><option value="done">Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern" selected>Concern</option></select>
+                            <br><span class="sc-badge sc-badge-concern">Concern</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Explained MSA between Spyglass Realty and Nations Lending</div>
+                            <div class="sc-expected">Agent must provide a written Affiliated Business Arrangement (AfBA) disclosure per RESPA Section 8. This disclosure must state: (1) the nature of the relationship, (2) estimated charges, and (3) that you are NOT required to use the affiliated provider.</div>
+                            <div class="sc-why">Why: The MSA creates a financial incentive for Alli to refer you to Nations Lending regardless of whether they offer the best terms. This doesn&rsquo;t mean Nations is bad &mdash; it means the referral wasn&rsquo;t necessarily based solely on your interests.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Do you have a written Affiliated Business Arrangement disclosure for us regarding Nations Lending? What does Spyglass Realty receive from this arrangement?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fin-02"><option value="done">Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern" selected>Concern</option></select>
+                            <br><span class="sc-badge sc-badge-concern">Concern</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Encouraged cross-shopping lenders</div>
+                            <div class="sc-expected">Best practice: buyers should get quotes from <strong>at least 3 lenders</strong> (one big bank, one credit union, one mortgage broker) before committing. Agent should actively encourage this, not just refer to the affiliated lender. CFPB research shows shopping can save $1,200+/year.</div>
+                            <div class="sc-why">Why: Only Nations Lending appears in your documents. Even a 0.25% rate difference on a $480K loan = $1,200/year = $36,000 over 30 years. It is <strong>not too late</strong> to get competing quotes this week.</div>
+                            <div class="sc-ask"><strong>Action:</strong> Get Loan Estimates from 2&ndash;3 other lenders this week. Try: a local credit union (UFCU, Amplify), an online lender (Better, Rocket), and/or a mortgage broker. Compare: rate, APR, origination fees, and total closing costs.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fin-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Tracking financing approval deadline (May 4)</div>
+                            <div class="sc-expected">Agent should have a clear timeline: loan application submitted, processing underway, documents requested, underwriting timeline, and a buffer for any delays before the May 4 deadline.</div>
+                            <div class="sc-why">Why: If financing isn&rsquo;t approved by May 4 and no extension is agreed, you may lose the financing contingency &mdash; meaning you could be obligated to close even without a loan.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fin-04"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Advised on rate lock timing</div>
+                            <div class="sc-expected">Agent and lender should discuss when to lock the rate. Key consideration: your pre-qual shows 6.75% but the contract caps financing at 6.5%. If rates land between 6.5% and 6.75%, you may not have financing contingency protection. Agent should have flagged this gap.</div>
+                            <div class="sc-why">Why: The rate cap mismatch (6.5% contract vs 6.75% pre-qual) is a potential trap. If your actual rate is 6.6%, you technically have financing but at a rate above the contract cap &mdash; consult your agent and lender on this.</div>
+                            <div class="sc-ask"><strong>Ask Alli &amp; Nossi:</strong> &ldquo;Our contract says 6.5% max but pre-qual was at 6.75%. If the rate comes in at 6.6%, does our financing contingency protect us? Should we lock now?&rdquo;</div>
+                        </div>
+                    </div>
+
+                    <!-- d) Due Diligence & Disclosure -->
+                    <h4 style="margin:1.5rem 0 0.5rem;color:var(--fl-green-dark);">d) Due Diligence &amp; Disclosure</h4>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-dd-01"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Seller&rsquo;s disclosure obtained and reviewed</div>
+                            <div class="sc-expected">Texas law requires the seller to provide a Seller&rsquo;s Disclosure Notice. Agent should review it with you, flag any concerning disclosures, and cross-reference with inspection findings.</div>
+                            <div class="sc-why">Why: The seller&rsquo;s disclosure appears in your Documents tab, suggesting it was obtained.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-dd-02"><option value="done" selected>Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-done">Done</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Tax records and assessed values reviewed</div>
+                            <div class="sc-expected">Agent should review TCAD records for assessed value ($686,615), tax rate, exemptions, and any pending reassessments that could impact your costs after purchase.</div>
+                            <div class="sc-why">Why: Your page shows detailed TCAD data. Confirm agent also explained the homestead exemption opportunity (file by Apr 30, 2027) and how it affects your tax bill.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-dd-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Title commitment process explained</div>
+                            <div class="sc-expected">Agent should explain: what a title commitment is, the standard exceptions (survey, liens, easements), your right to object within 5 days of receipt, and what title insurance covers vs. doesn&rsquo;t cover.</div>
+                            <div class="sc-why">Why: Title issues can derail a closing. Understanding the process early prevents surprises. Your title objection window closes approximately May 28.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;When do we expect the title commitment from Independence Title? Will you review it with us and flag any exceptions we should object to?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-dd-04"><option value="done">Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern" selected>Concern</option></select>
+                            <br><span class="sc-badge sc-badge-concern">Concern</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Recommended a real estate attorney</div>
+                            <div class="sc-expected">For unmarried co-buyers purchasing a 78-year-old home with a tenant, duplex conversion potential, and lead paint/asbestos concerns, an attorney is <strong>strongly recommended</strong>. The attorney should review the contract, draft a co-ownership agreement (addressing ownership splits, buyout provisions, death/incapacity, expense sharing), and advise on title holding structure.</div>
+                            <div class="sc-why">Why: Texas doesn&rsquo;t require an attorney, but co-buyer transactions are legally complex. Without a co-ownership agreement, disputes could result in a forced sale. Cost: $500&ndash;$1,500 for contract review + co-ownership agreement.</div>
+                            <div class="sc-ask"><strong>Ask Alli:</strong> &ldquo;Can you recommend a real estate attorney who works with co-buyer situations? We need a co-ownership agreement and contract review.&rdquo;</div>
+                        </div>
+                    </div>
+
+                    <!-- e) Communication & Responsiveness -->
+                    <h4 style="margin:1.5rem 0 0.5rem;color:var(--fl-green-dark);">e) Communication &amp; Responsiveness</h4>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-com-01"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Responds to questions within 2 hours during business days</div>
+                            <div class="sc-expected">During an active option period, response times should be under 2 hours for calls/texts and same-day for emails. During critical deadlines, agent should be available within 30 minutes.</div>
+                            <div class="sc-why">Why: Delayed responses during a 5-day option period can cost you negotiation time or miss deadlines.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-com-02"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Provides proactive updates (not just reactive)</div>
+                            <div class="sc-expected">Good agents send daily status updates during the option period: what happened today, what&rsquo;s scheduled tomorrow, any issues to be aware of. You should not have to ask &ldquo;what&rsquo;s happening?&rdquo;</div>
+                            <div class="sc-why">Why: Proactive communication is the #1 indicator of agent engagement. If you&rsquo;re always the one reaching out, it may signal low prioritization of your transaction.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-com-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Available for inspection and key appointments</div>
+                            <div class="sc-expected">Agent should attend the inspection (Apr 15, 12:30 PM) in person. This allows them to ask the inspector questions, understand issues firsthand, and begin formulating the repair negotiation strategy on-site.</div>
+                            <div class="sc-why">Why: An agent who attends the inspection can better represent your interests in repair negotiations because they&rsquo;ve seen the issues firsthand.</div>
+                            <div class="sc-ask"><strong>Confirm:</strong> Will Alli be at the GreenWorks inspection on April 15 at 12:30 PM?</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-com-04"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Clear explanation of next steps at each milestone</div>
+                            <div class="sc-expected">After each milestone (offer accepted, inspections, financing), agent should provide a clear written summary of: what just happened, what happens next, what you need to do, and key dates/deadlines coming up.</div>
+                            <div class="sc-why">Why: Buying a home is complex. Clear milestone summaries reduce anxiety and ensure nothing falls through the cracks.</div>
+                        </div>
+                    </div>
+
+                    <!-- f) Fiduciary Duties -->
+                    <h4 style="margin:1.5rem 0 0.5rem;color:var(--fl-green-dark);">f) Fiduciary Duties (TREC Requirements)</h4>
+                    <div class="callout callout-info" style="margin-bottom:0.75rem;">
+                        Under Texas law (TREC), your buyer&rsquo;s agent owes you specific fiduciary duties. These are legal obligations, not optional courtesies.
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fid-01"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Loyalty &mdash; Putting your interests first</div>
+                            <div class="sc-expected">Agent must prioritize your interests above their own or any third party&rsquo;s. This includes: recommending the best lender for you (not just the affiliated one), advising against the purchase if warranted, and negotiating hard on your behalf even if it means a smaller commission or more work.</div>
+                            <div class="sc-why">Why: The MSA with Nations Lending creates a potential conflict of interest. A loyal agent would disclose this prominently and actively encourage you to compare alternatives.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fid-02"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Full disclosure of material facts</div>
+                            <div class="sc-expected">Agent must disclose all material facts that could affect your decision: property condition issues known to them, neighborhood concerns, market trends, affiliated business relationships, and any information that could influence the transaction.</div>
+                            <div class="sc-why">Why: Material non-disclosure is the #1 reason for post-closing disputes. Your agent should be over-communicating, not under-communicating.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fid-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Competent advice and guidance</div>
+                            <div class="sc-expected">Agent must have sufficient knowledge and skill to advise you on: property valuation, inspection findings, contract terms, local market conditions, and the transaction process. For issues outside their expertise, they should refer you to appropriate professionals (attorney, inspector, lender).</div>
+                            <div class="sc-why">Why: A 1948 home with a tenant, duplex potential, and co-buyer situation is more complex than average. The agent should demonstrate expertise or bring in specialists.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="agent-fid-04"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Accounting for all funds</div>
+                            <div class="sc-expected">Agent must account for all money in the transaction: earnest money ($17,997), option fee ($500), and ensure proper delivery to Independence Title (Carol Bellomy). You should receive receipts for all deposits.</div>
+                            <div class="sc-why">Why: Earnest money due by Apr 16. Confirm wire instructions came directly from the title company (not via email, which could be wire fraud). Always verify wire instructions by phone.</div>
+                            <div class="sc-ask"><strong>IMPORTANT:</strong> Before wiring $17,997 + $500, call Independence Title directly at their published number to verify wire instructions. Wire fraud in real estate transactions is common.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LENDER SCORECARD -->
+            <div class="card" style="margin-bottom:1.25rem;">
+                <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Lender: Nossi Creeger, Nations Lending</h3>
+                <div class="sh-expand-body">
+
+                    <div class="callout callout-danger" style="margin-bottom:1rem;">
+                        <strong>Should you have cross-shopped lenders? YES.</strong> The Consumer Financial Protection Bureau (CFPB) recommends getting Loan Estimates from at least 3 lenders. Research shows borrowers who shop save an average of $1,200+ per year. You were referred to Nations Lending through an MSA with your agent&rsquo;s brokerage &mdash; this doesn&rsquo;t mean Nations is a bad lender, but it means the referral had a financial incentive behind it. <strong>It is NOT too late to get competing quotes this week.</strong>
+                    </div>
+
+                    <div class="callout callout-info" style="margin-bottom:1rem;">
+                        <strong>What is an MSA?</strong> A Marketing Service Agreement is a legal arrangement where Nations Lending pays Spyglass Realty for marketing services (e.g., co-branded materials, office space, lead sharing). It&rsquo;s legal under RESPA as long as: (1) it&rsquo;s disclosed to you, (2) you&rsquo;re told you can choose any lender, and (3) the payments are for actual services rendered (not just referrals). The concern is that it creates an incentive to steer clients to Nations regardless of whether they offer the best terms.
+                    </div>
+
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-01"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Provided official Loan Estimate (LE) within 3 business days of application</div>
+                            <div class="sc-expected">Lenders are legally required to provide a Loan Estimate within 3 business days of receiving your application. This standardized form shows: interest rate, monthly payment, closing costs, and total cost of the loan. Compare this to other lenders&rsquo; LEs.</div>
+                            <div class="sc-why">Why: The LE is your primary comparison tool. Without it, you cannot meaningfully evaluate this lender against others.</div>
+                            <div class="sc-ask"><strong>Ask Nossi:</strong> &ldquo;Can you send me the official Loan Estimate form? I want to compare it with other quotes.&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-02"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Presented multiple rate/product options</div>
+                            <div class="sc-expected">Good lenders present options: 30-year fixed vs. 15-year, different point structures (pay points for lower rate vs. no points), ARM options if appropriate. Not just one take-it-or-leave-it rate.</div>
+                            <div class="sc-why">Why: Different loan structures can save tens of thousands over the life of the loan. A lender who only presents one option may not be optimizing for your situation.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Transparent fee breakdown</div>
+                            <div class="sc-expected">Lender should clearly break down: origination fee, discount points, underwriting fee, appraisal fee, credit report fee, and any other lender charges. Watch for junk fees (processing fee, admin fee, rate lock fee) that inflate costs.</div>
+                            <div class="sc-why">Why: Lender fees vary widely &mdash; $2,000 to $8,000+ for the same loan. This is where cross-shopping pays off most.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-04"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">On track for May 4 financing approval deadline</div>
+                            <div class="sc-expected">Lender should provide a clear processing timeline: documents needed, underwriting queue time, conditions to be met. With 21 days to approval, the loan should be in active processing now.</div>
+                            <div class="sc-why">Why: If financing isn&rsquo;t approved by May 4, your contingency may expire. Ask for a timeline and weekly status updates.</div>
+                            <div class="sc-ask"><strong>Ask Nossi:</strong> &ldquo;What is the current status of our loan application? What documents do you still need? Are we on track for approval by May 4?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-05"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Rate lock strategy discussed</div>
+                            <div class="sc-expected">Lender should advise on: when to lock (now vs. float), lock period needed (closing is Jun 1 = ~48 days), cost of extending the lock, and the rate cap issue (contract says 6.5% but pre-qual at 6.75%).</div>
+                            <div class="sc-why">Why: If rates rise, locking now protects you. If rates fall, floating could save money. The 6.5% contract cap adds urgency &mdash; if you can&rsquo;t get 6.5% or below, understand your options.</div>
+                            <div class="sc-ask"><strong>Ask Nossi:</strong> &ldquo;What rate can you lock today? Our contract caps at 6.5% &mdash; can we hit that? If not, what are our options? What does a 48-day lock cost?&rdquo;</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-06"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Pre-qualification vs. pre-approval distinction explained</div>
+                            <div class="sc-expected">Pre-qualification (what you have) is based on self-reported income/assets. Pre-approval involves verified documentation (tax returns, pay stubs, bank statements). Pre-approval is stronger and catches issues early.</div>
+                            <div class="sc-why">Why: If you only have a pre-qual, the underwriting process may uncover issues (income verification, debt ratios) that delay or deny approval. Ask if you should upgrade to full pre-approval now.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="lender-07"><option value="done">Done</option><option value="unknown">Unknown</option><option value="not-done">Not Done</option><option value="concern" selected>Concern</option></select>
+                            <br><span class="sc-badge sc-badge-concern">Concern</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Encouraged (or at least not discouraged) cross-shopping</div>
+                            <div class="sc-expected">A good lender is confident in their rates and welcomes comparison. A lender who discourages shopping or pressures you to commit quickly is a red flag.</div>
+                            <div class="sc-why">Why: Multiple mortgage inquiries within a 45-day window count as a single credit inquiry for scoring purposes (per CFPB). There is NO credit score penalty for shopping lenders. If anyone told you otherwise, that was incorrect.</div>
+                            <div class="sc-ask"><strong>Action now:</strong> This week, request Loan Estimates from 2&ndash;3 other lenders. Suggestions for Austin: <strong>UFCU</strong> (local credit union, competitive rates), <strong>Amplify Credit Union</strong>, <strong>Better.com</strong> (fast online quotes), or any national bank. Compare the &ldquo;Loan Costs&rdquo; section on page 2 of each Loan Estimate.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INSPECTOR SCORECARD -->
+            <div class="card" style="margin-bottom:1.25rem;">
+                <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Inspector: GreenWorks Inspections &amp; Engineering</h3>
+                <div class="sh-expand-body">
+                    <div class="callout callout-info" style="margin-bottom:0.75rem;">
+                        Inspection is scheduled for <strong>April 15 at 12:30 PM</strong>. Evaluate these items after receiving the report (expected by April 16).
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="insp-01"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Comprehensive report delivered within 24 hours</div>
+                            <div class="sc-expected">Digital report with photos, detailed findings by system (roof, foundation, plumbing, electrical, HVAC, structure), severity ratings, and cost estimates where applicable.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="insp-02"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Thermal imaging and sewer camera scope performed</div>
+                            <div class="sc-expected">GreenWorks advertises these services. For a 1948 home, thermal imaging reveals hidden moisture and insulation gaps. Sewer camera scope is critical for cast-iron/clay pipes of this era &mdash; replacement can cost $8K&ndash;$40K.</div>
+                        </div>
+                    </div>
+                    <div class="scorecard-item">
+                        <div class="scorecard-status">
+                            <select class="status-select" data-item="insp-03"><option value="done">Done</option><option value="unknown" selected>Unknown</option><option value="not-done">Not Done</option><option value="concern">Concern</option></select>
+                            <br><span class="sc-badge sc-badge-unknown">Unknown</span>
+                        </div>
+                        <div class="scorecard-content">
+                            <div class="sc-title">Willing to discuss findings and answer follow-up questions</div>
+                            <div class="sc-expected">Good inspectors make themselves available after the inspection for questions. You should be able to call and ask about specific findings, especially anything that might be a deal-breaker.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== D. CONTRACT EXTENSION OPTIONS ===== -->
+            <h3 style="margin-top:2rem; margin-bottom:1rem; color:var(--fl-green-dark);">Contract Extension Options</h3>
+
+            <div class="callout callout-warning" style="margin-bottom:1.25rem;">
+                <strong>Key principle:</strong> All contract extensions require <strong>both parties</strong> to agree and sign an amendment. The seller is never obligated to grant an extension. Your leverage depends on the seller&rsquo;s motivation and how far along the transaction is.
+            </div>
+
+            <!-- Option Period Extension -->
+            <div class="card" style="margin-bottom:1.25rem;">
+                <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Option Period Extension <span class="badge badge-red">MOST URGENT</span></h3>
+                <div class="sh-expand-body">
+                    <div class="callout callout-danger" style="margin-bottom:0.75rem;">
+                        <strong>Deadline: April 18, 2026 at 5:00 PM.</strong> Any extension request must be agreed upon and signed BEFORE this deadline. Do not wait until the last day.
+                    </div>
+                    <table class="data-table">
+                        <tbody>
+                            <tr><td style="width:30%;font-weight:600;">How to extend</td><td>Execute a TREC Amendment to the contract (TAR form 1903 or similar). Both buyer and seller must sign. Your agent drafts it, listing agent presents to seller.</td></tr>
+                            <tr><td style="font-weight:600;">Typical cost</td><td>Additional option fee of <strong>$100&ndash;$200 per day</strong> of extension. This is negotiable. Some sellers accept a flat fee ($250&ndash;$500) for a few extra days. The additional fee is typically non-refundable.</td></tr>
+                            <tr><td style="font-weight:600;">Seller&rsquo;s obligation</td><td><strong>None.</strong> The seller can refuse any extension. However, most sellers will agree to a reasonable extension (3&ndash;5 days) if the buyer is acting in good faith and the inspection revealed legitimate issues that need further evaluation.</td></tr>
+                            <tr><td style="font-weight:600;">Strategy</td><td>Request the extension <strong>at the same time</strong> you present inspection findings. Frame it as: &ldquo;We need a few more days to get specialist evaluations on [specific issues] so we can make an informed decision.&rdquo; This shows good faith and ties the extension to a concrete reason.</td></tr>
+                            <tr><td style="font-weight:600;">If seller refuses</td><td>You must decide within the original option period (by Apr 18, 5 PM): proceed with the purchase as-is, negotiate repairs within the remaining time, or terminate and get your earnest money back.</td></tr>
+                            <tr><td style="font-weight:600;">Risk of not extending</td><td>If you need more time for specialist inspections and don&rsquo;t get an extension, you either proceed without full information or terminate. For a 78-year-old home with potential $40K+ issues, proceeding without full information is risky.</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="sc-ask" style="margin-top:0.75rem;">
+                        <strong>Ask Alli now:</strong> &ldquo;Based on what we know about this home&rsquo;s age and condition, should we proactively request an option period extension before the inspection? What would a 3&ndash;5 day extension cost us?&rdquo;
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financing Contingency Extension -->
+            <div class="card" style="margin-bottom:1.25rem;">
+                <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Financing Contingency Extension</h3>
+                <div class="sh-expand-body">
+                    <table class="data-table">
+                        <tbody>
+                            <tr><td style="width:30%;font-weight:600;">Current deadline</td><td><strong>May 4, 2026</strong> (Day 21 from effective date)</td></tr>
+                            <tr><td style="font-weight:600;">What it protects</td><td>If your loan is <strong>denied</strong> before this date, you can terminate the contract and get your earnest money back (minus option fee). You must provide written evidence of the denial.</td></tr>
+                            <tr><td style="font-weight:600;">How to extend</td><td>Written amendment signed by both parties. Request should include a reason (e.g., lender needs additional documentation, appraisal delayed) and a specific new deadline.</td></tr>
+                            <tr><td style="font-weight:600;">What happens if it passes</td><td>The financing contingency is <strong>deemed waived</strong>. This means if your loan falls through after May 4, you may still be obligated to close (or forfeit earnest money). This is a significant risk.</td></tr>
+                            <tr><td style="font-weight:600;">Rate cap consideration</td><td>Your contract caps the interest rate at 6.5%. If your actual rate comes in higher, this may constitute a financing issue under the contract &mdash; but the interpretation depends on the specific contract language. Consult your agent (and ideally an attorney) on this.</td></tr>
+                            <tr><td style="font-weight:600;">When to worry</td><td>If by April 28 (one week before deadline) you haven&rsquo;t received conditional loan approval, request an extension or escalate with your lender.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Closing Date Extension -->
+            <div class="card" style="margin-bottom:1.25rem;">
+                <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Closing Date Extension</h3>
+                <div class="sh-expand-body">
+                    <table class="data-table">
+                        <tbody>
+                            <tr><td style="width:30%;font-weight:600;">Current target</td><td><strong>June 1, 2026</strong> (Day 49)</td></tr>
+                            <tr><td style="font-weight:600;">How to extend</td><td>Written amendment signed by both parties. Specify new closing date and any adjustments to other deadlines.</td></tr>
+                            <tr><td style="font-weight:600;">Common reasons</td><td>Lender processing delays (most common), title issues discovered late, survey complications, repair completion delays, buyer/seller scheduling conflicts.</td></tr>
+                            <tr><td style="font-weight:600;">Seller motivation</td><td>Thelma Jane Hall is an individual seller (not investor). Individual sellers are often more flexible on closing dates but may also have their own timeline pressures (e.g., needing proceeds for another purchase).</td></tr>
+                            <tr><td style="font-weight:600;">Risk of delay</td><td>If one party is ready and the other isn&rsquo;t, the ready party can declare the other in default. Default can lead to earnest money forfeiture, specific performance claims, or contract termination. Always get a signed extension before the closing date passes.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- What Happens If Deadlines Pass -->
+            <div class="card" style="margin-bottom:1.25rem; border-left: 4px solid var(--fl-danger);">
+                <h3 style="color:var(--fl-danger);">What Happens If Deadlines Pass</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Deadline</th><th>Date</th><th>If Missed</th><th>Financial Exposure</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Option Period</strong></td>
+                            <td>Apr 18, 5 PM</td>
+                            <td>Lose unrestricted termination right. Can only terminate for specific contractual reasons (financing denial, title defects).</td>
+                            <td><span class="badge badge-red">$17,997 at risk</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Earnest Money</strong></td>
+                            <td>Apr 16</td>
+                            <td>Contract default. Seller can terminate the contract.</td>
+                            <td><span class="badge badge-red">Deal lost</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Financing Approval</strong></td>
+                            <td>May 4</td>
+                            <td>Financing contingency waived. Must close regardless of loan status or forfeit earnest money.</td>
+                            <td><span class="badge badge-red">$17,997 at risk</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Closing</strong></td>
+                            <td>Jun 1</td>
+                            <td>Party not ready may be declared in default. Could face specific performance lawsuit or earnest money forfeiture.</td>
+                            <td><span class="badge badge-red">$17,997 + legal costs</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="callout callout-danger" style="margin-top:0.75rem;">
+                    <strong>Total exposure if all contingencies lapse:</strong> $17,997 earnest money + potential specific performance (forced to close at $599,900) + legal fees. The option period is your safest exit. After April 18, every exit becomes harder and more expensive.
+                </div>
+            </div>
+        </div>
+
         <!-- ==================== INVESTMENT ROI COMPARISON ==================== -->
         <div class="section" id="sec-invest">
             <h2 class="section-title">House vs. Equities — Investment ROI Comparison</h2>
@@ -4614,6 +5791,70 @@ document.addEventListener('click', function(e) {
 
 // Load saved state on page load
 loadChecklistState();
+
+// ====== SCORECARD: status persistence & summary ======
+var SC_KEY = 'ashwood-scorecard-state';
+
+function scBadgeClass(v) {
+    return v === 'done' ? 'sc-badge-done' : v === 'concern' ? 'sc-badge-concern' : v === 'not-done' ? 'sc-badge-not-done' : 'sc-badge-unknown';
+}
+function scBadgeLabel(v) {
+    return v === 'done' ? 'Done' : v === 'concern' ? 'Concern' : v === 'not-done' ? 'Not Done' : 'Unknown';
+}
+function updateScBadge(sel) {
+    var badge = sel.parentElement.querySelector('.sc-badge');
+    if (!badge) return;
+    badge.className = 'sc-badge ' + scBadgeClass(sel.value);
+    badge.textContent = scBadgeLabel(sel.value);
+}
+function updateScSummary() {
+    var sels = document.querySelectorAll('#sec-stakeholders .status-select');
+    var c = { done: 0, unknown: 0, 'not-done': 0, concern: 0 };
+    sels.forEach(function(s) { c[s.value] = (c[s.value] || 0) + 1; });
+    var el = document.getElementById('scorecard-summary');
+    if (el) el.textContent = c.done + ' verified, ' + c.concern + ' concerns, ' + c['not-done'] + ' not done, ' + c.unknown + ' unknown';
+}
+function saveScState() {
+    var sels = document.querySelectorAll('#sec-stakeholders .status-select');
+    var st = {};
+    sels.forEach(function(s) { st[s.dataset.item] = s.value; });
+    localStorage.setItem(SC_KEY, JSON.stringify(st));
+}
+function loadScState() {
+    try {
+        var st = JSON.parse(localStorage.getItem(SC_KEY));
+        if (!st) { updateScSummary(); return; }
+        Object.keys(st).forEach(function(k) {
+            var sel = document.querySelector('#sec-stakeholders .status-select[data-item="' + k + '"]');
+            if (sel) { sel.value = st[k]; updateScBadge(sel); }
+        });
+        updateScSummary();
+    } catch(e) { updateScSummary(); }
+}
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('status-select')) {
+        updateScBadge(e.target);
+        updateScSummary();
+        saveScState();
+    }
+});
+loadScState();
+
+// Option period countdown
+(function() {
+    var deadline = new Date('2026-04-18T17:00:00-05:00');
+    var now = new Date();
+    var diff = deadline - now;
+    var el = document.getElementById('option-countdown');
+    if (el && diff > 0) {
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        el.textContent = days + 'd ' + hours + 'h';
+    } else if (el && diff <= 0) {
+        el.textContent = 'EXPIRED';
+        el.style.color = 'var(--fl-danger)';
+    }
+})();
 
 // ====== TIMELINE: today marker + past/imminent styling ======
 (function() {
