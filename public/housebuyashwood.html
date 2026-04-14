@@ -574,6 +574,98 @@
             .utl-card-wrap { padding-left: 0; }
         }
 
+        /* Document expandable cards */
+        .doc-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .doc-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .doc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.875rem 1rem;
+            cursor: pointer;
+            gap: 0.75rem;
+            background: #fafbfc;
+        }
+        .doc-header:hover { background: #f1f5f9; }
+        .doc-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 0;
+        }
+        .doc-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            color: #fff;
+            font-weight: 700;
+        }
+        .doc-icon-contract { background: var(--fl-green); }
+        .doc-icon-disclosure { background: #6366f1; }
+        .doc-icon-addendum { background: #0ea5e9; }
+        .doc-icon-finance { background: #f59e0b; }
+        .doc-icon-lease { background: #ec4899; }
+        .doc-icon-tax { background: #8b5cf6; }
+        .doc-icon-info { background: #64748b; }
+        .doc-title { font-weight: 600; font-size: 0.95rem; color: var(--fl-dark); }
+        .doc-meta { font-size: 0.8rem; color: var(--fl-muted); margin-top: 2px; }
+        .doc-badges { display: flex; gap: 0.4rem; flex-shrink: 0; align-items: center; }
+        .doc-chevron {
+            transition: transform 0.2s;
+            font-size: 0.75rem;
+            color: var(--fl-muted);
+            flex-shrink: 0;
+        }
+        .doc-card.open .doc-chevron { transform: rotate(180deg); }
+        .doc-details {
+            display: none;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .doc-card.open .doc-details { display: block; }
+        .doc-details h4 { margin: 0.75rem 0 0.35rem; font-size: 0.9rem; color: var(--fl-dark); }
+        .doc-details h4:first-child { margin-top: 0; }
+        .doc-details ul { margin: 0.25rem 0 0.5rem; padding-left: 1.25rem; }
+        .doc-details li { margin-bottom: 0.25rem; }
+        .doc-details .doc-insight {
+            background: #f0fdf4;
+            border-left: 3px solid var(--fl-green);
+            padding: 0.5rem 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+        }
+        .doc-details .doc-warning {
+            background: #fef2f2;
+            border-left: 3px solid var(--fl-danger);
+            padding: 0.5rem 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+        }
+        .doc-details .doc-action {
+            background: #fffbeb;
+            border-left: 3px solid var(--fl-warning);
+            padding: 0.5rem 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+        }
+
         #auth-gate {
             display: flex;
             align-items: center;
@@ -2800,6 +2892,443 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+
+            <h3 style="margin-top:1.5rem;">Transaction Documents</h3>
+            <p style="color:var(--fl-muted); font-size:0.85rem; margin-bottom:1rem;">Click any document to expand details, key insights, and action items.</p>
+
+            <!-- 1. Executed Purchase Contract -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-contract">C</div>
+                        <div>
+                            <div class="doc-title">One to Four Family Residential Contract (Resale)</div>
+                            <div class="doc-meta">TREC NO. 20-18 &bull; 11 pages &bull; Executed via DocuSign</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-green">Fully Executed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>The primary purchase contract for 1402 Ashwood RD, Austin TX 78722. This is the legally binding agreement between you (buyers) and Thelma Jane Hall (seller). TREC form 20-18 is the standard Texas residential resale contract.</p>
+
+                    <h4>Key Terms</h4>
+                    <ul>
+                        <li><strong>Sale Price:</strong> $599,900 &mdash; Cash portion $119,980 at closing + Seller financing addendum $479,920</li>
+                        <li><strong>Earnest Money:</strong> $17,997 due within 3 days to Independence Title (Carol Bellomy)</li>
+                        <li><strong>Option Fee:</strong> $500 &mdash; 5-day option period from effective date</li>
+                        <li><strong>Property Condition:</strong> "As Is" &mdash; Buyer accepts property as-is, N/A for specific repairs</li>
+                        <li><strong>Closing Date:</strong> Monday, June 1, 2026 (or before)</li>
+                        <li><strong>Home Warranty:</strong> Seller pays up to $725</li>
+                        <li><strong>Survey:</strong> Seller to furnish existing survey within specified days</li>
+                    </ul>
+
+                    <h4>Signatures &amp; Status</h4>
+                    <ul>
+                        <li><strong>Jacqueline Giroux:</strong> Signed 04/12/2026</li>
+                        <li><strong>Hannah Sonnad:</strong> Signed 04/12/2026</li>
+                        <li><strong>Thelma Jane Hall (Seller):</strong> DocuSigned 04/13/2026</li>
+                        <li><strong>Effective Date:</strong> 04/13/2026</li>
+                    </ul>
+
+                    <h4>Attached Addenda (checked in contract)</h4>
+                    <ul>
+                        <li>Third Party Financing Addendum</li>
+                        <li>Seller Financing Addendum</li>
+                        <li>Addendum for Seller's Disclosure of Lead-Based Paint</li>
+                        <li>Addendum Regarding Residential Leases</li>
+                    </ul>
+
+                    <h4>Broker Information</h4>
+                    <ul>
+                        <li><strong>Buyer's Agent:</strong> Alli Heller, Spyglass Realty (License #694604) &mdash; (760) 803-6209</li>
+                        <li><strong>Listing Agent:</strong> Luke Graves, Luke Graves Realty (License #517331) &mdash; (512) 771-7819</li>
+                        <li><strong>Listing Broker commission:</strong> 3% of Sales Price to Other Broker (Spyglass)</li>
+                    </ul>
+
+                    <div class="doc-insight">
+                        <strong>Key Insight:</strong> Contract is fully executed as of 04/13/2026. All deadlines run from this effective date. The "As Is" clause means you cannot require repairs, but you CAN still negotiate price reductions based on inspection findings or terminate during the option period.
+                    </div>
+                    <div class="doc-warning">
+                        <strong>Watch Out:</strong> The contract caps your interest rate at 6.5%, but your pre-qualification letter quotes 6.75%. If your locked rate lands between 6.5%&ndash;6.75%, the financing contingency may not protect you. Discuss with Nossi and Alli.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Seller's Disclosure Notice -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-disclosure">S</div>
+                        <div>
+                            <div class="doc-title">Seller's Disclosure Notice (SDN)</div>
+                            <div class="doc-meta">TXR-1406 &bull; 7 pages &bull; Signed by all parties</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-green">Signed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>Texas law requires sellers to disclose known property conditions. This is the seller's (Thelma Jane Hall) written disclosure of defects, conditions, and features of 1402 Ashwood Rd. Seller has occupied the property since 2015.</p>
+
+                    <h4>Items Marked "Yes" (Present/Working)</h4>
+                    <ul>
+                        <li>Cable TV Wiring, Carbon Monoxide Detector, Ceiling Fans, Cooktop, Dishwasher, Disposal, Emergency Escape Ladder, Exhaust Fans, Fire Detection Equipment, French Drains, Gas Fixtures, Liquid Propane Gas, Microwave, Outdoor Grill, Patio/Decking, Plumbing System, Pool, Pool Equipment, Pool Maintenance &amp; Accessories</li>
+                        <li>Pump sump grinder, Rain Gutters, Range/Stove, Roof/Attic Vents, Smoke Detector, Smoke Detector &ndash; Hearing Impaired, TV Service, Washer/Dryer Hookup, Window Screens, Public Sewer System</li>
+                    </ul>
+
+                    <h4>Appliances &amp; Systems Details</h4>
+                    <ul>
+                        <li><strong>Central A/C:</strong> Electric, gas &mdash; number of units unclear (appears 3 total, which is unusual)</li>
+                        <li><strong>Wall/Window AC Units:</strong> 4 units, number of units 10+</li>
+                        <li><strong>Attic Fans:</strong> Yes, electric</li>
+                        <li><strong>Central Heat:</strong> Electric, gas &mdash; separate mini split(s)</li>
+                        <li><strong>Water Heater:</strong> 2 units, owned, another tankless</li>
+                        <li><strong>Water Softener:</strong> Owned</li>
+                        <li><strong>Underground Lawn Sprinkler:</strong> Automatic, manual areas covered</li>
+                        <li><strong>Water Supply:</strong> City (MUD)</li>
+                        <li><strong>Roof Type:</strong> Composition shingle, approx. age 2014 (new roof 2024 per Section 3)</li>
+                    </ul>
+
+                    <h4>Section 3 &mdash; Known Conditions (Critical!)</h4>
+                    <ul>
+                        <li><span class="badge badge-red">Yes</span> <strong>Diseased Trees</strong> &mdash; oak wilt</li>
+                        <li><span class="badge badge-red">Yes</span> <strong>Previous Roof Repairs</strong></li>
+                        <li><span class="badge badge-red">Yes</span> <strong>Previous Other Structural Repairs</strong></li>
+                        <li><span class="badge badge-red">Yes</span> <strong>Termite or WDI damage needing repair</strong></li>
+                        <li><span class="badge badge-yellow">Note</span> New roof 2024 &mdash; hail damage claim</li>
+                    </ul>
+
+                    <h4>Section 5 &mdash; Flood Disclosure</h4>
+                    <ul>
+                        <li><span class="badge badge-red">No</span> Present flood insurance coverage</li>
+                        <li><span class="badge badge-red">Yes</span> Previous flooding from reservoir failure/breach</li>
+                        <li><span class="badge badge-yellow">Note</span> 1994 &mdash; water entered, minor water remediation, installed french drains, never re-occurred, never required insurance</li>
+                    </ul>
+
+                    <h4>Section 6 &mdash; Utility Providers</h4>
+                    <ul>
+                        <li>Electric: COA &bull; Sewer: COA &bull; Water: COA &bull; Cable: AT&amp;T &bull; Trash: COA &bull; Natural Gas: Texas Gas Service &bull; Internet: AT&amp;T</li>
+                    </ul>
+
+                    <h4>Other Notable Items</h4>
+                    <ul>
+                        <li>Homestead exemption currently claimed</li>
+                        <li>Insurance claims filed: Yes (received proceeds for damage)</li>
+                        <li>No FEMA/SBA flood assistance received</li>
+                        <li>Property is in a propane gas system service area</li>
+                        <li>Property is in a groundwater conservation / subsidence district</li>
+                    </ul>
+
+                    <div class="doc-warning">
+                        <strong>Red Flags for Inspection:</strong> The SDN confirms prior structural repairs, termite damage, flooding from reservoir breach, and oak wilt. These are exactly what GreenWorks needs to focus on during tomorrow's inspection. Bring this document with you.
+                    </div>
+                    <div class="doc-insight">
+                        <strong>Positive Sign:</strong> Seller has been thorough and transparent in disclosures. The 1994 flooding was addressed with french drains and has not recurred in 30+ years. New roof in 2024 is recent. Signed and acknowledged by both buyers on 04/13/2026.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Addendum Regarding Residential Leases -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-addendum">A</div>
+                        <div>
+                            <div class="doc-title">Addendum Regarding Residential Leases</div>
+                            <div class="doc-meta">TREC NO. 51-1 &bull; TXR 1953 &bull; 1 page</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-green">Signed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>A contract addendum that governs how existing residential leases at the property are handled during and after the sale. Required because the property has active tenants.</p>
+
+                    <h4>Key Provisions</h4>
+                    <ul>
+                        <li><strong>A. Termination of Leases:</strong> All Residential Leases must be terminated by closing. Seller delivers possession per Paragraph 10 of the contract.</li>
+                        <li><strong>B. Assignment &amp; Assumption:</strong> Existing leases shall be assigned by Seller and assumed by Buyer at closing.</li>
+                        <li><strong>Delivery of Leases:</strong> Option (c) is checked &mdash; Seller provides Buyer with notice of the oral residential lease(s) on the attached exhibit, identifying tenant names, rental amounts, and terms.</li>
+                        <li><strong>Security Deposits:</strong> At closing, Seller transfers security deposits ($921.02 per Property Code) to Buyer. Buyer signs a statement acknowledging they've acquired the property and are responsible for the deposits.</li>
+                    </ul>
+
+                    <h4>Paragraph 4 &mdash; Seller Notification Duty</h4>
+                    <ul>
+                        <li>If Seller learns any statement in Paragraph B(3) becomes untrue after effective date, Seller must cure within 7 days of providing notice to Buyer.</li>
+                        <li>If not cured beyond the 7-day period, Buyer may terminate the contract within 5 days after expiration of that 7-day period.</li>
+                    </ul>
+
+                    <h4>Signatures</h4>
+                    <ul>
+                        <li>Jacqueline Giroux: Signed 04/12/2026</li>
+                        <li>Hannah Sonnad: Signed 04/12/2026</li>
+                    </ul>
+
+                    <div class="doc-warning">
+                        <strong>Important:</strong> This paragraph says leases must be terminated by closing OR assigned to you. Since you're inheriting tenants, you'll assume landlord responsibilities including security deposit management. Verify that all lease details match the actual Ashwood Leases document.
+                    </div>
+                    <div class="doc-action">
+                        <strong>Action:</strong> Review the Ashwood Leases document (below) to confirm tenant names, rental amounts, and terms match what's referenced here. Any discrepancies could be grounds for negotiation.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Third Party Financing Addendum -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-finance">F</div>
+                        <div>
+                            <div class="doc-title">Third Party Financing Addendum</div>
+                            <div class="doc-meta">TREC NO. 40-11 &bull; 2 pages &bull; Financing terms</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-green">Signed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>Specifies the financing terms the buyer must obtain, and protects the buyer if financing cannot be secured within the stated terms. This is your financing contingency.</p>
+
+                    <h4>Financing Terms</h4>
+                    <ul>
+                        <li><strong>Type:</strong> Conventional Financing (Section A.1)</li>
+                        <li><strong>First Mortgage:</strong> $479,920.00</li>
+                        <li><strong>Term:</strong> 30 years</li>
+                        <li><strong>Max Interest Rate:</strong> 6.75%</li>
+                        <li><strong>Max Origination Charges:</strong> Not to exceed listed amount on Buyer's Loan Estimate</li>
+                    </ul>
+
+                    <h4>Buyer Approval (Section 3.A)</h4>
+                    <ul>
+                        <li>Contract is subject to Buyer obtaining Buyer Approval</li>
+                        <li>If Buyer cannot obtain approval, Buyer may terminate within specified days after effective date by giving Seller notice of termination plus a copy of the lender's written statement</li>
+                        <li>If terminated under this provision &mdash; earnest money is refunded</li>
+                    </ul>
+
+                    <h4>Property Approval (Section 3.B)</h4>
+                    <ul>
+                        <li>If lender's underwriting requirements are not satisfied (appraisal, insurability, etc.), Buyer may terminate on or before 3 days before Closing Date</li>
+                        <li>Earnest money is refunded if terminated under this provision</li>
+                    </ul>
+
+                    <h4>Signatures</h4>
+                    <ul>
+                        <li>Jacqueline Giroux: Signed 04/12/2026</li>
+                        <li>Hannah Sonnad: Signed 04/12/2026</li>
+                    </ul>
+
+                    <div class="doc-insight">
+                        <strong>Key Insight:</strong> This addendum is your safety net. If your lender cannot approve the loan within the stated terms (rate, amount, appraisal), you can terminate the contract and get your earnest money ($17,997) back. The financing approval deadline is 21 days from effective date (by ~May 4, 2026).
+                    </div>
+                    <div class="doc-warning">
+                        <strong>Rate Discrepancy:</strong> The addendum states max interest rate of 6.75%, but the main contract references 6.5%. Clarify with Alli which governs &mdash; the addendum typically controls for financing terms.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Ashwood Leases -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-lease">L</div>
+                        <div>
+                            <div class="doc-title">Ashwood Leases (2 Agreements)</div>
+                            <div class="doc-meta">Texas Residential Lease &bull; 16 pages total &bull; Two units</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-yellow">Review Needed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>Two active residential lease agreements for the property. As buyers, you will inherit these tenants and become their landlord at closing. Understanding the lease terms is critical for your rental income projections and landlord obligations.</p>
+
+                    <h4>Lease 1 &mdash; Unit A (Front Unit)</h4>
+                    <table class="data-table" style="margin-bottom:0.75rem;">
+                        <tr><td class="bold">Tenant</td><td>Amelia Gouni</td></tr>
+                        <tr><td class="bold">Rent</td><td>$2,200/month, due 1st of each month</td></tr>
+                        <tr><td class="bold">Security Deposit</td><td>$2,000</td></tr>
+                        <tr><td class="bold">Late Fee</td><td>$50/day after 2nd of month</td></tr>
+                        <tr><td class="bold">Lease Type</td><td>Month-to-month (terminable with 15 days written notice by either party)</td></tr>
+                        <tr><td class="bold">Signed</td><td>Landlord (Thelma Hall): 08/23/2025</td></tr>
+                        <tr><td class="bold">Utilities</td><td>Tenant responsible for all</td></tr>
+                        <tr><td class="bold">Pets</td><td>No animals unless separate written Pet Addendum</td></tr>
+                        <tr><td class="bold">Premises</td><td>1402-A Ashwood Road, ATX 78722</td></tr>
+                    </table>
+
+                    <h4>Lease 2 &mdash; Unit B (Rear Unit)</h4>
+                    <table class="data-table" style="margin-bottom:0.75rem;">
+                        <tr><td class="bold">Tenants</td><td>Diana Buchert &amp; Claire Klodell</td></tr>
+                        <tr><td class="bold">Rent</td><td>$2,500/month, due 1st of each month</td></tr>
+                        <tr><td class="bold">Security Deposit</td><td>$2,000 ($800 from Claire Klodell, remainder from Diana Buchert)</td></tr>
+                        <tr><td class="bold">Late Fee</td><td>$50/day after 2nd of month</td></tr>
+                        <tr><td class="bold">Lease Start</td><td>August 1, 2024 (originally to July 31, 2025, now month-to-month)</td></tr>
+                        <tr><td class="bold">Termination</td><td>Month-to-month with 30 days written notice</td></tr>
+                        <tr><td class="bold">Signed</td><td>Landlord (Thelma Hall): 07/26/2024, renewed 07/24/2025</td></tr>
+                        <tr><td class="bold">Utilities</td><td>$230/month flat (includes electric, water, trash, AT&amp;T internet) &mdash; due by 15th</td></tr>
+                        <tr><td class="bold">Pets</td><td>$100/day pet violation fee</td></tr>
+                        <tr><td class="bold">Premises</td><td>1402 Ashwood Road, ATX 78722</td></tr>
+                    </table>
+
+                    <h4>Handwritten Notes in Leases (Important!)</h4>
+                    <ul>
+                        <li>AC filter cleaning due 1st of each month (both leases)</li>
+                        <li>No painting allowed by tenants</li>
+                        <li>Trash/recycling day is Friday; bins to street Thursday PM</li>
+                        <li>Landlord provides lawn care for front, side, back yard, porches, and laundry area</li>
+                        <li>Tenants responsible for keeping common areas tidy</li>
+                        <li>Maintenance contacts: Andrew Cunningham (512) 209-0120, Mike Parsons (plumber) (512) 902-2985</li>
+                        <li>No Drano &mdash; use drain covers</li>
+                        <li>Landlord (Thelma): (512) 771-7827</li>
+                    </ul>
+
+                    <h4>Combined Rental Income</h4>
+                    <table class="data-table" style="margin-bottom:0.75rem;">
+                        <tr><td class="bold">Unit A (Amelia)</td><td>$2,200/mo</td></tr>
+                        <tr><td class="bold">Unit B (Diana &amp; Claire)</td><td>$2,500/mo</td></tr>
+                        <tr><td class="bold">Total Gross Rent</td><td><strong>$4,700/mo ($56,400/yr)</strong></td></tr>
+                        <tr><td class="bold">Unit B Utility Reimbursement</td><td>$230/mo ($2,760/yr)</td></tr>
+                        <tr><td class="bold">Security Deposits to Inherit</td><td>$4,000 total</td></tr>
+                    </table>
+
+                    <div class="doc-warning">
+                        <strong>Critical Issue:</strong> Both leases are month-to-month and terminable with short notice (15 or 30 days). This means tenants could leave quickly after closing, but it also means you can adjust rents or terms. Factor vacancy risk into your financial planning.
+                    </div>
+                    <div class="doc-action">
+                        <strong>Action Items:</strong> (1) During inspection, evaluate condition of both units separately. (2) Verify with Alli that the Lease Addendum's security deposit figures match ($921.02 vs $4,000 actual &mdash; discrepancy needs clarification). (3) Determine which unit you'll occupy vs rent after closing. (4) Save contractor contacts from handwritten notes.
+                    </div>
+                    <div class="doc-insight">
+                        <strong>Landlord Tip:</strong> The leases have lead-based paint disclosures (Section XXXV) since the property was built before 1978. As the new landlord, you must provide the EPA pamphlet to any new tenants and maintain the lead paint disclosure.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Spyglass Consumer Choice & ABA Disclosure -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-info">D</div>
+                        <div>
+                            <div class="doc-title">Consumer Choice &amp; Affiliated Business Disclosure</div>
+                            <div class="doc-meta">Spyglass Realty &bull; 2 pages &bull; v.1 March 2026</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-green">Signed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>A required disclosure from Spyglass Realty informing you that they have business relationships with certain service providers. You are NOT required to use any of these providers.</p>
+
+                    <h4>Affiliated Entities</h4>
+                    <table class="data-table" style="margin-bottom:0.75rem;">
+                        <thead><tr><th>Entity</th><th>Relationship</th><th>Services</th></tr></thead>
+                        <tbody>
+                            <tr><td>Nations Lending</td><td>Marketing Service Agreement</td><td>Financing solutions</td></tr>
+                            <tr><td>Cascade Roofing</td><td>Referral Agreement</td><td>Roofing &amp; construction</td></tr>
+                            <tr><td>Legacy Elite Solutions</td><td>Referral Agreement</td><td>Insurance</td></tr>
+                            <tr><td>Achosa Home Warranty</td><td>Referral Agreement</td><td>Residential service contracts</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Signatures</h4>
+                    <ul>
+                        <li>Jacqueline Giroux: Signed 04/12/2026</li>
+                        <li>Hannah Sonnad: Signed 04/12/2026</li>
+                        <li>Agent: Alli Heller, dated 04/12/2026</li>
+                    </ul>
+
+                    <div class="doc-insight">
+                        <strong>Key Takeaway:</strong> You're already using Nations Lending (Nossi Creeger) for financing. The disclosure confirms Spyglass may receive a financial benefit from this referral. You are free to shop other lenders &mdash; always get at least 2&ndash;3 competing quotes for your mortgage.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. TCAD Property Summary Report -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-tax">T</div>
+                        <div>
+                            <div class="doc-title">TCAD Property Summary Report</div>
+                            <div class="doc-meta">Travis Central Appraisal District &bull; PID 210699 &bull; 1504 Kirkwood Rd</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-blue">Reference</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>A Travis Central Appraisal District summary for a neighboring property at 1504 Kirkwood Rd (PID 210699). This appears to be included as a comparable property reference or may be related to the lot configuration of the Ashwood property.</p>
+
+                    <h4>Property Details</h4>
+                    <ul>
+                        <li><strong>Address:</strong> 1504 Kirkwood Rd, TX 78722</li>
+                        <li><strong>Owner:</strong> Otten Heather</li>
+                        <li><strong>Legal Description:</strong> S 129.16 FT LOT 11 BLK C DELWOOD SEC 3</li>
+                        <li><strong>Ownership:</strong> 100%</li>
+                        <li><strong>Exemptions:</strong> HS &ndash; Homestead</li>
+                        <li><strong>Homestead Audit:</strong> 2025</li>
+                        <li><strong>Property ID:</strong> 210699</li>
+                        <li><strong>Map ID:</strong> 021811</li>
+                        <li><strong>Market Area:</strong> D2009</li>
+                        <li><strong>Protest Status:</strong> EF</li>
+                    </ul>
+
+                    <div class="doc-insight">
+                        <strong>Context:</strong> This is a neighboring property in the same Delwood Sec 3 subdivision. It may have been pulled for comparison purposes or because the lots share a boundary. The 1402 Ashwood property is Lot 17, Block B in the same subdivision.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Blank Contract Template -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-info">R</div>
+                        <div>
+                            <div class="doc-title">TREC Contract Form (Blank Reference)</div>
+                            <div class="doc-meta">One to Four Residential Contract (Resale) &bull; 11 pages &bull; Unsigned template</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-blue">Reference</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>A blank, unsigned copy of the TREC One to Four Family Residential Contract (Resale) form NO. 20-18, dated 11-04-2024. This is the same form used for your executed contract but without any filled-in terms or signatures.</p>
+
+                    <div class="doc-insight">
+                        <strong>Use For:</strong> Reference when you want to understand the standard contract language without the handwritten additions or filled-in terms. Useful for comparing what's standard vs. what was negotiated specifically for your deal.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document summary -->
+            <div class="callout callout-info" style="margin-top:1rem;">
+                <strong>Document Summary:</strong> You have 8 key transaction documents: 1 executed purchase contract, 1 seller's disclosure, 3 addenda (leases, financing, lead paint), 1 brokerage disclosure, 1 lease package (2 agreements), and 1 TCAD reference. All critical documents are fully signed and executed as of 04/13/2026.
             </div>
         </div>
 
