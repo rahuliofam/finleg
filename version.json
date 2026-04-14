@@ -1,12 +1,12 @@
 {
-  "version": "v260414.06 6:00p",
-  "release": 215,
-  "sha": "8429421",
-  "fullSha": "8429421684f469e763295042ebf989f23ed6e200",
+  "version": "v260414.07 6:21p",
+  "release": 216,
+  "sha": "7869be3",
+  "fullSha": "7869be30f7478d323739a20a0868203da19494ef",
   "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 23:00:13+00",
-  "commits": [{"sha":"8429421","message":"fix: update Ashwood house-buy page to reflect married buyers","author":"Haydn"}]
+  "pushedAt": "2026-04-14 23:21:32+00",
+  "commits": [{"sha":"7869be3","message":"feat: refresh buyer checklist with enriched phases, subtasks, and specific action items","author":"Haydn"}]
 }
