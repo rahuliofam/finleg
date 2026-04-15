@@ -1,12 +1,12 @@
 {
-  "version": "v260415.03 2:49p",
-  "release": 223,
-  "sha": "e8deec9",
-  "fullSha": "e8deec933f842ccd1ca889ed944749540e9a8c68",
+  "version": "v260415.04 2:50p",
+  "release": 224,
+  "sha": "f012618",
+  "fullSha": "f012618687f6a4a8c2f44dd1384393e0d909a113",
   "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-15 19:49:00+00",
-  "commits": [{"sha":"e8deec9","message":"feat: update Ashwood page with duplex+ADU rental income model and revised financials","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-15 19:50:26+00",
+  "commits": [{"sha":"f012618","message":"fix: bypass Supabase auth redirect on localhost for preview compatibility","author":"Jacqueline Giroux"}]
 }
