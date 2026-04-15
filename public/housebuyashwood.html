@@ -590,6 +590,14 @@
             .insp-detail-grid { grid-template-columns: 1fr; }
             .insp-card-head { font-size: 0.82rem; }
         }
+        /* Citation tooltips */
+        .cite { position:relative; display:inline; border-bottom:1px dotted #0369a1; color:#0369a1; cursor:help; font-size:inherit; font-style:normal; }
+        .cite .cite-ref { font-size:0.65em; vertical-align:super; font-weight:700; margin-left:1px; color:#0369a1; }
+        .cite .cite-tip { display:none; position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#1e293b; color:#f1f5f9; font-size:0.78rem; font-weight:400; line-height:1.5; padding:0.6rem 0.85rem; border-radius:8px; white-space:normal; width:max-content; max-width:340px; z-index:1000; box-shadow:0 4px 16px rgba(0,0,0,0.25); pointer-events:none; text-align:left; }
+        .cite .cite-tip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#1e293b; }
+        .cite:hover .cite-tip, .cite:focus .cite-tip { display:block; }
+        .cite .cite-tip .cite-doc { font-weight:700; color:#93c5fd; display:block; margin-bottom:0.2rem; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; }
+        @media (max-width:768px) { .cite .cite-tip { left:0; transform:none; max-width:260px; } .cite .cite-tip::after { left:20px; transform:none; } }
         /* Past events */
         .utl-event.utl-past .utl-card {
             opacity: 0.55;
@@ -1040,7 +1048,7 @@
                 <div class="utl-event" data-date="2026-04-15">
                     <div class="utl-date">
                         <div class="utl-date-main">Apr 15</div>
-                        <div class="utl-date-day">Day 2 &bull; 12:30 PM</div>
+                        <div class="utl-date-day">Day 2 &bull; 2:30 PM</div>
                     </div>
                     <div class="utl-dot-col"><div class="utl-dot dot-action"></div></div>
                     <div class="utl-card-wrap">
@@ -1049,14 +1057,14 @@
                                 <span class="utl-card-title">GreenWorks Home Inspection</span>
                                 <div class="utl-card-badges">
                                     <span class="utl-cat utl-cat-action">Action</span>
-                                    <span class="utl-money">$757.11</span>
+                                    <span class="utl-money">$926.33</span>
                                 </div>
                                 <span class="utl-chevron">&#9660;</span>
                             </div>
                             <div class="utl-details">
-                                <strong>Comprehensive inspection at 12:30 PM CST.</strong> Both buyers should attend and walk with the inspector.<br><br>
-                                <strong>Included services:</strong> Licensed home inspection (above TREC standards), infrared thermal imaging, foundation elevation map, system &amp; structural evaluation, sprinkler/irrigation, sewer line camera, air quality readings, termite inspection (90-day guarantee), CLUE insurance history, energy report, repair estimate report.<br><br>
-                                <strong>Reports expected within 24 hours</strong> (by Apr 16). Review immediately &mdash; option period expires Apr 20 at 5 PM.<br><br>
+                                <strong>Comprehensive inspection at 2:30 PM CST.</strong> Both buyers should attend and walk with the inspector.<br><br>
+                                <strong>Included services (Greener Package):</strong> Licensed home inspection (above TREC standards), infrared thermal imaging, foundation elevation map, system &amp; structural evaluation, sprinkler/irrigation, sewer line camera, air quality readings, termite inspection (90-day guarantee), basic mold sampling (1 swab), CLUE insurance history, energy report, repair estimate report.<br><br>
+                                <strong>Reports expected within 48 hours</strong> (by Apr 17 per agreement). Review immediately &mdash; option period expires Apr 20 at 5 PM.<br><br>
                                 <strong>Bring:</strong> Phone/camera, notepad, flashlight, comfortable clothes for crawl spaces. Budget 3&ndash;4 hours.
                             </div>
                         </div>
@@ -1968,7 +1976,7 @@
                         <div class="check-box" onclick="this.classList.toggle('done')"></div>
                         <div class="check-label">
                             <div class="check-title">GreenWorks home inspection</div>
-                            <div class="check-detail"><span class="badge badge-red">SCHEDULED: Apr 15, 12:30 PM CST</span> Comprehensive inspection, $757.11 (sunk cost). Both Jackie &amp; Hannah should attend and walk with inspector for 3&ndash;4 hours. Reports within 24 hours (by Apr 16).</div>
+                            <div class="check-detail"><span class="badge badge-red">SCHEDULED: Apr 15, 2:30 PM CST</span> Comprehensive inspection, $926.33 (sunk cost). Both Jackie &amp; Hannah should attend and walk with inspector for 3&ndash;4 hours. Reports within 48 hours (by Apr 17 per agreement).</div>
                         </div>
                     </li>
                     <li style="padding-left:2rem;">
@@ -2101,7 +2109,7 @@
                         <div class="check-box" onclick="this.classList.toggle('done')"></div>
                         <div class="check-label">
                             <div class="check-title">Review all inspection reports &amp; make go/no-go decision</div>
-                            <div class="check-detail"><span class="badge badge-red">HARD DEADLINE: Apr 20, 5:00 PM</span> Review GreenWorks report (expected by Apr 16) plus any specialist reports. This is your strongest exit ramp. After this deadline, your $17,997 earnest money is at risk.</div>
+                            <div class="check-detail"><span class="badge badge-red">HARD DEADLINE: Apr 20, 5:00 PM</span> Review GreenWorks report (expected by Apr 17 per agreement) plus any specialist reports. This is your strongest exit ramp. After this deadline, your $17,997 earnest money is at risk.</div>
                         </div>
                     </li>
                     <li style="padding-left:2rem;">
@@ -2591,7 +2599,11 @@
 
             <!-- ===== A. INSPECTION OVERVIEW ===== -->
             <div class="callout callout-danger">
-                <strong>Inspection is tomorrow &mdash; Apr 15, 2026 at 12:30 PM CST.</strong> Option period expires Apr 20 at 5:00 PM. You have ~5 days from inspection to make a go/no-go decision.
+                <strong>Inspection is today &mdash; Apr 15, 2026 at 2:30 PM CST.</strong> Option period expires Apr 20 at 5:00 PM. You have ~5 days from inspection to make a go/no-go decision.
+            </div>
+
+            <div class="callout callout-warning">
+                <strong>Per Signed Inspection Agreement (Greener Package):</strong> The agreement allows GreenWorks up to <strong>48 hours</strong> for report delivery (by Apr 17), not 24 hours as previously shown. This tightens your specialist follow-up window. Also note: thermal imaging is explicitly <strong>not a moisture meter</strong> per the agreement &mdash; it only flags areas for further investigation. Basic mold sampling (1 swab) is included, but a full mold protocol requires a separate specialist. The inspection is visual only and limited to readily accessible areas &mdash; anything behind walls, under floors, or obstructed by furniture is outside the scope.
             </div>
 
             <div class="card">
@@ -2600,10 +2612,10 @@
                     <div>
                         <table class="data-table">
                             <tr><td class="bold">Inspector</td><td>GreenWorks Inspections &amp; Engineering</td></tr>
-                            <tr><td class="bold">Date &amp; Time</td><td>Tuesday, Apr 15, 2026 &bull; 12:30 PM CST</td></tr>
-                            <tr><td class="bold">Cost</td><td>$757.11 (sunk cost regardless of outcome)</td></tr>
+                            <tr><td class="bold">Date &amp; Time</td><td>Tuesday, Apr 15, 2026 &bull; 2:30 PM CST</td></tr>
+                            <tr><td class="bold">Cost</td><td>$926.33 (sunk cost regardless of outcome)</td></tr>
                             <tr><td class="bold">Duration</td><td>~3&ndash;4 hours for a 1,752 sqft / 1948 home</td></tr>
-                            <tr><td class="bold">Report Delivery</td><td>Digital report within 24 hours (by Apr 16)</td></tr>
+                            <tr><td class="bold">Report Delivery</td><td>Digital report within 48 hours per agreement (by Apr 17). May arrive sooner &mdash; follow up if not received by Apr 16 EOD.</td></tr>
                         </table>
                     </div>
                     <div>
@@ -2645,6 +2657,7 @@
                             <li>Digital Photo Reports &amp; Summary</li>
                             <li>Online Home Management Platform</li>
                             <li>GreenWorks HomeHub Utility Setup</li>
+                            <li>Basic Mold Sampling (1 swab of visible suspected mold)</li>
                         </ul>
                     </div>
                     <div>
@@ -2685,7 +2698,7 @@
                                     </div>
                                     <div class="insp-field">
                                         <div class="insp-field-label">What &ldquo;Waived in Contract&rdquo; Means</div>
-                                        The standard Texas contract includes a Lead-Based Paint Addendum giving buyers 10 days to test. Your contract waived this addendum, meaning the <strong>seller is not obligated to allow extra time</strong> for lead testing. However, you can still test during your existing option period at your own expense &mdash; it just means lead findings <strong>cannot extend your inspection window</strong> beyond Apr 20.
+                                        The standard Texas contract includes a Lead-Based Paint Addendum giving buyers 10 days to test. <span class="cite">Your contract waived this addendum<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TREC 1-4 Contract &mdash; Lead-Based Paint Addendum</span>The Lead-Based Paint Addendum was waived in the executed purchase contract, forgoing the standard 10-day lead inspection window.</span></span>, meaning the <strong>seller is not obligated to allow extra time</strong> for lead testing. However, you can still test during your existing option period at your own expense &mdash; it just means lead findings <strong>cannot extend your inspection window</strong> beyond Apr 20.
                                     </div>
                                 </div>
                                 <div class="insp-sources">Sources: EPA RRP Rule (40 CFR 745) &bull; Texas DSHS Lead Program &bull; HUD Guidelines for Evaluation and Control of Lead-Based Paint Hazards</div>
@@ -2745,7 +2758,7 @@
                                 <div class="insp-detail-grid">
                                     <div class="insp-field">
                                         <div class="insp-field-label">What &amp; Why</div>
-                                        A mold protocol goes beyond visual inspection to identify mold species and measure airborne spore counts. <strong>Order only if</strong> the GreenWorks thermal imaging reveals moisture intrusion. This home has <strong>disclosed flooding history</strong> (1994 reservoir breach) and <strong>32-year-old french drains</strong>, making hidden moisture a real possibility, especially in crawl spaces, behind walls, and in the attic.
+                                        A mold protocol goes beyond visual inspection to identify mold species and measure airborne spore counts. <strong>Order only if</strong> the GreenWorks thermal imaging reveals moisture intrusion. This home has <span class="cite"><strong>disclosed flooding history</strong> (1994 reservoir breach)<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller checked &ldquo;Yes&rdquo; to previous flooding from &ldquo;reservoir failure/breach&rdquo; and noted french drain installation in 1994.</span></span> and <strong>32-year-old french drains</strong>, making hidden moisture a real possibility, especially in crawl spaces, behind walls, and in the attic.
                                     </div>
                                     <div class="insp-field">
                                         <div class="insp-field-label">Who Performs It</div>
@@ -2828,7 +2841,7 @@
                                 <div class="insp-detail-grid">
                                     <div class="insp-field">
                                         <div class="insp-field-label">What &amp; Why</div>
-                                        A licensed Professional Engineer provides a <strong>legally stamped assessment</strong> of the foundation and structure. This goes far beyond what a general inspector can offer &mdash; a PE assessment is the standard used by lenders, insurers, and courts. Needed <strong>only if</strong> the GreenWorks elevation map shows differential movement exceeding 1 inch across the slab. The seller has <strong>disclosed previous structural repairs</strong> on this 78-year-old home in Austin&rsquo;s expansive clay soil &mdash; the PE determines whether movement is <strong>historical (stable)</strong> or <strong>active (ongoing)</strong>.
+                                        A licensed Professional Engineer provides a <strong>legally stamped assessment</strong> of the foundation and structure. This goes far beyond what a general inspector can offer &mdash; a PE assessment is the standard used by lenders, insurers, and courts. Needed <strong>only if</strong> the GreenWorks elevation map shows differential movement exceeding 1 inch across the slab. The seller has <span class="cite"><strong>disclosed previous structural repairs</strong><span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to &ldquo;previous other structural repairs.&rdquo; No scope, date, or contractor details provided.</span></span> on this 78-year-old home in Austin&rsquo;s expansive clay soil &mdash; the PE determines whether movement is <strong>historical (stable)</strong> or <strong>active (ongoing)</strong>.
                                     </div>
                                     <div class="insp-field">
                                         <div class="insp-field-label">Who Performs It</div>
@@ -2851,7 +2864,7 @@
                                     </div>
                                     <div class="insp-field">
                                         <div class="insp-field-label">Decision Guide</div>
-                                        <strong>Watch the GreenWorks elevation map closely.</strong> If it shows &lt;1&Prime; differential and no active cracking, you likely don&rsquo;t need the PE. If it shows &gt;1&Prime; or the inspector notes active concerns, <strong>call a PE that same evening</strong>. The seller&rsquo;s disclosure of prior structural repairs makes this the #2 most important follow-up after the sewer scope.
+                                        <strong>Watch the GreenWorks elevation map closely.</strong> If it shows &lt;1&Prime; differential and no active cracking, you likely don&rsquo;t need the PE. If it shows &gt;1&Prime; or the inspector notes active concerns, <strong>call a PE that same evening</strong>. <span class="cite">The seller&rsquo;s disclosure of prior structural repairs<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to previous structural repairs. Combined with 78-year age and expansive clay soil, this elevates foundation assessment priority.</span></span> makes this the #2 most important follow-up after the sewer scope.
                                     </div>
                                 </div>
                                 <div class="insp-sources">Sources: Texas Board of Professional Engineers (TBPE) &bull; Foundation Performance Association Guidelines</div>
@@ -2870,7 +2883,7 @@
                                 <div class="insp-detail-grid">
                                     <div class="insp-field">
                                         <div class="insp-field-label">What &amp; Why</div>
-                                        The seller disclosed <strong>&ldquo;New roof 2024 &mdash; hail damage&rdquo;</strong> (insurance claim replacement). An independent roof certification answers critical questions: Was it a <strong>full tear-off or overlay</strong> on old shingles? What warranty exists and is it <strong>transferable</strong> to a new owner? Was the work <strong>permitted</strong> through the City of Austin? An independent inspector verifies quality separately from the installer.
+                                        <span class="cite">The seller disclosed <strong>&ldquo;New roof 2024 &mdash; hail damage&rdquo;</strong><span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to previous roof repairs and noted &ldquo;New roof 2024 &mdash; hail damage,&rdquo; indicating an insurance-claim replacement.</span></span> (insurance claim replacement). An independent roof certification answers critical questions: Was it a <strong>full tear-off or overlay</strong> on old shingles? What warranty exists and is it <strong>transferable</strong> to a new owner? Was the work <strong>permitted</strong> through the City of Austin? An independent inspector verifies quality separately from the installer.
                                     </div>
                                     <div class="insp-field">
                                         <div class="insp-field-label">Who Performs It</div>
@@ -2956,14 +2969,14 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Foundation elevation / movement</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$30K+</td><td>GreenWorks provides elevation map. Look for &gt;1&Prime; differential across the slab. Seller disclosed previous structural repairs.</td><td>Order structural engineer ($300&ndash;$500) for PE-stamped assessment. Active movement = potential deal-breaker.</td></tr>
-                        <tr><td class="bold">Exterior cracks</td><td><span class="badge badge-red">High</span></td><td>Incl. above</td><td>Diagonal cracks &gt; 1/4&Prime;, stair-step cracks in brick/mortar, separation at corners. Austin clay soil causes seasonal movement.</td><td>Hairline cracks are cosmetic. Wide or active cracks need engineer. Photograph and measure width for reference.</td></tr>
+                        <tr><td class="bold">Foundation elevation / movement</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$30K+</td><td><span class="cite">GreenWorks provides elevation map<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">GreenWorks Inspection Package</span>Foundation elevation mapping is included in the comprehensive inspection booked for Apr 15 at 2:30 PM. Maps differential settlement across the slab.</span></span>. Look for &gt;1&Prime; differential across the slab. <span class="cite">Seller disclosed previous structural repairs<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure Notice (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to &ldquo;previous other structural repairs&rdquo; under Section 3 &mdash; Structural. No details provided about scope, date, or contractor.</span></span>.</td><td>Order structural engineer ($300&ndash;$500) for PE-stamped assessment. Active movement = potential deal-breaker.</td></tr>
+                        <tr><td class="bold">Exterior cracks</td><td><span class="badge badge-red">High</span></td><td>Incl. above</td><td>Diagonal cracks &gt; 1/4&Prime;, stair-step cracks in brick/mortar, separation at corners. <span class="cite">Austin clay soil causes seasonal movement<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">USDA Soil Survey &mdash; Travis County</span>The 78741 zip code is mapped as Houston Black clay (Vertisol), a high-plasticity expansive soil known for significant shrink-swell cycles with moisture changes.</span></span>.</td><td>Hairline cracks are cosmetic. Wide or active cracks need engineer. Photograph and measure width for reference.</td></tr>
                         <tr><td class="bold">Interior signs</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Sticking doors/windows, sloping floors, wall-ceiling gaps, cracked drywall, out-of-plumb door frames.</td><td>Some settling is normal for 78 years. Pattern of multiple symptoms = structural concern. Ask inspector if active or historical.</td></tr>
                         <tr><td class="bold">Crawl space (if pier &amp; beam)</td><td><span class="badge badge-yellow">Medium</span></td><td>$2K&ndash;$10K</td><td>Moisture, standing water, wood rot, pier condition, beam deflection, pest evidence, proper ventilation.</td><td>Moisture barrier may be needed. Rotted beams need sistering or replacement. Check if accessible to inspector.</td></tr>
                     </tbody>
                 </table>
                 <div class="callout callout-danger" style="margin-top:0.75rem;">
-                    <strong>CRITICAL FOR THIS HOME:</strong> Seller disclosed previous structural repairs on a 78-year-old slab in Austin&rsquo;s expansive clay soil. The GreenWorks <strong>elevation map is the single most important data point</strong> from tomorrow&rsquo;s inspection. If it shows &gt;1&Prime; differential, order a PE structural assessment <strong>immediately</strong> (evening of Apr 15). Active foundation movement at this home&rsquo;s age and soil conditions = potential deal-breaker or $15K&ndash;$30K negotiation item. Have a PE&rsquo;s number ready before you walk in.
+                    <strong>CRITICAL FOR THIS HOME:</strong> <span class="cite">Seller disclosed previous structural repairs<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to &ldquo;previous other structural repairs&rdquo; under Section 3. No details on scope, date, or contractor.</span></span> on a <span class="cite">78-year-old slab in Austin&rsquo;s expansive clay soil<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TCAD Records + USDA Soil Survey</span>Built 1948 per TCAD. Travis County soil: Houston Black clay (Vertisol) with high plasticity index.</span></span>. The GreenWorks <strong>elevation map is the single most important data point</strong> from tomorrow&rsquo;s inspection. If it shows &gt;1&Prime; differential, order a PE structural assessment <strong>immediately</strong> (evening of Apr 15). Active foundation movement at this home&rsquo;s age and soil conditions = potential deal-breaker or <span class="cite">$15K&ndash;$30K negotiation item<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Foundation Performance Association</span>Typical residential foundation repair with steel piers in Central Texas ranges $5K&ndash;$30K+ depending on number of piers needed and engineering oversight.</span></span>. Have a PE&rsquo;s number ready before you walk in.
                 </div>
 
                 <!-- 2. Plumbing Supply -->
@@ -2971,7 +2984,7 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Pipe material (galvanized steel?)</td><td><span class="badge badge-red">Very High</span></td><td>$8K&ndash;$15K</td><td>1948 home almost certainly had galvanized. May be partially replaced with PEX/copper. Ask inspector what % is original.</td><td>If &gt;50% original galvanized: budget for full PEX repipe. Get plumber bid. Major negotiation leverage.</td></tr>
+                        <tr><td class="bold">Pipe material (galvanized steel?)</td><td><span class="badge badge-red">Very High</span></td><td>$8K&ndash;$15K</td><td><span class="cite">1948 home almost certainly had galvanized<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TCAD Records + Construction Standards</span>Built 1948 per TCAD. Galvanized steel was the standard residential supply pipe material from the 1930s&ndash;1960s. Expected lifespan: 40&ndash;70 years.</span></span>. May be partially replaced with PEX/copper. Ask inspector what % is original.</td><td>If &gt;50% original galvanized: budget for full PEX repipe. Get plumber bid. Major negotiation leverage.</td></tr>
                         <tr><td class="bold">Water pressure</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Test every faucet. Low pressure = corroded galvanized pipes. Run multiple fixtures simultaneously.</td><td>Low pressure confirms pipe degradation. Document with video for negotiation.</td></tr>
                         <tr><td class="bold">Water heater</td><td><span class="badge badge-yellow">Medium</span></td><td>$1.5K&ndash;$4K</td><td>Check age (label on unit), type (tank/tankless), capacity, signs of rust or corrosion, T&amp;P valve, drip pan.</td><td>If &gt;10 years old: budget replacement. Leaking = urgent. Tankless upgrade ($3&ndash;$4K) eliminates recurring risk.</td></tr>
                         <tr><td class="bold">Under-sink leaks</td><td><span class="badge badge-green">Low</span></td><td>$100&ndash;$500</td><td>Check all cabinets under sinks for moisture, mold, warped wood, bucket catches.</td><td>Active leaks need repair. Water damage may indicate longer-term problem.</td></tr>
@@ -2986,13 +2999,13 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Sewer camera scope</td><td><span class="badge badge-red">Very High</span></td><td>$8K&ndash;$40K</td><td><strong>Included in GreenWorks package.</strong> 78-year cast iron drains at or past end of life. Camera reveals cracks, root intrusion, bellying, offsets, blockages.</td><td>Request a copy of the sewer video. If cast iron is failing: get plumber bid for replacement. Under-slab failure = $25K&ndash;$40K. Potential deal-breaker.</td></tr>
-                        <tr><td class="bold">French drain condition</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$8K</td><td>Seller disclosed french drains installed 1994 (32 years old) after reservoir flooding. Check if functional or clogged.</td><td>French drains have 15&ndash;25 year lifespan. Likely need replacement. Factor into drainage budget.</td></tr>
+                        <tr><td class="bold">Sewer camera scope</td><td><span class="badge badge-red">Very High</span></td><td>$8K&ndash;$40K</td><td><span class="cite"><strong>Included in GreenWorks package.</strong><span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">GreenWorks Inspection Package</span>Sewer line camera scope is included in the comprehensive inspection package booked for Apr 15.</span></span> <span class="cite">78-year cast iron drains at or past end of life<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TCAD Records + Cast Iron Soil Pipe Institute</span>Built 1948. Cast iron drain pipes have a 50&ndash;75 year expected lifespan. At 78 years, these pipes are at or past end of service life.</span></span>. Camera reveals cracks, root intrusion, bellying, offsets, blockages.</td><td>Request a copy of the sewer video. If cast iron is failing: get plumber bid for replacement. Under-slab failure = $25K&ndash;$40K. Potential deal-breaker.</td></tr>
+                        <tr><td class="bold">French drain condition</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$8K</td><td><span class="cite">Seller disclosed french drains installed 1994<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller noted &ldquo;outbuilding/garage minor water penetration &mdash; installed french drains&rdquo; in 1994, following reservoir failure/breach flooding.</span></span> (32 years old) after <span class="cite">reservoir flooding<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller checked &ldquo;Yes&rdquo; to previous flooding from &ldquo;reservoir failure/breach.&rdquo;</span></span>. Check if functional or clogged.</td><td>French drains have 15&ndash;25 year lifespan. Likely need replacement. Factor into drainage budget.</td></tr>
                         <tr><td class="bold">Drain flow / backups</td><td><span class="badge badge-yellow">Medium</span></td><td>Incl. above</td><td>Slow drains in any fixture, gurgling sounds, sewer odor. Run water in all fixtures during inspection.</td><td>Slow drains + old cast iron = imminent replacement needed. Document which fixtures affected.</td></tr>
                     </tbody>
                 </table>
                 <div class="callout callout-danger" style="margin-top:0.75rem;">
-                    <strong>SEWER SCOPE IS YOUR MOST IMPORTANT INCLUDED TEST:</strong> 78-year-old cast iron drain lines are at or past end-of-life. Under-slab sewer line failure is the <strong>single most expensive possible repair</strong> on this home ($25K&ndash;$40K). The sewer camera scope is included in your GreenWorks package &mdash; <strong>request a copy of the full video</strong>, not just the summary report. If the camera reveals cracking, root intrusion, bellying, or significant corrosion, get a licensed plumber&rsquo;s bid <strong>before Apr 20</strong>. This finding alone could justify walking away or negotiating a $20K+ price reduction.
+                    <strong>SEWER SCOPE IS YOUR MOST IMPORTANT INCLUDED TEST:</strong> <span class="cite">78-year-old cast iron drain lines are at or past end-of-life<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TCAD Records + Cast Iron Soil Pipe Institute</span>Built 1948. Cast iron drain pipes have a 50&ndash;75 year expected lifespan. At 78 years, these are at or past end of service life.</span></span>. Under-slab sewer line failure is the <strong>single most expensive possible repair</strong> on this home (<span class="cite">$25K&ndash;$40K<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Austin Plumbing Contractor Estimates</span>Under-slab sewer line replacement in Austin requires tunneling or slab cuts, typically $25K&ndash;$40K including restoration. Costs vary with linear footage and access.</span></span>). The sewer camera scope is included in your GreenWorks package &mdash; <strong>request a copy of the full video</strong>, not just the summary report. If the camera reveals cracking, root intrusion, bellying, or significant corrosion, get a licensed plumber&rsquo;s bid <strong>before Apr 20</strong>. This finding alone could justify walking away or negotiating a $20K+ price reduction.
                 </div>
 
                 <!-- 4. Electrical -->
@@ -3000,8 +3013,8 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Panel brand &amp; amperage</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$5K</td><td>Check for Federal Pacific (FPE) or Zinsco panels &mdash; both are <strong>known fire hazards</strong> and should be replaced regardless. Check if 100A, 150A, or 200A service.</td><td>FPE/Zinsco = replace immediately ($2K&ndash;$4K). Under 200A = may need upgrade for modern loads (HVAC, EV charger, etc.).</td></tr>
-                        <tr><td class="bold">Wiring type</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$20K</td><td>1948 may have cloth-insulated wiring (fire hazard), knob-and-tube remnants, or aluminum. Ask inspector to identify type at panel and in attic.</td><td>Cloth wiring = partial rewire recommended. Knob-and-tube = full rewire. Aluminum = pigtailing or rewire. Major negotiation item.</td></tr>
+                        <tr><td class="bold">Panel brand &amp; amperage</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$5K</td><td>Check for <span class="cite">Federal Pacific (FPE) or Zinsco panels &mdash; both are <strong>known fire hazards</strong><span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">CPSC Reports + Insurance Industry Standards</span>Federal Pacific Stab-Lok breakers have documented failure rates of 25&ndash;40% (not tripping under overload). Multiple CPSC investigations and class-action settlements. Most insurers require replacement.</span></span> and should be replaced regardless. Check if 100A, 150A, or 200A service.</td><td>FPE/Zinsco = replace immediately ($2K&ndash;$4K). Under 200A = may need upgrade for modern loads (HVAC, EV charger, etc.).</td></tr>
+                        <tr><td class="bold">Wiring type</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$20K</td><td><span class="cite">1948 may have cloth-insulated wiring (fire hazard), knob-and-tube remnants, or aluminum<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TCAD Records + NEC History</span>Built 1948. Cloth-insulated (rubber/fabric) wiring was standard through the 1950s. Insulation degrades over decades, exposing conductors. NEC did not require grounded outlets until 1962.</span></span>. Ask inspector to identify type at panel and in attic.</td><td>Cloth wiring = partial rewire recommended. Knob-and-tube = full rewire. Aluminum = pigtailing or rewire. Major negotiation item.</td></tr>
                         <tr><td class="bold">Grounding &amp; outlets</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$3K</td><td>Check for ungrounded 2-prong outlets, missing GFCIs in kitchen/bath/exterior, proper AFCI protection in bedrooms.</td><td>Upgrading outlets is not urgent but affects resale. GFCIs in wet areas are safety-critical and cheap to add ($50&ndash;$100 each).</td></tr>
                         <tr><td class="bold">Capacity for modern loads</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$5K</td><td>Can the system handle HVAC, EV charger, modern kitchen appliances, and potential duplex conversion?</td><td>Ask inspector about available capacity. If limited: panel upgrade + new circuits needed. Factor into renovation budget.</td></tr>
                     </tbody>
@@ -3015,7 +3028,7 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">2024 replacement verification</td><td><span class="badge badge-yellow">Medium</span></td><td>$0&ndash;$25K</td><td>Seller disclosed &ldquo;New roof 2024 &mdash; hail damage.&rdquo; Verify: full tear-off or overlay? Composition shingles? Warranty documentation?</td><td>If overlay on old shingles: reduced lifespan. Request contractor name and warranty. Insurance claim may make future claims harder.</td></tr>
+                        <tr><td class="bold">2024 replacement verification</td><td><span class="badge badge-yellow">Medium</span></td><td>$0&ndash;$25K</td><td><span class="cite">Seller disclosed &ldquo;New roof 2024 &mdash; hail damage.&rdquo;<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to previous roof repairs and noted &ldquo;New roof 2024 &mdash; hail damage&rdquo; indicating an insurance-claim replacement.</span></span> Verify: full tear-off or overlay? Composition shingles? Warranty documentation?</td><td>If overlay on old shingles: reduced lifespan. Request contractor name and warranty. Insurance claim may make future claims harder.</td></tr>
                         <tr><td class="bold">Attic inspection</td><td><span class="badge badge-yellow">Medium</span></td><td>$0&ndash;$5K</td><td>Proper ventilation, insulation type and depth, signs of leaks (stains, mold), wiring condition, pest evidence, structural integrity of rafters/trusses.</td><td>Poor ventilation = premature roof failure and moisture issues. Missing insulation = high energy costs. Thermal imaging will reveal gaps.</td></tr>
                         <tr><td class="bold">Flashing &amp; penetrations</td><td><span class="badge badge-green">Low</span></td><td>$200&ndash;$1K</td><td>Chimney flashing, vent boots, skylights (if any), gutter connections. These are the most common leak points even on new roofs.</td><td>Flashing repairs are inexpensive. If new roof was installed poorly, this is where it shows first.</td></tr>
                     </tbody>
@@ -3047,7 +3060,7 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Grading &amp; drainage</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$10K</td><td>Ground should slope AWAY from foundation. Seller disclosed previous flooding from reservoir breach. French drains installed 1994. Check if functional.</td><td>Poor grading + flood history = serious concern. May need re-grading, new french drains, or sump pump. Check FEMA flood zone status. Budget flood insurance ($1K&ndash;$3K/yr).</td></tr>
+                        <tr><td class="bold">Grading &amp; drainage</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$10K</td><td>Ground should slope AWAY from foundation. <span class="cite">Seller disclosed previous flooding from reservoir breach<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller checked &ldquo;Yes&rdquo; to previous flooding and noted &ldquo;reservoir failure/breach&rdquo; as the source. French drains installed in response.</span></span>. <span class="cite">French drains installed 1994<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller noted &ldquo;outbuilding/garage minor water penetration &mdash; installed french drains&rdquo; in 1994.</span></span>. Check if functional.</td><td>Poor grading + flood history = serious concern. May need re-grading, new french drains, or sump pump. Check FEMA flood zone status. Budget flood insurance ($1K&ndash;$3K/yr).</td></tr>
                         <tr><td class="bold">Siding &amp; exterior walls</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$15K</td><td>Material type (wood, fiber cement, brick?), condition, paint condition, rot, gaps. Thermal imaging reveals insulation voids behind walls.</td><td>Wood siding on a 1948 home may contain lead paint (test separately). Rotted sections need replacement. Repainting is carpenter-friendly.</td></tr>
                         <tr><td class="bold">Trees near foundation</td><td><span class="badge badge-yellow">Medium</span></td><td>$1K&ndash;$5K</td><td>Large trees within 20 ft of foundation can cause root damage to pipes and foundation movement via soil moisture changes.</td><td>Tree removal or root barriers may be needed. Consult arborist if large trees are close to structure.</td></tr>
                         <tr><td class="bold">Driveway, walkways, fencing</td><td><span class="badge badge-green">Low</span></td><td>$1K&ndash;$5K</td><td>Cracking, heaving, trip hazards, fence condition. Cosmetic but affects curb appeal and safety.</td><td>Low priority. Factor into renovation budget. Carpenter advantage for fence/deck work.</td></tr>
@@ -3059,14 +3072,14 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Lead-based paint</td><td><span class="badge badge-red">Very High</span></td><td>$5K&ndash;$25K</td><td><strong>Not included in GreenWorks.</strong> 1948 home almost certainly has lead paint. You waived the lead inspection in the contract, but can still test independently during option period. Critical if children will be in the home.</td><td><strong>Strongly recommend independent lead test ($300&ndash;$500).</strong> Intact paint is safe. Renovation disturbs paint &mdash; EPA-certified contractors cost 20&ndash;50% more. Encapsulation ($5K) is cheaper than removal ($15K+).</td></tr>
+                        <tr><td class="bold">Lead-based paint</td><td><span class="badge badge-red">Very High</span></td><td>$5K&ndash;$25K</td><td><strong>Not included in GreenWorks.</strong> <span class="cite">1948 home almost certainly has lead paint<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">EPA Lead Paint Disclosure Rule (40 CFR 745)</span>Pre-1978 homes are presumed to contain lead-based paint. Homes built before 1950 have the highest probability (~87%) per HUD/EPA studies.</span></span>. <span class="cite">You waived the lead inspection in the contract<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TREC Lead-Based Paint Addendum</span>The standard 10-day lead inspection period was waived in the executed contract. Seller is not obligated to allow extra time for lead testing beyond the option period.</span></span>, but can still test independently during option period. Critical if children will be in the home.</td><td><strong>Strongly recommend independent lead test ($300&ndash;$500).</strong> Intact paint is safe. Renovation disturbs paint &mdash; EPA-certified contractors cost 20&ndash;50% more. Encapsulation ($5K) is cheaper than removal ($15K+).</td></tr>
                         <tr><td class="bold">Asbestos</td><td><span class="badge badge-yellow">Medium</span></td><td>$3K&ndash;$20K</td><td><strong>Not included.</strong> Common in 1940s homes: floor tiles (9x9&Prime;), pipe insulation, duct tape, popcorn ceilings, siding. Harmless if undisturbed.</td><td>Test before any renovation ($200&ndash;$400). Professional abatement required before demolition. Not a deal-breaker if no immediate renovation planned.</td></tr>
                         <tr><td class="bold">Air quality</td><td><span class="badge badge-green">Low</span></td><td>$0&ndash;$2K</td><td><strong>Included in GreenWorks.</strong> Checks for VOCs, particulates, CO levels. Thermal imaging may reveal moisture that causes mold.</td><td>If elevated readings: investigate source (mold, off-gassing, ventilation). Mold protocol testing is $300&ndash;$600 additional.</td></tr>
-                        <tr><td class="bold">Termite / WDI</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$15K</td><td><strong>GreenWorks includes 90-day guarantee.</strong> Seller marked &ldquo;No&rdquo; on all termite/WDI fields in SDN &sect;3. However, 1948 pier &amp; beam homes in Austin are high-risk for termite history. Look for signs of past or active infestation and any structural wood damage.</td><td>Active infestation = treatment ($500&ndash;$2K). Structural damage from prior = repair ($2K&ndash;$15K). Annual termite bond recommended ($200&ndash;$400/yr). Ask about prior treatment records.</td></tr>
+                        <tr><td class="bold">Termite / WDI</td><td><span class="badge badge-red">High</span></td><td>$2K&ndash;$15K</td><td><strong>GreenWorks includes 90-day guarantee.</strong> <span class="cite">Seller marked &ldquo;No&rdquo; on all termite/WDI fields in SDN &sect;3<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller answered &ldquo;No&rdquo; to all four termite/WDI questions: current infestation, previous infestation, previous treatment, and previous damage. This means seller is unaware &mdash; not that none exists.</span></span>. However, <span class="cite">1948 pier &amp; beam homes in Austin are high-risk for termite history<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Texas A&amp;M AgriLife Extension</span>Central Texas is in USDA Termite Infestation Probability Zone &ldquo;Very Heavy,&rdquo; and pier-and-beam construction with wood-to-soil contact is the highest-risk residential type for subterranean termites.</span></span>. Look for signs of past or active infestation and any structural wood damage.</td><td>Active infestation = treatment ($500&ndash;$2K). Structural damage from prior = repair ($2K&ndash;$15K). Annual termite bond recommended ($200&ndash;$400/yr). Ask about prior treatment records.</td></tr>
                     </tbody>
                 </table>
                 <div class="callout callout-danger" style="margin-top:0.75rem;">
-                    <strong>LEAD + TERMITE RISK:</strong> This 1948 home has <strong>near-certain lead paint</strong> and is <strong>high-risk for termite/WDI damage due to age and construction type</strong> (pier &amp; beam). The seller marked &ldquo;No&rdquo; on all four termite fields in the SDN, but that does not mean the home is clear &mdash; it means the seller is not aware of damage. The questions are still extent and cost.<br><br>
+                    <strong>LEAD + TERMITE RISK:</strong> This 1948 home has <strong>near-certain lead paint</strong> and is <strong>high-risk for termite/WDI damage due to age and construction type</strong> (pier &amp; beam). <span class="cite">The seller marked &ldquo;No&rdquo; on all four termite fields in the SDN<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller answered &ldquo;No&rdquo; to current infestation, previous infestation, previous treatment, and previous damage. SDN &sect;3 only requires disclosure of seller&rsquo;s actual knowledge.</span></span>, but that does not mean the home is clear &mdash; it means the seller is not aware of damage. The questions are still extent and cost.<br><br>
                     <strong>Lead paint:</strong> Order XRF testing for Apr 15&ndash;16 ($300&ndash;$500, same-day results). Intact paint is safe to live with, but any renovation triggers the EPA RRP rule requiring certified contractors at 20&ndash;50% cost premium.<br><br>
                     <strong>Termites:</strong> The seller marked &ldquo;No&rdquo; on all termite/WDI fields, but a 1948 pier &amp; beam home in Austin should be independently verified. The GreenWorks 90-day guarantee covers <strong>treatment of active infestation only</strong> &mdash; it does <strong>NOT</strong> cover structural repair. Ask the inspector specifically: &ldquo;Is there any evidence of past or current termite activity, and is there structural wood damage?&rdquo; Termite damage repair can run $2K&ndash;$15K depending on which structural members are compromised. Ask whether the home has an active termite bond.
                 </div>
@@ -3076,12 +3089,12 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Previous flooding</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$50K+</td><td>Seller disclosed &ldquo;Yes&rdquo; to previous flooding from reservoir failure/breach <em>(SDN &sect;5)</em>. 1994 note: &ldquo;outbuilding/garage minor water penetration &mdash; installed french drains.&rdquo;</td><td>Verify FEMA flood zone status. Obtain flood insurance immediately after closing ($1K&ndash;$3K/yr). Check for residual moisture or mold in lower areas. French drains are 32 years old &mdash; likely need replacement.</td></tr>
-                        <tr><td class="bold">Current flood insurance</td><td><span class="badge badge-red">High</span></td><td>$1K&ndash;$3K/yr</td><td>Seller has NO flood insurance currently. Despite flooding history.</td><td>Your lender may require it depending on zone. Even if not required, carry it given the disclosure. Budget annually.</td></tr>
+                        <tr><td class="bold">Previous flooding</td><td><span class="badge badge-red">High</span></td><td>$5K&ndash;$50K+</td><td><span class="cite">Seller disclosed &ldquo;Yes&rdquo; to previous flooding from reservoir failure/breach<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Section 5 &mdash; Flooding: Seller checked &ldquo;Yes&rdquo; and identified &ldquo;reservoir failure/breach&rdquo; as the flooding source.</span></span> <em>(SDN &sect;5)</em>. 1994 note: <span class="cite">&ldquo;outbuilding/garage minor water penetration &mdash; installed french drains.&rdquo;<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller&rsquo;s handwritten note in Section 5 describes the 1994 flooding event and remediation action taken.</span></span></td><td>Verify FEMA flood zone status. Obtain flood insurance immediately after closing ($1K&ndash;$3K/yr). Check for residual moisture or mold in lower areas. French drains are 32 years old &mdash; likely need replacement.</td></tr>
+                        <tr><td class="bold">Current flood insurance</td><td><span class="badge badge-red">High</span></td><td>$1K&ndash;$3K/yr</td><td><span class="cite">Seller has NO flood insurance currently<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller indicated no current flood insurance despite disclosing previous flooding history from reservoir breach.</span></span>. Despite flooding history.</td><td>Your lender may require it depending on zone. Even if not required, carry it given the disclosure. Budget annually.</td></tr>
                     </tbody>
                 </table>
                 <div class="callout callout-warning" style="margin-top:0.75rem;">
-                    <strong>FLOOD HISTORY + NO CURRENT INSURANCE:</strong> Seller disclosed previous flooding from a 1994 reservoir breach but currently carries <strong>no flood insurance</strong>. The french drains installed in response are now <strong>32 years old</strong> &mdash; well past the typical 15&ndash;25 year lifespan and likely degraded or non-functional. Three action items: (1) Verify <strong>FEMA flood zone status</strong> before closing &mdash; your lender may require flood insurance regardless; (2) Budget <strong>$1K&ndash;$3K/yr</strong> for flood insurance even if not in a high-risk zone given the disclosure; (3) Budget <strong>$3K&ndash;$8K</strong> for french drain replacement in the first 1&ndash;2 years of ownership.
+                    <strong>FLOOD HISTORY + NO CURRENT INSURANCE:</strong> <span class="cite">Seller disclosed previous flooding from a 1994 reservoir breach<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller checked &ldquo;Yes&rdquo; to previous flooding, source: &ldquo;reservoir failure/breach,&rdquo; with 1994 remediation note.</span></span> but currently carries <strong>no flood insurance</strong>. The french drains installed in response are now <strong>32 years old</strong> &mdash; well past the typical 15&ndash;25 year lifespan and likely degraded or non-functional. Three action items: (1) Verify <strong>FEMA flood zone status</strong> before closing &mdash; your lender may require flood insurance regardless; (2) Budget <strong>$1K&ndash;$3K/yr</strong> for flood insurance even if not in a high-risk zone given the disclosure; (3) Budget <strong>$3K&ndash;$8K</strong> for french drain replacement in the first 1&ndash;2 years of ownership.
                 </div>
 
                 <!-- 11. Tenant Areas -->
@@ -3089,7 +3102,7 @@
                 <table class="data-table">
                     <thead><tr><th style="width:22%">Check</th><th style="width:8%">Risk</th><th style="width:12%">Cost</th><th style="width:28%">What to Look For</th><th>If Questionable</th></tr></thead>
                     <tbody>
-                        <tr><td class="bold">Full access to all units</td><td><span class="badge badge-red">High</span></td><td>&mdash;</td><td>Property has existing tenant. <strong>Ensure inspector has access to ALL areas</strong> including tenant-occupied spaces. Coordinate with Alli + listing agent beforehand.</td><td>If tenant denies access: red flag. Any area not inspected is an unknown risk. May need to schedule separate access.</td></tr>
+                        <tr><td class="bold">Full access to all units</td><td><span class="badge badge-red">High</span></td><td>&mdash;</td><td><span class="cite">Property has existing tenant<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Addendum Regarding Residential Leases (TXR 1953)</span>Existing leases are assigned to buyer at closing (Option B). Lease copies due from seller by April 16, 2026 (3 days after effective date).</span></span>. <strong>Ensure inspector has access to ALL areas</strong> including tenant-occupied spaces. Coordinate with Alli + listing agent beforehand.</td><td>If tenant denies access: red flag. Any area not inspected is an unknown risk. May need to schedule separate access.</td></tr>
                         <tr><td class="bold">Tenant unit condition</td><td><span class="badge badge-yellow">Medium</span></td><td>$2K&ndash;$10K</td><td>General condition, any tenant-caused damage, maintenance issues, appliance condition, separate utility meters?</td><td>Damage costs may be recoverable from security deposit. Check if units have separate electrical/water meters (affects landlord costs).</td></tr>
                         <tr><td class="bold">Unit separation / code</td><td><span class="badge badge-yellow">Medium</span></td><td>$5K&ndash;$20K</td><td>For a multi-family property: fire separation between units, separate egress, smoke/CO detectors in each unit, permitted conversion?</td><td>Unpermitted duplex conversion = liability. Check city permit records. May need upgrades for code compliance. Affects insurance and financing.</td></tr>
                     </tbody>
@@ -3113,7 +3126,7 @@
                 <div class="grid-3">
                     <div style="background:var(--fl-green-light); border-radius:10px; padding:1rem;">
                         <h4 style="color:var(--fl-green-dark); margin-top:0;">Phase 1: GreenWorks</h4>
-                        <p style="font-size:0.8rem; color:var(--fl-muted); font-weight:600;">Apr 15 (12:30 PM)</p>
+                        <p style="font-size:0.8rem; color:var(--fl-muted); font-weight:600;">Apr 15 (2:30 PM)</p>
                         <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
                             <li>Full home inspection</li>
                             <li>Sewer camera scope</li>
@@ -3122,7 +3135,7 @@
                             <li>Air quality + termite</li>
                             <li>Irrigation inspection</li>
                         </ul>
-                        <p style="font-size:0.8rem; color:var(--fl-green-dark); font-weight:600; margin-top:0.5rem;">Reports by Apr 16</p>
+                        <p style="font-size:0.8rem; color:var(--fl-green-dark); font-weight:600; margin-top:0.5rem;">Reports by Apr 17</p>
                     </div>
                     <div style="background:#eff6ff; border-radius:10px; padding:1rem;">
                         <h4 style="color:#1e40af; margin-top:0;">Phase 2: Specialists</h4>
@@ -3154,14 +3167,14 @@
             <!-- ===== E. DELIVERABLES TRACKER ===== -->
             <div class="card">
                 <h3>Inspection Deliverables Tracker</h3>
-                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:0.75rem;">Check off each deliverable as you receive it from GreenWorks. All should arrive within 24 hours of inspection.</p>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:0.75rem;">Check off each deliverable as you receive it from GreenWorks. Agreement allows up to 48 hours (by Apr 17), but follow up if not received by Apr 16 EOD.</p>
                 <ul class="checklist" id="checklist-inspection">
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Digital Photo Report</div><div class="check-detail">Full walkthrough with annotated photos of every finding</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Repair Estimate Report</div><div class="check-detail">Itemized cost estimates for every deficiency &mdash; use this for negotiation</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Foundation Elevation Map</div><div class="check-detail">Shows elevation differentials across the slab. &gt;1&Prime; differential = concern</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Sewer Line Video</div><div class="check-detail">Camera footage of drain lines &mdash; request a copy of the full video file</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">C.L.U.E. Insurance Claims History</div><div class="check-detail">Past insurance claims on this property &mdash; reveals undisclosed damage history</div></div></li>
-                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Thermal Imaging Report</div><div class="check-detail">Infrared scans showing moisture, insulation gaps, electrical hotspots</div></div></li>
+                    <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Thermal Imaging Report</div><div class="check-detail">Infrared scans showing temperature anomalies, insulation gaps, electrical hotspots. Note: per agreement, thermal cameras are <strong>not moisture meters</strong> &mdash; they flag areas for further investigation only.</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Air Quality Readings</div><div class="check-detail">VOC levels, particulates, CO &mdash; flag if above EPA thresholds</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Termite / WDI Report + 90-Day Guarantee</div><div class="check-detail">Active infestation check + guarantee document. Verify prior damage extent.</div></div></li>
                     <li><div class="check-box" onclick="this.classList.toggle('done')"></div><div class="check-label"><div class="check-title">Energy Report</div><div class="check-detail">Insulation levels, efficiency ratings, estimated utility costs</div></div></li>
@@ -3192,7 +3205,7 @@
                     </thead>
                     <tbody>
                         <tr><td class="bold">Attend inspection</td><td>Be present, take notes &amp; photos</td><td>Should attend</td><td>Conducts inspection</td><td>&mdash;</td></tr>
-                        <tr><td class="bold">Review reports</td><td>Read every page carefully</td><td>Reviews for negotiation leverage</td><td>Delivers reports within 24hr</td><td>Reviews for underwriting</td></tr>
+                        <tr><td class="bold">Review reports</td><td>Read every page carefully</td><td>Reviews for negotiation leverage</td><td>Delivers reports within 48hr</td><td>Reviews for underwriting</td></tr>
                         <tr><td class="bold">Identify deal-breakers</td><td>Flag personal concerns</td><td>Flag negotiation items</td><td>Flags safety/code issues</td><td>Flags lender requirements</td></tr>
                         <tr><td class="bold">Request price reduction</td><td>Decides target amount</td><td><strong>Drafts amendment, leads negotiation</strong></td><td>Provides repair estimates as evidence</td><td>&mdash;</td></tr>
                         <tr><td class="bold">Request seller credit</td><td>Decides amount</td><td><strong>Drafts amendment</strong></td><td>&mdash;</td><td>Must approve credit structure</td></tr>
@@ -3979,7 +3992,99 @@
                 </div>
             </div>
 
-            <!-- 6. Spyglass Consumer Choice & ABA Disclosure -->
+            <!-- 7. Spyglass Consumer Choice & ABA Disclosure -->
+            <!-- 6. GreenWorks Inspection Agreement -->
+            <div class="doc-card" onclick="this.classList.toggle('open')">
+                <div class="doc-header">
+                    <div class="doc-header-left">
+                        <div class="doc-icon doc-icon-contract">I</div>
+                        <div>
+                            <div class="doc-title">Home Inspection &amp; Limitations Agreement</div>
+                            <div class="doc-meta">GreenWorks Service Company, Inc. &bull; Greener Package &bull; 14 pages &bull; Signed by Jackie Giroux</div>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="badge badge-green">Signed</span>
+                        <span class="doc-chevron">&#9660;</span>
+                    </div>
+                </div>
+                <div class="doc-details">
+                    <h4>What This Is</h4>
+                    <p>The formal inspection agreement between Jackie Giroux and GreenWorks Service Company, Inc. for a general visual inspection of 1402 Ashwood Rd, Austin, TX 78722. This is a <strong>Greener Package</strong> &mdash; GreenWorks' comprehensive tier with additional services beyond the standard TREC inspection.</p>
+
+                    <h4>Key Terms</h4>
+                    <table class="data-table" style="margin-bottom:0.75rem;">
+                        <tr><td class="bold">Client</td><td>Jackie Giroux</td></tr>
+                        <tr><td class="bold">Property</td><td>1402 Ashwood Rd, Austin, TX 78722</td></tr>
+                        <tr><td class="bold">Inspection Date</td><td>April 15, 2026 at 2:30 PM</td></tr>
+                        <tr><td class="bold">Fee</td><td>$926.33</td></tr>
+                        <tr><td class="bold">Package</td><td>Greener Package</td></tr>
+                        <tr><td class="bold">Report Delivery</td><td>Written report within 2 days of inspection (by Apr 17)</td></tr>
+                        <tr><td class="bold">Cancellation</td><td>24-hour notice required; $100 non-refundable fee if &lt;24 hours</td></tr>
+                    </table>
+
+                    <h4>Greener Package Inclusions</h4>
+                    <ul style="font-size:0.85rem; line-height:1.8;">
+                        <li>Licensed home inspection (above TREC standards)</li>
+                        <li>90-day termite guarantee (if termites found within 90 days, GreenWorks provides recommendations and solutions)</li>
+                        <li>Digital photo reports &amp; inspection report summary</li>
+                        <li>Repair cost estimates (Repair Pricr&trade;)</li>
+                        <li>HomeBlendr&trade; online home management platform</li>
+                        <li>Insurance Claims History Report (C.L.U.E.)</li>
+                        <li>Concierge utility setup service</li>
+                        <li>Sewer line camera inspection</li>
+                        <li>One-time Air Quality test</li>
+                        <li>Basic mold sampling (one swab of visible suspected mold)</li>
+                        <li>Infrared thermal imaging (courtesy, non-invasive)</li>
+                        <li>Foundation elevation survey (if applicable)</li>
+                        <li>Sprinkler/irrigation inspection</li>
+                    </ul>
+
+                    <h4>Critical Limitations to Understand</h4>
+                    <div class="doc-warning">
+                        <strong>This is a visual inspection only.</strong> The agreement explicitly states the inspection is limited to &ldquo;readily accessible&rdquo; areas. The inspector will NOT:
+                        <ul style="margin-top:0.5rem; font-size:0.85rem; line-height:1.7;">
+                            <li>Move furniture, rugs, paintings, or personal property</li>
+                            <li>See into or behind walls</li>
+                            <li>Identify concealed, hidden, or latent defects</li>
+                            <li>Inspect areas obstructed by soil, vegetation, wall coverings, ceilings (including suspended ceilings), floors, or built-in cabinets/shelves</li>
+                            <li>Test for environmental hazards (asbestos, radon, lead, formaldehyde, mold beyond the single basic swab)</li>
+                            <li>Perform engineering, architectural, appraisal, or code-compliance evaluations</li>
+                            <li>Inspect for pests beyond a visual check (full mold protocol or WDI structural damage assessment requires separate specialists)</li>
+                        </ul>
+                    </div>
+
+                    <div class="doc-warning">
+                        <strong>Thermal imaging is NOT a moisture meter.</strong> Per the agreement, infrared cameras &ldquo;are not moisture meters but can aid in identifying areas that warrant further investigation.&rdquo; The thermal scan is a courtesy &mdash; a non-invasive, limited visual survey for temperature variations only. If the scan flags anomalies, you need a separate moisture assessment or mold protocol to confirm.
+                    </div>
+
+                    <div class="doc-warning">
+                        <strong>Mold sampling is basic.</strong> The Greener Package includes one swab of visible suspected mold only. If additional swabs are needed, a separate Mold Inspection Agreement is required. The mold inspection is limited to readily accessible areas. Mold can exist behind walls, under carpeting, beneath wood floors, and in other concealed areas &mdash; this sampling will not detect hidden mold.
+                    </div>
+
+                    <h4>Liability &amp; Dispute Resolution</h4>
+                    <ul style="font-size:0.85rem; line-height:1.8;">
+                        <li><strong>Liquidated damages cap:</strong> Total liability limited to the inspection fee ($926.33). You can pay $10,000 upfront to remove this cap.</li>
+                        <li><strong>Report is confidential:</strong> Intended for Jackie&rsquo;s sole use. Not transferable to third parties. GreenWorks has permission to share with your agent and attorney.</li>
+                        <li><strong>No warranties:</strong> The report is not a guarantee or warranty of property condition. It is not a substitute for seller&rsquo;s disclosures.</li>
+                        <li><strong>Claims deadline:</strong> Must notify GreenWorks in writing within 10 days of discovery. Must allow them 10 business days to re-inspect before any alteration.</li>
+                        <li><strong>Dispute resolution:</strong> Mediation first (Dallas County), then binding arbitration. <strong>Jury trial is waived.</strong></li>
+                        <li><strong>Statute of limitations:</strong> 1 year from inspection (2 years for breach of contract).</li>
+                    </ul>
+
+                    <h4>Third-Party Service Providers</h4>
+                    <p style="font-size:0.85rem;">By signing, you consented to contact from GreenWorks&rsquo; third-party service providers (TX HVAC Experts, Solar Revolution) for marketing purposes, and to information sharing with InspectionGo (iGo). To opt out of insurance services or the Utility Concierge, use the opt-out links in the agreement.</p>
+
+                    <div class="doc-action">
+                        <strong>Action Items:</strong> (1) Confirm both Jackie AND Hannah plan to attend &mdash; only Jackie signed the agreement. (2) Arrive on time at 2:30 PM &mdash; budget 3&ndash;4 hours. (3) Bring seller&rsquo;s disclosure to cross-reference during inspection. (4) The 48-hour report window means reports could arrive as late as Apr 17 &mdash; plan specialist follow-ups accordingly.
+                    </div>
+
+                    <div class="doc-insight">
+                        <strong>Key Insight:</strong> The agreement&rsquo;s &ldquo;As Is&rdquo; language mirrors your purchase contract. GreenWorks&rsquo; intent is to educate you about deficiencies, not require repairs. Use their repair estimate report as <strong>negotiation evidence</strong> for a price reduction &mdash; the report carries weight even in an &ldquo;As Is&rdquo; deal.
+                    </div>
+                </div>
+            </div>
+
             <div class="doc-card" onclick="this.classList.toggle('open')">
                 <div class="doc-header">
                     <div class="doc-header-left">
@@ -4022,7 +4127,7 @@
                 </div>
             </div>
 
-            <!-- 7. TCAD Property Summary Report -->
+            <!-- 8. TCAD Property Summary Report -->
             <div class="doc-card" onclick="this.classList.toggle('open')">
                 <div class="doc-header">
                     <div class="doc-header-left">
@@ -4061,7 +4166,7 @@
                 </div>
             </div>
 
-            <!-- 8. Blank Contract Template -->
+            <!-- 9. Blank Contract Template -->
             <div class="doc-card" onclick="this.classList.toggle('open')">
                 <div class="doc-header">
                     <div class="doc-header-left">
@@ -4088,7 +4193,7 @@
 
             <!-- Document summary -->
             <div class="callout callout-info" style="margin-top:1rem;">
-                <strong>Document Summary:</strong> You have 8 key transaction documents: 1 executed purchase contract, 1 seller's disclosure, 3 addenda (leases, financing, lead paint), 1 brokerage disclosure, 1 lease package (2 agreements), and 1 TCAD reference. All critical documents are fully signed and executed as of 04/13/2026.
+                <strong>Document Summary:</strong> You have 9 key transaction documents: 1 executed purchase contract, 1 seller's disclosure, 3 addenda (leases, financing, lead paint), 1 inspection agreement (GreenWorks Greener Package), 1 brokerage disclosure, 1 lease package (2 agreements), and 1 TCAD reference. All critical documents are fully signed and executed as of 04/13/2026.
             </div>
         </div>
 
@@ -4431,31 +4536,31 @@
                             <td class="bold">Previous flooding from reservoir breach</td>
                             <td><span class="badge badge-red">High</span></td>
                             <td>$5K–$50K+</td>
-                            <td>Seller disclosed "Yes" to previous flooding from reservoir failure/breach. The 1994 note mentions "outbuilding/garage minor water penetration — installed french drains." While french drains were installed, this confirms the property HAS flooded before. No current flood insurance. <strong>You should obtain flood insurance immediately after closing and investigate FEMA flood zone status.</strong></td>
+                            <td><span class="cite">Seller disclosed "Yes" to previous flooding from reservoir failure/breach<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Section 5 &mdash; Flooding: Seller checked &ldquo;Yes&rdquo; and identified &ldquo;reservoir failure/breach&rdquo; as source.</span></span>. The 1994 note mentions <span class="cite">"outbuilding/garage minor water penetration — installed french drains."<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;5</span>Seller&rsquo;s handwritten note describing the 1994 flooding event and remediation.</span></span> While french drains were installed, this confirms the property HAS flooded before. No current flood insurance. <strong>You should obtain flood insurance immediately after closing and investigate FEMA flood zone status.</strong></td>
                         </tr>
                         <tr>
                             <td class="bold">Lead-based paint — inspection waived</td>
                             <td><span class="badge badge-red">High</span></td>
                             <td>$5K–$25K remediation</td>
-                            <td>Built 1948 — pre-1978 home almost certainly has lead paint. Seller has no knowledge of hazards and no reports. <strong>You waived your right to a lead inspection.</strong> If lead is found later (especially with children in the home), remediation is expensive and legally complex.</td>
+                            <td>Built 1948 — pre-1978 home almost certainly has lead paint. Seller has no knowledge of hazards and no reports. <span class="cite"><strong>You waived your right to a lead inspection.</strong><span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TREC 1-4 Contract &mdash; Lead-Based Paint Addendum</span>Lead-Based Paint Addendum was waived in the executed contract, forgoing the standard 10-day inspection window.</span></span> If lead is found later (especially with children in the home), remediation is expensive and legally complex.</td>
                         </tr>
                         <tr>
                             <td class="bold">Previous roof repairs + new roof 2024</td>
                             <td><span class="badge badge-yellow">Medium</span></td>
                             <td>$0–$15K</td>
-                            <td>Seller disclosed previous roof repairs <em>(SDN &sect;3)</em> and notes "New roof 2024 — hail damage." This means the roof was replaced via insurance claim. Check: was it a full replacement or partial? Is it a composition overlay on old shingles? Get documentation of the roofing work and warranty. Insurance claims history may make the property harder to insure.</td>
+                            <td><span class="cite">Seller disclosed previous roof repairs<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to previous roof repairs and noted &ldquo;New roof 2024 &mdash; hail damage.&rdquo;</span></span> <em>(SDN &sect;3)</em> and notes "New roof 2024 — hail damage." This means the roof was replaced via insurance claim. Check: was it a full replacement or partial? Is it a composition overlay on old shingles? Get documentation of the roofing work and warranty. Insurance claims history may make the property harder to insure.</td>
                         </tr>
                         <tr>
                             <td class="bold">Previous structural repairs</td>
                             <td><span class="badge badge-yellow">Medium</span></td>
                             <td>$5K–$30K</td>
-                            <td>Seller disclosed previous other structural repairs <em>(SDN &sect;3)</em>. On a 1948 home with Austin's expansive clay soil, this could indicate ongoing foundation issues. Get a structural engineer's report during the option period — not just a home inspector.</td>
+                            <td><span class="cite">Seller disclosed previous other structural repairs<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller checked &ldquo;Yes&rdquo; to &ldquo;previous other structural repairs.&rdquo; No details on scope, date, or contractor.</span></span> <em>(SDN &sect;3)</em>. On a 1948 home with Austin's expansive clay soil, this could indicate ongoing foundation issues. Get a structural engineer's report during the option period — not just a home inspector.</td>
                         </tr>
                         <tr>
                             <td class="bold">Termite / WDI risk (age-based)</td>
                             <td><span class="badge badge-yellow">Medium</span></td>
                             <td>$2K–$15K</td>
-                            <td>Seller marked &ldquo;No&rdquo; on all four termite/WDI fields in SDN &sect;3, meaning they are not aware of damage. However, this is a 1948 pier &amp; beam home &mdash; subterranean termites are common in Austin and damage can be hidden. Get a WDI inspection to verify. Treatment may be needed, and structural wood damage repair can be costly on older homes.</td>
+                            <td><span class="cite">Seller marked &ldquo;No&rdquo; on all four termite/WDI fields in SDN &sect;3<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Seller&rsquo;s Disclosure (TXR-1406) &sect;3</span>Seller answered &ldquo;No&rdquo; to: current infestation, previous infestation, previous treatment, and previous damage. Discloses only seller&rsquo;s actual knowledge.</span></span>, meaning they are not aware of damage. However, this is a <span class="cite">1948 pier &amp; beam home &mdash; subterranean termites are common in Austin<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">Texas A&amp;M AgriLife Extension</span>Central Texas is in USDA Termite Infestation Probability Zone &ldquo;Very Heavy.&rdquo; Pier-and-beam construction has elevated risk due to wood-to-soil proximity.</span></span> and damage can be hidden. Get a WDI inspection to verify. Treatment may be needed, and structural wood damage repair can be costly on older homes.</td>
                         </tr>
                         <tr>
                             <td class="bold">No flood insurance currently</td>
@@ -4483,7 +4588,7 @@
             <div class="card">
                 <h3>HOA / Property Owners Association Risk</h3>
                 <div class="callout callout-warning">
-                    <strong>Mandatory POA membership required.</strong> Per contract Paragraph 7D(3), the property is subject to mandatory membership in a property owners association.
+                    <strong>Mandatory POA membership required.</strong> <span class="cite">Per contract Paragraph 7D(3)<span class="cite-ref">&dagger;</span><span class="cite-tip"><span class="cite-doc">TREC 1-4 Residential Contract &para;7D(3)</span>Contract Paragraph 7D(3) states the property is subject to mandatory membership in a property owners association with required assessments.</span></span>, the property is subject to mandatory membership in a property owners association.
                 </div>
                 <table class="data-table">
                     <tbody>
@@ -5170,7 +5275,7 @@
                             <tr>
                                 <td><strong>Inspector</strong></td>
                                 <td>GreenWorks Inspections &amp; Engineering</td>
-                                <td style="font-size:0.85rem;">Scheduled Apr 15, 12:30 PM</td>
+                                <td style="font-size:0.85rem;">Scheduled Apr 15, 2:30 PM</td>
                             </tr>
                             <tr>
                                 <td><strong>Appraiser</strong></td>
@@ -5339,7 +5444,7 @@
                         </div>
                         <div class="scorecard-content">
                             <div class="sc-title">Scheduled inspections promptly</div>
-                            <div class="sc-expected">Inspections should be scheduled within 24 hours of contract execution for a 7-day option period. GreenWorks is scheduled for Apr 15 at 12:30 PM (Day 2) &mdash; this is prompt.</div>
+                            <div class="sc-expected">Inspections should be scheduled within 24 hours of contract execution for a 7-day option period. GreenWorks is scheduled for Apr 15 at 2:30 PM (Day 2) &mdash; this is prompt.</div>
                             <div class="sc-why">Why: With only 7 days, every hour counts. Day 2 inspection leaves ~5 days for results review and negotiation.</div>
                         </div>
                     </div>
@@ -5544,9 +5649,9 @@
                         </div>
                         <div class="scorecard-content">
                             <div class="sc-title">Available for inspection and key appointments</div>
-                            <div class="sc-expected">Agent should attend the inspection (Apr 15, 12:30 PM) in person. This allows them to ask the inspector questions, understand issues firsthand, and begin formulating the repair negotiation strategy on-site.</div>
+                            <div class="sc-expected">Agent should attend the inspection (Apr 15, 2:30 PM) in person. This allows them to ask the inspector questions, understand issues firsthand, and begin formulating the repair negotiation strategy on-site.</div>
                             <div class="sc-why">Why: An agent who attends the inspection can better represent your interests in repair negotiations because they&rsquo;ve seen the issues firsthand.</div>
-                            <div class="sc-ask"><strong>Confirm:</strong> Will Alli be at the GreenWorks inspection on April 15 at 12:30 PM?</div>
+                            <div class="sc-ask"><strong>Confirm:</strong> Will Alli be at the GreenWorks inspection on April 15 at 2:30 PM?</div>
                         </div>
                     </div>
                     <div class="scorecard-item">
@@ -5716,7 +5821,7 @@
                 <h3 class="sh-expand" onclick="this.classList.toggle('open')"><span class="sh-chevron">&#9654;</span> Inspector: GreenWorks Inspections &amp; Engineering</h3>
                 <div class="sh-expand-body">
                     <div class="callout callout-info" style="margin-bottom:0.75rem;">
-                        Inspection is scheduled for <strong>April 15 at 12:30 PM</strong>. Evaluate these items after receiving the report (expected by April 16).
+                        Inspection is scheduled for <strong>April 15 at 2:30 PM</strong>. Evaluate these items after receiving the report (agreement allows up to 48 hours &mdash; by April 17).
                     </div>
                     <div class="scorecard-item">
                         <div class="scorecard-status">
@@ -5724,7 +5829,7 @@
                             <br><span class="sc-badge sc-badge-unknown">Unknown</span>
                         </div>
                         <div class="scorecard-content">
-                            <div class="sc-title">Comprehensive report delivered within 24 hours</div>
+                            <div class="sc-title">Comprehensive report delivered within 48 hours</div>
                             <div class="sc-expected">Digital report with photos, detailed findings by system (roof, foundation, plumbing, electrical, HVAC, structure), severity ratings, and cost estimates where applicable.</div>
                         </div>
                     </div>
