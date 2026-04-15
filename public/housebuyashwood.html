@@ -836,6 +836,7 @@
             <button class="nav-tab" data-section="financial">Financial Analysis</button>
             <button class="nav-tab" data-section="market">Market Comps</button>
             <button class="nav-tab" data-section="structural">Inspection Details</button>
+            <button class="nav-tab" data-section="inspchecklist">InspChecklist</button>
             <button class="nav-tab" data-section="records">Records &amp; Permits</button>
             <button class="nav-tab" data-section="documents">Your Documents</button>
             <button class="nav-tab" data-section="offer">Offer Contract</button>
@@ -3345,6 +3346,298 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- ==================== INSPECTION CHECKLIST (QUICK REF) ==================== -->
+        <div class="section" id="sec-inspchecklist">
+            <h2 class="section-title">Inspection Checklist &mdash; Quick Reference</h2>
+
+            <div class="callout callout-danger">
+                <strong>Today &mdash; Apr 15, 2026 at 12:30 PM.</strong> Print or bookmark this page. Walk through each item WITH the inspector. Option period expires Apr 20 at 5 PM &mdash; every finding today drives your go/no-go decision.
+            </div>
+
+            <!-- DEAL-BREAKER TIER -->
+            <div class="card">
+                <h3 style="color:var(--fl-danger);">Deal-Breaker Items &mdash; Must Know Before Apr 20</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:1rem;">Any single item here could justify walking away or a $20K+ price reduction. Get answers TODAY.</p>
+
+                <ul class="checklist" id="checklist-insp-dealbreaker">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Foundation Elevation Map &mdash; &gt;1&Prime; differential?</div>
+                            <div class="check-detail">Seller disclosed previous structural repairs. Austin expansive clay + 78 years = high risk. If &gt;1&Prime; differential: call a structural engineer (PE) TONIGHT. Active movement = potential deal-breaker ($15K&ndash;$30K+). <strong>Ask:</strong> &ldquo;Is this active movement or historical settling?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Sewer Camera Scope &mdash; Cast iron condition?</div>
+                            <div class="check-detail">78-year cast iron drains at/past end of life. <strong>Request full video copy</strong>, not just summary. Look for: cracking, root intrusion, bellying, offsets, corrosion. Under-slab failure = $25K&ndash;$40K. <strong>Ask:</strong> &ldquo;What percentage of drain lines are original cast iron? Any sections need immediate replacement?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Galvanized Supply Pipes &mdash; What % original?</div>
+                            <div class="check-detail">1948 home = almost certainly galvanized steel supply lines. Corrode from inside over 50&ndash;70 yrs. <strong>Test:</strong> Run multiple faucets simultaneously &mdash; pressure drop = corroded pipes. Full PEX repipe = $8K&ndash;$15K. <strong>Ask:</strong> &ldquo;What pipe material do you see at the water heater and under each sink?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Electrical Panel &mdash; FPE or Zinsco? Wiring type?</div>
+                            <div class="check-detail"><strong>Federal Pacific or Zinsco panels = known fire hazard, replace immediately ($2K&ndash;$4K).</strong> Check wiring type at panel AND in attic: cloth-insulated (fire risk), knob-and-tube (full rewire needed), or aluminum. Affects insurability. <strong>Ask:</strong> &ldquo;What&rsquo;s the panel brand, amperage, and wiring type?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Termite / WDI &mdash; Any structural wood damage?</div>
+                            <div class="check-detail">Seller marked &ldquo;No&rdquo; on all 4 termite fields, but 1948 pier &amp; beam in Austin = high risk. GreenWorks 90-day guarantee covers treatment only, NOT structural repair ($2K&ndash;$15K). <strong>Ask:</strong> &ldquo;Is there evidence of past or current termite activity? Any structural wood damage?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Thermal Imaging &mdash; Active moisture intrusion?</div>
+                            <div class="check-detail">Flood history (1994 reservoir breach) + 32-year-old french drains = moisture risk. Watch the IR scan for cold spots, moisture signatures in walls/ceilings. If moisture found: order mold testing immediately ($300&ndash;$600). <strong>Ask:</strong> &ldquo;Are you seeing any moisture signatures behind walls or in the crawl space?&rdquo;</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- HIGH PRIORITY -->
+            <div class="card">
+                <h3 style="color:var(--fl-warning);">High Priority &mdash; Significant Cost or Safety Impact</h3>
+
+                <ul class="checklist" id="checklist-insp-high">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Exterior Cracks &mdash; Width &amp; pattern?</div>
+                            <div class="check-detail">Diagonal cracks &gt;1/4&Prime;, stair-step cracks in brick/mortar, corner separations = structural concern. Hairline = cosmetic. <strong>Photograph and measure</strong> crack widths for reference.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Lead Paint &mdash; Plan for XRF test?</div>
+                            <div class="check-detail">1948 = near-100% lead paint. You waived the addendum but can still test during option period. If kids will live here or ANY renovation planned: order XRF gun testing ($300&ndash;$500, same-day results). Intact paint is safe; renovation triggers EPA RRP rule (20&ndash;50% contractor cost premium).</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Grading &amp; Drainage &mdash; Slopes away from foundation?</div>
+                            <div class="check-detail">Ground must slope AWAY from house. Flood history + no current flood insurance + 32-yr french drains likely non-functional. <strong>Ask:</strong> &ldquo;Is the grading adequate? Are the french drains functional?&rdquo; Budget $3K&ndash;$8K for drain replacement + $1K&ndash;$3K/yr flood insurance.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Roof 2024 Replacement &mdash; Tear-off or overlay?</div>
+                            <div class="check-detail">Seller disclosed &ldquo;New roof 2024 &mdash; hail damage.&rdquo; Overlay on old shingles = reduced lifespan. <strong>Ask:</strong> &ldquo;Is this a full tear-off or overlay? Do you see the warranty documentation? Was it properly permitted?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">HVAC System &mdash; Age &amp; remaining life?</div>
+                            <div class="check-detail">AC units last 12&ndash;18 years in Austin heat. Check manufacture date on nameplate. If &gt;15 yrs: budget replacement ($8K&ndash;$18K). Test both heating and cooling &mdash; temperature differential should be 15&ndash;20&deg;F. <strong>Ask:</strong> &ldquo;How old is this system and what&rsquo;s its estimated remaining life?&rdquo;</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Tenant Unit &mdash; Full access granted?</div>
+                            <div class="check-detail">Inspector MUST access all tenant-occupied areas. Any area not inspected = unknown risk. Check: condition, damage, separate meters, fire separation, permitted conversion, egress. <strong>If access denied: red flag.</strong></div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Water Heater &mdash; Age &amp; condition?</div>
+                            <div class="check-detail">Check age label, signs of rust/corrosion, T&amp;P valve, drip pan. If &gt;10 years: budget $1.5K&ndash;$4K replacement. Leaking = urgent.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- MEDIUM PRIORITY -->
+            <div class="card">
+                <h3>Medium Priority &mdash; Budget Items &amp; Maintenance</h3>
+
+                <ul class="checklist" id="checklist-insp-medium">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Interior Signs of Movement</div>
+                            <div class="check-detail">Sticking doors/windows, sloping floors, wall-ceiling gaps, cracked drywall, out-of-plumb frames. Some settling normal for 78 yrs &mdash; pattern of multiple symptoms = structural concern.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Crawl Space Condition (if pier &amp; beam)</div>
+                            <div class="check-detail">Moisture, standing water, wood rot, pier condition, beam deflection, pest evidence, ventilation. Moisture barrier may be needed. Rotted beams = $2K&ndash;$10K.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Attic &mdash; Ventilation, insulation, leaks</div>
+                            <div class="check-detail">Check ventilation (poor = premature roof failure), insulation type/depth, leak stains, wiring condition, pest evidence, rafter integrity. Thermal imaging reveals gaps.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Ductwork &mdash; Leaks &amp; insulation</div>
+                            <div class="check-detail">Thermal imaging reveals duct leaks. Older homes = poorly sealed, uninsulated ducts. Sealing + insulation is high-ROI ($2K&ndash;$4K), saves 15&ndash;25% on energy.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Windows &mdash; Single or double pane?</div>
+                            <div class="check-detail">Original 1948 single-pane = poor energy efficiency. Check seals, operation, condensation, wood frame rot. Replacement $5K&ndash;$15K but not urgent. May qualify for energy credits.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Electrical Capacity for Future Loads</div>
+                            <div class="check-detail">Can the system handle HVAC + EV charger + modern kitchen + potential duplex conversion? If limited: panel upgrade + new circuits needed ($1K&ndash;$5K).</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Siding &amp; Exterior Walls</div>
+                            <div class="check-detail">Material type, condition, paint condition, rot, gaps. Wood siding may contain lead paint. Thermal imaging reveals insulation voids. $3K&ndash;$15K if major work needed.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Trees Near Foundation</div>
+                            <div class="check-detail">Large trees within 20 ft cause root damage to pipes + foundation movement via soil moisture changes. May need removal or root barriers ($1K&ndash;$5K).</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Grounding &amp; Outlets</div>
+                            <div class="check-detail">Ungrounded 2-prong outlets, missing GFCIs in kitchen/bath/exterior, AFCI in bedrooms. GFCIs in wet areas = safety-critical ($50&ndash;$100 each).</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- LOW PRIORITY -->
+            <div class="card">
+                <h3 style="color:var(--fl-muted);">Lower Priority &mdash; Note but Don&rsquo;t Stress</h3>
+
+                <ul class="checklist" id="checklist-insp-low">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Sprinkler / Irrigation System</div>
+                            <div class="check-detail">Included in GreenWorks. Test all zones, heads, controller, backflow preventer. Non-functional = foundation risk from dry soil in Austin clay.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Flashing &amp; Roof Penetrations</div>
+                            <div class="check-detail">Chimney flashing, vent boots, gutter connections. Most common leak points even on new roofs. Repairs are inexpensive ($200&ndash;$1K).</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Under-Sink Leaks</div>
+                            <div class="check-detail">Check all cabinets for moisture, mold, warped wood. Active leaks = repair needed. Water damage may indicate longer-term problem.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Exterior Doors &amp; Weatherstripping</div>
+                            <div class="check-detail">Locks, deadbolts, thresholds, frame condition. Check all entry points including tenant unit. Low cost to address.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Driveway, Walkways, Fencing</div>
+                            <div class="check-detail">Cracking, heaving, trip hazards, fence condition. Cosmetic. Jackie&rsquo;s carpenter skills make these low-cost fixes.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('done'); saveChecklistState();"></div>
+                        <div class="check-label">
+                            <div class="check-title">Air Quality Readings</div>
+                            <div class="check-detail">Included in GreenWorks. VOCs, particulates, CO levels. If elevated: investigate source (mold, off-gassing, ventilation).</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- QUESTIONS TO ASK -->
+            <div class="card">
+                <h3>Top 12 Questions &mdash; Ask During the Walk-Through</h3>
+                <p style="font-size:0.85rem; color:var(--fl-muted); margin-bottom:0.75rem;">Don&rsquo;t wait for the report. The in-person conversation is more valuable.</p>
+                <ol style="font-size:0.9rem; padding-left:1.25rem; line-height:2.2;">
+                    <li><strong>&ldquo;What are the top 3 most expensive items you&rsquo;d fix first?&rdquo;</strong></li>
+                    <li>&ldquo;Is the foundation showing <strong>active movement</strong> or just historical settling?&rdquo;</li>
+                    <li>&ldquo;What percentage of the plumbing is <strong>original cast iron / galvanized</strong>?&rdquo;</li>
+                    <li>&ldquo;What&rsquo;s the <strong>panel brand, amperage, and wiring type</strong>?&rdquo;</li>
+                    <li>&ldquo;Is the 2024 roof a <strong>full tear-off or overlay</strong>?&rdquo;</li>
+                    <li>&ldquo;Any signs of <strong>active water intrusion or moisture</strong> on thermal imaging?&rdquo;</li>
+                    <li>&ldquo;What&rsquo;s the <strong>HVAC age</strong> and estimated remaining life?&rdquo;</li>
+                    <li>&ldquo;Any <strong>safety hazards</strong> needing immediate attention?&rdquo;</li>
+                    <li>&ldquo;Is there evidence of <strong>past or current termite activity</strong>?&rdquo;</li>
+                    <li>&ldquo;What&rsquo;s a <strong>realistic repair budget</strong> for this home in the first 1&ndash;3 years?&rdquo;</li>
+                    <li>&ldquo;Is there anything about this property that <strong>concerns you more than usual</strong>?&rdquo;</li>
+                    <li>&ldquo;Have you inspected other homes <strong>in Cherrywood</strong>? Any patterns?&rdquo;</li>
+                </ol>
+            </div>
+
+            <!-- POST-INSPECTION ACTIONS -->
+            <div class="card">
+                <h3>Immediate Post-Inspection Actions</h3>
+                <div class="grid-3">
+                    <div style="background:#fef2f2; border-radius:10px; padding:1rem;">
+                        <h4 style="color:var(--fl-danger); margin-top:0;">If Deal-Breakers Found</h4>
+                        <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
+                            <li>Call Alli immediately</li>
+                            <li>Get specialist bids before Apr 20</li>
+                            <li>Decide: negotiate $20K+ reduction or terminate ($500 loss)</li>
+                            <li><strong>Deadline: Apr 20, 5 PM</strong></li>
+                        </ul>
+                    </div>
+                    <div style="background:#fefce8; border-radius:10px; padding:1rem;">
+                        <h4 style="color:var(--fl-warning); margin-top:0;">If Moderate Issues Found</h4>
+                        <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
+                            <li>Compile repair cost estimates</li>
+                            <li>Request seller credit (50&ndash;75% of costs)</li>
+                            <li>Alli presents GreenWorks estimates</li>
+                            <li>Proceed if seller agrees</li>
+                        </ul>
+                    </div>
+                    <div style="background:#f0fdf4; border-radius:10px; padding:1rem;">
+                        <h4 style="color:var(--fl-success); margin-top:0;">If Clean Report</h4>
+                        <ul style="font-size:0.8rem; padding-left:1rem; color:var(--fl-muted); line-height:1.7;">
+                            <li>Proceed with confidence</li>
+                            <li>Budget &lt;$15K for normal 78-yr maintenance</li>
+                            <li>Order lead paint XRF test anyway</li>
+                            <li>Verify flood insurance options</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
