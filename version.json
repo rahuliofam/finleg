@@ -1,12 +1,12 @@
 {
-  "version": "v260414.11 6:51p",
-  "release": 220,
-  "sha": "3b5097e",
-  "fullSha": "3b5097e7ea09b198dae6f747ef00aa4acc3bf053",
-  "actor": "jackie61899280",
+  "version": "v260415.01 2:42p",
+  "release": 221,
+  "sha": "2ea9432",
+  "fullSha": "2ea9432c2e641c4b357b2c9eac04717eab79cc63",
+  "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 23:51:01+00",
-  "commits": [{"sha":"3b5097e","message":"feat: add CRN Law attorney to checklist timeline for Apr 15","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-15 19:42:55+00",
+  "commits": [{"sha":"2ea9432","message":"feat: add inspection agreement to documents + fact-check inspection details","author":"Haydn"}]
 }
