@@ -1,12 +1,12 @@
 {
-  "version": "v260415.02 2:45p",
-  "release": 222,
-  "sha": "7620cd3",
-  "fullSha": "7620cd39b84c378a0f579e415a68e56473e1b15e",
-  "actor": "rsonnad",
+  "version": "v260415.03 2:49p",
+  "release": 223,
+  "sha": "e8deec9",
+  "fullSha": "e8deec933f842ccd1ca889ed944749540e9a8c68",
+  "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-15 19:45:28+00",
-  "commits": [{"sha":"04fa5ce","message":"feat: add InspChecklist tab with priority-ordered inspection checklist","author":"Rahul"},{"sha":"7620cd3","message":"feat: shared finleg-header.js with logo + version on all pages","author":"Rahul"}]
+  "pushedAt": "2026-04-15 19:49:00+00",
+  "commits": [{"sha":"e8deec9","message":"feat: update Ashwood page with duplex+ADU rental income model and revised financials","author":"Jacqueline Giroux"}]
 }
