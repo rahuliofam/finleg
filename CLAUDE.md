@@ -1,4 +1,4 @@
-# [Your Project Name] — Project Directives
+# Finleg — Project Directives
 
 > **On-demand docs — load when the task matches:**
 > - `docs/CREDENTIALS.md` — **load for:** SQL queries, deploying functions, SSH, API calls
@@ -9,8 +9,7 @@
 > - `docs/INTEGRATIONS.md` — **load for:** external APIs, vendor setup, pricing
 > - `docs/CHANGELOG.md` — **load for:** understanding recent changes, migration context
 
-> **IMPORTANT: First-time setup!**
-> Run `/setup-alpacapps-infra` to set up the full infrastructure interactively.
+> **Note:** Finleg is a customized fork of the `alpacapps-infra` template. The `/setup-alpacapps-infra` skill is for fresh clones and does not need to be re-run here. See `CUSTOMIZATION.md` for what was customized.
 
 ## Mandatory Behaviors
 
@@ -25,7 +24,7 @@
 - No personal info in consumer/public views
 - `showToast()` not `alert()` in admin
 - `openLightbox(url)` for images
-- Tailwind: use design tokens from `@theme` block (see `docs/PATTERNS.md`). Run `npm run css:build` after new classes.
+- Tailwind v4: use design tokens from the `@theme` block in `src/app/globals.css` (see `docs/PATTERNS.md`). Next.js rebuilds CSS via PostCSS automatically — no manual `css:build` step.
 
 ## Batch Processing
 
@@ -57,6 +56,6 @@ SUPABASE_ACCESS_TOKEN=$(bw get notes "Supabase — AlpacApps Project" | grep "Ma
 
 ## Quick Refs
 
-- **Tech:** Vanilla HTML/JS + Tailwind v4 | Supabase | GitHub Pages
-- **Live:** https://USERNAME.github.io/REPO/
-- **Architecture:** Browser → GitHub Pages → Supabase (no server-side code)
+- **Tech:** Next.js 16 (App Router, static export) + React 19 + TypeScript + Tailwind v4 | Supabase (Postgres + Auth + Edge Functions) | Cloudflare Workers + R2 + D1 | GitHub Pages | Hostinger VPS (batch jobs)
+- **Live:** https://finleg.net (also https://rahuliofam.github.io/finleg/)
+- **Architecture:** Browser → GitHub Pages (static export of Next.js) → Supabase for DB/Auth; Cloudflare Workers for OAuth callbacks, R2 file proxy, and Claude session archive; Hostinger VPS runs nightly batch/AI scripts.
