@@ -1,12 +1,12 @@
 {
-  "version": "v260413.06 11:43p",
-  "release": 209,
-  "sha": "dd4bb46",
-  "fullSha": "dd4bb4683917369a865c1b9fa75e5b86771c890d",
+  "version": "v260416.01 2:59p",
+  "release": 227,
+  "sha": "cc594a4",
+  "fullSha": "cc594a4f43ee6021846bd0212929803aaa55824c",
   "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-14 04:43:28+00",
-  "commits": [{"sha":"dd4bb46","message":"feat: add Offer Risk Analysis tab to Ashwood house page","author":"Rahul"}]
+  "pushedAt": "2026-04-16 19:59:34+00",
+  "commits": [{"sha":"b9c60ce","message":"Correct Hannah/Jackie Solo 401(k) math using Schedule C net profit","author":"Rahul"},{"sha":"cc594a4","message":"Merge branch 'clever-gagarin'","author":"Rahul"}]
 }

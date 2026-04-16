@@ -101,12 +101,7 @@
 <body>
 <div id="auth-gate"><p>Checking authorization...</p></div>
 <div id="main-content">
-<div class="finleg-bar">
-    <img src="/finleg-logo-transparent.png" alt="Finleg">
-    <img src="/finleg-wordmark-white.png" alt="Finleg" style="height:22px;">
-    <span class="ver" id="version-label">loading...</span>
-</div>
-<script>fetch('/version.json').then(r=>r.json()).then(d=>{document.getElementById('version-label').textContent=d.version||''}).catch(()=>{});</script>
+<script src="/finleg-header.js"></script>
 <div class="container">
 
     <div class="header">
