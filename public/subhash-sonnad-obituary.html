@@ -99,6 +99,8 @@
     </style>
 </head>
 <body>
+    <div id="version-label" style="position:fixed;top:6px;right:10px;font-size:9px;font-family:monospace;color:rgba(255,255,255,0.35);z-index:100;"></div>
+    <script>fetch('/version.json').then(r=>r.json()).then(d=>{document.getElementById('version-label').textContent=d.version||''}).catch(()=>{});</script>
     <div class="header">
         <h1>Subhash Ramanna Sonnad</h1>
         <div class="dates">November 13, 1932 &mdash; July 12, 2021</div>
