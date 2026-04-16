@@ -336,8 +336,38 @@
                         <tr><td>Principal & Interest (6.5%, 30yr)</td><td class="right bold" id="pi-payment">—</td></tr>
                         <tr><td>Property Tax</td><td class="right bold">$730</td></tr>
                         <tr><td>Home Insurance</td><td class="right bold">$200</td></tr>
-                        <tr style="background: var(--fl-green-light);"><td class="bold">Total Monthly Cost</td><td class="right bold" id="total-monthly" style="color: var(--fl-green-dark); font-size: 1.1rem;">—</td></tr>
+                        <tr style="background: var(--fl-green-light);"><td class="bold">Total Monthly PITI</td><td class="right bold" id="total-monthly" style="color: var(--fl-green-dark); font-size: 1.1rem;">—</td></tr>
                     </table>
+                    <p style="font-size:0.75rem;color:var(--fl-muted);margin-top:0.5rem;">
+                        P&I calculated using standard mortgage formula: M = P &times; [r(1+r)<sup>n</sup>] / [(1+r)<sup>n</sup> &minus; 1], where P = loan amount, r = monthly rate, n = 360 months.
+                    </p>
+
+                    <div class="callout callout-warning" style="margin-top:1rem;">
+                        <strong>Property Tax Note:</strong> The $730/mo figure is your current estimate, but public records show 2025 annual taxes of <strong>$11,787 (~$982/mo)</strong>. If the city reassesses after purchase at the $599,900 price, your monthly tax could increase to this higher level. The sliders on the Cash Flow tab let you model different scenarios.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Additional Monthly Costs to Consider</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Expense</th><th class="right">Est. Monthly</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Utilities (bundled)</td><td class="right">$330–$525</td><td>Water, sewer, trash, drainage, transport fees. Electricity alone averages ~$175/mo in Austin.</td></tr>
+                            <tr><td>Maintenance & Repairs</td><td class="right">~$500</td><td>1% of home value annually = $5,999/yr. Covers HVAC servicing, roof patches, plumbing, etc.</td></tr>
+                            <tr><td>PMI</td><td class="right bold" style="color:var(--fl-success);">$0</td><td>Not required — 20% down payment eliminates PMI</td></tr>
+                            <tr><td>HOA</td><td class="right bold" style="color:var(--fl-success);">$0</td><td>No mandatory HOA for this property</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="grid-2" style="margin-top:1rem;">
+                        <div class="calc-result">
+                            <div style="font-size:0.8rem;color:var(--fl-muted);">PITI Only</div>
+                            <div class="big-num" id="piti-only" style="font-size:1.5rem;">—</div>
+                        </div>
+                        <div class="calc-result" style="background:#fff7ed;border:2px solid #f59e0b;">
+                            <div style="font-size:0.8rem;color:var(--fl-warning);">Realistic Total (PITI + Utilities + Maintenance)</div>
+                            <div class="big-num" id="realistic-total" style="font-size:1.5rem;color:var(--fl-warning);">—</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -1364,6 +1394,10 @@
         // Tab 1 — Purchase
         document.getElementById('pi-payment').textContent = fmt(pi);
         document.getElementById('total-monthly').textContent = fmt(totalMonthly);
+        document.getElementById('piti-only').textContent = fmt(totalMonthly);
+        const utilitiesMid = 428; // midpoint of $330-$525
+        const maintenance = 500; // 1% of home value / 12
+        document.getElementById('realistic-total').textContent = fmt(totalMonthly + utilitiesMid + maintenance) + '/mo';
         drawPie(pi, TAX, INSURANCE);
         buildAmortTable(annualRate);
 
