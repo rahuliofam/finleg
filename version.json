@@ -1,12 +1,12 @@
 {
-  "version": "v260415.06 11:23p",
-  "release": 226,
-  "sha": "43f6662",
-  "fullSha": "43f6662ccea542126023957a514f16788c396252",
-  "actor": "jackie61899280",
+  "version": "v260416.01 2:59p",
+  "release": 227,
+  "sha": "cc594a4",
+  "fullSha": "cc594a4f43ee6021846bd0212929803aaa55824c",
+  "actor": "rsonnad",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-16 04:23:34+00",
-  "commits": [{"sha":"43f6662","message":"feat: add detailed monthly costs, property tax warning, and permits tab","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-16 19:59:34+00",
+  "commits": [{"sha":"b9c60ce","message":"Correct Hannah/Jackie Solo 401(k) math using Schedule C net profit","author":"Rahul"},{"sha":"cc594a4","message":"Merge branch 'clever-gagarin'","author":"Rahul"}]
 }
