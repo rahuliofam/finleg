@@ -1,12 +1,12 @@
 {
-  "version": "v260416.02 3:16p",
-  "release": 228,
-  "sha": "ac5821e",
-  "fullSha": "ac5821e3913464a3e014d3d35495551aa06ef6b7",
-  "actor": "rsonnad",
+  "version": "v260416.03 5:24p",
+  "release": 229,
+  "sha": "9177b2f",
+  "fullSha": "9177b2f111dfb56a54676447c200c697ffb87926",
+  "actor": "hrsonnad",
   "source": "github-main-push",
   "model": "ci",
-  "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-16 20:16:17+00",
-  "commits": [{"sha":"a976861","message":"Add version number to top of remaining pages","author":"Rahul"},{"sha":"d88a9d7","message":"Merge remote-tracking branch 'origin/main' into clever-gagarin","author":"Rahul"},{"sha":"ac5821e","message":"Enforce standard FinLeg header on all public HTML pages","author":"Rahul"}]
+  "machine": "runnervmeorf1",
+  "pushedAt": "2026-04-16 22:24:03+00",
+  "commits": [{"sha":"9177b2f","message":"feat: populate Records & Permits with real public record data for 1402 Ashwood","author":"Haydn"}]
 }
