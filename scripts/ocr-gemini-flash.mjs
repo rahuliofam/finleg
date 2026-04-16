@@ -4,49 +4,61 @@
  * Runs locally — no Hostinger needed. ~5s/doc, ~$0.0004/page.
  *
  * Usage:
- *   node scripts/ocr-gemini-flash.mjs [--dry-run] [--limit=N] [--bucket=legal-docs]
+ *   node scripts/ocr-gemini-flash.mjs [--dry-run] [--limit N] [--bucket legal-docs] [--verbose]
  *
  * Requires: GEMINI_API_KEY env var or Bitwarden entry "Gemini API Keys"
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { readFileSync, unlinkSync, mkdirSync } from 'fs';
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { join } from 'path';
-import { config } from 'dotenv';
 
-config();
+import {
+  loadEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  retry,
+  run,
+  ValidationError,
+} from './lib/index.mjs';
 
-// ── Config ──
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!SUPABASE_SERVICE_KEY) { console.error('Missing SUPABASE_SERVICE_ROLE_KEY'); process.exit(1); }
+const env = loadEnv({
+  required: ['SUPABASE_SERVICE_ROLE_KEY', 'GEMINI_API_KEY', 'R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY'],
+});
 
-const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
-const R2_ACCESS_KEY = process.env.R2_ACCESS_KEY_ID;
-const R2_SECRET_KEY = process.env.R2_SECRET_ACCESS_KEY;
-if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY || !R2_SECRET_KEY) { console.error('Missing R2 credentials'); process.exit(1); }
+const supabase = createSupabaseClient({ env });
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) { console.error('Missing GEMINI_API_KEY in .env'); process.exit(1); }
+const args = parseArgs(process.argv.slice(2), {
+  numbers: { limit: 9999 },
+  strings: ['bucket'],
+  help: `OCR scanned PDFs via Gemini 2.5 Flash
+
+Usage: node scripts/ocr-gemini-flash.mjs [options]
+
+Options:
+  --dry-run        download only, don't OCR or save
+  --limit N        max docs to process (default all)
+  --bucket NAME    filter by bucket (e.g. legal-docs)
+  --verbose        show debug logs
+  --help           this text
+`,
+});
+
+const log = createLogger({ verbose: args.verbose });
 
 const s3 = new S3Client({
   region: 'auto',
-  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: R2_ACCESS_KEY, secretAccessKey: R2_SECRET_KEY },
+  endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY },
 });
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-const DRY_RUN = process.argv.includes('--dry-run');
-const LIMIT = parseInt(process.argv.find(a => a.startsWith('--limit='))?.split('=')[1] || '0') || 9999;
-const BUCKET_FILTER = process.argv.find(a => a.startsWith('--bucket='))?.split('=')[1] || null;
 const PARALLEL = 1; // sequential to avoid rate limits on free tier
 const TMP_DIR = '/tmp/ocr-gemini';
 const GEMINI_MODEL = 'gemini-2.5-flash';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${env.GEMINI_API_KEY}`;
 
 const PROMPT = 'Extract ALL text from this scanned PDF document. Return ONLY the raw text content, preserving paragraph structure. Do not add any commentary, headers, formatting notes, or markdown. Just the plain text as it appears in the document.';
 
@@ -60,9 +72,7 @@ async function downloadFromR2(bucket, r2Key) {
   return tmpPath;
 }
 
-async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-async function ocrWithGemini(pdfPath, retries = 3) {
+async function ocrWithGemini(pdfPath) {
   const pdfBase64 = readFileSync(pdfPath).toString('base64');
 
   const body = {
@@ -74,39 +84,42 @@ async function ocrWithGemini(pdfPath, retries = 3) {
     }],
   };
 
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    const resp = await fetch(GEMINI_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+  // retry() handles exponential backoff on 429/5xx and network errors.
+  return retry(
+    async () => {
+      const resp = await fetch(GEMINI_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-    if (resp.status === 429) {
-      const wait = Math.min(10000 * (attempt + 1), 30000); // 10s, 20s, 30s
-      if (attempt < retries) {
-        console.log(`    ⏳ rate limited, waiting ${wait / 1000}s (attempt ${attempt + 1}/${retries})...`);
-        await sleep(wait);
-        continue;
+      if (!resp.ok) {
+        const errText = await resp.text();
+        // Attach status so retry's defaultShouldRetry can decide.
+        const e = new Error(`Gemini API ${resp.status}: ${errText.slice(0, 200)}`);
+        e.status = resp.status;
+        throw e;
       }
+
+      const data = await resp.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) {
+        const reason = data.candidates?.[0]?.finishReason || 'unknown';
+        // No text returned — usually bad input, don't retry.
+        throw new ValidationError(`Gemini returned no text (reason: ${reason})`);
+      }
+      return text.trim();
+    },
+    {
+      maxAttempts: 4,
+      baseDelayMs: 10_000,       // 10s, 20s, 40s (matches previous hardcoded schedule)
+      maxDelayMs: 40_000,
+      jitter: 0,
+      onRetry: (err, attempt, waitMs) => {
+        log.warn(`    Gemini retry ${attempt} after ${Math.round(waitMs / 1000)}s (${err.message?.slice(0, 80)})`);
+      },
     }
-
-    if (!resp.ok) {
-      const errText = await resp.text();
-      throw new Error(`Gemini API ${resp.status}: ${errText.slice(0, 200)}`);
-    }
-
-    const data = await resp.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!text) {
-      const reason = data.candidates?.[0]?.finishReason || 'unknown';
-      throw new Error(`Gemini returned no text (reason: ${reason})`);
-    }
-
-    return text.trim();
-  }
-
-  throw new Error('Gemini rate limited after all retries');
+  );
 }
 
 async function processDocument(doc) {
@@ -117,8 +130,8 @@ async function processDocument(doc) {
   try {
     tmpPath = await downloadFromR2(bucket, r2_key);
 
-    if (DRY_RUN) {
-      console.log(`  [DRY] ${filename} (${Math.round(file_size / 1024)}KB)`);
+    if (args.dryRun) {
+      log.info(`  [DRY] ${filename} (${Math.round(file_size / 1024)}KB)`);
       return { id, success: true, chars: 0, dryRun: true };
     }
 
@@ -126,7 +139,7 @@ async function processDocument(doc) {
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
     if (!text || text.length < 10) {
-      console.log(`  ✗ ${filename}: no text extracted (${elapsed}s)`);
+      log.warn(`  ✗ ${filename}: no text extracted (${elapsed}s)`);
       return { id, error: 'empty result' };
     }
 
@@ -137,24 +150,26 @@ async function processDocument(doc) {
       .eq('id', id);
 
     if (error) {
-      console.error(`  ✗ ${filename}: DB error: ${error.message}`);
+      log.error(`  ✗ ${filename}: DB error: ${error.message}`);
       return { id, error: error.message };
     }
 
-    console.log(`  ✓ ${filename}: ${text.length} chars (${elapsed}s)`);
+    log.info(`  ✓ ${filename}: ${text.length} chars (${elapsed}s)`);
     return { id, success: true, chars: text.length, elapsed: parseFloat(elapsed) };
   } catch (e) {
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.error(`  ✗ ${filename}: ${e.message?.slice(0, 150)} (${elapsed}s)`);
+    log.error(`  ✗ ${filename}: ${e.message?.slice(0, 150)} (${elapsed}s)`);
     return { id, error: e.message?.slice(0, 80) };
   } finally {
     if (tmpPath) try { unlinkSync(tmpPath); } catch {}
   }
 }
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 async function main() {
-  console.log(`[START] OCR Scanned PDFs via Gemini 2.5 Flash`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Bucket: ${BUCKET_FILTER || 'all'} | Parallel: ${PARALLEL}\n`);
+  log.info(`[START] OCR Scanned PDFs via Gemini 2.5 Flash`);
+  log.info(`Mode: ${args.dryRun ? 'DRY-RUN' : 'LIVE'} | Limit: ${args.limit} | Bucket: ${args.bucket || 'all'} | Parallel: ${PARALLEL}\n`);
 
   let query = supabase
     .from('document_index')
@@ -162,16 +177,16 @@ async function main() {
     .eq('file_type', 'pdf')
     .is('extracted_text', null)
     .order('file_size', { ascending: true })
-    .limit(LIMIT);
+    .limit(args.limit);
 
-  if (BUCKET_FILTER) {
-    query = query.eq('bucket', BUCKET_FILTER);
+  if (args.bucket) {
+    query = query.eq('bucket', args.bucket);
   }
 
   const { data: docs, error } = await query;
-  if (error) { console.error(`Query error: ${error.message}`); process.exit(1); }
+  if (error) throw new ValidationError(`Query error: ${error.message}`);
 
-  console.log(`Found ${docs.length} scanned PDFs to OCR\n`);
+  log.info(`Found ${docs.length} scanned PDFs to OCR\n`);
 
   let success = 0, failed = 0, totalChars = 0, totalTime = 0;
 
@@ -196,16 +211,16 @@ async function main() {
     const avgTime = success > 0 ? (totalTime / success).toFixed(1) : '?';
     const remaining = docs.length - done;
     const eta = success > 0 ? Math.round((remaining * totalTime) / success / 60) : '?';
-    console.log(`  Progress: ${done}/${docs.length} | ✓${success} ✗${failed} | avg ${avgTime}s/doc | ETA ~${eta}min\n`);
+    log.info(`  Progress: ${done}/${docs.length} | ✓${success} ✗${failed} | avg ${avgTime}s/doc | ETA ~${eta}min\n`);
   }
 
-  console.log(`\n=== COMPLETE ===`);
-  console.log(`OCR'd:     ${success}`);
-  console.log(`Failed:    ${failed}`);
-  console.log(`Total:     ${docs.length}`);
-  console.log(`Chars:     ${totalChars.toLocaleString()}`);
-  console.log(`Avg time:  ${success > 0 ? (totalTime / success).toFixed(1) : '0'}s/doc`);
-  console.log(`Total time: ${(totalTime / 60).toFixed(1)}min`);
+  log.info(`\n=== COMPLETE ===`);
+  log.info(`OCR'd:     ${success}`);
+  log.info(`Failed:    ${failed}`);
+  log.info(`Total:     ${docs.length}`);
+  log.info(`Chars:     ${totalChars.toLocaleString()}`);
+  log.info(`Avg time:  ${success > 0 ? (totalTime / success).toFixed(1) : '0'}s/doc`);
+  log.info(`Total time: ${(totalTime / 60).toFixed(1)}min`);
 }
 
-main().catch(console.error);
+run(main);

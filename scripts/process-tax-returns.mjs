@@ -16,48 +16,61 @@
  *   node scripts/process-tax-returns.mjs --reprocess --entity "Rahul" --year 2023  # Re-extract
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { exec } from 'child_process';
 import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync, statSync } from 'fs';
 import { promisify } from 'util';
 import { basename, join } from 'path';
 import { createHmac, createHash } from 'crypto';
-import { config } from 'dotenv';
 
-config(); // Load .env
+import {
+  loadEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  run,
+} from './lib/index.mjs';
 
 const execAsync = promisify(exec);
 
 // ── Config ──────────────────────────────────────────────────────────────────
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const env = loadEnv({ required: ['SUPABASE_SERVICE_ROLE_KEY', 'GEMINI_API_KEY'] });
+const supabase = createSupabaseClient({ env });
+
+const GEMINI_API_KEY = env.GEMINI_API_KEY;
+const RESEND_API_KEY = env.RESEND_API_KEY;
 const FROM_ADDRESS = 'agent@finleg.net';
 const NOTIFY_TO = 'rahchak@gmail.com';
 const CLAUDE_MODEL = 'sonnet';
 
-if (!SUPABASE_SERVICE_KEY) { console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env'); process.exit(1); }
-if (!GEMINI_API_KEY) { console.error('Missing GEMINI_API_KEY in .env'); process.exit(1); }
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
 // ── CLI args ────────────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const DRY_RUN = args.includes('--dry-run');
-const GEMINI_ONLY = args.includes('--gemini-only');
-const INBOX_MODE = args.includes('--inbox');
-const LIMIT = parseInt(getArg('--limit') || '100');
-const DIR_PATH = getArg('--dir');
-const FILE_PATH = getArg('--file');
-const REPROCESS = args.includes('--reprocess');
-const FILTER_ENTITY = getArg('--entity');
-const FILTER_YEAR = getArg('--year');
+const cliArgs = parseArgs(process.argv.slice(2), {
+  booleans: ['gemini-only', 'inbox', 'reprocess'],
+  numbers: { limit: 100 },
+  strings: ['dir', 'file', 'entity', 'year'],
+  help: `Process Tax Returns — Hostinger batch script.
 
-function getArg(flag) {
-  const idx = args.indexOf(flag);
-  return idx >= 0 && idx + 1 < args.length ? args[idx + 1] : null;
-}
+Usage:
+  node scripts/process-tax-returns.mjs --inbox                     # Poll statement_inbox for pending tax returns
+  node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"       # Process a directory of local PDFs
+  node scripts/process-tax-returns.mjs --file "/path/to/file.pdf"  # Process single local file
+  node scripts/process-tax-returns.mjs --dry-run --inbox           # Extract but don't insert
+  node scripts/process-tax-returns.mjs --limit 5 --dir "/path"     # Process max 5 files
+  node scripts/process-tax-returns.mjs --gemini-only               # Skip Claude verification
+  node scripts/process-tax-returns.mjs --reprocess --entity "Rahul" --year 2023  # Re-extract
+`,
+});
+
+const DRY_RUN = cliArgs.dryRun;
+const GEMINI_ONLY = cliArgs.geminiOnly;
+const INBOX_MODE = cliArgs.inbox;
+const LIMIT = cliArgs.limit;
+const DIR_PATH = cliArgs.dir;
+const FILE_PATH = cliArgs.file;
+const REPROCESS = cliArgs.reprocess;
+const FILTER_ENTITY = cliArgs.entity;
+const FILTER_YEAR = cliArgs.year;
+
+const log = createLogger({ verbose: cliArgs.verbose });
 
 function shellEsc(s) {
   return "'" + s.replace(/'/g, "'\\''") + "'";
@@ -417,7 +430,7 @@ async function extractManifest(pdfPath) {
   const url = `${process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta'}/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
   const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
   if (!res.ok) {
-    console.warn(`    Manifest extraction failed (${res.status}) — proceeding without`);
+    log.warn(`    Manifest extraction failed (${res.status}) — proceeding without`);
     return null;
   }
   const result = await res.json();
@@ -522,13 +535,13 @@ function parseJsonResponse(text, source) {
   const jsonStart = trimmed.indexOf('{');
   const jsonEnd = trimmed.lastIndexOf('}');
   if (jsonStart < 0 || jsonEnd <= jsonStart) {
-    console.error(`  ✗ ${source}: No JSON found (first 200 chars): ${trimmed.slice(0, 200)}`);
+    log.error(`  ✗ ${source}: No JSON found (first 200 chars): ${trimmed.slice(0, 200)}`);
     return null;
   }
   try {
     return JSON.parse(trimmed.slice(jsonStart, jsonEnd + 1));
   } catch (e) {
-    console.error(`  ✗ ${source}: JSON parse error: ${e.message}`);
+    log.error(`  ✗ ${source}: JSON parse error: ${e.message}`);
     return null;
   }
 }
@@ -637,7 +650,7 @@ function hmacSign(payload) {
 // ── Send conflict resolution email ──────────────────────────────────────────
 async function sendConflictEmail(filename, conflicts, gemini, claude, returnId, r2Key) {
   if (!RESEND_API_KEY) {
-    console.log('    (No RESEND_API_KEY — skipping conflict email)');
+    log.info('    (No RESEND_API_KEY — skipping conflict email)');
     return;
   }
 
@@ -738,12 +751,12 @@ async function sendConflictEmail(filename, conflicts, gemini, claude, returnId, 
 
     if (!res.ok) {
       const text = await res.text();
-      console.error(`    ✗ Conflict email failed: ${res.status} ${text}`);
+      log.error(`    ✗ Conflict email failed: ${res.status} ${text}`);
     } else {
-      console.log(`    ✉ Conflict email sent to ${NOTIFY_TO} (token: ${token})`);
+      log.info(`    ✉ Conflict email sent to ${NOTIFY_TO} (token: ${token})`);
     }
   } catch (err) {
-    console.error(`    ✗ Email error: ${err.message}`);
+    log.error(`    ✗ Email error: ${err.message}`);
   }
 }
 
@@ -922,7 +935,7 @@ async function getOrCreateEntity(entityData) {
     .single();
 
   if (error) throw new Error(`Entity create error: ${error.message}`);
-  console.log(`    Created entity: ${name} (${created.id})`);
+  log.info(`    Created entity: ${name} (${created.id})`);
   return created.id;
 }
 
@@ -965,7 +978,7 @@ async function createTaxReturn(entityId, data, inboxId = null) {
     .maybeSingle();
 
   if (existing && !REPROCESS) {
-    console.log(`    Return already exists (${existing.id}) — use --reprocess to overwrite`);
+    log.info(`    Return already exists (${existing.id}) — use --reprocess to overwrite`);
     return null;
   }
 
@@ -1096,7 +1109,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_37_amount_owed: f.line_37_amount_owed,
       line_38_estimated_tax_penalty: f.line_38_estimated_tax_penalty,
     });
-    if (error) console.error(`  ✗ form_1040 insert: ${error.message}`);
+    if (error) log.error(`  ✗ form_1040 insert: ${error.message}`);
     else inserted.push('1040');
 
     // Dependents
@@ -1127,7 +1140,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_17_se_health_insurance: f.line_17_se_health_insurance,
       line_26_total_adjustments: f.line_26_total_adjustments,
     });
-    if (error) console.error(`  ✗ schedule_1 insert: ${error.message}`);
+    if (error) log.error(`  ✗ schedule_1 insert: ${error.message}`);
     else inserted.push('Schedule 1');
   }
 
@@ -1141,7 +1154,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_12_net_investment_income_tax: f.line_12_net_investment_income_tax,
       line_21_total_other_taxes: f.line_21_total_other_taxes,
     });
-    if (error) console.error(`  ✗ schedule_2 insert: ${error.message}`);
+    if (error) log.error(`  ✗ schedule_2 insert: ${error.message}`);
     else inserted.push('Schedule 2');
   }
 
@@ -1174,7 +1187,7 @@ async function insertFormData(returnId, taxYear, data) {
         line_25_utilities: exp.line_25_utilities,
       }).select('id').single();
 
-      if (error) { console.error(`  ✗ schedule_c insert: ${error.message}`); continue; }
+      if (error) { log.error(`  ✗ schedule_c insert: ${error.message}`); continue; }
       inserted.push(`Schedule C (${f.business_name || i + 1})`);
 
       // Other expenses
@@ -1199,7 +1212,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_15_net_long_term: f.line_15_net_long_term,
       line_16_combined: f.line_16_combined,
     });
-    if (error) console.error(`  ✗ schedule_d insert: ${error.message}`);
+    if (error) log.error(`  ✗ schedule_d insert: ${error.message}`);
     else inserted.push('Schedule D');
   }
 
@@ -1298,7 +1311,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_12_se_tax: f.line_12_se_tax,
       line_13_deduction_half_se: f.line_13_deduction_half_se,
     });
-    if (error) console.error(`  ✗ schedule_se insert: ${error.message}`);
+    if (error) log.error(`  ✗ schedule_se insert: ${error.message}`);
     else inserted.push('Schedule SE');
   }
 
@@ -1357,7 +1370,7 @@ async function insertFormData(returnId, taxYear, data) {
         line_22_total_depreciation: f.line_22_total_depreciation,
       }).select('id').single();
 
-      if (error) { console.error(`  ✗ form_4562 insert: ${error.message}`); continue; }
+      if (error) { log.error(`  ✗ form_4562 insert: ${error.message}`); continue; }
       inserted.push(`Form 4562 (${f.business_or_activity || '?'})`);
 
       if (f.assets?.length && f4562) {
@@ -1389,7 +1402,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_26_net_ptc: f.line_26_net_ptc,
       line_29_excess_repayment: f.line_29_excess_repayment,
     });
-    if (error) console.error(`  ✗ form_8962 insert: ${error.message}`);
+    if (error) log.error(`  ✗ form_8962 insert: ${error.message}`);
     else inserted.push('Form 8962');
   }
 
@@ -1401,7 +1414,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_15_qbi_deduction: f.line_15_qbi_deduction,
     }).select('id').single();
 
-    if (error) console.error(`  ✗ form_8995 insert: ${error.message}`);
+    if (error) log.error(`  ✗ form_8995 insert: ${error.message}`);
     else {
       inserted.push('Form 8995');
       if (f.businesses?.length && f8995) {
@@ -1437,7 +1450,7 @@ async function insertFormData(returnId, taxYear, data) {
       line_23_taxable_income: f.line_23_taxable_income,
       line_24_total_tax: f.line_24_total_tax,
     });
-    if (error) console.error(`  ✗ form_1041 insert: ${error.message}`);
+    if (error) log.error(`  ✗ form_1041 insert: ${error.message}`);
     else inserted.push('Form 1041');
 
     if (f.schedule_b) {
@@ -1489,64 +1502,64 @@ async function insertFormData(returnId, taxYear, data) {
 // ── Process a single PDF file ───────────────────────────────────────────────
 async function processFile(filePath, { inboxId = null } = {}) {
   const filename = basename(filePath);
-  console.log(`\n  → Processing: ${filename}`);
+  log.info(`\n  → Processing: ${filename}`);
 
   try {
     // Step 0: Form manifest (Pass 1) — inventory all forms in the PDF
-    console.log(`    Pass 1: Scanning form manifest...`);
+    log.info(`    Pass 1: Scanning form manifest...`);
     const manifest = await extractManifest(filePath);
     if (manifest?.forms?.length) {
-      console.log(`    Found ${manifest.forms.length} forms: ${manifest.forms.map(f => f.form_code).join(', ')}`);
+      log.info(`    Found ${manifest.forms.length} forms: ${manifest.forms.map(f => f.form_code).join(', ')}`);
     }
 
     // Step 1: Extract with Gemini Flash 2.5 (primary, Pass 2)
-    console.log(`    Pass 2: Extracting with Gemini Flash 2.5...`);
+    log.info(`    Pass 2: Extracting with Gemini Flash 2.5...`);
     const geminiResult = await extractWithGemini(filePath);
 
     if (!geminiResult) throw new Error('Gemini returned no parseable result');
     if (geminiResult.return_type === 'not_tax_return') {
-      console.log(`    SKIPPED — not a tax return`);
+      log.info(`    SKIPPED — not a tax return`);
       return { status: 'not_tax_return' };
     }
 
     // Check manifest coverage — flag any forms found in PDF but missing from extraction
     const missingForms = checkManifestCoverage(manifest, geminiResult.forms || {});
     if (missingForms.length > 0) {
-      console.log(`    ⚠ ${missingForms.length} form(s) in PDF but missing from extraction:`);
+      log.info(`    ⚠ ${missingForms.length} form(s) in PDF but missing from extraction:`);
       for (const mf of missingForms) {
-        console.log(`      - ${mf.form_code} (pages ${mf.pages})`);
+        log.info(`      - ${mf.form_code} (pages ${mf.pages})`);
       }
       // Store missing forms in extraction_notes for review
       geminiResult._missing_forms = missingForms;
     } else if (manifest) {
-      console.log(`    ✓ All manifest forms covered in extraction`);
+      log.info(`    ✓ All manifest forms covered in extraction`);
     }
 
-    console.log(`    Gemini: ${geminiResult.return_type} for ${geminiResult.entity?.name} (${geminiResult.tax_year})`);
+    log.info(`    Gemini: ${geminiResult.return_type} for ${geminiResult.entity?.name} (${geminiResult.tax_year})`);
 
     // Step 2: Extract with Claude Sonnet (verification) unless --gemini-only
     let claudeResult = null;
     let conflicts = [];
 
     if (!GEMINI_ONLY) {
-      console.log(`    Verifying with Claude Sonnet 4.6...`);
+      log.info(`    Verifying with Claude Sonnet 4.6...`);
       claudeResult = await extractWithClaude(filePath);
 
       if (claudeResult) {
-        console.log(`    Claude: ${claudeResult.return_type} for ${claudeResult.entity?.name} (${claudeResult.tax_year})`);
+        log.info(`    Claude: ${claudeResult.return_type} for ${claudeResult.entity?.name} (${claudeResult.tax_year})`);
 
         // Step 3: Compare results
         conflicts = compareExtractions(geminiResult, claudeResult);
         if (conflicts.length > 0) {
-          console.log(`    ⚠ ${conflicts.length} conflict(s) detected`);
+          log.info(`    ⚠ ${conflicts.length} conflict(s) detected`);
           for (const c of conflicts) {
-            console.log(`      ${c.field}: Gemini=${c.gemini_value} vs Claude=${c.claude_value}`);
+            log.info(`      ${c.field}: Gemini=${c.gemini_value} vs Claude=${c.claude_value}`);
           }
         } else {
-          console.log(`    ✓ Both models agree`);
+          log.info(`    ✓ Both models agree`);
         }
       } else {
-        console.log(`    ⚠ Claude extraction failed — using Gemini only`);
+        log.info(`    ⚠ Claude extraction failed — using Gemini only`);
       }
     }
 
@@ -1554,16 +1567,16 @@ async function processFile(filePath, { inboxId = null } = {}) {
     const data = geminiResult;
 
     if (DRY_RUN) {
-      console.log(`    ✓ Dry run — would insert ${data.return_type} for ${data.entity?.name} (${data.tax_year})`);
+      log.info(`    ✓ Dry run — would insert ${data.return_type} for ${data.entity?.name} (${data.tax_year})`);
       if (conflicts.length > 0) {
-        console.log(`    Would send conflict email for ${conflicts.length} conflict(s)`);
+        log.info(`    Would send conflict email for ${conflicts.length} conflict(s)`);
       }
       return { status: 'dry_run' };
     }
 
     // Step 4: Upload to R2
     const r2Key = buildTaxR2Key(data);
-    console.log(`    R2 key: ${r2Key}`);
+    log.info(`    R2 key: ${r2Key}`);
     await uploadToR2(filePath, r2Key);
 
     // Step 5: Create entity + return envelope
@@ -1603,9 +1616,9 @@ async function processFile(filePath, { inboxId = null } = {}) {
     }, { onConflict: 'r2_key' });
 
     // Step 8: Insert form data into typed tables
-    console.log(`    Inserting form data...`);
+    log.info(`    Inserting form data...`);
     const formsInserted = await insertFormData(returnId, data.tax_year, data);
-    console.log(`    ✓ Inserted: ${formsInserted.join(', ')}`);
+    log.info(`    ✓ Inserted: ${formsInserted.join(', ')}`);
 
     // Step 9: Update verification metadata
     if (!GEMINI_ONLY) {
@@ -1629,7 +1642,7 @@ async function processFile(filePath, { inboxId = null } = {}) {
 
     return { status: 'success', formsInserted };
   } catch (err) {
-    console.error(`    ✗ Error: ${err.message}`);
+    log.error(`    ✗ Error: ${err.message}`);
     return { status: 'error', error: err.message };
   }
 }
@@ -1637,7 +1650,7 @@ async function processFile(filePath, { inboxId = null } = {}) {
 // ── Discover PDF files ──────────────────────────────────────────────────────
 function discoverPdfs(dirPath) {
   if (!existsSync(dirPath)) {
-    console.error(`Directory not found: ${dirPath}`);
+    log.error(`Directory not found: ${dirPath}`);
     process.exit(1);
   }
 
@@ -1669,7 +1682,7 @@ async function downloadToFile(url, destPath) {
 
 // ── Inbox mode: poll statement_inbox for pending tax returns ─────────────────
 async function processInbox() {
-  console.log(`Polling statement_inbox for pending tax returns...\n`);
+  log.info(`Polling statement_inbox for pending tax returns...\n`);
 
   const { data: items, error } = await supabase
     .from('statement_inbox')
@@ -1681,14 +1694,14 @@ async function processInbox() {
 
   if (error) throw new Error(`Inbox query error: ${error.message}`);
 
-  console.log(`Found ${items?.length || 0} pending tax return(s)\n`);
+  log.info(`Found ${items?.length || 0} pending tax return(s)\n`);
   if (!items?.length) return { total: 0 };
 
   const stats = { success: 0, dry_run: 0, error: 0, not_tax_return: 0, skipped_existing: 0 };
 
   for (const item of items) {
     const label = `${item.account_name || '?'} — ${item.account_type || '?'} (${item.attachment_filename})`;
-    console.log(`\n  → Inbox item: ${label}`);
+    log.info(`\n  → Inbox item: ${label}`);
 
     // Mark as processing
     await supabase
@@ -1700,9 +1713,9 @@ async function processInbox() {
 
     try {
       // Download from Supabase Storage
-      console.log(`    Downloading from storage...`);
+      log.info(`    Downloading from storage...`);
       const fileSize = await downloadToFile(item.attachment_url, tmpPath);
-      console.log(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
+      log.info(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
 
       // Process the file
       const result = await processFile(tmpPath, { inboxId: item.id });
@@ -1738,7 +1751,7 @@ async function processInbox() {
           .eq('id', item.id);
       }
     } catch (err) {
-      console.error(`    ✗ Error: ${err.message}`);
+      log.error(`    ✗ Error: ${err.message}`);
       stats.error++;
       await supabase
         .from('statement_inbox')
@@ -1754,7 +1767,7 @@ async function processInbox() {
 
     // Rate-limit delay between extractions to avoid Gemini 429s (60s between items)
     if (items.indexOf(item) < items.length - 1) {
-      console.log('    Waiting 60s before next extraction (rate limit)...');
+      log.info('    Waiting 60s before next extraction (rate limit)...');
       await new Promise(r => setTimeout(r, 60_000));
     }
   }
@@ -1764,10 +1777,10 @@ async function processInbox() {
 
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
-  console.log(`\n╔══════════════════════════════════════════╗`);
-  console.log(`║  Tax Return Processor                    ║`);
-  console.log(`╚══════════════════════════════════════════╝`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Source: ${INBOX_MODE ? 'INBOX' : 'LOCAL'} | Extraction: ${GEMINI_ONLY ? 'Gemini only' : 'Gemini + Claude'} | Limit: ${LIMIT}\n`);
+  log.info(`\n╔══════════════════════════════════════════╗`);
+  log.info(`║  Tax Return Processor                    ║`);
+  log.info(`╚══════════════════════════════════════════╝`);
+  log.info(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Source: ${INBOX_MODE ? 'INBOX' : 'LOCAL'} | Extraction: ${GEMINI_ONLY ? 'Gemini only' : 'Gemini + Claude'} | Limit: ${LIMIT}\n`);
 
   const startTime = Date.now();
   let stats;
@@ -1782,22 +1795,22 @@ async function main() {
 
     if (FILE_PATH) {
       if (!existsSync(FILE_PATH)) {
-        console.error(`File not found: ${FILE_PATH}`);
+        log.error(`File not found: ${FILE_PATH}`);
         process.exit(1);
       }
       files = [FILE_PATH];
     } else if (DIR_PATH) {
       files = discoverPdfs(DIR_PATH);
     } else {
-      console.error('Must specify --inbox, --dir, or --file');
-      console.log('Usage:');
-      console.log('  node scripts/process-tax-returns.mjs --inbox                        # Poll inbox');
-      console.log('  node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"          # Local directory');
-      console.log('  node scripts/process-tax-returns.mjs --file "/path/to/file.pdf"     # Single file');
+      log.error('Must specify --inbox, --dir, or --file');
+      log.info('Usage:');
+      log.info('  node scripts/process-tax-returns.mjs --inbox                        # Poll inbox');
+      log.info('  node scripts/process-tax-returns.mjs --dir "/path/to/pdfs"          # Local directory');
+      log.info('  node scripts/process-tax-returns.mjs --file "/path/to/file.pdf"     # Single file');
       process.exit(1);
     }
 
-    console.log(`Found ${files.length} PDF(s) to process\n`);
+    log.info(`Found ${files.length} PDF(s) to process\n`);
     if (!files.length) return;
 
     stats = { success: 0, dry_run: 0, error: 0, not_tax_return: 0, skipped_existing: 0 };
@@ -1810,16 +1823,13 @@ async function main() {
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`\n══════════════════════════════════════════`);
-  console.log(`COMPLETE in ${elapsed}s`);
-  console.log(`  Successful: ${stats.success || 0}`);
-  console.log(`  Errors: ${stats.error || 0}`);
-  console.log(`  Not tax returns: ${stats.not_tax_return || 0}`);
-  console.log(`  Skipped (existing): ${stats.skipped_existing || 0}`);
-  console.log(`══════════════════════════════════════════\n`);
+  log.info(`\n══════════════════════════════════════════`);
+  log.info(`COMPLETE in ${elapsed}s`);
+  log.info(`  Successful: ${stats.success || 0}`);
+  log.info(`  Errors: ${stats.error || 0}`);
+  log.info(`  Not tax returns: ${stats.not_tax_return || 0}`);
+  log.info(`  Skipped (existing): ${stats.skipped_existing || 0}`);
+  log.info(`══════════════════════════════════════════\n`);
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+run(main);
