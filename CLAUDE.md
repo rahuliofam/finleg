@@ -4,6 +4,7 @@
 > - `docs/CREDENTIALS.md` — **load for:** SQL queries, deploying functions, SSH, API calls
 > - `docs/SCHEMA.md` — **load for:** writing queries, modifying tables, debugging data
 > - `docs/PATTERNS.md` — **load for:** writing UI code, Tailwind styling, code review, testing
+> - `docs/FORMS.md` — **load for:** writing forms, validation, `useForm`, error boundaries
 > - `docs/KEY-FILES.md` — **load for:** finding files, understanding project structure
 > - `docs/DEPLOY.md` — **load for:** pushing, deploying, version questions
 > - `docs/INTEGRATIONS.md` — **load for:** external APIs, vendor setup, pricing

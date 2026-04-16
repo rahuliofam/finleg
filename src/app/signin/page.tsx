@@ -3,28 +3,56 @@
 import { Suspense } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import CenteredBrandLayout from "@/components/centered-brand-layout";
+import { useForm } from "@/lib/use-form";
+import {
+  email as emailRule,
+  minLength,
+  required,
+  type ValidationSchema,
+} from "@/lib/validation";
+
+interface SignInValues extends Record<string, unknown> {
+  email: string;
+  password: string;
+}
+
+const signInSchema: ValidationSchema<SignInValues> = {
+  email: [required("Email is required"), emailRule()],
+  password: [required("Password is required"), minLength(1)],
+};
 
 function SignInContent() {
   const { user, loading, signInWithGoogle, signIn } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showEmail, setShowEmail] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [authError, setAuthError] = useState("");
+
+  const form = useForm<SignInValues>({
+    initialValues: { email: "", password: "" },
+    schema: signInSchema,
+    onSubmit: async (values) => {
+      setAuthError("");
+      try {
+        const { error: err } = await signIn(values.email, values.password);
+        if (err) setAuthError(err.message);
+      } catch {
+        setAuthError("Sign in failed");
+      }
+    },
+  });
 
   // Auto sign-in for automated testing: /signin?auto=1&redirect=/intranet
-  const [autoTriggered, setAutoTriggered] = useState(false);
+  const autoTriggeredRef = useRef(false);
   useEffect(() => {
-    if (!loading && !user && !autoTriggered && searchParams.get("auto") === "1") {
-      setAutoTriggered(true);
+    if (!loading && !user && !autoTriggeredRef.current && searchParams.get("auto") === "1") {
+      autoTriggeredRef.current = true;
       signIn("tester@finleg.net", "M@akeSureItsG00d").catch(() => {});
     }
-  }, [loading, user, autoTriggered, searchParams, signIn]);
+  }, [loading, user, searchParams, signIn]);
 
   useEffect(() => {
     if (!loading && user) {
@@ -37,19 +65,8 @@ function SignInContent() {
     return null;
   }
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSubmitting(true);
-    try {
-      const { error: authError } = await signIn(email, password);
-      if (authError) setError(authError.message);
-    } catch {
-      setError("Sign in failed");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const fieldError = (name: keyof SignInValues & string) =>
+    form.touched[name] && form.errors[name] ? form.errors[name] : null;
 
   return (
     <CenteredBrandLayout>
@@ -79,30 +96,48 @@ function SignInContent() {
           Use email instead
         </button>
       ) : (
-        <form onSubmit={handleEmailSignIn} className="mt-6 w-full space-y-3">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A]"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A]"
-          />
-          {error && <p className="text-xs text-red-500">{error}</p>}
+        <form onSubmit={form.handleSubmit} className="mt-6 w-full space-y-3" noValidate>
+          <div>
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={form.values.email}
+              onChange={form.handleChange}
+              onBlur={form.handleBlur}
+              aria-invalid={fieldError("email") ? true : undefined}
+              className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A] ${
+                fieldError("email") ? "border-red-400" : "border-slate-300"
+              }`}
+            />
+            {fieldError("email") && (
+              <p className="mt-1 text-xs text-red-500">{form.errors.email}</p>
+            )}
+          </div>
+          <div>
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={form.values.password}
+              onChange={form.handleChange}
+              onBlur={form.handleBlur}
+              aria-invalid={fieldError("password") ? true : undefined}
+              className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A] ${
+                fieldError("password") ? "border-red-400" : "border-slate-300"
+              }`}
+            />
+            {fieldError("password") && (
+              <p className="mt-1 text-xs text-red-500">{form.errors.password}</p>
+            )}
+          </div>
+          {authError && <p className="text-xs text-red-500">{authError}</p>}
           <button
             type="submit"
-            disabled={submitting}
+            disabled={form.submitting}
             className="w-full px-4 py-2.5 text-sm bg-slate-700 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition-colors cursor-pointer"
           >
-            {submitting ? "Signing in..." : "Sign in"}
+            {form.submitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
       )}

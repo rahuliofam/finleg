@@ -2,6 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useForm } from "@/lib/use-form";
+import {
+  email as emailRule,
+  required,
+  type ValidationSchema,
+} from "@/lib/validation";
+
+interface InviteValues extends Record<string, unknown> {
+  email: string;
+  role: string;
+}
+
+const inviteSchema: ValidationSchema<InviteValues> = {
+  email: [required("Email is required"), emailRule()],
+  role: [required("Role is required")],
+};
 
 interface AppUser {
   id: string;
@@ -44,10 +60,40 @@ export function UsersTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("public");
-  const [inviting, setInviting] = useState(false);
   const [editingRole, setEditingRole] = useState<string | null>(null);
+
+  const inviteForm = useForm<InviteValues>({
+    initialValues: { email: "", role: "public" },
+    schema: inviteSchema,
+    onSubmit: async (values) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const invitedEmail = values.email.toLowerCase().trim();
+      const { error: invError } = await supabase.from("user_invitations").insert({
+        email: invitedEmail,
+        role: values.role,
+        invited_by_email: user?.email || null,
+      });
+
+      if (invError) {
+        inviteForm.setFieldError("email", invError.message);
+        return;
+      }
+
+      // Fire-and-forget invitation email
+      supabase.functions
+        .invoke("send-invitation-email", {
+          body: { email: invitedEmail, role: values.role, invited_by_email: user?.email },
+        })
+        .catch((err: unknown) => console.error("Invitation email failed:", err));
+
+      inviteForm.reset({ email: "", role: "public" });
+      setShowInviteForm(false);
+      fetchData();
+    },
+  });
 
   async function fetchData() {
     setLoading(true);
@@ -76,40 +122,6 @@ export function UsersTab() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  async function handleInvite(e: React.FormEvent) {
-    e.preventDefault();
-    if (!inviteEmail.trim()) return;
-
-    setInviting(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    const { error: invError } = await supabase.from("user_invitations").insert({
-      email: inviteEmail.toLowerCase().trim(),
-      role: inviteRole,
-      invited_by_email: user?.email || null,
-    });
-
-    if (invError) {
-      setError(invError.message);
-    } else {
-      // Fire-and-forget invitation email
-      const invitedEmail = inviteEmail.toLowerCase().trim();
-      supabase.functions
-        .invoke("send-invitation-email", {
-          body: { email: invitedEmail, role: inviteRole, invited_by_email: user?.email },
-        })
-        .catch((err: unknown) => console.error("Invitation email failed:", err));
-
-      setInviteEmail("");
-      setInviteRole("public");
-      setShowInviteForm(false);
-      fetchData();
-    }
-    setInviting(false);
-  }
 
   async function handleRevokeInvitation(id: string) {
     await supabase.from("user_invitations").update({ status: "revoked" }).eq("id", id);
@@ -185,27 +197,41 @@ export function UsersTab() {
       {/* Invite Form */}
       {showInviteForm && (
         <form
-          onSubmit={handleInvite}
+          onSubmit={inviteForm.handleSubmit}
+          noValidate
           className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-4"
         >
           <h3 className="text-sm font-semibold text-slate-700 mb-3">Send Invitation</h3>
-          <div className="flex gap-3 items-end">
+          <div className="flex gap-3 items-start">
             <div className="flex-1">
               <label className="block text-xs font-medium text-slate-600 mb-1">Email</label>
               <input
+                name="email"
                 type="email"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
+                value={inviteForm.values.email}
+                onChange={inviteForm.handleChange}
+                onBlur={inviteForm.handleBlur}
                 placeholder="user@example.com"
-                required
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A] text-slate-900"
+                aria-invalid={
+                  inviteForm.touched.email && inviteForm.errors.email ? true : undefined
+                }
+                className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A] text-slate-900 ${
+                  inviteForm.touched.email && inviteForm.errors.email
+                    ? "border-red-400"
+                    : "border-slate-300"
+                }`}
               />
+              {inviteForm.touched.email && inviteForm.errors.email && (
+                <p className="mt-1 text-xs text-red-600">{inviteForm.errors.email}</p>
+              )}
             </div>
             <div className="w-40">
               <label className="block text-xs font-medium text-slate-600 mb-1">Role</label>
               <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value)}
+                name="role"
+                value={inviteForm.values.role}
+                onChange={inviteForm.handleChange}
+                onBlur={inviteForm.handleBlur}
                 className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]/30 focus:border-[#1B6B3A] text-slate-900"
               >
                 {ROLES.map((r) => (
@@ -217,10 +243,10 @@ export function UsersTab() {
             </div>
             <button
               type="submit"
-              disabled={inviting}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#1B6B3A] hover:bg-[#145530] rounded-lg transition-colors disabled:opacity-50"
+              disabled={inviteForm.submitting}
+              className="mt-5 px-4 py-2 text-sm font-medium text-white bg-[#1B6B3A] hover:bg-[#145530] rounded-lg transition-colors disabled:opacity-50"
             >
-              {inviting ? "Sending..." : "Send Invite"}
+              {inviteForm.submitting ? "Sending..." : "Send Invite"}
             </button>
           </div>
           <p className="text-xs text-slate-500 mt-2">
