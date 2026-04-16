@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>1402 Ashwood Rd — Cost Breakdown & Cash Flow | FinLeg</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+    (function() {
+      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocal) {
+        document.addEventListener('DOMContentLoaded', function() {
+          var gate = document.getElementById('auth-gate');
+          if (gate) gate.style.display = 'none';
+          var main = document.getElementById('main-content');
+          if (main) main.style.display = 'block';
+        });
+        return;
+      }
+      const sb = window.supabase.createClient(
+        'https://gjdvzzxsrzuorguwkaih.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqZHZ6enhzcnp1b3JndXdrYWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzE5NTcsImV4cCI6MjA4OTAwNzk1N30.eZ6WVVb3e7HbT_LYG0YPbxl4btD6d-Hlmb657qmaOBY',
+        { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } }
+      );
+      sb.auth.getSession().then(async function(res) {
+        var session = res.data?.session;
+        if (!session) { window.location.href = '/signin?redirect=' + encodeURIComponent(window.location.pathname); return; }
+        var allowedEmails = ['jackie61899280@gmail.com', 'sonnad.phoebe@gmail.com', 'rahulioson@gmail.com', 'hrsonnad@gmail.com'];
+        var email = session.user.email;
+        var allowed = allowedEmails.includes(email);
+        if (!allowed) {
+          var { data: appUser } = await sb.from('app_users').select('id').eq('email', email).single();
+          allowed = !!appUser;
+        }
+        if (allowed) {
+          document.getElementById('auth-gate')?.remove();
+          document.getElementById('main-content').style.display = 'block';
+        } else {
+          document.getElementById('auth-gate').innerHTML = '<div style="text-align:center;padding:4rem 2rem;"><h2 style="color:#991b1b;">Access Denied</h2><p style="color:#666;">Signed in as <strong>' + email + '</strong></p></div>';
+        }
+      });
+    })();
+    </script>
+    <style>
+        :root {
+            --fl-green: #1B6B3A;
+            --fl-green-dark: #145530;
+            --fl-green-light: #e8f5ec;
+            --fl-bg: #f8faf9;
+            --fl-text: #1a1a2e;
+            --fl-muted: #64748b;
+            --fl-border: #e2e8f0;
+            --fl-card: #ffffff;
+            --fl-accent: #0369a1;
+            --fl-warning: #b45309;
+            --fl-danger: #991b1b;
+            --fl-success: #15803d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--fl-bg);
+            color: var(--fl-text);
+            line-height: 1.6;
+        }
+        .hero {
+            background: linear-gradient(135deg, #0f2419 0%, #1B6B3A 50%, #0f4c25 100%);
+            color: white;
+            padding: 3rem 2rem 2rem;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #a7f3d0, #1B6B3A, #a7f3d0);
+        }
+        .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .hero .subtitle { color: #a7f3d0; font-size: 1.1rem; }
+        .hero .price-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .hero .meta {
+            display: flex; gap: 1.5rem; margin-top: 0.75rem;
+            font-size: 0.95rem; color: #d1fae5; flex-wrap: wrap;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .nav-tabs {
+            display: flex; flex-wrap: wrap; gap: 0.25rem;
+            background: var(--fl-card);
+            border: 1px solid var(--fl-border);
+            border-radius: 12px;
+            padding: 0.35rem;
+            margin-bottom: 2rem;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .nav-tab {
+            padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 500; white-space: nowrap;
+            border: none; background: none; color: var(--fl-muted);
+            transition: all 0.2s;
+        }
+        .nav-tab:hover { background: var(--fl-green-light); color: var(--fl-green); }
+        .nav-tab.active { background: var(--fl-green); color: white; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .section-title {
+            font-size: 1.4rem; font-weight: 700; color: var(--fl-green-dark);
+            margin-bottom: 1.5rem; padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--fl-green-light);
+        }
+        .card {
+            background: var(--fl-card);
+            border: 1px solid var(--fl-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--fl-text); }
+        .card h4 { font-size: 0.9rem; font-weight: 600; margin: 1rem 0 0.5rem; color: var(--fl-green-dark); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1.25rem; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.5rem; }
+            .hero .price-badge { font-size: 1.4rem; }
+        }
+        .stat-card { text-align: center; padding: 1.25rem; }
+        .stat-card .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--fl-green); }
+        .stat-card .stat-label { font-size: 0.8rem; color: var(--fl-muted); margin-top: 0.25rem; }
+        .badge {
+            display: inline-block; padding: 0.2rem 0.6rem;
+            border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+        }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-gray { background: #f1f5f9; color: #475569; }
+        table.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        table.data-table th {
+            text-align: left; padding: 0.6rem 0.75rem;
+            background: var(--fl-green-light); color: var(--fl-green-dark);
+            font-weight: 600; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 0.03em;
+        }
+        table.data-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--fl-border); }
+        table.data-table tr:last-child td { border-bottom: none; }
+        table.data-table .right { text-align: right; }
+        table.data-table .bold { font-weight: 600; }
+        .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.9rem; }
+        .callout-warning { background: #fffbeb; border-left: 4px solid #f59e0b; color: #92400e; }
+        .callout-danger { background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; }
+        .callout-info { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; }
+        .callout-success { background: #f0fdf4; border-left: 4px solid #22c55e; color: #166534; }
+        .calc-result {
+            background: var(--fl-green-light); border-radius: 8px;
+            padding: 1.25rem; margin-top: 1rem; text-align: center;
+        }
+        .calc-result .big-num { font-size: 2rem; font-weight: 700; color: var(--fl-green-dark); }
+
+        /* Sliders */
+        .slider-group { margin-bottom: 1.25rem; }
+        .slider-group label {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; font-weight: 500; margin-bottom: 0.35rem;
+        }
+        .slider-group label .slider-val {
+            font-weight: 700; color: var(--fl-green); font-size: 0.95rem;
+        }
+        input[type="range"] {
+            width: 100%; height: 6px; -webkit-appearance: none;
+            background: var(--fl-border); border-radius: 3px; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 20px; height: 20px;
+            border-radius: 50%; background: var(--fl-green); cursor: pointer;
+            border: 3px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Pie chart */
+        .pie-chart-container { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; justify-content: center; }
+        .pie-legend { font-size: 0.85rem; }
+        .pie-legend-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; }
+        .pie-legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+        /* Bar chart */
+        .bar-chart { display: flex; flex-direction: column; gap: 0.5rem; }
+        .bar-row { display: flex; align-items: center; gap: 0.75rem; }
+        .bar-label { width: 140px; font-size: 0.8rem; text-align: right; flex-shrink: 0; color: var(--fl-muted); }
+        .bar-track { flex: 1; height: 28px; background: #f1f5f9; border-radius: 6px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 0.5rem; font-size: 0.75rem; font-weight: 600; color: white; min-width: fit-content; transition: width 0.5s; }
+        .bar-amount { font-size: 0.85rem; font-weight: 600; width: 100px; text-align: right; flex-shrink: 0; }
+
+        /* Canvas charts */
+        canvas { max-width: 100%; }
+
+        /* Timeline */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+            width: 2px; background: var(--fl-green-light);
+        }
+        .timeline-item { position: relative; padding-bottom: 1.5rem; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -1.65rem; top: 4px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: var(--fl-green); border: 2px solid var(--fl-green-light);
+        }
+        .timeline-item.phase-active::before { background: var(--fl-warning); border-color: #fef3c7; }
+        .timeline-item.phase-future::before { background: var(--fl-border); border-color: #f1f5f9; }
+        .timeline-item .tl-title { font-weight: 600; }
+        .timeline-item .tl-desc { font-size: 0.85rem; color: var(--fl-muted); margin-top: 0.15rem; }
+        .timeline-item .tl-date { font-size: 0.75rem; color: var(--fl-accent); font-weight: 600; margin-top: 0.25rem; }
+
+        /* Budget bar */
+        .budget-bar-wrap { margin: 1.5rem 0; }
+        .budget-bar-labels { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem; }
+        .budget-bar { height: 32px; background: #e2e8f0; border-radius: 8px; overflow: hidden; position: relative; }
+        .budget-bar-fill { height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: white; transition: width 0.5s; }
+        .budget-bar-target { position: absolute; top: -4px; bottom: -4px; width: 3px; background: var(--fl-text); border-radius: 2px; z-index: 2; }
+        .budget-bar-target-label { position: absolute; top: -20px; font-size: 0.7rem; font-weight: 600; transform: translateX(-50%); white-space: nowrap; }
+
+        /* Room cards */
+        .room-card { border-left: 4px solid var(--fl-green); }
+        .room-card.room-kitchen { border-left-color: #f59e0b; }
+        .room-card.room-bathroom { border-left-color: #3b82f6; }
+        .room-card.room-general { border-left-color: #8b5cf6; }
+        .room-card.room-structure { border-left-color: #ef4444; }
+        .room-card.room-mechanical { border-left-color: #06b6d4; }
+        .room-card.room-finishes { border-left-color: #84cc16; }
+        .room-card .room-icon { font-size: 1.2rem; margin-right: 0.5rem; }
+        .room-subtotal {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--fl-green-light); padding: 0.6rem 0.75rem;
+            border-radius: 6px; margin-top: 0.75rem; font-weight: 600;
+            font-size: 0.9rem; color: var(--fl-green-dark);
+        }
+        .grand-total {
+            background: linear-gradient(135deg, #0f2419, #1B6B3A);
+            color: white; border-radius: 12px; padding: 1.5rem;
+            text-align: center; margin-top: 1.5rem;
+        }
+        .grand-total .gt-label { font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.25rem; }
+        .grand-total .gt-value { font-size: 2rem; font-weight: 700; }
+        .grand-total .gt-note { font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem; }
+
+        /* Cash flow indicator */
+        .cashflow-indicator {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 1rem 1.25rem; border-radius: 10px; margin: 1rem 0;
+        }
+        .cashflow-positive { background: #f0fdf4; border: 2px solid #22c55e; }
+        .cashflow-negative { background: #fef2f2; border: 2px solid #ef4444; }
+        .cashflow-indicator .cf-amount { font-size: 1.5rem; font-weight: 700; }
+        .cashflow-indicator .cf-label { font-size: 0.85rem; color: var(--fl-muted); }
+
+        /* Waterfall chart */
+        .waterfall { display: flex; align-items: flex-end; gap: 0.5rem; height: 300px; padding: 0 0.5rem; }
+        .wf-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .wf-bar { width: 100%; border-radius: 6px 6px 0 0; min-height: 4px; transition: height 0.5s; position: relative; }
+        .wf-bar-label { font-size: 0.65rem; font-weight: 700; color: white; text-align: center; padding: 0.25rem; word-break: break-word; }
+        .wf-col-label { font-size: 0.7rem; color: var(--fl-muted); text-align: center; margin-top: 0.5rem; word-break: break-word; }
+        .wf-col-amount { font-size: 0.75rem; font-weight: 600; margin-top: 0.15rem; text-align: center; }
+
+        @media print {
+            .nav-tabs { display: none; }
+            .section { display: block !important; page-break-before: always; }
+            .hero { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="auth-gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--fl-muted);font-size:0.9rem;">Loading...</div>
+
+    <div id="main-content" style="display:block;">
+        <script src="/finleg-header.js"></script>
+
+        <div class="hero">
+            <h1>1402 Ashwood Rd</h1>
+            <p class="subtitle">Cost Breakdown & Investment Cash Flow</p>
+            <div class="price-badge">$599,900</div>
+            <div class="meta">
+                <span>Austin, TX 78722</span>
+                <span>Duplex + ADU</span>
+                <span>3 Income Units</span>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="nav-tabs" id="nav-tabs">
+                <button class="nav-tab active" data-section="purchase">Purchase</button>
+                <button class="nav-tab" data-section="cashflow">Cash Flow</button>
+                <button class="nav-tab" data-section="rental-reno">Rental Unit Reno</button>
+                <button class="nav-tab" data-section="our-reno">Our Unit Reno</button>
+                <button class="nav-tab" data-section="adu">ADU Build</button>
+                <button class="nav-tab" data-section="summary">Total Investment</button>
+                <button class="nav-tab" data-section="timeline">Timeline</button>
+                <button class="nav-tab" data-section="permits">Permits & Regs</button>
+                <button class="nav-tab" data-section="breakeven">Break-Even</button>
+            </div>
+
+            <!-- ============ TAB 1: PURCHASE OVERVIEW ============ -->
+            <div class="section active" id="sec-purchase">
+                <h2 class="section-title">Purchase Overview</h2>
+                <div class="grid-3" id="purchase-stats">
+                    <div class="card stat-card">
+                        <div class="stat-value">$599,900</div>
+                        <div class="stat-label">Purchase Price</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value">$119,980</div>
+                        <div class="stat-label">Down Payment (20%)</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value">$479,920</div>
+                        <div class="stat-label">Loan Amount</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Monthly Payment Breakdown</h3>
+                    <table class="data-table">
+                        <tr><td>Principal & Interest (6.5%, 30yr)</td><td class="right bold" id="pi-payment">—</td></tr>
+                        <tr><td>Property Tax</td><td class="right bold">$730</td></tr>
+                        <tr><td>Home Insurance</td><td class="right bold">$200</td></tr>
+                        <tr style="background: var(--fl-green-light);"><td class="bold">Total Monthly Cost</td><td class="right bold" id="total-monthly" style="color: var(--fl-green-dark); font-size: 1.1rem;">—</td></tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>Where Each Dollar Goes</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="pie-chart" width="240" height="240"></canvas>
+                        <div class="pie-legend" id="pie-legend"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Loan Amortization Snapshot</h3>
+                    <table class="data-table" id="amort-table">
+                        <thead><tr><th>Year</th><th class="right">Balance</th><th class="right">Equity</th><th class="right">Total Paid</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ TAB 2: CASH FLOW ============ -->
+            <div class="section" id="sec-cashflow">
+                <h2 class="section-title">Rental Income & Cash Flow</h2>
+
+                <div class="card">
+                    <h3>Interactive Adjustments</h3>
+                    <div class="grid-2">
+                        <div>
+                            <div class="slider-group">
+                                <label>Mortgage Rate <span class="slider-val" id="val-rate">6.50%</span></label>
+                                <input type="range" id="sl-rate" min="5" max="8" step="0.25" value="6.5">
+                            </div>
+                            <div class="slider-group">
+                                <label>Annual Rent Growth <span class="slider-val" id="val-growth">4.0%</span></label>
+                                <input type="range" id="sl-growth" min="2" max="6" step="0.5" value="4">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="slider-group">
+                                <label>Top Unit Rent <span class="slider-val" id="val-rent1">$2,000</span></label>
+                                <input type="range" id="sl-rent1" min="1500" max="3000" step="100" value="2000">
+                            </div>
+                            <div class="slider-group">
+                                <label>ADU Rent <span class="slider-val" id="val-rent2">$2,000</span></label>
+                                <input type="range" id="sl-rent2" min="1500" max="3000" step="100" value="2000">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Phase 1 — Top Unit Only</h3>
+                        <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:0.75rem;">Before ADU is complete</p>
+                        <table class="data-table">
+                            <tr><td>Monthly Costs</td><td class="right" id="cf1-costs">—</td></tr>
+                            <tr><td>Top Unit Income</td><td class="right" style="color:var(--fl-success);" id="cf1-income">—</td></tr>
+                            <tr style="background:#fef2f2;"><td class="bold">Net Out-of-Pocket</td><td class="right bold" id="cf1-net">—</td></tr>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <h3>Phase 2 — Both Units Rented</h3>
+                        <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:0.75rem;">After ADU is complete</p>
+                        <table class="data-table">
+                            <tr><td>Monthly Costs</td><td class="right" id="cf2-costs">—</td></tr>
+                            <tr><td>Combined Income</td><td class="right" style="color:var(--fl-success);" id="cf2-income">—</td></tr>
+                            <tr id="cf2-net-row"><td class="bold">Net Cash Flow</td><td class="right bold" id="cf2-net">—</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="callout callout-info" style="margin-top:1rem;">
+                    <strong>Austin Market Comparison (2026)</strong><br>
+                    1-Bedroom: ~$1,100 – $1,600/mo &nbsp;|&nbsp; 2-Bedroom: ~$1,400 – $1,950/mo<br>
+                    <span style="font-size:0.8rem;color:var(--fl-muted);">Sources: Zillow, RentCafe, Zumper</span>
+                </div>
+
+                <div class="card" style="margin-top:1.25rem;">
+                    <h3>Projected Rental Income (Combined)</h3>
+                    <table class="data-table" id="rent-projection">
+                        <thead><tr><th>Year</th><th class="right">Top Unit/mo</th><th class="right">ADU/mo</th><th class="right">Combined/mo</th><th class="right">Annual Income</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ TAB 3: RENTAL UNIT RENO ============ -->
+            <div class="section" id="sec-rental-reno">
+                <h2 class="section-title">Rental Unit Renovation Costs</h2>
+                <div class="callout callout-success">All labor is DIY — $0 labor cost. Prices are budget-tier estimates using IKEA and big-box stores.</div>
+
+                <div class="card room-card room-kitchen">
+                    <h3>Kitchen</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Est. Cost</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Dishwasher</td><td class="right">$400</td><td>Whirlpool / Frigidaire basic</td></tr>
+                            <tr><td>Garbage disposal (1/2 HP)</td><td class="right">$100</td><td>InSinkErator Badger 5</td></tr>
+                            <tr><td>Kitchen cabinets (IKEA)</td><td class="right">$800</td><td>KNOXHULT or ENHET line</td></tr>
+                            <tr><td>Paint — walls + trim</td><td class="right">$100</td><td>Behr/Valspar, ~150 sq ft</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Kitchen Subtotal</span><span>$1,400</span></div>
+                </div>
+
+                <div class="card room-card room-bathroom">
+                    <h3>Bathroom</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Est. Cost</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Decorative mirror</td><td class="right">$60</td><td>IKEA arched/round style</td></tr>
+                            <tr><td>Rain-style shower head</td><td class="right">$35</td><td>Moen/Delta budget rain head</td></tr>
+                            <tr><td>Accent wall paint</td><td class="right">$50</td><td>Accent color + trim</td></tr>
+                            <tr><td>Nice outlet/switch covers (6)</td><td class="right">$30</td><td>Matte black or brushed brass</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Bathroom Subtotal</span><span>$175</span></div>
+                </div>
+
+                <div class="card room-card room-general">
+                    <h3>Whole Unit — General</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Est. Cost</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Ceiling crown molding (~200 linear ft)</td><td class="right">$200</td><td>MDF primed, Home Depot/Lowes</td></tr>
+                            <tr><td>Arched doorway conversions (3 doorways)</td><td class="right">$120</td><td>Plywood arch kits / DIY drywall</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>General Subtotal</span><span>$320</span></div>
+                </div>
+
+                <div class="grand-total">
+                    <div class="gt-label">Rental Unit Renovation Total</div>
+                    <div class="gt-value">$1,895</div>
+                    <div class="gt-note">All DIY labor &bull; Budget materials &bull; Big visual impact</div>
+                </div>
+            </div>
+
+            <!-- ============ TAB 4: OUR UNIT RENO ============ -->
+            <div class="section" id="sec-our-reno">
+                <h2 class="section-title">Our Unit Renovation Costs</h2>
+                <div class="callout callout-success">All labor is DIY — $0 labor cost.</div>
+
+                <div class="card room-card room-kitchen">
+                    <h3>Kitchen</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Est. Cost</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>New stove/range</td><td class="right">$475</td><td>Budget electric or gas range</td></tr>
+                            <tr><td>Dishwasher</td><td class="right">$400</td><td>Match rental unit spec</td></tr>
+                            <tr><td>Cabinets (IKEA)</td><td class="right">$800</td><td>KNOXHULT / ENHET</td></tr>
+                            <tr><td>Floor tiles (~20 sq ft @ $3/sqft)</td><td class="right">$90</td><td>Tile + thinset + grout + spacers</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Kitchen Subtotal</span><span>$1,765</span></div>
+                </div>
+
+                <div class="grand-total">
+                    <div class="gt-label">Our Unit Renovation Total</div>
+                    <div class="gt-value">$1,765</div>
+                    <div class="gt-note">All DIY labor &bull; IKEA cabinets &bull; Budget tile</div>
+                </div>
+            </div>
+
+            <!-- ============ TAB 5: ADU BUILD ============ -->
+            <div class="section" id="sec-adu">
+                <h2 class="section-title">ADU Build Costs — Garage Conversion + 2nd Story</h2>
+                <div class="callout callout-info">
+                    <strong>Footprint:</strong> 21' &times; 12' = 252 sq ft/floor &times; 2 stories = <strong>504 sq ft total</strong><br>
+                    All DIY labor except roof removal and re-install (hired help needed).
+                </div>
+
+                <div class="budget-bar-wrap">
+                    <div class="budget-bar-labels">
+                        <span>$0</span>
+                        <span style="font-weight:600;color:var(--fl-green-dark);">Budget Target: $40,000</span>
+                        <span>$50,000</span>
+                    </div>
+                    <div class="budget-bar">
+                        <div class="budget-bar-fill" id="adu-budget-fill" style="width:0%;background:var(--fl-green);">$0</div>
+                        <div class="budget-bar-target" id="adu-budget-target" style="left:80%;"><span class="budget-bar-target-label">$40K target</span></div>
+                    </div>
+                </div>
+
+                <div class="card room-card room-structure">
+                    <h3>Permits & Structure</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Low</th><th class="right">High</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Building permit + plan review</td><td class="right">$2,000</td><td class="right">$5,000</td><td>COA ADU permit fees vary</td></tr>
+                            <tr><td>Remove existing roof (hired)</td><td class="right">$1,500</td><td class="right">$3,000</td><td>1–2 day job, small crew</td></tr>
+                            <tr><td>2nd-story framing + hardware</td><td class="right">$3,000</td><td class="right">$5,000</td><td>2x6 walls, 2x10 joists, Simpson ties</td></tr>
+                            <tr><td>New roof on 2nd story (hired)</td><td class="right">$3,000</td><td class="right">$5,000</td><td>Sheathing + shingles + labor</td></tr>
+                            <tr><td>Subfloor (2nd story)</td><td class="right">$500</td><td class="right">$800</td><td>3/4" OSB/plywood</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Structure Subtotal</span><span id="adu-structure-range">$10,000 – $18,800</span></div>
+                </div>
+
+                <div class="card room-card room-mechanical">
+                    <h3>Mechanical — HVAC, Plumbing, Electrical</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Low</th><th class="right">High</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Mini split (1–2 heads)</td><td class="right">$1,500</td><td class="right">$3,000</td><td>MrCool DIY install</td></tr>
+                            <tr><td>Toilet</td><td class="right">$100</td><td class="right">$150</td><td>Basic Kohler/American Standard</td></tr>
+                            <tr><td>Shower (prefab stall + valve)</td><td class="right">$300</td><td class="right">$500</td><td>Fiberglass surround</td></tr>
+                            <tr><td>2 sinks (ReStore)</td><td class="right">$50</td><td class="right">$100</td><td>Habitat ReStore find</td></tr>
+                            <tr><td>Plumbing rough-in</td><td class="right">$500</td><td class="right">$1,500</td><td>Materials; may need licensed inspection</td></tr>
+                            <tr><td>Electrical rough-in + subpanel</td><td class="right">$800</td><td class="right">$2,000</td><td>Wire, breakers, boxes</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Mechanical Subtotal</span><span>$3,250 – $7,250</span></div>
+                </div>
+
+                <div class="card room-card room-kitchen">
+                    <h3>Kitchen & Appliances</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Low</th><th class="right">High</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>IKEA cabinets</td><td class="right">$800</td><td class="right">$800</td><td>ENHET / KNOXHULT</td></tr>
+                            <tr><td>Dishwasher</td><td class="right">$350</td><td class="right">$450</td><td>Budget reliable</td></tr>
+                            <tr><td>Stove/range</td><td class="right">$400</td><td class="right">$550</td><td>Budget electric</td></tr>
+                            <tr><td>Refrigerator</td><td class="right">$400</td><td class="right">$600</td><td>Basic top-freezer</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Kitchen Subtotal</span><span>$1,950 – $2,400</span></div>
+                </div>
+
+                <div class="card room-card room-finishes">
+                    <h3>Finishes — Windows, Flooring, Walls</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Item</th><th class="right">Low</th><th class="right">High</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Windows (6–10, from ReStore)</td><td class="right">$150</td><td class="right">$600</td><td>$25–60 each</td></tr>
+                            <tr><td>Engineered wood flooring (~504 sqft)</td><td class="right">$1,000</td><td class="right">$1,500</td><td>$2–3/sqft budget</td></tr>
+                            <tr><td>Drywall (~1,800 sqft surface)</td><td class="right">$800</td><td class="right">$1,200</td><td>Sheets + mud + tape</td></tr>
+                            <tr><td>Insulation (walls + ceiling)</td><td class="right">$400</td><td class="right">$700</td><td>Fiberglass batts</td></tr>
+                            <tr><td>Interior paint (both floors)</td><td class="right">$150</td><td class="right">$250</td><td>Walls + trim</td></tr>
+                            <tr><td>Doors, trim, hardware</td><td class="right">$500</td><td class="right">$800</td><td>Interior doors, baseboards</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="room-subtotal"><span>Finishes Subtotal</span><span>$3,000 – $5,050</span></div>
+                </div>
+
+                <div class="grid-2" style="margin-top:1.25rem;">
+                    <div class="grand-total" style="background:linear-gradient(135deg,#0f2419,#1B6B3A);">
+                        <div class="gt-label">Low Estimate</div>
+                        <div class="gt-value" id="adu-low">$18,200</div>
+                    </div>
+                    <div class="grand-total" id="adu-high-card" style="background:linear-gradient(135deg,#7f1d1d,#991b1b);">
+                        <div class="gt-label">High Estimate</div>
+                        <div class="gt-value" id="adu-high">$33,500</div>
+                    </div>
+                </div>
+
+                <div class="callout callout-warning" id="adu-warning" style="display:none;margin-top:1rem;">
+                    <strong>Budget Warning:</strong> <span id="adu-warning-text"></span>
+                </div>
+
+                <div class="callout callout-info" style="margin-top:1rem;">
+                    <strong>Biggest cost drivers:</strong> Permits ($2K–$5K), roof work ($4.5K–$8K hired labor), and framing ($3K–$5K). The structure/roof phase is ~55% of the total budget. Saving on ReStore windows and DIY everything else keeps the remaining costs very manageable.
+                </div>
+            </div>
+
+            <!-- ============ TAB 6: TOTAL INVESTMENT ============ -->
+            <div class="section" id="sec-summary">
+                <h2 class="section-title">Total Investment Summary</h2>
+
+                <div class="card">
+                    <h3>Cash Needed to Close & Build</h3>
+                    <table class="data-table" id="summary-table">
+                        <thead><tr><th>Category</th><th class="right">Low</th><th class="right">High</th></tr></thead>
+                        <tbody>
+                            <tr><td>Down payment (20%)</td><td class="right">$119,980</td><td class="right">$119,980</td></tr>
+                            <tr><td>Closing costs (~2–3%)</td><td class="right">$12,000</td><td class="right">$18,000</td></tr>
+                            <tr><td>Rental unit renovation</td><td class="right">$1,895</td><td class="right">$1,895</td></tr>
+                            <tr><td>Our unit renovation</td><td class="right">$1,765</td><td class="right">$1,765</td></tr>
+                            <tr><td>ADU build</td><td class="right" id="sum-adu-low">$18,200</td><td class="right" id="sum-adu-high">$33,500</td></tr>
+                            <tr style="background:var(--fl-green-light);font-size:1.05rem;"><td class="bold">Grand Total Cash Needed</td><td class="right bold" id="sum-total-low">—</td><td class="right bold" id="sum-total-high">—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>Investment Breakdown</h3>
+                    <div class="bar-chart" id="waterfall-bars"></div>
+                </div>
+
+                <div class="callout callout-success" style="margin-top:1rem;">
+                    <strong>Perspective:</strong> The renovation + ADU costs (<span id="sum-reno-pct">—</span>% of total investment) generate $4,000/mo in rental income — that's building a cash-flowing asset for pennies on the dollar compared to the property value.
+                </div>
+            </div>
+
+            <!-- ============ TAB 7: TIMELINE ============ -->
+            <div class="section" id="sec-timeline">
+                <h2 class="section-title">Project Timeline</h2>
+
+                <div class="callout callout-info" style="margin-bottom:1.5rem;">
+                    Rental unit + our unit renovations can happen concurrently with Phase 1 permitting. Total estimated project duration: <strong>6–12 months</strong>.
+                </div>
+
+                <div class="card">
+                    <h3>Renovation Phase — Concurrent</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="tl-title">Rental Unit Renovation</div>
+                            <div class="tl-desc">Paint, cabinets, dishwasher, garbage disposal, crown molding, arched doorways, bathroom upgrades</div>
+                            <div class="tl-date">~1–2 weekends (DIY)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="tl-title">Our Unit Renovation</div>
+                            <div class="tl-desc">New stove, dishwasher, IKEA cabinets, floor tiles</div>
+                            <div class="tl-date">~1–2 weekends (DIY)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:0.5rem;">
+                    <h3>ADU Build Phases</h3>
+                    <div class="timeline">
+                        <div class="timeline-item phase-active">
+                            <div class="tl-title">Phase 1 — Permitting</div>
+                            <div class="tl-desc">Research City of Austin ADU requirements, prepare plans, submit permit application, wait for approval</div>
+                            <div class="tl-date">Est. 2–4 months</div>
+                        </div>
+                        <div class="timeline-item phase-future">
+                            <div class="tl-title">Phase 2 — Roof & Framing</div>
+                            <div class="tl-desc">Remove existing garage roof (hired help), frame second-story walls and floor, re-install new roof on top of 2nd story (hired help)</div>
+                            <div class="tl-date">Est. 1–2 months</div>
+                        </div>
+                        <div class="timeline-item phase-future">
+                            <div class="tl-title">Phase 3 — Full ADU Buildout</div>
+                            <div class="tl-desc">Plumbing rough-in, electrical rough-in, insulation, drywall, flooring, kitchen install, bathroom install, windows, mini split, paint, trim, final inspections</div>
+                            <div class="tl-date">Est. 3–6 months (DIY pace)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="tl-title">ADU Move-In Ready</div>
+                            <div class="tl-desc">Final city inspection, list for rent at $2,000/mo</div>
+                            <div class="tl-date">~6–12 months from permit start</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-3" style="margin-top:1.25rem;">
+                    <div class="card stat-card">
+                        <div class="stat-value" style="color:var(--fl-warning);">2–4 mo</div>
+                        <div class="stat-label">Permitting</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value" style="color:var(--fl-danger);">1–2 mo</div>
+                        <div class="stat-label">Roof & Framing</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value" style="color:var(--fl-accent);">3–6 mo</div>
+                        <div class="stat-label">Full Buildout</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ TAB 8: PERMITS & REGULATIONS ============ -->
+            <div class="section" id="sec-permits">
+                <h2 class="section-title">Permits & Regulatory Compliance</h2>
+
+                <div class="callout callout-warning">
+                    <strong>1402 Ashwood is 78 years old (built 1948).</strong> Structures over 45 years trigger mandatory Historic Preservation Office review. This adds time and design constraints — but is navigable with the right approach.
+                </div>
+
+                <!-- Property Context -->
+                <div class="card">
+                    <h3>Property & Zoning Context</h3>
+                    <table class="data-table">
+                        <tr><td class="bold" style="width:40%;">Zoning</td><td>SF-3-NCCD-NP (Family Residence — Neighborhood Conservation Combining District — Neighborhood Plan)</td></tr>
+                        <tr><td class="bold">Subdivision</td><td>Delwood Section 03, Upper Boggy Creek NP area</td></tr>
+                        <tr><td class="bold">Lot Size</td><td>~7,209 sq ft</td></tr>
+                        <tr><td class="bold">Year Built</td><td>1948 (Minimal Traditional style, stucco exterior, slab-on-grade)</td></tr>
+                        <tr><td class="bold">Current Use</td><td>Two-story duplex + independent outbuilding (garage/shop)</td></tr>
+                        <tr><td class="bold">Proposed</td><td>Vertical addition to outbuilding — second story for ADU</td></tr>
+                    </table>
+                </div>
+
+                <!-- NCCD vs SF-3 Development Standards -->
+                <div class="card">
+                    <h3>Development Standards — NCCD vs SF-3 Base</h3>
+                    <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:0.75rem;">The Upper Boggy Creek NCCD overlay is often <strong>more restrictive</strong> than base SF-3 zoning. Your design must meet the stricter of the two.</p>
+                    <table class="data-table">
+                        <thead><tr><th>Standard</th><th>NCCD Requirement</th><th>SF-3 Base</th><th>Impact</th></tr></thead>
+                        <tbody>
+                            <tr><td>Max Height (primary)</td><td class="bold">30 ft</td><td>35 ft</td><td><span class="badge badge-yellow">NCCD stricter</span></td></tr>
+                            <tr><td>Max Stories</td><td class="bold">2 stories</td><td>2 stories</td><td><span class="badge badge-gray">Same</span></td></tr>
+                            <tr><td>Accessory Height</td><td class="bold">25–25.5 ft</td><td>30 ft</td><td><span class="badge badge-red">Key constraint</span></td></tr>
+                            <tr><td>Front Setback</td><td>25 ft</td><td>25 ft</td><td><span class="badge badge-gray">Same</span></td></tr>
+                            <tr><td>Side Setback</td><td>5 ft</td><td>5 ft</td><td><span class="badge badge-gray">Same</span></td></tr>
+                            <tr><td>Rear Setback</td><td>10 ft (reduced for accessory)</td><td>10 ft</td><td><span class="badge badge-green">Garage is rear</span></td></tr>
+                            <tr><td>Impervious Cover</td><td colspan="2">45% of lot = 3,244 sq ft max</td><td><span class="badge badge-blue">Check total</span></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="callout callout-danger" style="margin-top:0.75rem;">
+                        <strong>Critical:</strong> The accessory structure height cap of 25–25.5 ft is the main design constraint for the 2-story garage. Your design must stay under this limit AND within the "Setback Plane" (McMansion ordinance Subchapter F) — a 45-degree slope starting 15 ft above the side property line.
+                    </div>
+                </div>
+
+                <!-- HOME Initiative Benefits -->
+                <div class="card">
+                    <h3>HOME Initiative Benefits (2024–2026)</h3>
+                    <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:0.75rem;">Austin's Housing Options and Market Efficiency (HOME) initiative provides significant advantages for this project:</p>
+                    <div class="grid-3" style="margin-bottom:0.75rem;">
+                        <div class="card stat-card" style="background:var(--fl-green-light);margin-bottom:0;">
+                            <div class="stat-value" style="font-size:1.2rem;">1,350 sf</div>
+                            <div class="stat-label">Max ADU size (or 0.15 FAR)</div>
+                        </div>
+                        <div class="card stat-card" style="background:var(--fl-green-light);margin-bottom:0;">
+                            <div class="stat-value" style="font-size:1.2rem;">2,500 sf</div>
+                            <div class="stat-label">Min lot (yours is 7,209)</div>
+                        </div>
+                        <div class="card stat-card" style="background:var(--fl-green-light);margin-bottom:0;">
+                            <div class="stat-value" style="font-size:1.2rem;">0</div>
+                            <div class="stat-label">Parking spaces required</div>
+                        </div>
+                    </div>
+                    <div class="callout callout-success">
+                        <strong>Good news:</strong> The HOME initiative removed extra parking requirements for ADUs and expanded allowable unit sizes. Your 504 sq ft ADU is well under the 1,350 sq ft cap, and your 7,209 sq ft lot far exceeds the 2,500 sq ft minimum.
+                    </div>
+                </div>
+
+                <!-- Permit Fee Breakdown -->
+                <div class="card">
+                    <h3>Permit Fee Breakdown (FY 2025–2026)</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Fee Type</th><th class="right">Estimated Cost</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Plan Review Application</td><td class="right">$136</td><td>Base processing for residential additions</td></tr>
+                            <tr><td>Plan Review Fee (401–500 sq ft)</td><td class="right">$551</td><td>Tiered sq ft review charge</td></tr>
+                            <tr><td>Building Permit (BP)</td><td class="right">$335</td><td>Standard BP for small projects</td></tr>
+                            <tr><td>Electrical Permit (EP)</td><td class="right">$167</td><td>New circuits / service upgrade</td></tr>
+                            <tr><td>Plumbing Permit (PP)</td><td class="right">$200</td><td>Bathroom + kitchen plumbing</td></tr>
+                            <tr><td>Mechanical Permit (MP)</td><td class="right">$147</td><td>Mini split / HVAC review</td></tr>
+                            <tr><td>Energy Code Review</td><td class="right">$86</td><td>IECC compliance check</td></tr>
+                            <tr><td>Historic Review</td><td class="right">$151</td><td>Required — building is 78 years old</td></tr>
+                            <tr style="background:var(--fl-green-light);"><td class="bold">Subtotal: Base City Fees</td><td class="right bold">$1,773</td><td></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h4 style="margin-top:1.25rem;">Potential Additional Fees</h4>
+                    <table class="data-table">
+                        <thead><tr><th>Fee Type</th><th class="right">Estimated</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Technology Surcharge (4–10%)</td><td class="right">$70–$180</td><td>Funds AB+C portal infrastructure</td></tr>
+                            <tr><td>Tree Mitigation (if applicable)</td><td class="right">$0–$3,000+</td><td>Per inch of tree diameter if protected tree impacted</td></tr>
+                            <tr><td>Capital Recovery / Impact Fees</td><td class="right">$0–$1,500</td><td>Often reduced/waived for ADUs under 600 sq ft</td></tr>
+                            <tr><td>Variance (if needed via BOA)</td><td class="right">~$1,000</td><td>Only if exceeding NCCD height or setback</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="grid-2" style="margin-top:1.25rem;">
+                        <div class="grand-total" style="background:linear-gradient(135deg,#0f2419,#1B6B3A);">
+                            <div class="gt-label">City Fees Only</div>
+                            <div class="gt-value">$2,500–$4,500</div>
+                        </div>
+                        <div class="grand-total" style="background:linear-gradient(135deg,#1e3a5f,#0369a1);">
+                            <div class="gt-label">+ Professional Services</div>
+                            <div class="gt-value">$7,000–$12,000</div>
+                            <div class="gt-note">Architect + Engineer + Surveyor</div>
+                        </div>
+                    </div>
+
+                    <div class="callout callout-info" style="margin-top:1rem;">
+                        <strong>Total permitting budget (fees + professionals): $9,500 – $16,500.</strong> This is the "soft cost" investment required before construction begins. The professional services are mandatory — Austin requires certified structural plans and a boundary survey for this type of project.
+                    </div>
+                </div>
+
+                <!-- Review Process -->
+                <div class="card">
+                    <h3>Review Types Required</h3>
+                    <div class="grid-2">
+                        <div>
+                            <h4>Residential Plan Review (RPR)</h4>
+                            <p style="font-size:0.85rem;color:var(--fl-muted);">Submit digital plans through Austin Build + Connect (AB+C) portal. Must include: certified boundary survey, site plan with impervious cover, floor plans for both levels, and Setback Plane (McMansion) analysis.</p>
+                        </div>
+                        <div>
+                            <h4>Historic Preservation Review</h4>
+                            <p style="font-size:0.85rem;color:var(--fl-muted);">HPO reviews impact on historical integrity. Design tip: match the 1948 stucco finish and roof pitch to get <strong>administrative approval</strong> and avoid a full Historic Landmark Commission hearing.</p>
+                        </div>
+                        <div>
+                            <h4>Environmental / Tree Review</h4>
+                            <p style="font-size:0.85rem;color:var(--fl-muted);">Tree survey required. Protected trees (19"+ diameter) and Heritage trees (24"+) trigger Critical Root Zone analysis. Construction equipment access must avoid root zones.</p>
+                        </div>
+                        <div>
+                            <h4>Trade Permits (EP, PP, MP)</h4>
+                            <p style="font-size:0.85rem;color:var(--fl-muted);">Electrical: new sub-panel likely needed. Plumbing: check if 1948 clay/cast-iron sewer lateral needs replacement. Mechanical: mini split must meet 2024 IECC.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structural Challenges -->
+                <div class="card">
+                    <h3>Structural Engineering Challenges</h3>
+                    <div class="callout callout-warning" style="margin-top:0;">
+                        <strong>1948 Foundation Risk:</strong> Most garages from this era have unreinforced 4-inch concrete slabs. A structural engineer must perform a slab-depth test before permitting. If the foundation is insufficient, underpinning could add <strong>$15,000–$30,000</strong> to the project.
+                    </div>
+                    <table class="data-table" style="margin-top:0.75rem;">
+                        <thead><tr><th>Challenge</th><th>Requirement</th><th>Cost Impact</th></tr></thead>
+                        <tbody>
+                            <tr><td>Foundation load capacity</td><td>Engineer must certify slab can support 2nd story dead + live loads</td><td><span class="badge badge-red">$15K–$30K if underpinning needed</span></td></tr>
+                            <tr><td>Wall framing upgrade</td><td>May need to double studs or switch from 2x4 to 2x6</td><td><span class="badge badge-yellow">$500–$2,000</span></td></tr>
+                            <tr><td>Fire separation</td><td>If within 5 ft of property line: fire-rated walls (Type X gypsum), no windows on that side</td><td><span class="badge badge-yellow">$300–$800</span></td></tr>
+                            <tr><td>Egress (2nd floor)</td><td>Emergency escape window in sleeping area + code-compliant staircase</td><td><span class="badge badge-green">Included in build</span></td></tr>
+                            <tr><td>Insulation (2024 IECC)</td><td>R-21 walls, R-49 roof, high-performance windows</td><td><span class="badge badge-green">Included in build</span></td></tr>
+                            <tr><td>Sewer lateral</td><td>1948 clay/cast-iron lines may need full replacement to street</td><td><span class="badge badge-red">$3,000–$8,000 if needed</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Permitting Timeline -->
+                <div class="card">
+                    <h3>Permitting Timeline — Step by Step</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Phase</th><th>Duration</th><th>Key Milestones</th></tr></thead>
+                        <tbody>
+                            <tr><td class="bold">Pre-Design & Surveys</td><td>3–6 weeks</td><td>Boundary survey, tree survey, structural assessment</td></tr>
+                            <tr><td class="bold">Architectural Design</td><td>4–8 weeks</td><td>Construction drawings, Subchapter F compliance</td></tr>
+                            <tr><td class="bold">Site Plan Exemption</td><td>2–4 weeks</td><td>DSD review of footprint and impervious cover</td></tr>
+                            <tr><td class="bold">Residential Plan Review</td><td>6–12 weeks</td><td>Building, Zoning, and Technical reviews</td></tr>
+                            <tr><td class="bold">Historic Office Review</td><td>2–4 weeks</td><td>Review of 1948 structure and design compatibility</td></tr>
+                            <tr><td class="bold">Permit Issuance</td><td>1 week</td><td>Payment of final invoices, BP activation</td></tr>
+                            <tr style="background:var(--fl-green-light);"><td class="bold">Total: Permit Process</td><td class="bold">4–9 months</td><td>From first survey to permit in hand</td></tr>
+                            <tr><td class="bold">Construction Phase</td><td>4–8 months</td><td>Foundation, framing, trade inspections</td></tr>
+                            <tr style="background:#eff6ff;"><td class="bold">Total: Inception to Occupancy</td><td class="bold">10–14 months</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Strategic Recommendations -->
+                <div class="card">
+                    <h3>Strategic Recommendations</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="tl-title">1. Get Surveys First</div>
+                            <div class="tl-desc">Boundary + tree survey to map Critical Root Zones against garage footprint. Structural engineer slab-depth test to confirm the 1948 foundation can handle a 2nd story. <strong>This determines if the project is viable at your budget.</strong></div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="tl-title">2. Design Within NCCD Limits</div>
+                            <div class="tl-desc">Keep under 25.5 ft accessory height to avoid Board of Adjustment variance ($1,000 fee + major delays). Stay within the Setback Plane. Consider the "Preservation Bonus" under HOME initiative for FAR exemptions.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="tl-title">3. Engage Historic Preservation Early</div>
+                            <div class="tl-desc">Present a design that matches the 1948 stucco/wood-siding palette. Avoid modern industrial materials (corrugated metal). Goal: <strong>administrative approval</strong> to skip the full Historic Landmark Commission hearing.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="tl-title">4. Schedule a Preliminary Plan Review (PPR)</div>
+                            <div class="tl-desc">Meet with city staff before filing to identify deal-breakers (heritage tree conflicts, NCCD violations). This prevents costly comment cycles and re-submissions.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="tl-title">5. Budget for Soft Costs</div>
+                            <div class="tl-desc">~$5K city fees + $7K–$12K professionals (architect, structural engineer, surveyor). The professional docs are mandatory for permit approval in a historic area like Delwood.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warnings -->
+                <div class="callout callout-danger">
+                    <strong>Do NOT skip permits.</strong> Unpermitted work in Austin carries a fine of <strong>triple the permit cost or $25/day</strong> (whichever is greater). Unpermitted structures can receive a Stop Work Order and may be required to be demolished if they can't meet modern structural and fire codes.
+                </div>
+
+                <div class="callout callout-info" style="margin-top:0.5rem;">
+                    <strong>ROI context:</strong> A permitted garage conversion in Austin delivers up to 80% ROI. In Cherrywood/Delwood, ADUs rent for $1,500–$2,000/mo. The $9.5K–$16.5K permitting investment is recovered in 5–8 months of ADU rental income.
+                </div>
+            </div>
+
+            <!-- ============ TAB 9: BREAK-EVEN ============ -->
+            <div class="section" id="sec-breakeven">
+                <h2 class="section-title">Break-Even Analysis</h2>
+
+                <div class="card">
+                    <h3>When Does Rental Income Cover the Investment?</h3>
+                    <p style="font-size:0.85rem;color:var(--fl-muted);margin-bottom:1rem;">
+                        This tracks cumulative net rental income (after mortgage costs) vs. total renovation + ADU investment. The crossover point is when the property improvements have "paid for themselves."
+                    </p>
+                    <canvas id="breakeven-chart" width="800" height="400" style="width:100%;height:auto;"></canvas>
+                </div>
+
+                <div class="grid-2" style="margin-top:1.25rem;">
+                    <div class="card stat-card">
+                        <div class="stat-value" id="be-months">—</div>
+                        <div class="stat-label">Months to Break Even (mid estimate)</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-value" id="be-year-5">—</div>
+                        <div class="stat-label">Cumulative Profit by Year 5</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:1.25rem;">
+                    <h3>Monthly Cash Flow Over Time</h3>
+                    <canvas id="cashflow-chart" width="800" height="350" style="width:100%;height:auto;"></canvas>
+                    <div class="callout callout-info" style="margin-top:0.75rem;">
+                        The step up in cash flow marks when the ADU comes online. Rent growth compounds year over year, steadily increasing your monthly surplus.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+(function() {
+    // ===== CONSTANTS =====
+    const PRICE = 599900;
+    const DOWN_PCT = 0.20;
+    const DOWN = PRICE * DOWN_PCT;
+    const LOAN = PRICE - DOWN;
+    const TERM = 360; // 30 years
+    const TAX = 730;
+    const INSURANCE = 200;
+
+    // Renovation costs (fixed)
+    const RENTAL_RENO = 1895;
+    const OUR_RENO = 1765;
+    const ADU_LOW = 18200;
+    const ADU_HIGH = 33500;
+    const ADU_MID = Math.round((ADU_LOW + ADU_HIGH) / 2);
+    const CLOSING_LOW = 12000;
+    const CLOSING_HIGH = 18000;
+
+    // ===== UTILITY FUNCTIONS =====
+    function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+    function fmtK(n) { return n >= 1000 ? '$' + Math.round(n/1000) + 'K' : fmt(n); }
+
+    function calcMortgage(principal, annualRate, termMonths) {
+        const r = annualRate / 12;
+        if (r === 0) return principal / termMonths;
+        return principal * (r * Math.pow(1 + r, termMonths)) / (Math.pow(1 + r, termMonths) - 1);
+    }
+
+    function getSliderValues() {
+        return {
+            rate: parseFloat(document.getElementById('sl-rate').value),
+            rent1: parseInt(document.getElementById('sl-rent1').value),
+            rent2: parseInt(document.getElementById('sl-rent2').value),
+            growth: parseFloat(document.getElementById('sl-growth').value)
+        };
+    }
+
+    // ===== TAB SWITCHING =====
+    document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('sec-' + this.dataset.section).classList.add('active');
+        });
+    });
+
+    // ===== PIE CHART =====
+    function drawPie(pi, tax, ins) {
+        const canvas = document.getElementById('pie-chart');
+        const ctx = canvas.getContext('2d');
+        const total = pi + tax + ins;
+        const data = [
+            { label: 'Principal & Interest', value: pi, color: '#1B6B3A' },
+            { label: 'Property Tax', value: tax, color: '#f59e0b' },
+            { label: 'Insurance', value: ins, color: '#3b82f6' }
+        ];
+        const cx = 120, cy = 120, r = 100;
+        ctx.clearRect(0, 0, 240, 240);
+
+        let startAngle = -Math.PI / 2;
+        data.forEach(d => {
+            const sliceAngle = (d.value / total) * 2 * Math.PI;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+            ctx.closePath();
+            ctx.fillStyle = d.color;
+            ctx.fill();
+            startAngle += sliceAngle;
+        });
+
+        // Center hole
+        ctx.beginPath();
+        ctx.arc(cx, cy, 55, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+
+        // Center text
+        ctx.fillStyle = '#1a1a2e';
+        ctx.font = 'bold 16px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(fmt(total), cx, cy - 2);
+        ctx.font = '11px -apple-system, sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('/month', cx, cy + 14);
+
+        // Legend
+        const legendEl = document.getElementById('pie-legend');
+        legendEl.innerHTML = data.map(d =>
+            `<div class="pie-legend-item">
+                <div class="pie-legend-dot" style="background:${d.color}"></div>
+                <span><strong>${fmt(d.value)}</strong> ${d.label} (${Math.round(d.value/total*100)}%)</span>
+            </div>`
+        ).join('');
+    }
+
+    // ===== AMORTIZATION TABLE =====
+    function buildAmortTable(annualRate) {
+        const tbody = document.querySelector('#amort-table tbody');
+        const r = annualRate / 12;
+        const mp = calcMortgage(LOAN, annualRate, TERM);
+        let balance = LOAN;
+        let totalPaid = 0;
+        const rows = [];
+        for (let m = 1; m <= TERM; m++) {
+            const interest = balance * r;
+            const principal = mp - interest;
+            balance -= principal;
+            totalPaid += mp;
+            if (m % 12 === 0) {
+                const year = m / 12;
+                if ([1,2,3,5,10,15,20,25,30].includes(year)) {
+                    rows.push(`<tr><td>Year ${year}</td><td class="right">${fmt(Math.max(0, balance))}</td><td class="right">${fmt(PRICE - Math.max(0, balance))}</td><td class="right">${fmt(totalPaid)}</td></tr>`);
+                }
+            }
+        }
+        tbody.innerHTML = rows.join('');
+    }
+
+    // ===== RENT PROJECTION TABLE =====
+    function buildRentProjection(rent1, rent2, growthPct) {
+        const tbody = document.querySelector('#rent-projection tbody');
+        const rows = [];
+        for (let y = 0; y < 10; y++) {
+            const factor = Math.pow(1 + growthPct / 100, y);
+            const r1 = Math.round(rent1 * factor);
+            const r2 = Math.round(rent2 * factor);
+            const combined = r1 + r2;
+            rows.push(`<tr><td>Year ${y + 1}</td><td class="right">${fmt(r1)}</td><td class="right">${fmt(r2)}</td><td class="right bold">${fmt(combined)}</td><td class="right">${fmt(combined * 12)}</td></tr>`);
+        }
+        tbody.innerHTML = rows.join('');
+    }
+
+    // ===== WATERFALL BARS =====
+    function buildWaterfallBars() {
+        const items = [
+            { label: 'Down Payment', low: DOWN, high: DOWN, color: '#1B6B3A' },
+            { label: 'Closing Costs', low: CLOSING_LOW, high: CLOSING_HIGH, color: '#0369a1' },
+            { label: 'Rental Reno', low: RENTAL_RENO, high: RENTAL_RENO, color: '#f59e0b' },
+            { label: 'Our Reno', low: OUR_RENO, high: OUR_RENO, color: '#8b5cf6' },
+            { label: 'ADU Build', low: ADU_LOW, high: ADU_HIGH, color: '#ef4444' }
+        ];
+        const maxVal = items.reduce((s, i) => s + i.high, 0);
+        const container = document.getElementById('waterfall-bars');
+        container.innerHTML = items.map(item => {
+            const midVal = Math.round((item.low + item.high) / 2);
+            const pct = (midVal / maxVal) * 100;
+            const rangeText = item.low === item.high ? fmt(item.low) : `${fmtK(item.low)} – ${fmtK(item.high)}`;
+            return `<div class="bar-row">
+                <div class="bar-label">${item.label}</div>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:${pct}%;background:${item.color};">${rangeText}</div>
+                </div>
+                <div class="bar-amount">${rangeText}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // ===== ADU BUDGET BAR =====
+    function updateAduBudgetBar() {
+        const mid = ADU_MID;
+        const maxBar = 50000;
+        const pct = Math.min(100, (mid / maxBar) * 100);
+        const fill = document.getElementById('adu-budget-fill');
+        const isOver = mid > 40000;
+        fill.style.width = pct + '%';
+        fill.style.background = isOver ? '#ef4444' : 'var(--fl-green)';
+        fill.textContent = fmt(mid) + ' avg';
+
+        const warning = document.getElementById('adu-warning');
+        if (ADU_HIGH > 40000) {
+            warning.style.display = 'block';
+            document.getElementById('adu-warning-text').textContent =
+                `The high estimate (${fmt(ADU_HIGH)}) could exceed the $40K target. Biggest cost drivers: permits + roof/framing (hired labor). To stay under $40K: negotiate roof crew rates, keep permits on the low end, and source all windows from ReStore.`;
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+
+    // ===== BREAK-EVEN CHART =====
+    function drawBreakevenChart(annualRate, rent1, rent2, growthPct) {
+        const canvas = document.getElementById('breakeven-chart');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const totalInvestment = RENTAL_RENO + OUR_RENO + ADU_MID + Math.round((CLOSING_LOW + CLOSING_HIGH) / 2);
+        const mp = calcMortgage(LOAN, annualRate, TERM) + TAX + INSURANCE;
+        const aduOnlineMonth = 9; // ~9 months until ADU is ready
+
+        // Calculate cumulative net income over 120 months (10 years)
+        const months = 120;
+        const cumulativeIncome = [];
+        let cumulative = 0;
+        let breakMonth = -1;
+
+        for (let m = 0; m < months; m++) {
+            const year = Math.floor(m / 12);
+            const factor = Math.pow(1 + growthPct / 100, year);
+            const r1 = rent1 * factor;
+            const r2 = m >= aduOnlineMonth ? rent2 * factor : 0;
+            const netMonthly = r1 + r2 - mp;
+            cumulative += netMonthly;
+            cumulativeIncome.push(cumulative);
+            if (breakMonth < 0 && cumulative >= totalInvestment) breakMonth = m + 1;
+        }
+
+        // Chart dimensions
+        const pad = { top: 40, right: 30, bottom: 50, left: 70 };
+        const cw = W - pad.left - pad.right;
+        const ch = H - pad.top - pad.bottom;
+
+        const allVals = [...cumulativeIncome, totalInvestment];
+        const minY = Math.min(0, ...allVals);
+        const maxY = Math.max(...allVals) * 1.1;
+
+        function xPos(m) { return pad.left + (m / months) * cw; }
+        function yPos(v) { return pad.top + ch - ((v - minY) / (maxY - minY)) * ch; }
+
+        // Grid lines
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        const ySteps = 5;
+        for (let i = 0; i <= ySteps; i++) {
+            const v = minY + (maxY - minY) * (i / ySteps);
+            const y = yPos(v);
+            ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+            ctx.fillStyle = '#64748b'; ctx.font = '11px -apple-system,sans-serif'; ctx.textAlign = 'right';
+            ctx.fillText(fmtK(v), pad.left - 8, y + 4);
+        }
+
+        // X labels
+        ctx.textAlign = 'center';
+        for (let y = 0; y <= 10; y += 2) {
+            const x = xPos(y * 12);
+            ctx.fillStyle = '#64748b'; ctx.font = '11px -apple-system,sans-serif';
+            ctx.fillText('Yr ' + y, x, H - pad.bottom + 20);
+        }
+
+        // Investment line (horizontal)
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, yPos(totalInvestment));
+        ctx.lineTo(W - pad.right, yPos(totalInvestment));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px -apple-system,sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText('Investment: ' + fmt(totalInvestment), pad.left + 4, yPos(totalInvestment) - 8);
+
+        // Zero line
+        if (minY < 0) {
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, yPos(0));
+            ctx.lineTo(W - pad.right, yPos(0));
+            ctx.stroke();
+        }
+
+        // ADU online marker
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(xPos(aduOnlineMonth), pad.top);
+        ctx.lineTo(xPos(aduOnlineMonth), H - pad.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#f59e0b'; ctx.font = '10px -apple-system,sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('ADU online', xPos(aduOnlineMonth), pad.top - 6);
+
+        // Cumulative income curve
+        ctx.strokeStyle = '#1B6B3A';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let m = 0; m < months; m++) {
+            const x = xPos(m);
+            const y = yPos(cumulativeIncome[m]);
+            if (m === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Fill under curve
+        ctx.lineTo(xPos(months - 1), yPos(0));
+        ctx.lineTo(xPos(0), yPos(0));
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(27,107,58,0.08)';
+        ctx.fill();
+
+        // Break-even dot
+        if (breakMonth > 0) {
+            const bx = xPos(breakMonth);
+            const by = yPos(totalInvestment);
+            ctx.beginPath();
+            ctx.arc(bx, by, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = '#1B6B3A';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(bx, by, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            ctx.fillStyle = '#1B6B3A'; ctx.font = 'bold 12px -apple-system,sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Break-even: ~' + breakMonth + ' months', bx, by - 14);
+        }
+
+        // Title
+        ctx.fillStyle = '#1a1a2e'; ctx.font = 'bold 13px -apple-system,sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText('Cumulative Net Rental Income vs. Total Investment', pad.left, 20);
+
+        // Update stat cards
+        document.getElementById('be-months').textContent = breakMonth > 0 ? '~' + breakMonth + ' months' : 'N/A';
+        const yr5val = cumulativeIncome[59] || 0;
+        document.getElementById('be-year-5').textContent = fmt(yr5val);
+        document.getElementById('be-year-5').style.color = yr5val > 0 ? 'var(--fl-success)' : 'var(--fl-danger)';
+    }
+
+    // ===== CASH FLOW OVER TIME CHART =====
+    function drawCashflowChart(annualRate, rent1, rent2, growthPct) {
+        const canvas = document.getElementById('cashflow-chart');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const mp = calcMortgage(LOAN, annualRate, TERM) + TAX + INSURANCE;
+        const aduOnlineMonth = 9;
+        const months = 120;
+        const cashflows = [];
+
+        for (let m = 0; m < months; m++) {
+            const year = Math.floor(m / 12);
+            const factor = Math.pow(1 + growthPct / 100, year);
+            const r1 = rent1 * factor;
+            const r2 = m >= aduOnlineMonth ? rent2 * factor : 0;
+            cashflows.push(r1 + r2 - mp);
+        }
+
+        const pad = { top: 30, right: 20, bottom: 50, left: 70 };
+        const cw = W - pad.left - pad.right;
+        const ch = H - pad.top - pad.bottom;
+
+        const minY = Math.min(0, ...cashflows) * 1.1;
+        const maxY = Math.max(...cashflows) * 1.2;
+
+        function xPos(m) { return pad.left + (m / months) * cw; }
+        function yPos(v) { return pad.top + ch - ((v - minY) / (maxY - minY)) * ch; }
+
+        // Grid
+        ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const v = minY + (maxY - minY) * (i / 4);
+            const y = yPos(v);
+            ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+            ctx.fillStyle = '#64748b'; ctx.font = '11px -apple-system,sans-serif'; ctx.textAlign = 'right';
+            ctx.fillText(fmt(v), pad.left - 8, y + 4);
+        }
+        ctx.textAlign = 'center';
+        for (let y = 0; y <= 10; y += 2) {
+            ctx.fillStyle = '#64748b'; ctx.font = '11px -apple-system,sans-serif';
+            ctx.fillText('Yr ' + y, xPos(y * 12), H - pad.bottom + 20);
+        }
+
+        // Zero line
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(pad.left, yPos(0)); ctx.lineTo(W - pad.right, yPos(0)); ctx.stroke();
+
+        // Bars
+        const barW = Math.max(2, cw / months - 1);
+        cashflows.forEach((cf, m) => {
+            const x = xPos(m);
+            const y0 = yPos(0);
+            const y = yPos(cf);
+            ctx.fillStyle = cf >= 0 ? 'rgba(27,107,58,0.6)' : 'rgba(239,68,68,0.5)';
+            ctx.fillRect(x, Math.min(y, y0), barW, Math.abs(y - y0));
+        });
+
+        // ADU marker
+        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+        ctx.beginPath(); ctx.moveTo(xPos(aduOnlineMonth), pad.top); ctx.lineTo(xPos(aduOnlineMonth), H - pad.bottom); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#f59e0b'; ctx.font = '10px -apple-system,sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('ADU online', xPos(aduOnlineMonth), pad.top - 6);
+
+        ctx.fillStyle = '#1a1a2e'; ctx.font = 'bold 13px -apple-system,sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText('Monthly Net Cash Flow', pad.left, 18);
+    }
+
+    // ===== SUMMARY TOTALS =====
+    function updateSummaryTotals() {
+        const totalLow = DOWN + CLOSING_LOW + RENTAL_RENO + OUR_RENO + ADU_LOW;
+        const totalHigh = DOWN + CLOSING_HIGH + RENTAL_RENO + OUR_RENO + ADU_HIGH;
+        document.getElementById('sum-total-low').textContent = fmt(totalLow);
+        document.getElementById('sum-total-high').textContent = fmt(totalHigh);
+
+        const renoTotal = RENTAL_RENO + OUR_RENO + ADU_MID;
+        const totalMid = (totalLow + totalHigh) / 2;
+        document.getElementById('sum-reno-pct').textContent = Math.round(renoTotal / totalMid * 100);
+    }
+
+    // ===== MASTER UPDATE =====
+    function updateAll() {
+        const { rate, rent1, rent2, growth } = getSliderValues();
+        const annualRate = rate / 100;
+        const pi = calcMortgage(LOAN, annualRate, TERM);
+        const totalMonthly = pi + TAX + INSURANCE;
+
+        // Update slider labels
+        document.getElementById('val-rate').textContent = rate.toFixed(2) + '%';
+        document.getElementById('val-rent1').textContent = fmt(rent1);
+        document.getElementById('val-rent2').textContent = fmt(rent2);
+        document.getElementById('val-growth').textContent = growth.toFixed(1) + '%';
+
+        // Tab 1 — Purchase
+        document.getElementById('pi-payment').textContent = fmt(pi);
+        document.getElementById('total-monthly').textContent = fmt(totalMonthly);
+        drawPie(pi, TAX, INSURANCE);
+        buildAmortTable(annualRate);
+
+        // Tab 2 — Cash flow
+        document.getElementById('cf1-costs').textContent = fmt(totalMonthly);
+        document.getElementById('cf1-income').textContent = '+' + fmt(rent1);
+        const net1 = rent1 - totalMonthly;
+        document.getElementById('cf1-net').textContent = fmt(Math.abs(net1));
+        document.getElementById('cf1-net').style.color = net1 >= 0 ? 'var(--fl-success)' : 'var(--fl-danger)';
+        document.getElementById('cf1-net').textContent = (net1 >= 0 ? '+' : '-') + fmt(Math.abs(net1));
+
+        document.getElementById('cf2-costs').textContent = fmt(totalMonthly);
+        document.getElementById('cf2-income').textContent = '+' + fmt(rent1 + rent2);
+        const net2 = (rent1 + rent2) - totalMonthly;
+        document.getElementById('cf2-net').textContent = (net2 >= 0 ? '+' : '-') + fmt(Math.abs(net2));
+        document.getElementById('cf2-net').style.color = net2 >= 0 ? 'var(--fl-success)' : 'var(--fl-danger)';
+        const netRow = document.getElementById('cf2-net-row');
+        netRow.style.background = net2 >= 0 ? '#f0fdf4' : '#fef2f2';
+
+        buildRentProjection(rent1, rent2, growth);
+
+        // Tab 5 — ADU budget bar
+        updateAduBudgetBar();
+
+        // Tab 6 — Summary
+        updateSummaryTotals();
+        buildWaterfallBars();
+
+        // Tab 8 — Break-even
+        drawBreakevenChart(annualRate, rent1, rent2, growth);
+        drawCashflowChart(annualRate, rent1, rent2, growth);
+    }
+
+    // ===== SLIDER LISTENERS =====
+    ['sl-rate', 'sl-rent1', 'sl-rent2', 'sl-growth'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateAll);
+    });
+
+    // ===== INIT =====
+    updateAll();
+})();
+</script>
+</body>
+</html>
