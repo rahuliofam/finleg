@@ -34,6 +34,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Verify all public pages have the standard FinLeg header
+        run: node scripts/check-page-headers.mjs
+
       - run: npm run build
 
       - uses: actions/configure-pages@v5

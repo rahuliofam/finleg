@@ -23,6 +23,7 @@ This is **finleg**. If the user mentions **alpacapps**, **alpaca**, **portsie**,
 2. Push immediately — GitHub Pages deploys on push to main. See `docs/DEPLOY.md`
 3. CI bumps version — never bump locally
 4. Run SQL migrations directly — never ask the user to run SQL manually
+5. **Every new HTML page under `public/`** must include `<script src="/finleg-header.js"></script>` inside `<body>` (inside `#main-content` if the page has auth-gating). This injects the shared nav bar + version indicator. CI enforces this via `scripts/check-page-headers.mjs` — deploy will fail if any page is missing it.
 
 ## Code Guards
 
