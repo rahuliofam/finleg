@@ -1,12 +1,12 @@
 {
-  "version": "v260415.04 2:50p",
-  "release": 224,
-  "sha": "f012618",
-  "fullSha": "f012618687f6a4a8c2f44dd1384393e0d909a113",
+  "version": "v260415.05 11:18p",
+  "release": 225,
+  "sha": "7318a22",
+  "fullSha": "7318a22012adc320fff96e1a6b2b76500f89a6c8",
   "actor": "jackie61899280",
   "source": "github-main-push",
   "model": "ci",
   "machine": "runnervm35a4x",
-  "pushedAt": "2026-04-15 19:50:26+00",
-  "commits": [{"sha":"f012618","message":"fix: bypass Supabase auth redirect on localhost for preview compatibility","author":"Jacqueline Giroux"}]
+  "pushedAt": "2026-04-16 04:18:45+00",
+  "commits": [{"sha":"7318a22","message":"feat: add Ashwood cost breakdown page with 9 interactive tabs","author":"Jacqueline Giroux"}]
 }
