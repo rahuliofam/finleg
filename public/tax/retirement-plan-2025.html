@@ -112,7 +112,7 @@
     <div class="header">
         <h1>2025 Retirement Contributions & Distribution Strategy</h1>
         <h2>Sonnad Family — Updated with Actual Tax Documents</h2>
-        <div class="updated">Updated: April 9, 2026 &middot; Source: 2025 W-2s, 1099s, German Wage Certificate</div>
+        <div class="updated">Updated: April 16, 2026 &middot; Source: 2025 W-2s, 1099s, Schedule C net profits, German Wage Certificate</div>
     </div>
 
     <!-- INCOME SUMMARY -->
@@ -140,8 +140,8 @@
             <tr><th>Item</th><th class="right">Plan Assumed</th><th class="right">Actual</th><th class="right">Difference</th><th>Impact</th></tr>
             <tr class="changed"><td>Haydn W-2 income</td><td class="amount">$60,000</td><td class="amount">$24,910</td><td class="amount" style="color:#dc2626">-$35,090</td><td><span class="badge badge-change">More distrib room</span></td></tr>
             <tr><td>Emina German wages</td><td class="amount">$29,630</td><td class="amount">$29,630</td><td class="amount">$0</td><td><span class="badge badge-ok">Confirmed</span></td></tr>
-            <tr class="changed"><td>Hannah earned income</td><td class="amount">$28,000</td><td class="amount">~$36,201</td><td class="amount" style="color:#16a34a">+$8,201</td><td><span class="badge badge-change">More 401k capacity</span></td></tr>
-            <tr class="changed"><td>Jackie earned income</td><td class="amount">$31,000</td><td class="amount">~$14,626</td><td class="amount" style="color:#dc2626">-$16,374</td><td><span class="badge badge-warn">Less 401k capacity</span></td></tr>
+            <tr class="changed"><td>Hannah Sch C net profit</td><td class="amount">$28,000</td><td class="amount">$14,655</td><td class="amount" style="color:#dc2626">-$13,345</td><td><span class="badge badge-warn">Less 401k capacity</span></td></tr>
+            <tr class="changed"><td>Jackie Sch C net profit</td><td class="amount">$31,000</td><td class="amount">$10,437</td><td class="amount" style="color:#dc2626">-$20,563</td><td><span class="badge badge-warn">Less 401k capacity</span></td></tr>
         </table>
     </div>
 
@@ -161,24 +161,46 @@
 
     <!-- SOLO 401K -->
     <div class="section">
-        <div class="section-title">Roth Solo 401(k) Contributions — Based on SE Income Only</div>
+        <div class="section-title">Roth Solo 401(k) Contributions — Based on Schedule C Net Profit</div>
         <table>
             <tr><th></th><th class="right">Hannah</th><th class="right">Jackie</th></tr>
-            <tr><td>Total SE Income</td><td class="amount">~$24,846</td><td class="amount">$12,600</td></tr>
-            <tr><td>Less 1/2 SE Tax (7.65%)</td><td class="amount">-$1,901</td><td class="amount">-$964</td></tr>
-            <tr><td>Adjusted SE Income</td><td class="amount">~$22,945</td><td class="amount">~$11,636</td></tr>
-            <tr><td>Employee Deferral (up to $23,500)</td><td class="amount">$22,945</td><td class="amount">$11,636</td></tr>
-            <tr><td>Employer Profit-Sharing (20%)</td><td class="amount">~$4,589</td><td class="amount">~$2,327</td></tr>
-            <tr class="total-row"><td>Total Solo 401(k)</td><td class="amount">~$27,534</td><td class="amount">~$13,963</td></tr>
+            <tr><td>Schedule C gross SE income</td><td class="amount">~$24,406</td><td class="amount">$12,600</td></tr>
+            <tr><td>Less business expenses</td><td class="amount">-$9,751</td><td class="amount">-$2,163</td></tr>
+            <tr class="changed"><td><strong>Schedule C net profit</strong></td><td class="amount"><strong>$14,655</strong></td><td class="amount"><strong>$10,437</strong></td></tr>
+            <tr><td>× 92.35% (removes employer-half of SE tax)</td><td class="amount">$13,534</td><td class="amount">$9,639</td></tr>
+            <tr><td><strong>Net SE earnings (plan compensation)</strong></td><td class="amount"><strong>$13,534</strong></td><td class="amount"><strong>$9,639</strong></td></tr>
+            <tr><td>Employee deferral (up to $23,500)</td><td class="amount">$13,534</td><td class="amount">$9,639</td></tr>
+            <tr><td>Employer profit-sharing (20%)</td><td class="amount">$2,707</td><td class="amount">$1,928</td></tr>
+            <tr><td>Subtotal</td><td class="amount">$16,241</td><td class="amount">$11,567</td></tr>
+            <tr class="changed"><td>Capped at 100% of earned income</td><td class="amount">$13,534</td><td class="amount">$9,639</td></tr>
+            <tr class="total-row"><td>Total Solo 401(k)</td><td class="amount">$13,534</td><td class="amount">$9,639</td></tr>
         </table>
-        <table style="margin-top: 0.5rem;">
-            <tr><th></th><th class="right">Original Plan</th><th class="right">Updated</th><th class="right">Change</th></tr>
-            <tr><td>Hannah Solo 401(k)</td><td class="amount">$22,200</td><td class="amount">~$27,534</td><td class="amount" style="color:#16a34a">+$5,334</td></tr>
-            <tr class="changed"><td>Jackie Solo 401(k)</td><td class="amount">$24,800</td><td class="amount">~$13,963</td><td class="amount" style="color:#dc2626">-$10,837</td></tr>
-            <tr class="total-row"><td>Total Solo 401(k)</td><td class="amount">$47,000</td><td class="amount">~$41,497</td><td class="amount" style="color:#dc2626">-$5,503</td></tr>
+        <div class="note">
+            <strong>Why the cap?</strong> IRC §415 limits total annual additions to the lesser of $70,000 or <strong>100% of earned income</strong>. Because the employee deferral alone already equals 100% of net SE earnings, there's no headroom for the employer profit-sharing piece. With higher SE income (above the $23,500 employee cap), the 20% employer piece would kick in on top.
+        </div>
+        <table style="margin-top: 0.75rem;">
+            <tr><th></th><th class="right">Original Plan</th><th class="right">Prior Page</th><th class="right">Corrected</th><th class="right">vs Original</th></tr>
+            <tr class="changed"><td>Hannah Solo 401(k)</td><td class="amount">$22,200</td><td class="amount">~$27,534</td><td class="amount"><strong>$13,534</strong></td><td class="amount" style="color:#dc2626">-$8,666</td></tr>
+            <tr class="changed"><td>Jackie Solo 401(k)</td><td class="amount">$24,800</td><td class="amount">~$13,963</td><td class="amount"><strong>$9,639</strong></td><td class="amount" style="color:#dc2626">-$15,161</td></tr>
+            <tr class="total-row"><td>Total Solo 401(k)</td><td class="amount">$47,000</td><td class="amount">~$41,497</td><td class="amount"><strong>$23,173</strong></td><td class="amount" style="color:#dc2626">-$23,827</td></tr>
         </table>
-        <div class="note">Solo 401(k) contributions are based on <strong>net self-employment income only</strong>. W-2 wages (Kong, New Caps) do not count. Jackie's lower SE income from Fever Labs is the main reduction. Deadline: Oct 15, 2026 (with tax extension).</div>
-        <div class="flag" style="margin-top: 0.5rem;">Jackie must be added as a spouse participant to Hannah's existing Solo 401(k) plan at Schwab. Confirm plan allows Roth contributions.</div>
+        <div class="note"><strong>What changed from the prior page:</strong> The prior calculation used gross 1099 income ($24,846 for Hannah, $12,600 for Jackie) rather than Schedule C net profit (after $9,751 and $2,163 of expenses). It also added employer profit-sharing on top of an already-maxed employee deferral, exceeding the 100%-of-earned-income ceiling.</div>
+        <div class="flag" style="margin-top: 0.5rem;">
+            <strong>DEADLINE ALERT — Employee deferral is due April 15, 2026 (no extension).</strong> Only the <em>employer profit-sharing</em> portion gets the Oct 15 extension deadline. Since both Hannah's and Jackie's contributions are 100% employee deferral (capped by earned income), the entire amount must be contributed by <strong>April 15, 2026 — tomorrow</strong>.
+        </div>
+        <div class="flag" style="margin-top: 0.5rem;">Jackie must be added as a spouse participant to Hannah's existing Solo 401(k) plan at Schwab. Confirm plan allows Roth (designated Roth) contributions.</div>
+    </div>
+
+    <!-- SEP IRA ALTERNATIVE -->
+    <div class="section">
+        <div class="section-title amber">SEP IRA Alternative — If Oct 15 Deadline Needed</div>
+        <table>
+            <tr><th></th><th class="right">Hannah</th><th class="right">Jackie</th></tr>
+            <tr><td>Net SE earnings</td><td class="amount">$13,534</td><td class="amount">$9,639</td></tr>
+            <tr><td>SEP contribution (20% of net SE)</td><td class="amount">$2,707</td><td class="amount">$1,928</td></tr>
+            <tr><td>Deadline with extension</td><td>Oct 15, 2026</td><td>Oct 15, 2026</td></tr>
+        </table>
+        <div class="note">SEP IRA has <strong>no employee deferral component</strong> — only the 20% employer piece. Much smaller contribution, but can be funded up to Oct 15 with an extension. The solo 401(k) deferral ($13,534 / $9,639) is far more powerful — but only if funded by <strong>April 15</strong>.</div>
     </div>
 
     <!-- FAMILY TOTAL -->
@@ -189,9 +211,9 @@
             <tr><td>Rahul</td><td class="amount">$0</td><td class="amount">$0</td><td class="amount">$0</td><td>No earned income — $44K Roth conversion only</td></tr>
             <tr><td>Haydn</td><td class="amount">$7,000</td><td class="amount">$0</td><td class="amount">$7,000</td><td>No SE income for Solo 401(k)</td></tr>
             <tr><td>Emina</td><td class="amount">$7,000</td><td class="amount">$0</td><td class="amount">$7,000</td><td>German income qualifies for IRA</td></tr>
-            <tr><td>Hannah</td><td class="amount">$7,000</td><td class="amount">~$27,534</td><td class="amount">~$34,534</td><td>Existing Solo 401(k) at Schwab</td></tr>
-            <tr><td>Jackie</td><td class="amount">$7,000</td><td class="amount">~$13,963</td><td class="amount">~$20,963</td><td>Add as spouse to Hannah's plan</td></tr>
-            <tr class="total-row"><td>Family Total</td><td class="amount">$28,000</td><td class="amount">~$41,497</td><td class="amount">~$69,497</td><td>Was $75,000 in original plan</td></tr>
+            <tr><td>Hannah</td><td class="amount">$7,000</td><td class="amount">$13,534</td><td class="amount">$20,534</td><td>Capped at 100% of net SE earnings</td></tr>
+            <tr><td>Jackie</td><td class="amount">$7,000</td><td class="amount">$9,639</td><td class="amount">$16,639</td><td>Capped at 100% of net SE earnings</td></tr>
+            <tr class="total-row"><td>Family Total</td><td class="amount">$28,000</td><td class="amount">$23,173</td><td class="amount">$51,173</td><td>Was $75,000 in original plan</td></tr>
         </table>
     </div>
 
@@ -204,7 +226,7 @@
                 <li>Take SubTrust distributions (taxed at 12–22%)</li>
                 <li>Live on distributions instead of SE income</li>
                 <li>Contribute all SE income to Roth Solo 401(k)</li>
-                <li><strong>Result:</strong> ~$41K/year shifted to tax-free vehicle — potentially $600K+ tax-free by retirement</li>
+                <li><strong>Result:</strong> ~$23K/year shifted to tax-free vehicle (Solo 401k) + $14K/yr Roth IRAs — potentially $500K+ tax-free by retirement</li>
             </ol>
         </div>
     </div>
@@ -235,12 +257,12 @@
     <div class="section">
         <div class="section-title amber">Action Items</div>
         <div class="action-item"><span class="priority high">1</span><span>Fund Roth IRAs — $7,000 each for Haydn, Emina, Hannah, Jackie ($28K total)</span><span class="deadline">Apr 15, 2026</span></div>
-        <div class="action-item"><span class="priority high">2</span><span>Confirm Jackie is participant on Hannah's Solo 401(k) plan at Schwab</span><span class="deadline">ASAP</span></div>
-        <div class="action-item"><span class="priority high">3</span><span>Confirm Solo 401(k) plan allows Roth (designated Roth) contributions</span><span class="deadline">ASAP</span></div>
-        <div class="action-item"><span class="priority">4</span><span>Confirm Hannah's domicile — TX (no state tax) vs CA (9.3% state tax)</span><span class="deadline">Before filing</span></div>
-        <div class="action-item"><span class="priority">5</span><span>Verify Hannah's Square Payroll is 1099 or W-2</span><span class="deadline">Before filing</span></div>
-        <div class="action-item"><span class="priority">6</span><span>Fund Solo 401(k) Roth contributions (~$41.5K total)</span><span class="deadline">Oct 15, 2026</span></div>
-        <div class="action-item"><span class="priority">7</span><span>File tax extension to get Solo 401(k) contribution deadline to Oct 15</span><span class="deadline">Apr 15, 2026</span></div>
+        <div class="action-item"><span class="priority high">2</span><span><strong>Fund Solo 401(k) employee deferrals — Hannah $13,534 + Jackie $9,639 = $23,173</strong> (NO extension available for deferral)</span><span class="deadline">Apr 15, 2026</span></div>
+        <div class="action-item"><span class="priority high">3</span><span>Confirm Jackie is participant on Hannah's Solo 401(k) plan at Schwab</span><span class="deadline">ASAP</span></div>
+        <div class="action-item"><span class="priority high">4</span><span>Confirm Solo 401(k) plan allows Roth (designated Roth) contributions</span><span class="deadline">ASAP</span></div>
+        <div class="action-item"><span class="priority">5</span><span>Confirm Hannah's domicile — TX (no state tax) vs CA (9.3% state tax)</span><span class="deadline">Before filing</span></div>
+        <div class="action-item"><span class="priority">6</span><span>Verify Hannah's Square Payroll is 1099 or W-2 (could boost SE income)</span><span class="deadline">Before filing</span></div>
+        <div class="action-item"><span class="priority">7</span><span>File tax extension (Form 4868) to preserve Oct 15 employer profit-sharing deadline</span><span class="deadline">Apr 15, 2026</span></div>
         <div class="action-item"><span class="priority">8</span><span>Execute additional SubTrust distributions per capacity table above</span><span class="deadline">Dec 31, 2026</span></div>
     </div>
 
