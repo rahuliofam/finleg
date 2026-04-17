@@ -81,6 +81,66 @@ async function fetchAttachmentsList(emailId: string, apiKey: string): Promise<an
 }
 
 /**
+ * Send a duplicate-detected reply email.
+ */
+async function sendDuplicateEmail(
+  original: any,
+  apiKey: string,
+  duplicates: { filename: string; institution: string; account_number: string; period_start: string; period_end: string; existing_date: string }[]
+): Promise<void> {
+  const fromLine = typeof original.from === "string"
+    ? original.from
+    : original.from?.[0]?.address || original.from?.[0] || "unknown sender";
+
+  const subject = `⚠️ Duplicate statement${duplicates.length > 1 ? "s" : ""} — already on file`;
+
+  let html = `<div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">`;
+  html += `<h2 style="margin-bottom: 4px;">⚠️ Duplicate Detected</h2>`;
+  html += `<p style="color: #666; margin-top: 0;">From <strong>${fromLine}</strong> · ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</p>`;
+  html += `<p>The following statement${duplicates.length > 1 ? "s have" : " has"} already been received and processed:</p>`;
+
+  for (const dup of duplicates) {
+    const institution = (dup.institution || "unknown").replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+    html += `<div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px; margin-bottom: 12px;">`;
+    html += `<div style="font-weight: 600; margin-bottom: 8px;">📄 ${dup.filename}</div>`;
+    html += `<table style="border-collapse: collapse; font-size: 14px;">`;
+    html += `<tr><td style="padding: 3px 8px; color: #666; font-size: 13px;">Institution</td><td style="padding: 3px 8px; font-size: 13px;">${institution}</td></tr>`;
+    html += `<tr><td style="padding: 3px 8px; color: #666; font-size: 13px;">Account</td><td style="padding: 3px 8px; font-size: 13px;">···${dup.account_number}</td></tr>`;
+    html += `<tr><td style="padding: 3px 8px; color: #666; font-size: 13px;">Period</td><td style="padding: 3px 8px; font-size: 13px;">${dup.period_start} → ${dup.period_end}</td></tr>`;
+    html += `<tr><td style="padding: 3px 8px; color: #666; font-size: 13px;">First received</td><td style="padding: 3px 8px; font-size: 13px;">${dup.existing_date}</td></tr>`;
+    html += `</table>`;
+    html += `</div>`;
+  }
+
+  html += `<p style="color: #666; font-size: 13px;">No action needed — the original is already in the system.</p>`;
+  html += `<p style="margin-top: 16px; font-size: 13px; color: #999;"><a href="https://finleg.net/intranet/bookkeeping/statements" style="color: #2563eb;">View statements →</a></p>`;
+  html += `</div>`;
+
+  const res = await fetch(`${RESEND_API_URL}/emails`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM_ADDRESS,
+      to: [fromLine],
+      bcc: [FORWARD_TO],
+      subject,
+      html,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to send duplicate email: ${res.status} ${text}`);
+  }
+
+  const result = await res.json();
+  console.log(`Duplicate email sent to ${fromLine}, Resend ID: ${result.id}`);
+}
+
+/**
  * Send a processing summary email after all attachments have been processed.
  */
 async function sendSummaryEmail(
@@ -1175,6 +1235,34 @@ serve(async (req: Request) => {
           if (classification.doc_type === "statement" && classification.confidence >= 0.5) {
             console.log(`Processing as statement: ${classification.institution} ${classification.account_type} ${classification.statement_date}`);
 
+            // ── Duplicate check: same institution + account + period ──
+            if (classification.institution && classification.account_number && classification.period_start && classification.period_end) {
+              const { data: existing } = await supabase
+                .from("statement_inbox")
+                .select("id, created_at")
+                .eq("institution", classification.institution)
+                .eq("account_number", classification.account_number)
+                .eq("period_start", classification.period_start)
+                .eq("period_end", classification.period_end)
+                .limit(1)
+                .single();
+
+              if (existing) {
+                console.log(`Duplicate statement detected: ${classification.institution} ···${classification.account_number} ${classification.period_start}→${classification.period_end} (existing id: ${existing.id})`);
+                processedStatements.push({
+                  duplicate: true,
+                  institution: classification.institution,
+                  account_number: classification.account_number,
+                  period_start: classification.period_start,
+                  period_end: classification.period_end,
+                  filename,
+                  existing_id: existing.id,
+                  existing_date: existing.created_at,
+                });
+                continue;
+              }
+            }
+
             // Store PDF in statements bucket
             const attachmentUrl = await storeStatementAttachment(supabase, filename, binaryData, contentType);
 
@@ -1360,14 +1448,27 @@ serve(async (req: Request) => {
       }
     }
 
+    // Check for duplicates among processed statements
+    const duplicateStatements = processedStatements.filter((s: any) => s.duplicate);
+    const newStatements = processedStatements.filter((s: any) => !s.duplicate && !s.error);
+
+    // Send duplicate notification if any duplicates were found
+    if (duplicateStatements.length > 0) {
+      try {
+        await sendDuplicateEmail(email, resendKey, duplicateStatements);
+      } catch (dupErr) {
+        console.error("Failed to send duplicate email:", dupErr);
+      }
+    }
+
     // Send summary email for receipts only — statements get their email after parsing in process-inbox.mjs
-    if (processedReceipts.length > 0 || (processedStatements.length === 0 && processedReceipts.length === 0)) {
+    if (processedReceipts.length > 0 || (newStatements.length === 0 && processedReceipts.length === 0 && duplicateStatements.length === 0)) {
       try {
         await sendSummaryEmail(email, resendKey, [], processedReceipts);
       } catch (fwdErr) {
         console.error("Failed to send summary email:", fwdErr);
       }
-    } else {
+    } else if (newStatements.length > 0) {
       console.log("Skipping summary email — statements will be emailed after parsing");
     }
 
