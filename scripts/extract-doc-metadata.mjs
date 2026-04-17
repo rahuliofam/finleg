@@ -187,7 +187,7 @@ async function processDocument(doc) {
     // Update description (new column — will add via migration)
     // For now, store enriched data in a JSON-friendly way
     if (metadata.description) updates.description = metadata.description;
-    if (metadata.date) updates.statement_date = metadata.date;
+    if (metadata.date && new Date(metadata.date) <= new Date()) updates.statement_date = metadata.date;
     if (metadata.year && !doc.year) updates.year = metadata.year;
     if (metadata.institution && (!doc.institution || doc.institution === '')) {
       updates.institution = metadata.institution.toLowerCase().replace(/\s+/g, '-');

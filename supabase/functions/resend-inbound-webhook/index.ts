@@ -1173,6 +1173,10 @@ serve(async (req: Request) => {
 
           // ── Statement flow ──
           if (classification.doc_type === "statement" && classification.confidence >= 0.5) {
+            // Reject future dates — likely an AI extraction error
+            if (classification.statement_date && new Date(classification.statement_date) > new Date()) {
+              classification.statement_date = null;
+            }
             console.log(`Processing as statement: ${classification.institution} ${classification.account_type} ${classification.statement_date}`);
 
             // Store PDF in statements bucket

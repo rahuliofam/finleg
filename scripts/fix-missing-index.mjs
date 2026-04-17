@@ -87,6 +87,8 @@ function extractD(filename, relpath) {
     const [y,mo,d] = sd.split('-').map(Number);
     const dim = new Date(y, mo, 0).getDate();
     if (d > dim || d < 1 || mo > 12 || mo < 1) sd = null;
+    // Reject future dates — likely a typo in the filename year
+    if (sd && new Date(sd) > new Date()) { year = y - 1; month = mo; sd = `${y - 1}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
   }
   return { year, month, statementDate: sd };
 }
