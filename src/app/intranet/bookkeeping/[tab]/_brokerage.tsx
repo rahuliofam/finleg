@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import GroupRows from "./_brokerage/GroupRows";
 import PositionRows from "./_brokerage/PositionRows";
@@ -158,19 +158,15 @@ export default function BrokerageTab() {
     window.location.href = `${SCHWAB_OAUTH_WORKER}/schwab/auth`;
   };
 
-  const handleDisconnect = async () => {
-    if (!confirm("Disconnect Schwab? Existing data will be preserved but no new syncs will run."))
-      return;
-    const { data: institution } = await supabase
-      .from("institutions")
-      .select("id")
-      .eq("name", "Charles Schwab")
-      .single();
-    if (institution)
-      await supabase.from("oauth_tokens").update({ status: "revoked" }).eq("institution_id", institution.id);
-    setStatus({ connected: false });
-  };
-  void handleDisconnect; // preserved for future UI; not currently wired
+  // Days until the Schwab refresh token expires; null when not connected or no
+  // expiry available. Memoized on the expiry timestamp so the render stays pure
+  // (React 19 / react-compiler flags Date.now() called inline during render).
+  const refreshDaysLeft = useMemo<number | null>(() => {
+    if (!status?.connected || !status.refreshTokenExpiresAt) return null;
+    return Math.ceil(
+      (new Date(status.refreshTokenExpiresAt).getTime() - Date.now()) / 86400000,
+    );
+  }, [status?.connected, status?.refreshTokenExpiresAt]);
 
   if (loading) {
     return (
@@ -274,27 +270,22 @@ export default function BrokerageTab() {
       </div>
 
       {/* Expiry warning */}
-      {status?.connected && status.refreshTokenExpiresAt && (() => {
-        const daysLeft = Math.ceil(
-          (new Date(status.refreshTokenExpiresAt).getTime() - Date.now()) / 86400000,
-        );
-        return daysLeft <= 2 ? (
-          <div
-            style={{
-              padding: "8px 12px",
-              borderRadius: 3,
-              border: "1px solid #f59e0b",
-              background: "#fffbeb",
-              fontSize: 12,
-              color: "#92400e",
-              marginBottom: 8,
-            }}
-          >
-            Schwab connection expires in {daysLeft} day{daysLeft !== 1 ? "s" : ""}. Re-authenticate
-            to maintain sync.
-          </div>
-        ) : null;
-      })()}
+      {refreshDaysLeft !== null && refreshDaysLeft <= 2 && (
+        <div
+          style={{
+            padding: "8px 12px",
+            borderRadius: 3,
+            border: "1px solid #f59e0b",
+            background: "#fffbeb",
+            fontSize: 12,
+            color: "#92400e",
+            marginBottom: 8,
+          }}
+        >
+          Schwab connection expires in {refreshDaysLeft} day
+          {refreshDaysLeft !== 1 ? "s" : ""}. Re-authenticate to maintain sync.
+        </div>
+      )}
 
       {/* ============ TOTAL VALUE + CHART ============ */}
       <div style={{ border: "1px solid #ddd", borderRadius: 4, background: "#fff", marginBottom: 16 }}>
