@@ -50,11 +50,11 @@ New work should live in the Next.js app unless there's a reason not to.
 
 ## UI conventions
 
-1. Use toast notifications, not `alert()` (intranet has `showToast()` helpers)
+1. Use inline error/success banners for form feedback — never `alert()`. Wrap form pages in the `<ErrorBoundary>` from `src/components/error-boundary.tsx` and use the `useForm` hook + validation lib (see `docs/FORMS.md`).
 2. Filter archived items client-side: `.filter(s => !s.is_archived)`
 3. Don't expose personal info (emails, phone numbers, balances) in public / consumer views
 4. Client-side image compression for uploads > 500KB
-5. `openLightbox(url)` for viewing images in modals
+5. Image lightbox: each tab that shows photos has its own modal pattern (e.g., `_photos.tsx`, `_general.tsx`). There is no global `openLightbox()` helper — copy the local pattern when you add a new image-viewing surface.
 6. Admin tables use the intranet's shared table components in `src/components/`
 
 ## Data access

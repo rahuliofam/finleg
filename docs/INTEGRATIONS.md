@@ -117,7 +117,7 @@ QUICKBOOKS_REFRESH_TOKEN=...      # Auto-rotated; initial from OAuth Playground
 - **Anon Key:** Hardcoded in `shared/supabase.js` (public, safe to expose)
 - **Service Role Key:** `local.env` / `.env` → `SUPABASE_SERVICE_ROLE_KEY`
 - **DB Password:** `local.env` / `.env` → `SUPABASE_DB_PASSWORD`
-- **DB Host:** `aws-1-us-east-2.pooler.supabase.com:6543`
+- **DB Host:** `aws-0-us-west-1.pooler.supabase.com:6543` (matches `.env.example` and `BACKUP-RECOVERY.md`)
 - **DB User:** `postgres.gjdvzzxsrzuorguwkaih`
 
 <!-- Only the services you selected during setup will be active -->

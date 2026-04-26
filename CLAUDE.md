@@ -1,13 +1,18 @@
 # Finleg — Project Directives
 
 > **On-demand docs — load when the task matches:**
-> - `docs/CREDENTIALS.md` — **load for:** SQL queries, deploying functions, SSH, API calls
 > - `docs/SCHEMA.md` — **load for:** writing queries, modifying tables, debugging data
+> - `docs/DATA-ARCHITECTURE.md` — **load for:** how data flows between Supabase tables, R2, edge functions
 > - `docs/PATTERNS.md` — **load for:** writing UI code, Tailwind styling, code review, testing
 > - `docs/KEY-FILES.md` — **load for:** finding files, understanding project structure
 > - `docs/DEPLOY.md` — **load for:** pushing, deploying, version questions
-> - `docs/INTEGRATIONS.md` — **load for:** external APIs, vendor setup, pricing
+> - `docs/INTEGRATIONS.md` — **load for:** external APIs (Anthropic, Gemini, QB, Schwab, R2, Resend), vendor setup, pricing
 > - `docs/CHANGELOG.md` — **load for:** understanding recent changes, migration context
+> - `docs/BACKUP-RECOVERY.md` — **load for:** backup strategy, cron schedules, restore procedures
+> - `docs/REMOTE-ACCESS.md` — **load for:** SSH to Hostinger / Alpaca Mac, cron access, server admin
+> - `docs/STATEMENT-INGESTION.md` — **load for:** statement parsing pipeline, `process-inbox`, `ingest-statements`
+> - `docs/PHOTO-CAPTION-OPERATIONS.md` — **load for:** photo metadata, captioning, search backend
+> - `docs/R2-MIGRATION-CLEANUP.md` — **load for:** R2 bucket history, account migration context
 
 > **Note:** Finleg is a customized fork of the `alpacapps-infra` template. The `/setup-alpacapps-infra` skill is for fresh clones and does not need to be re-run here. See `CUSTOMIZATION.md` for what was customized.
 
@@ -22,8 +27,7 @@
 
 - Filter archived items: `.filter(s => !s.is_archived)` client-side
 - No personal info in consumer/public views
-- `showToast()` not `alert()` in admin
-- `openLightbox(url)` for images
+- Inline error/success banners (not `alert()`) for form feedback — see `docs/FORMS.md` for the `useForm` + `ErrorBoundary` pattern
 - Tailwind v4: use design tokens from the `@theme` block in `src/app/globals.css` (see `docs/PATTERNS.md`). Next.js rebuilds CSS via PostCSS automatically — no manual `css:build` step.
 
 ## Batch Processing
