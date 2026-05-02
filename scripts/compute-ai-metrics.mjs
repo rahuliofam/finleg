@@ -4,64 +4,91 @@
  * Compute AI Metrics — Weekly accuracy computation
  *
  * Calculates how well AI categorization is performing by comparing
- * AI-assigned categories against human corrections.
+ * AI-assigned categories against human corrections, then upserts the
+ * resulting row into `ai_metrics` (keyed by period_start + period_end).
  *
  * Usage:
- *   node scripts/compute-ai-metrics.mjs
+ *   node scripts/compute-ai-metrics.mjs                          # last 7 days
  *   node scripts/compute-ai-metrics.mjs --period 2026-03-01 2026-03-15
+ *   node scripts/compute-ai-metrics.mjs --dry-run --verbose
  *
  * Prerequisites:
  *   - SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in environment
  */
 
-import { createClient } from "@supabase/supabase-js";
+import {
+  loadSupabaseEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  run,
+  FatalError,
+} from './lib/index.mjs';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || "https://gjdvzzxsrzuorguwkaih.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const args = parseArgs(process.argv.slice(2), {
+  help: `Compute weekly AI categorization metrics and upsert into ai_metrics.
 
-if (!SUPABASE_KEY) {
-  console.error("ERROR: SUPABASE_SERVICE_ROLE_KEY not set");
-  process.exit(1);
-}
+Usage: node scripts/compute-ai-metrics.mjs [options]
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+Options:
+  --period S E   ISO dates (YYYY-MM-DD) for explicit window; default = last 7 days
+  --dry-run      compute and print metrics but don't upsert
+  --verbose      enable debug logs
+  --help         this text
+`,
+});
 
-const args = process.argv.slice(2);
-const periodIdx = args.indexOf("--period");
+const env = loadSupabaseEnv();
+const supabase = createSupabaseClient({ env });
+const log = createLogger({ verbose: args.verbose });
 
-let periodStart, periodEnd;
-if (periodIdx >= 0 && args[periodIdx + 1] && args[periodIdx + 2]) {
-  periodStart = args[periodIdx + 1];
-  periodEnd = args[periodIdx + 2];
-} else {
-  // Default: last 7 days
-  periodEnd = new Date().toISOString().split("T")[0];
-  periodStart = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+function resolvePeriod(positional) {
+  // Support either positional `--period S E` (legacy) or two positional args
+  // after `--period`. parseArgs hands `--period` to the unknown list and the
+  // dates land in `_` since they don't start with `-`.
+  if (positional.length >= 2) {
+    return { start: positional[0], end: positional[1] };
+  }
+  const end = new Date().toISOString().split('T')[0];
+  const start = new Date(Date.now() - 7 * 86_400_000).toISOString().split('T')[0];
+  return { start, end };
 }
 
 async function main() {
-  console.log(`Computing AI metrics for ${periodStart} to ${periodEnd}\n`);
+  // Backward-compat: scripts were called as `--period S E` before the harness.
+  // parseArgs treats `--period` as unknown; the dates show up as positional.
+  const periodIdx = process.argv.indexOf('--period');
+  let periodStart, periodEnd;
+  if (periodIdx >= 0 && process.argv[periodIdx + 1] && process.argv[periodIdx + 2]) {
+    periodStart = process.argv[periodIdx + 1];
+    periodEnd = process.argv[periodIdx + 2];
+  } else {
+    const p = resolvePeriod(args._);
+    periodStart = p.start;
+    periodEnd = p.end;
+  }
 
-  // Fetch all AI-categorized transactions in the period
+  log.info(`Computing AI metrics for ${periodStart} to ${periodEnd}`);
+
   const { data: aiCategorized, error: err1 } = await supabase
-    .from("qb_transactions")
-    .select("id, our_category, category_confidence, review_status, reviewed_by")
-    .eq("category_source", "ai")
-    .gte("updated_at", `${periodStart}T00:00:00Z`)
-    .lte("updated_at", `${periodEnd}T23:59:59Z`);
+    .from('qb_transactions')
+    .select('id, our_category, category_confidence, review_status, reviewed_by')
+    .eq('category_source', 'ai')
+    .gte('updated_at', `${periodStart}T00:00:00Z`)
+    .lte('updated_at', `${periodEnd}T23:59:59Z`);
 
   if (err1) {
-    console.error("Failed to fetch AI categorized transactions:", err1.message);
-    process.exit(1);
+    throw new FatalError(`Failed to fetch AI categorized transactions: ${err1.message}`, {
+      cause: err1,
+    });
   }
 
   const total = aiCategorized?.length || 0;
   if (total === 0) {
-    console.log("No AI-categorized transactions in this period.");
+    log.info('No AI-categorized transactions in this period.');
     return;
   }
 
-  // Count approved (human agreed) vs overridden (human changed category)
   let approved = 0;
   let overridden = 0;
   let stillPending = 0;
@@ -70,49 +97,43 @@ async function main() {
   for (const txn of aiCategorized) {
     totalConfidence += Number(txn.category_confidence) || 0;
 
-    if (txn.review_status === "approved") {
+    if (txn.review_status === 'approved') {
       approved++;
-    } else if (txn.review_status === "auto_categorized" || txn.review_status === "pending") {
-      stillPending++;
     } else {
-      // If category_source is still 'ai' but reviewed_by is human, it was overridden
-      // Actually, if human overrides, category_source changes to 'human'
-      // So any remaining are still auto_categorized
+      // 'auto_categorized', 'pending', or anything else we haven't reviewed
       stillPending++;
     }
   }
 
-  // Also check for transactions that WERE ai-categorized but then human-overridden
-  // These will have category_source='human' now, so we need the activity log
+  // Human overrides change category_source to 'human', so we infer them from the
+  // activity log rather than the qb_transactions rows above.
   const { data: overrides } = await supabase
-    .from("bookkeeping_activity_log")
-    .select("details")
-    .eq("action", "manual_categorized")
-    .gte("created_at", `${periodStart}T00:00:00Z`)
-    .lte("created_at", `${periodEnd}T23:59:59Z`);
+    .from('bookkeeping_activity_log')
+    .select('details')
+    .eq('action', 'manual_categorized')
+    .gte('created_at', `${periodStart}T00:00:00Z`)
+    .lte('created_at', `${periodEnd}T23:59:59Z`);
 
   if (overrides) {
-    for (const log of overrides) {
-      if (log.details?.previous_source === "ai") {
+    for (const logRow of overrides) {
+      if (logRow.details?.previous_source === 'ai') {
         overridden++;
       }
     }
   }
 
-  // Count new rules created in this period
   const { count: newRules } = await supabase
-    .from("category_rules")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", `${periodStart}T00:00:00Z`)
-    .lte("created_at", `${periodEnd}T23:59:59Z`);
+    .from('category_rules')
+    .select('id', { count: 'exact', head: true })
+    .gte('created_at', `${periodStart}T00:00:00Z`)
+    .lte('created_at', `${periodEnd}T23:59:59Z`);
 
-  // Count rules deactivated
   const { count: deactivated } = await supabase
-    .from("category_rules")
-    .select("id", { count: "exact", head: true })
-    .eq("is_active", false)
-    .gte("updated_at", `${periodStart}T00:00:00Z`)
-    .lte("updated_at", `${periodEnd}T23:59:59Z`);
+    .from('category_rules')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_active', false)
+    .gte('updated_at', `${periodStart}T00:00:00Z`)
+    .lte('updated_at', `${periodEnd}T23:59:59Z`);
 
   const reviewed = approved + overridden;
   const accuracyPct = reviewed > 0 ? Math.round((approved / reviewed) * 100 * 100) / 100 : null;
@@ -130,29 +151,29 @@ async function main() {
     rules_deactivated: deactivated || 0,
   };
 
-  console.log("Metrics:");
-  console.log(`  Total AI categorized: ${total}`);
-  console.log(`  Human approved: ${approved}`);
-  console.log(`  Human overridden: ${overridden}`);
-  console.log(`  Still pending: ${stillPending}`);
-  console.log(`  Accuracy: ${accuracyPct !== null ? `${accuracyPct}%` : "N/A (no reviews yet)"}`);
-  console.log(`  Avg confidence: ${avgConfidence}`);
-  console.log(`  New rules created: ${newRules || 0}`);
-  console.log(`  Rules deactivated: ${deactivated || 0}`);
+  log.info('Metrics:');
+  log.info(`  Total AI categorized: ${total}`);
+  log.info(`  Human approved: ${approved}`);
+  log.info(`  Human overridden: ${overridden}`);
+  log.info(`  Still pending: ${stillPending}`);
+  log.info(`  Accuracy: ${accuracyPct !== null ? `${accuracyPct}%` : 'N/A (no reviews yet)'}`);
+  log.info(`  Avg confidence: ${avgConfidence}`);
+  log.info(`  New rules created: ${newRules || 0}`);
+  log.info(`  Rules deactivated: ${deactivated || 0}`);
 
-  // Upsert metrics
+  if (args.dryRun) {
+    log.info('[dry-run] skipping upsert into ai_metrics');
+    return;
+  }
+
   const { error: upsertErr } = await supabase
-    .from("ai_metrics")
-    .upsert(metrics, { onConflict: "period_start,period_end" });
+    .from('ai_metrics')
+    .upsert(metrics, { onConflict: 'period_start,period_end' });
 
   if (upsertErr) {
-    console.error("\nFailed to save metrics:", upsertErr.message);
-  } else {
-    console.log("\nMetrics saved to ai_metrics table.");
+    throw new FatalError(`Failed to save metrics: ${upsertErr.message}`, { cause: upsertErr });
   }
+  log.info('Metrics saved to ai_metrics table.');
 }
 
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+run(main);

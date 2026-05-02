@@ -4,8 +4,12 @@
  * Sync Investment Balances to QuickBooks
  *
  * Monthly batch job that pushes aggregate investment account balances
- * from finleg's investment_statement_summaries into QB as journal entries.
- * This keeps QB's balance sheet accurate without making QB track positions.
+ * from finleg's investment_statement_summaries into QB as JournalEntry
+ * proposals on `qb_writeback_queue`. Also queues Deposit proposals for
+ * dividend/interest/capital-gain transactions in the last 30 days.
+ *
+ * Entries are queued with status='proposed' — admin approval is required
+ * before the qb-writeback edge function will execute them in QB.
  *
  * Usage:
  *   node scripts/sync-investment-balances-to-qb.mjs
@@ -13,43 +17,59 @@
  *
  * Prerequisites:
  *   - SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in environment
- *   - QB OAuth tokens configured
+ *   - QB OAuth tokens configured (used by qb-writeback edge function)
  */
 
-import { createClient } from "@supabase/supabase-js";
+import {
+  loadSupabaseEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  run,
+  FatalError,
+} from './lib/index.mjs';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || "https://gjdvzzxsrzuorguwkaih.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const args = parseArgs(process.argv.slice(2), {
+  help: `Queue investment balance updates + recent investment-income deposits in qb_writeback_queue.
 
-if (!SUPABASE_KEY) {
-  console.error("ERROR: SUPABASE_SERVICE_ROLE_KEY not set");
-  process.exit(1);
-}
+Usage: node scripts/sync-investment-balances-to-qb.mjs [options]
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-const dryRun = process.argv.includes("--dry-run");
+Options:
+  --dry-run      compute and print but don't insert any queue rows
+  --verbose      enable debug logs
+  --help         this text
+
+Notes:
+  Entries land with status='proposed' — admin approval is required before the
+  qb-writeback edge function will execute them.
+`,
+});
+
+const env = loadSupabaseEnv();
+const supabase = createSupabaseClient({ env });
+const log = createLogger({ verbose: args.verbose });
 
 async function main() {
-  console.log(`Investment Balance → QB Sync`);
-  console.log(`Mode: ${dryRun ? "DRY RUN" : "LIVE"}\n`);
+  log.info('Investment Balance → QB Sync');
+  log.info(`Mode: ${args.dryRun ? 'DRY RUN' : 'LIVE'}`);
 
-  // 1. Get latest investment statement summaries (most recent per account)
   const { data: summaries, error: sumErr } = await supabase
-    .from("investment_statement_summaries")
-    .select("id, institution, account_name, account_holder, ending_value, statement_date")
-    .order("statement_date", { ascending: false });
+    .from('investment_statement_summaries')
+    .select('id, institution, account_name, account_holder, ending_value, statement_date')
+    .order('statement_date', { ascending: false });
 
   if (sumErr) {
-    console.error("Failed to fetch investment summaries:", sumErr.message);
-    process.exit(1);
+    throw new FatalError(`Failed to fetch investment summaries: ${sumErr.message}`, {
+      cause: sumErr,
+    });
   }
 
   if (!summaries?.length) {
-    console.log("No investment statement summaries found.");
+    log.info('No investment statement summaries found.');
     return;
   }
 
-  // Dedupe: keep only the most recent per account
+  // Dedupe: keep only the most recent per (institution, account_name).
   const latestByAccount = new Map();
   for (const s of summaries) {
     const key = `${s.institution}|${s.account_name}`;
@@ -58,19 +78,19 @@ async function main() {
     }
   }
 
-  console.log(`Found ${latestByAccount.size} investment accounts with latest balances:\n`);
+  log.info(`Found ${latestByAccount.size} investment accounts with latest balances:`);
 
   let totalValue = 0;
   const entries = [];
 
-  for (const [key, summary] of latestByAccount) {
+  for (const summary of latestByAccount.values()) {
     const value = Number(summary.ending_value) || 0;
     totalValue += value;
 
-    console.log(`  ${summary.institution} - ${summary.account_name}`);
-    console.log(`    Holder: ${summary.account_holder}`);
-    console.log(`    Balance: $${value.toLocaleString()}`);
-    console.log(`    As of: ${summary.statement_date}\n`);
+    log.info(`  ${summary.institution} - ${summary.account_name}`);
+    log.debug(`    Holder: ${summary.account_holder}`);
+    log.debug(`    Balance: $${value.toLocaleString()}`);
+    log.debug(`    As of: ${summary.statement_date}`);
 
     entries.push({
       institution: summary.institution,
@@ -81,42 +101,38 @@ async function main() {
     });
   }
 
-  console.log(`\nTotal portfolio value: $${totalValue.toLocaleString()}\n`);
+  log.info(`Total portfolio value: $${totalValue.toLocaleString()}`);
 
-  if (dryRun) {
-    console.log("[DRY RUN] Would create QB writeback queue entries for each account.");
-    console.log("Each entry would create/update a Journal Entry in QB adjusting the");
-    console.log("investment account balance to match the latest statement value.");
+  if (args.dryRun) {
+    log.info('[dry-run] Would create QB writeback queue entries for each account.');
+    log.info('         Each entry would create/update a Journal Entry in QB adjusting the');
+    log.info('         investment account balance to match the latest statement value.');
     return;
   }
 
-  // 2. Create writeback queue entries
-  // Each investment account gets a journal entry that adjusts its balance
-  // The QB account for investments should be an "Other Asset" type account
   let queued = 0;
 
   for (const entry of entries) {
     const description = `Investment balance update: ${entry.institution} ${entry.account_name} (${entry.account_holder}) as of ${entry.statement_date}`;
 
-    // Check if there's already a pending/approved entry for this account
     const { data: existing } = await supabase
-      .from("qb_writeback_queue")
-      .select("id")
-      .eq("qb_entity_type", "JournalEntry")
-      .eq("field_name", "investment_balance")
-      .ilike("reason", `%${entry.institution}%${entry.account_name}%`)
-      .in("status", ["proposed", "approved"])
+      .from('qb_writeback_queue')
+      .select('id')
+      .eq('qb_entity_type', 'JournalEntry')
+      .eq('field_name', 'investment_balance')
+      .ilike('reason', `%${entry.institution}%${entry.account_name}%`)
+      .in('status', ['proposed', 'approved'])
       .limit(1);
 
     if (existing?.length) {
-      console.log(`  Skipping ${entry.institution} ${entry.account_name} — already queued`);
+      log.info(`  Skipping ${entry.institution} ${entry.account_name} — already queued`);
       continue;
     }
 
-    const { error: insertErr } = await supabase.from("qb_writeback_queue").insert({
-      qb_entity_type: "JournalEntry",
-      qb_entity_id: "new", // Will create new JE
-      field_name: "investment_balance",
+    const { error: insertErr } = await supabase.from('qb_writeback_queue').insert({
+      qb_entity_type: 'JournalEntry',
+      qb_entity_id: 'new',
+      field_name: 'investment_balance',
       old_value: null,
       new_value: JSON.stringify({
         amount: entry.ending_value,
@@ -124,35 +140,35 @@ async function main() {
         memo: description,
       }),
       reason: `Monthly balance update: ${entry.institution} ${entry.account_name} = $${entry.ending_value.toLocaleString()} as of ${entry.statement_date}`,
-      status: "proposed", // Needs admin approval before executing
+      status: 'proposed',
     });
 
     if (insertErr) {
-      console.error(`  Failed to queue ${entry.institution} ${entry.account_name}:`, insertErr.message);
+      log.error(`  Failed to queue ${entry.institution} ${entry.account_name}: ${insertErr.message}`);
     } else {
-      console.log(`  Queued: ${entry.institution} ${entry.account_name} = $${entry.ending_value.toLocaleString()}`);
+      log.info(`  Queued: ${entry.institution} ${entry.account_name} = $${entry.ending_value.toLocaleString()}`);
       queued++;
     }
   }
 
-  // 3. Also detect investment income (dividends, capital gains) for QB
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString().split("T")[0];
+  // Investment income (dividends, capital gains) in the last 30 days → Deposit proposals.
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 86_400_000).toISOString().split('T')[0];
   const { data: investmentIncome } = await supabase
-    .from("investment_transactions")
-    .select("id, institution, account_name, transaction_type, security_name, total_amount, trade_date")
-    .in("transaction_type", ["Dividend", "Interest", "Capital Gain Distribution"])
-    .gte("trade_date", thirtyDaysAgo);
+    .from('investment_transactions')
+    .select('id, institution, account_name, transaction_type, security_name, total_amount, trade_date')
+    .in('transaction_type', ['Dividend', 'Interest', 'Capital Gain Distribution'])
+    .gte('trade_date', thirtyDaysAgo);
 
   if (investmentIncome?.length) {
-    console.log(`\nFound ${investmentIncome.length} investment income transactions in last 30 days:`);
+    log.info(`Found ${investmentIncome.length} investment income transactions in last 30 days:`);
 
     for (const income of investmentIncome) {
-      console.log(`  ${income.trade_date}: ${income.transaction_type} - ${income.security_name} $${income.total_amount}`);
+      log.debug(`  ${income.trade_date}: ${income.transaction_type} - ${income.security_name} $${income.total_amount}`);
 
-      const { error: incErr } = await supabase.from("qb_writeback_queue").insert({
-        qb_entity_type: "Deposit",
-        qb_entity_id: "new",
-        field_name: "investment_income",
+      const { error: incErr } = await supabase.from('qb_writeback_queue').insert({
+        qb_entity_type: 'Deposit',
+        qb_entity_id: 'new',
+        field_name: 'investment_income',
         old_value: null,
         new_value: JSON.stringify({
           amount: Number(income.total_amount),
@@ -161,18 +177,15 @@ async function main() {
           date: income.trade_date,
         }),
         reason: `${income.transaction_type}: ${income.security_name} $${income.total_amount} on ${income.trade_date}`,
-        status: "proposed",
+        status: 'proposed',
       });
 
       if (!incErr) queued++;
     }
   }
 
-  console.log(`\nDone. Queued ${queued} writeback entries for admin approval.`);
-  console.log(`Approve them in the UI, then run the qb-writeback edge function to execute.`);
+  log.info(`Done. Queued ${queued} writeback entries for admin approval.`);
+  log.info('Approve them in the UI, then run the qb-writeback edge function to execute.');
 }
 
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+run(main);

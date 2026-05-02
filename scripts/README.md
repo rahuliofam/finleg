@@ -81,8 +81,9 @@ still work — the lib is opt-in.
 
 Currently migrated: `process-inbox.mjs`, `process-tax-returns.mjs`,
 `ingest-statements.mjs`, `ai-categorize-batch.mjs`, `ocr-gemini-flash.mjs`,
-`extract-doc-text.mjs`. Migration of the remaining scripts is mechanical and
-can happen incrementally.
+`extract-doc-text.mjs`, `compute-ai-metrics.mjs`,
+`sync-investment-balances-to-qb.mjs`. Migration of the remaining scripts is
+mechanical and can happen incrementally.
 
 ---
 
@@ -267,14 +268,14 @@ Parse a QuickBooks General Ledger CSV export and load into
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY`.
 - **Notes:** ⚠️ destructive — deletes all existing rows before inserting.
 
-### `sync-investment-balances-to-qb.mjs`
+### `sync-investment-balances-to-qb.mjs` *(harness-migrated)*
 Monthly batch: push aggregate investment balances from
 `investment_statement_summaries` into the `qb_writeback_queue` as `JournalEntry`
 proposals, and queue `Deposit` proposals for dividend/interest/capital-gain
 transactions from the last 30 days. Entries are `proposed` and require admin
 approval before the `qb-writeback` edge function executes them.
 
-- **Invocation:** monthly. `node scripts/sync-investment-balances-to-qb.mjs [--dry-run]`.
+- **Invocation:** monthly. `node scripts/sync-investment-balances-to-qb.mjs [--dry-run] [--verbose]`.
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY` (QB OAuth not used directly — edge function handles writeback).
 - **External:** Supabase only.
 
@@ -352,11 +353,11 @@ Idempotent — skips `(match_pattern, match_type)` pairs that already exist.
 - **Invocation:** manual. `node scripts/seed-category-rules.mjs`.
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY`.
 
-### `compute-ai-metrics.mjs`
+### `compute-ai-metrics.mjs` *(harness-migrated)*
 Compute weekly AI-categorization accuracy by comparing AI-assigned categories
 to human corrections and upsert a row into `ai_metrics`.
 
-- **Invocation:** weekly. `node scripts/compute-ai-metrics.mjs` (last 7 days) or `--period YYYY-MM-DD YYYY-MM-DD`.
+- **Invocation:** weekly. `node scripts/compute-ai-metrics.mjs` (last 7 days) or `--period YYYY-MM-DD YYYY-MM-DD`. Supports `--dry-run` and `--verbose`.
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY`.
 
 ---
