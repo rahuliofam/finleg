@@ -3,23 +3,33 @@
  * Seed category_rules table with common vendor patterns.
  * Safe to re-run — skips existing patterns.
  *
- * Usage: node scripts/seed-category-rules.mjs
+ * Usage: node scripts/seed-category-rules.mjs [--dry-run] [--verbose]
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { config } from 'dotenv';
+import {
+  loadSupabaseEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  run,
+  FatalError,
+} from './lib/index.mjs';
 
-config();
+const args = parseArgs(process.argv.slice(2), {
+  help: `Seed common vendor → category rules into category_rules. Idempotent.
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+Usage: node scripts/seed-category-rules.mjs [options]
 
-if (!SUPABASE_SERVICE_KEY) {
-  console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env');
-  process.exit(1);
-}
+Options:
+  --dry-run      compute the diff but don't insert any rows
+  --verbose      enable debug logs
+  --help         this text
+`,
+});
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const env = loadSupabaseEnv();
+const supabase = createSupabaseClient({ env });
+const log = createLogger({ verbose: args.verbose });
 
 const RULES = [
   // Office & Software
@@ -107,34 +117,49 @@ const RULES = [
 ];
 
 async function main() {
-  // Get existing patterns to avoid duplicates
-  const { data: existing } = await supabase
+  const { data: existing, error: fetchErr } = await supabase
     .from('category_rules')
     .select('match_pattern, match_type');
 
+  if (fetchErr) {
+    throw new FatalError(`Failed to fetch existing rules: ${fetchErr.message}`, {
+      cause: fetchErr,
+    });
+  }
+
   const existingSet = new Set(
-    (existing || []).map(r => `${r.match_pattern}|${r.match_type}`)
+    (existing || []).map((r) => `${r.match_pattern}|${r.match_type}`),
   );
 
-  const toInsert = RULES
-    .filter(r => !existingSet.has(`${r.match_pattern}|${r.match_type}`))
-    .map(r => ({ ...r, created_by: 'seed' }));
+  const toInsert = RULES.filter(
+    (r) => !existingSet.has(`${r.match_pattern}|${r.match_type}`),
+  ).map((r) => ({ ...r, created_by: 'seed' }));
+
+  log.info(
+    `${RULES.length} candidate rules; ${toInsert.length} new, ${RULES.length - toInsert.length} already exist.`,
+  );
 
   if (toInsert.length === 0) {
-    console.log('All rules already exist. Nothing to insert.');
+    log.info('Nothing to insert.');
+    return;
+  }
+
+  if (args.dryRun) {
+    log.info('[dry-run] Would insert:');
+    for (const r of toInsert) {
+      log.info(`  ${r.match_type.padEnd(11)} "${r.match_pattern}" → ${r.category} (priority ${r.priority})`);
+    }
     return;
   }
 
   const { error } = await supabase.from('category_rules').insert(toInsert);
   if (error) {
-    console.error('Error seeding rules:', error);
-    process.exit(1);
+    throw new FatalError(`Error seeding rules: ${error.message}`, { cause: error });
   }
 
-  console.log(`Seeded ${toInsert.length} category rules (${RULES.length - toInsert.length} already existed)`);
+  log.info(
+    `Seeded ${toInsert.length} category rules (${RULES.length - toInsert.length} already existed).`,
+  );
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+run(main);

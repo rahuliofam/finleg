@@ -82,8 +82,8 @@ still work — the lib is opt-in.
 Currently migrated: `process-inbox.mjs`, `process-tax-returns.mjs`,
 `ingest-statements.mjs`, `ai-categorize-batch.mjs`, `ocr-gemini-flash.mjs`,
 `extract-doc-text.mjs`, `compute-ai-metrics.mjs`,
-`sync-investment-balances-to-qb.mjs`. Migration of the remaining scripts is
-mechanical and can happen incrementally.
+`sync-investment-balances-to-qb.mjs`, `seed-category-rules.mjs`. Migration of
+the remaining scripts is mechanical and can happen incrementally.
 
 ---
 
@@ -346,11 +346,11 @@ category, account_type, institution, and year.
 - **Invocation:** manual. `node scripts/verify-index.mjs`.
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY`.
 
-### `seed-category-rules.mjs`
+### `seed-category-rules.mjs` *(harness-migrated)*
 Insert a curated list of vendor-pattern → category rules into `category_rules`.
 Idempotent — skips `(match_pattern, match_type)` pairs that already exist.
 
-- **Invocation:** manual. `node scripts/seed-category-rules.mjs`.
+- **Invocation:** manual. `node scripts/seed-category-rules.mjs [--dry-run] [--verbose]`.
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY`.
 
 ### `compute-ai-metrics.mjs` *(harness-migrated)*
