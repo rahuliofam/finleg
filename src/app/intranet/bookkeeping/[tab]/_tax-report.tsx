@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { TabHeader, TabEmptyState, StatCard } from "@/components/tabs";
 
 interface TaxCategory {
   category: string;
@@ -135,39 +136,33 @@ export default function TaxReportTab() {
   }
 
   if (loading) {
-    return (
-      <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-        Loading tax data...
-      </div>
-    );
+    return <TabEmptyState message="Loading tax data..." />;
   }
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Tax Report</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Tax-relevant financial summary for {year}
-          </p>
-        </div>
-        <select
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm bg-white"
-        >
-          {availableYears.map((y) => (
-            <option key={y} value={y}>{y}</option>
-          ))}
-        </select>
-      </div>
+      <TabHeader
+        title="Tax Report"
+        description={`Tax-relevant financial summary for ${year}`}
+        actions={
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm bg-white"
+          >
+            {availableYears.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        }
+      />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <SummaryCard label="Total Income" value={formatCurrency(incomeTotal)} accent="green" />
-        <SummaryCard label="Total Expenses" value={formatCurrency(expenseTotal)} accent="red" />
-        <SummaryCard label="Net" value={formatCurrency(incomeTotal - expenseTotal)} accent={incomeTotal >= expenseTotal ? "green" : "red"} />
-        <SummaryCard label="Deductible" value={formatCurrency(deductibleTotal)} accent="purple" />
+        <StatCard label="Total Income" value={formatCurrency(incomeTotal)} accent="green" valueSize="text-xl" />
+        <StatCard label="Total Expenses" value={formatCurrency(expenseTotal)} accent="red" valueSize="text-xl" />
+        <StatCard label="Net" value={formatCurrency(incomeTotal - expenseTotal)} accent={incomeTotal >= expenseTotal ? "green" : "red"} valueSize="text-xl" />
+        <StatCard label="Deductible" value={formatCurrency(deductibleTotal)} accent="purple" valueSize="text-xl" />
       </div>
 
       {/* Capital Gains/Losses */}
@@ -231,29 +226,6 @@ export default function TaxReportTab() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent: "green" | "red" | "purple";
-}) {
-  const colors = {
-    green: "text-green-700",
-    red: "text-red-700",
-    purple: "text-purple-700",
-  };
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 text-center">
-      <div className={`text-xl font-bold ${colors[accent]}`}>{value}</div>
-      <div className="text-xs text-slate-500 mt-0.5">{label}</div>
     </div>
   );
 }

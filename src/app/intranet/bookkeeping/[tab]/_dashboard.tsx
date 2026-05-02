@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { TabHeader, TabEmptyState, StatCard } from "@/components/tabs";
 
 interface SpendingMonth {
   month: string;
@@ -138,31 +139,24 @@ export default function DashboardTab() {
     new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
   if (loading) {
-    return (
-      <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-        Loading dashboard...
-      </div>
-    );
+    return <TabEmptyState message="Loading dashboard..." />;
   }
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">Financial overview and system health</p>
-      </div>
+      <TabHeader title="Dashboard" description="Financial overview and system health" />
 
       {/* KPI Cards */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <KPICard label="Transactions" value={stats.totalTransactions.toLocaleString()} />
-          <KPICard
+          <StatCard label="Transactions" value={stats.totalTransactions.toLocaleString()} />
+          <StatCard
             label="Pending Review"
             value={stats.pendingReview.toString()}
             accent={stats.pendingReview > 0 ? "amber" : "green"}
           />
-          <KPICard label="Auto-Categorized" value={`${stats.autoCategorizePct}%`} accent="purple" />
-          <KPICard label="Active Rules" value={stats.activeRules.toString()} accent="teal" />
+          <StatCard label="Auto-Categorized" value={`${stats.autoCategorizePct}%`} accent="purple" />
+          <StatCard label="Active Rules" value={stats.activeRules.toString()} accent="teal" />
         </div>
       )}
 
@@ -249,32 +243,6 @@ export default function DashboardTab() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function KPICard({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: "green" | "purple" | "amber" | "teal";
-}) {
-  const accentColors = {
-    green: "text-green-700",
-    purple: "text-purple-700",
-    amber: "text-amber-700",
-    teal: "text-teal-700",
-  };
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 text-center">
-      <div className={`text-2xl font-bold ${accent ? accentColors[accent] : "text-slate-900"}`}>
-        {value}
-      </div>
-      <div className="text-xs text-slate-500 mt-0.5">{label}</div>
     </div>
   );
 }

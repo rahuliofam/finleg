@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { TabNotFound } from "@/components/tabs";
 import OverviewTab from "./_overview";
 import ReportsTab from "./_reports";
 
@@ -14,10 +15,6 @@ export default function ZeniTabContent() {
     case "reports":
       return <ReportsTab />;
     default:
-      return (
-        <div className="text-center py-12 text-slate-400">
-          <p>Tab not found.</p>
-        </div>
-      );
+      return <TabNotFound />;
   }
 }

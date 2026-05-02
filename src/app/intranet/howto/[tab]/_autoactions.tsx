@@ -2,6 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import {
+  TabHeader,
+  TabErrorBanner,
+  TabEmptyState,
+  FilterPills,
+  type FilterPillOption,
+} from "@/components/tabs";
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -267,15 +274,19 @@ export default function AutoActionsPage() {
   const unresolvedFindings = events.filter((e) => e.source === "finding" && e.status !== "success").length;
   const totalAutoActions = events.filter((e) => e.source === "activity").length;
 
+  const filterOptions: FilterPillOption<FilterSource>[] = [
+    { key: "all", label: `All (${events.length})` },
+    { key: "sync", label: `Syncs (${counts.sync})` },
+    { key: "activity", label: `Actions (${counts.activity})` },
+    { key: "finding", label: `Findings (${counts.finding})` },
+  ];
+
   return (
     <div className="max-w-4xl">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">AutoActions</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Unified log of all automated system activity &mdash; syncs, AI actions, and integrity findings.
-        </p>
-      </div>
+      <TabHeader
+        title="AutoActions"
+        description="Unified log of all automated system activity — syncs, AI actions, and integrity findings."
+      />
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -313,23 +324,16 @@ export default function AutoActionsPage() {
 
       {/* Filter bar */}
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide mr-1">Filter:</span>
-        {(["all", "sync", "activity", "finding"] as FilterSource[]).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              filter === f
-                ? "bg-slate-800 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            {f === "all" ? `All (${events.length})` :
-             f === "sync" ? `Syncs (${counts.sync})` :
-             f === "activity" ? `Actions (${counts.activity})` :
-             `Findings (${counts.finding})`}
-          </button>
-        ))}
+        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide mr-1">
+          Filter:
+        </span>
+        <FilterPills
+          options={filterOptions}
+          value={filter}
+          onChange={setFilter}
+          variant="slate"
+          showCounts={false}
+        />
         <button
           onClick={fetchAll}
           className="ml-auto text-xs text-slate-500 hover:text-slate-800 px-2 py-1"
@@ -338,15 +342,9 @@ export default function AutoActionsPage() {
         </button>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2 font-medium underline">Dismiss</button>
-        </div>
-      )}
+      <TabErrorBanner error={error} onDismiss={() => setError(null)} />
 
-      {/* Event list */}
+      {/* Event list — uses rounded-lg (unlike the xl default) to match the list container below */}
       {loading ? (
         <div className="rounded-lg border border-slate-200 p-8 text-center text-slate-500">
           Loading automated actions...

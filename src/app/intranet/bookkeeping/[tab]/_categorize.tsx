@@ -2,6 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import {
+  TabHeader,
+  TabErrorBanner,
+  TabEmptyState,
+  FilterPills,
+  type FilterPillOption,
+} from "@/components/tabs";
 
 interface QBTransaction {
   id: string;
@@ -234,7 +241,7 @@ export default function CategorizeTab() {
   const formatAmount = (a: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Math.abs(a));
 
-  const filterTabs: { key: FilterTab; label: string; count: number }[] = [
+  const filterTabs: FilterPillOption<FilterTab>[] = [
     { key: "pending", label: "Needs Category", count: stats.pending },
     { key: "auto_categorized", label: "Auto-Categorized", count: stats.auto },
     { key: "approved", label: "Approved", count: stats.approved },
@@ -243,66 +250,33 @@ export default function CategorizeTab() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Quick Categorize</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Review and categorize transactions from QuickBooks
-          </p>
-        </div>
-        {filter === "auto_categorized" && transactions.length > 0 && (
-          <button
-            onClick={handleBulkApprove}
-            disabled={saving === "bulk"}
-            className="px-4 py-2 text-sm font-medium text-white bg-[#228B4A] hover:bg-[#1B6B3A] rounded-lg transition-colors disabled:opacity-50"
-          >
-            {saving === "bulk" ? "Approving..." : `Approve All (${transactions.length})`}
-          </button>
-        )}
-      </div>
+      <TabHeader
+        title="Quick Categorize"
+        description="Review and categorize transactions from QuickBooks"
+        actionsAlign="center"
+        actions={
+          filter === "auto_categorized" && transactions.length > 0 ? (
+            <button
+              onClick={handleBulkApprove}
+              disabled={saving === "bulk"}
+              className="px-4 py-2 text-sm font-medium text-white bg-[#228B4A] hover:bg-[#1B6B3A] rounded-lg transition-colors disabled:opacity-50"
+            >
+              {saving === "bulk" ? "Approving..." : `Approve All (${transactions.length})`}
+            </button>
+          ) : undefined
+        }
+      />
 
-      {error && (
-        <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2 font-medium underline">
-            Dismiss
-          </button>
-        </div>
-      )}
+      <TabErrorBanner error={error} onDismiss={() => setError(null)} />
 
-      {/* Filter tabs */}
-      <div className="flex gap-2 mb-6">
-        {filterTabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setFilter(tab.key)}
-            className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-              filter === tab.key
-                ? "bg-[#228B4A] text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            {tab.label}
-            {tab.count > 0 && (
-              <span className="ml-1.5 text-xs opacity-75">({tab.count})</span>
-            )}
-          </button>
-        ))}
-      </div>
+      <FilterPills options={filterTabs} value={filter} onChange={setFilter} className="mb-6" />
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Loading transactions...
-        </div>
+        <TabEmptyState message="Loading transactions..." />
       ) : transactions.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          <p className="text-lg mb-2">
-            {filter === "pending" ? "All caught up!" : "No transactions found."}
-          </p>
-          {filter === "pending" && (
-            <p className="text-sm">No transactions need categorization right now.</p>
-          )}
-        </div>
+        <TabEmptyState title={filter === "pending" ? "All caught up!" : "No transactions found."}>
+          {filter === "pending" ? "No transactions need categorization right now." : null}
+        </TabEmptyState>
       ) : (
         <div className="space-y-3">
           {transactions.map((txn) => (

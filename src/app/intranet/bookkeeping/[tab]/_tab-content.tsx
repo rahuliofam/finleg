@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { TabNotFound } from "@/components/tabs";
 import LedgerNotesTab from "./_ledger-notes";
 import StatementsTab from "./_statements";
 import CategorizeTab from "./_categorize";
@@ -38,10 +39,6 @@ export default function BookkeepingTabContent() {
     case "brokerage":
       return <BrokerageTab />;
     default:
-      return (
-        <div className="text-center py-12 text-slate-400">
-          <p>Tab not found.</p>
-        </div>
-      );
+      return <TabNotFound />;
   }
 }

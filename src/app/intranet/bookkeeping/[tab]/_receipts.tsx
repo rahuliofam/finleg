@@ -2,6 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import {
+  TabHeader,
+  TabErrorBanner,
+  TabEmptyState,
+  FilterPills,
+  type FilterPillOption,
+} from "@/components/tabs";
 
 interface Receipt {
   id: string;
@@ -164,7 +171,7 @@ export default function ReceiptsTab() {
     error: "bg-red-100 text-red-700",
   };
 
-  const filterTabs: { key: StatusFilter; label: string }[] = [
+  const filterTabs: FilterPillOption<StatusFilter>[] = [
     { key: "all", label: "All" },
     { key: "pending", label: "Pending" },
     { key: "parsed", label: "Parsed" },
@@ -174,19 +181,17 @@ export default function ReceiptsTab() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Receipt Inbox</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Receipts emailed to <span className="font-mono text-slate-700">agent@finleg.net</span> appear here
-        </p>
-      </div>
+      <TabHeader
+        title="Receipt Inbox"
+        description={
+          <>
+            Receipts emailed to{" "}
+            <span className="font-mono text-slate-700">agent@finleg.net</span> appear here
+          </>
+        }
+      />
 
-      {error && (
-        <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2 font-medium underline">Dismiss</button>
-        </div>
-      )}
+      <TabErrorBanner error={error} onDismiss={() => setError(null)} />
 
       {/* How-to banner */}
       <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
@@ -196,34 +201,20 @@ export default function ReceiptsTab() {
         (e.g. &quot;meals&quot; or &quot;office supplies&quot;) to skip AI categorization.
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-2 mb-6">
-        {filterTabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setFilter(tab.key)}
-            className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-              filter === tab.key
-                ? "bg-[#228B4A] text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <FilterPills
+        options={filterTabs}
+        value={filter}
+        onChange={setFilter}
+        showCounts={false}
+        className="mb-6"
+      />
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Loading receipts...
-        </div>
+        <TabEmptyState message="Loading receipts..." />
       ) : receipts.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          <p className="text-lg mb-2">No receipts yet</p>
-          <p className="text-sm">
-            Email a receipt to <span className="font-mono">agent@finleg.net</span> to get started.
-          </p>
-        </div>
+        <TabEmptyState title="No receipts yet">
+          Email a receipt to <span className="font-mono">agent@finleg.net</span> to get started.
+        </TabEmptyState>
       ) : (
         <div className="space-y-3">
           {receipts.map((receipt) => (

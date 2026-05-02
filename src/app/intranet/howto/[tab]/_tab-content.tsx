@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { TabNotFound } from "@/components/tabs";
 import ComponentsPage from "./_components";
 import NutsBoltsPage from "./_nutsbolts";
 import AutoActionsPage from "./_autoactions";
@@ -23,10 +24,6 @@ export default function HowtoTabContent() {
     case "data-pipeline":
       return <DataPipelinePage />;
     default:
-      return (
-        <div className="text-center py-12 text-slate-400">
-          <p>Tab not found.</p>
-        </div>
-      );
+      return <TabNotFound />;
   }
 }

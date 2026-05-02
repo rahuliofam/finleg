@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { TabHeader, TabErrorBanner, TabEmptyState, StatCard } from "@/components/tabs";
 
 interface ActivityEntry {
   id: string;
@@ -190,28 +191,26 @@ export default function ActivityTab() {
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Activity Feed</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Everything the AI agent and humans have done
-          </p>
-        </div>
-        <button
-          onClick={handleSyncNow}
-          disabled={syncing}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {syncing ? (
-            <>
-              <span className="animate-spin">⟳</span>
-              Syncing...
-            </>
-          ) : (
-            <>🔄 Sync Now</>
-          )}
-        </button>
-      </div>
+      <TabHeader
+        title="Activity Feed"
+        description="Everything the AI agent and humans have done"
+        actions={
+          <button
+            onClick={handleSyncNow}
+            disabled={syncing}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {syncing ? (
+              <>
+                <span className="animate-spin">⟳</span>
+                Syncing...
+              </>
+            ) : (
+              <>🔄 Sync Now</>
+            )}
+          </button>
+        }
+      />
 
       {/* Recent Sync Runs */}
       {syncRuns.length > 0 && (
@@ -245,12 +244,7 @@ export default function ActivityTab() {
         </div>
       )}
 
-      {error && (
-        <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2 font-medium underline">Dismiss</button>
-        </div>
-      )}
+      <TabErrorBanner error={error} onDismiss={() => setError(null)} />
 
       {/* Stats cards */}
       {stats && (
@@ -264,16 +258,11 @@ export default function ActivityTab() {
       )}
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Loading activity...
-        </div>
+        <TabEmptyState message="Loading activity..." />
       ) : entries.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          <p className="text-lg mb-2">No activity yet</p>
-          <p className="text-sm">
-            Activity will appear here once receipts are processed or transactions are synced.
-          </p>
-        </div>
+        <TabEmptyState title="No activity yet">
+          Activity will appear here once receipts are processed or transactions are synced.
+        </TabEmptyState>
       ) : (
         <div className="space-y-1">
           {entries.map((entry) => {
@@ -312,32 +301,6 @@ export default function ActivityTab() {
           })}
         </div>
       )}
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: number;
-  accent?: "green" | "purple" | "amber" | "teal";
-}) {
-  const accentColors = {
-    green: "text-green-700",
-    purple: "text-purple-700",
-    amber: "text-amber-700",
-    teal: "text-teal-700",
-  };
-
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 text-center">
-      <div className={`text-2xl font-bold ${accent ? accentColors[accent] : "text-slate-900"}`}>
-        {value}
-      </div>
-      <div className="text-xs text-slate-500 mt-0.5">{label}</div>
     </div>
   );
 }
