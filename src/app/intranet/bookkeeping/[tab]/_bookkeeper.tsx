@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { TabHeader, TabErrorBanner, TabEmptyState } from "@/components/tabs";
 
 interface QBTransaction {
   id: string;
@@ -118,29 +119,19 @@ export default function BookkeeperTab() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Bookkeeper Queue</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Transactions flagged for bookkeeper review — complex categorization, splits, or unknowns
-        </p>
-      </div>
+      <TabHeader
+        title="Bookkeeper Queue"
+        description="Transactions flagged for bookkeeper review — complex categorization, splits, or unknowns"
+      />
 
-      {error && (
-        <div className="mb-4 text-sm rounded-lg px-4 py-3 bg-red-50 border border-red-200 text-red-700">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2 font-medium underline">Dismiss</button>
-        </div>
-      )}
+      <TabErrorBanner error={error} onDismiss={() => setError(null)} />
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Loading queue...
-        </div>
+        <TabEmptyState message="Loading queue..." />
       ) : transactions.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          <p className="text-lg mb-2">Queue is empty</p>
-          <p className="text-sm">No transactions need bookkeeper attention right now.</p>
-        </div>
+        <TabEmptyState title="Queue is empty">
+          No transactions need bookkeeper attention right now.
+        </TabEmptyState>
       ) : (
         <div className="space-y-4">
           <p className="text-sm text-slate-600">

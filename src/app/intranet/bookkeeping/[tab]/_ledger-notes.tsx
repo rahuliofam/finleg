@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { TabHeader, TabEmptyState } from "@/components/tabs";
 
 interface IntegrityFinding {
   id: string;
@@ -141,19 +142,19 @@ export default function LedgerNotesTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Ledger Notes</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            QuickBooks data quality analysis
-          </p>
-        </div>
-        {hasLiveFindings && (
-          <span className="text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">
-            Live data
-          </span>
-        )}
-      </div>
+      <TabHeader
+        title="Ledger Notes"
+        description="QuickBooks data quality analysis"
+        className="mb-0"
+        actionsAlign="center"
+        actions={
+          hasLiveFindings ? (
+            <span className="text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">
+              Live data
+            </span>
+          ) : undefined
+        }
+      />
 
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-4">
@@ -178,17 +179,12 @@ export default function LedgerNotesTab() {
       </div>
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Loading findings...
-        </div>
+        <TabEmptyState message="Loading findings..." />
       ) : findings.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          <p className="text-lg mb-2">No open findings</p>
-          <p className="text-sm">
-            Run the integrity check to scan for data quality issues.
-            Findings will appear here automatically after the weekly check runs.
-          </p>
-        </div>
+        <TabEmptyState title="No open findings">
+          Run the integrity check to scan for data quality issues. Findings will appear here
+          automatically after the weekly check runs.
+        </TabEmptyState>
       ) : (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-slate-900">
