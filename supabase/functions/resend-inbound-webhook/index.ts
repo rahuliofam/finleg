@@ -1,3 +1,13 @@
+/**
+ * Resend Inbound Email Webhook — entry point for emails sent to
+ * `agent@finleg.net`. For each processable attachment (PDF or image):
+ *   1. Fetch the email + attachment bytes from Resend.
+ *   2. Classify PDFs via Gemini 2.5 Flash as statement vs receipt.
+ *   3. Statements → store in `statements` bucket + insert into `statement_inbox`.
+ *   4. Receipts → parse with Claude Haiku, store in `receipts` bucket, attempt
+ *      to auto-match against an existing `qb_transactions` row (score >= 0.5).
+ *   5. Email the sender a branded summary BCC'd to the forward address.
+ */
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -408,7 +418,10 @@ async function storeAttachment(
 }
 
 /**
- * Try to match a receipt to an existing QB transaction.
+ * Try to match a receipt to an unmatched QB transaction. Searches within
+ * a ±5-day window, scores candidates: exact amount 0.6 (close ±$1 = 0.3,
+ * else skip), date proximity up to 0.2, vendor substring match 0.2. Returns
+ * the best candidate only if final score >= 0.5.
  */
 async function tryMatchTransaction(
   supabase: any,

@@ -66,6 +66,11 @@ async function ensureValidToken(supabase: any, token: QBToken): Promise<QBToken>
   return newToken;
 }
 
+/**
+ * QB sparse update: reads the entity first to grab the current `SyncToken`
+ * (QB uses optimistic locking), then POSTs a sparse-merge body with only the
+ * fields being changed. Using `sparse: true` avoids clobbering unrelated fields.
+ */
 async function qbSparseUpdate(
   token: QBToken,
   entityType: string,

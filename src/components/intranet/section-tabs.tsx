@@ -7,6 +7,11 @@ import { SECTIONS, type SectionDefinition } from "@/types/intranet";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 
+/**
+ * Top-level intranet section tabs. Injects a dynamic personal tab (keyed `my`,
+ * labeled with the user's first name) at the far right — placed before the
+ * Admin tab for admins, and hiding the Admin tab entirely for non-admins.
+ */
 export function SectionTabs() {
   const pathname = usePathname();
   const { user } = useAuth();

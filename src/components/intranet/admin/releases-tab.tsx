@@ -87,6 +87,12 @@ async function fetchWithFallback(url: string) {
   return res.json();
 }
 
+/**
+ * Changelog view. Correlates merged PRs with the version bumped by CI:
+ * scans commit history for `chore: bump version` commits, matches the preceding
+ * merge-commit's PR number, then fetches `version.json` at that commit to
+ * attach the exact version string to each PR row.
+ */
 export function ReleasesTab() {
   const [prs, setPrs] = useState<PRDetail[]>([]);
   const [loading, setLoading] = useState(true);

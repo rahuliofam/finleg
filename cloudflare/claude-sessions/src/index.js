@@ -2,6 +2,18 @@
 // Stores and retrieves Claude Code session transcripts.
 // Auth: Bearer token — set via `wrangler secret put AUTH_TOKEN`
 
+/**
+ * Routes (all require `Authorization: Bearer AUTH_TOKEN` except OPTIONS):
+ *   POST /sessions           — upsert a session (INSERT OR REPLACE, idempotent)
+ *   GET  /sessions           — list w/ project/search/from/to filters + paging
+ *   GET  /sessions/:id       — full session incl. transcript
+ *   GET  /projects           — distinct project names
+ *   GET  /stats              — aggregates; caps `duration_mins < 1440` to
+ *                              exclude stale/orphaned sessions from averages
+ *   POST /sessions/ask       — natural-language Q&A via Workers AI; uses full
+ *                              transcripts when <=10 sessions, summaries otherwise
+ *   POST /fix-timestamps     — backfill `ended_at` for a bulk-import window
+ */
 export default {
   async fetch(request, env) {
     // CORS preflight

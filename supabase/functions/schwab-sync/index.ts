@@ -1,3 +1,11 @@
+/**
+ * Schwab Sync — pulls accounts, positions, balances, and optionally
+ * transactions from the Schwab Trader API into the shared PlaidPlus schema
+ * (institutions, accounts, holdings, securities, transactions,
+ * account_balances). Refresh tokens are stored AES-256-GCM encrypted in
+ * `oauth_tokens`; decryption format matches the schwab-callback-router
+ * Cloudflare Worker (`iv_base64.ciphertext_base64`).
+ */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -70,6 +78,11 @@ async function encrypt(plaintext: string, key: CryptoKey): Promise<string> {
 // Token management
 // ============================================================
 
+/**
+ * Decrypts and returns a valid access token. Refreshes via Schwab OAuth when
+ * the stored token is within 2 min of expiry, re-encrypts the new tokens, and
+ * persists the updated `oauth_tokens` row. Returns the plaintext access token.
+ */
 async function ensureValidToken(
   supabase: any,
   tokenRecord: any,

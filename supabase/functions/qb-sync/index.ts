@@ -1,3 +1,10 @@
+/**
+ * QB Sync — pulls Purchase/Deposit/Transfer/JournalEntry entities from the
+ * QuickBooks Online API into `qb_transactions`, applies vendor-based
+ * `category_rules`, detects soft-deletes, and records a `sync_runs` row.
+ * Expects a POST body (optional) with `{syncType, triggeredBy, sinceDate?}`.
+ * Uses sandbox vs production API based on `QUICKBOOKS_ENVIRONMENT`.
+ */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -30,6 +37,13 @@ function getSupabase() {
 // Token management
 // ============================================================
 
+/**
+ * Returns a token guaranteed valid for the next ~5 min. Refreshes via the QB
+ * OAuth2 refresh grant when the current access token is within that window of
+ * expiry; persists the rotated `refresh_token` (QB may issue a new one) and
+ * updated expiry timestamps back to `qb_tokens`.
+ * @throws if client credentials are missing or the refresh call fails.
+ */
 async function ensureValidToken(supabase: any, token: QBToken): Promise<QBToken> {
   const expiresAt = new Date(token.expires_at);
   const now = new Date();
@@ -133,6 +147,13 @@ async function fetchAccounts(token: QBToken, isSandbox: boolean): Promise<any[]>
 // Category rules
 // ============================================================
 
+/**
+ * Finds the first active `category_rules` row whose pattern matches the
+ * vendor (exact/contains/starts_with/regex, case-insensitive). Rules are
+ * ordered by descending priority, so more specific rules win. Invalid regex
+ * patterns are silently skipped. On a match, bumps `hit_count` and
+ * `last_hit_at` for the rule.
+ */
 async function applyCategoryRules(
   supabase: any,
   vendorName: string
@@ -269,6 +290,12 @@ function transformJournalEntry(je: any): any {
 // Soft-delete detection
 // ============================================================
 
+/**
+ * Soft-deletes local transactions that no longer appear in the QB fetch for
+ * the sync window. `fetchedQBIds` must use composite `qb_id:qb_type` keys —
+ * the same Id can legitimately reuse across entity types in QB. Returns the
+ * count of rows newly marked `is_deleted=true`.
+ */
 async function detectDeletedTransactions(
   supabase: any,
   sinceDate: string,

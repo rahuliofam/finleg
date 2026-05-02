@@ -16,6 +16,14 @@ function authenticate(req: Request): boolean {
   return headerKey === INGEST_API_KEY || bearerToken === INGEST_API_KEY;
 }
 
+/**
+ * POST handler that captures a "thought" into the `thoughts` table with a
+ * Gemini embedding + extracted metadata. Handles three entry points:
+ *   - Slack URL verification handshake (unauthenticated, one-time)
+ *   - Slack `event_callback` messages (filters out edits/bot/subtype events)
+ *   - Direct capture via `{ content, source? }` JSON body
+ * All non-handshake requests require `x-brain-key` or Bearer `INGEST_API_KEY`.
+ */
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Open Brain ingest endpoint", { status: 200 });
@@ -120,6 +128,12 @@ async function generateEmbedding(text: string): Promise<number[]> {
   return data.embedding.values;
 }
 
+/**
+ * Asks Gemini 2.0 Flash to classify the thought into `{type, tags, people,
+ * action_items, priority}`. Strips markdown code fences the model sometimes
+ * emits despite the "no markdown" instruction. On any error returns a safe
+ * default observation so ingestion never fails because of metadata.
+ */
 async function extractMetadata(
   text: string,
 ): Promise<Record<string, unknown>> {

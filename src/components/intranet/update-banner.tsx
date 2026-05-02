@@ -19,6 +19,12 @@ interface UpdateState {
   updatesPage: string;
 }
 
+/**
+ * Polls the AlpacApps template updates manifest and surfaces any features
+ * dated after the last check. Throttled per-browser via localStorage to at
+ * most once every 30 days; dismissing the banner also bumps the last-check
+ * timestamp so it won't reappear for another cycle.
+ */
 export function UpdateBanner() {
   const [state, setState] = useState<UpdateState | null>(null);
   const [dismissed, setDismissed] = useState(false);
