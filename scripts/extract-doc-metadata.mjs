@@ -7,11 +7,10 @@
  * and updates Supabase document_index with extracted metadata.
  *
  * Usage:
- *   node scripts/extract-doc-metadata.mjs [--dry-run] [--limit=N] [--category=legal]
+ *   node scripts/extract-doc-metadata.mjs [--dry-run] [--limit N] [--category legal] [--verbose]
  *
  * Prerequisites on Hostinger:
  *   - Claude CLI installed (`npm install -g @anthropic-ai/claude-code`)
- *   - wrangler installed (`npm install -g wrangler`)
  *   - Node.js 22+
  *
  * The script:
@@ -21,51 +20,69 @@
  *   4. Updates Supabase with extracted fields
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { readFileSync, writeFileSync, unlinkSync, mkdirSync } from 'fs';
-import { createWriteStream } from 'fs';
+import { readFileSync, writeFileSync, unlinkSync, mkdirSync, createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import { config } from 'dotenv';
 
-config(); // Load .env
+import {
+  loadEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  run,
+  FatalError,
+} from './lib/index.mjs';
 
 const execAsync = promisify(exec);
 
-// ── Config ──
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!SUPABASE_SERVICE_KEY) {
-  console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env');
-  process.exit(1);
-}
+const args = parseArgs(process.argv.slice(2), {
+  numbers: { limit: 999 },
+  strings: ['category'],
+  help: `Extract structured metadata from documents in R2 via Claude CLI headless mode.
 
-// Cloudflare R2 via S3 API
-const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
-const R2_ACCESS_KEY = process.env.R2_ACCESS_KEY_ID;
-const R2_SECRET_KEY = process.env.R2_SECRET_ACCESS_KEY;
-if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY || !R2_SECRET_KEY) {
-  console.error('Missing R2 credentials in .env (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)');
-  process.exit(1);
-}
+Usage: node scripts/extract-doc-metadata.mjs [options]
+
+Options:
+  --dry-run         compute extractions but don't write to Supabase
+  --limit N         max documents to process this run (default 999)
+  --category NAME   restrict to one category (legal, tax-personal, investment, other)
+  --verbose         enable debug logs
+  --help            this text
+
+Notes:
+  Claude CLI must be installed and authenticated on this host. PARALLEL is
+  fixed at 2 to keep headless mode well-behaved; a 2s pause between batches
+  rate-limits the worker.
+`,
+});
+
+const env = loadEnv({
+  required: [
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'R2_ACCOUNT_ID',
+    'R2_ACCESS_KEY_ID',
+    'R2_SECRET_ACCESS_KEY',
+  ],
+});
+
+const supabase = createSupabaseClient({ env });
+const log = createLogger({ verbose: args.verbose });
 
 const s3 = new S3Client({
   region: 'auto',
-  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: R2_ACCESS_KEY, secretAccessKey: R2_SECRET_KEY },
+  endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: env.R2_ACCESS_KEY_ID,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+  },
 });
-const DRY_RUN = process.argv.includes('--dry-run');
-const LIMIT = parseInt(process.argv.find(a => a.startsWith('--limit='))?.split('=')[1] || '0') || 999;
-const CATEGORY_FILTER = process.argv.find(a => a.startsWith('--category='))?.split('=')[1] || null;
+
 const PARALLEL = 2; // concurrent Claude CLI calls (conservative for headless mode)
 const TMP_DIR = '/tmp/doc-extract';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-// File types Claude can parse
 const PARSEABLE_TYPES = ['pdf', 'docx', 'doc', 'txt', 'csv', 'xlsx', 'xls', 'xml'];
 const IMAGE_TYPES = ['jpg', 'jpeg', 'png'];
 
@@ -97,7 +114,7 @@ async function downloadFromR2(bucket, r2Key) {
     await pipeline(resp.Body, createWriteStream(tmpPath));
     return tmpPath;
   } catch (e) {
-    console.error(`  Download failed: ${e.message?.slice(0, 80)}`);
+    log.warn(`  Download failed: ${e.message?.slice(0, 80)}`);
     return null;
   }
 }
@@ -115,7 +132,6 @@ Current institution: ${existingMeta.institution || 'unknown'}`;
     // For images and PDFs, use allowedTools to let Claude read the local file
     promptText = `${EXTRACTION_PROMPT}\n\nContext:\n${context}\n\nRead and analyze this file: ${filePath}`;
   } else {
-    // Read text content for text-based files
     let textContent;
     try {
       textContent = readFileSync(filePath, 'utf-8').slice(0, 50000);
@@ -130,63 +146,58 @@ Current institution: ${existingMeta.institution || 'unknown'}`;
   writeFileSync(promptPath, promptText);
 
   try {
-    // Use Claude CLI --print mode
-    // For PDFs/images, allow Read tool so Claude can read the local file
     const isPdfOrImage = IMAGE_TYPES.includes(fileType) || fileType === 'pdf';
     const allowTools = isPdfOrImage ? ' --allowedTools "Read"' : '';
 
     const { stdout } = await execAsync(
       `cat "${promptPath}" | claude --print --model sonnet${allowTools}`,
-      { timeout: 180000, maxBuffer: 10 * 1024 * 1024 }
+      { timeout: 180_000, maxBuffer: 10 * 1024 * 1024 },
     );
 
     const text = stdout.trim();
 
-    // Parse JSON from response
     try {
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
     } catch (e) {
-      console.error(`  JSON parse error: ${e.message}`);
-      console.error(`  Raw response: ${text.slice(0, 200)}`);
+      log.warn(`  JSON parse error: ${e.message}`);
+      log.debug(`  Raw response: ${text.slice(0, 200)}`);
     }
 
     return null;
   } finally {
-    try { unlinkSync(promptPath); } catch {}
+    try { unlinkSync(promptPath); } catch { /* ignore cleanup failures */ }
   }
 }
 
 async function processDocument(doc) {
   const { id, bucket, r2_key, filename, file_type, category, account_type, institution, original_path } = doc;
 
-  console.log(`Processing: ${filename} [${bucket}/${r2_key}]`);
+  log.info(`Processing: ${filename} [${bucket}/${r2_key}]`);
 
-  // Skip non-parseable types
   if (!PARSEABLE_TYPES.includes(file_type) && !IMAGE_TYPES.includes(file_type)) {
-    console.log(`  Skipping: unsupported file type '${file_type}'`);
+    log.info(`  Skipping: unsupported file type '${file_type}'`);
     return { id, skipped: true };
   }
 
   let tmpPath;
   try {
-    // Download from R2
     tmpPath = await downloadFromR2(bucket, r2_key);
     if (!tmpPath) return { id, error: 'download failed' };
 
-    // Extract with Claude CLI headless
-    const metadata = await extractWithClaude(tmpPath, file_type, filename, { category, account_type, institution, original_path });
+    const metadata = await extractWithClaude(tmpPath, file_type, filename, {
+      category, account_type, institution, original_path,
+    });
 
     if (!metadata) {
-      console.log(`  No metadata extracted`);
+      log.info('  No metadata extracted');
       return { id, error: 'extraction failed' };
     }
 
-    console.log(`  Extracted: ${metadata.title || 'untitled'} (${metadata.document_type})`);
+    log.info(`  Extracted: ${metadata.title || 'untitled'} (${metadata.document_type})`);
 
-    // Build Supabase update
     const updates = {};
 
     if (metadata.description) updates.description = metadata.description;
@@ -196,7 +207,6 @@ async function processDocument(doc) {
       updates.institution = metadata.institution.toLowerCase().replace(/\s+/g, '-');
     }
 
-    // Store full extraction as metadata JSON
     updates.ai_metadata = JSON.stringify({
       document_type: metadata.document_type,
       title: metadata.title,
@@ -210,65 +220,59 @@ async function processDocument(doc) {
 
     updates.updated_at = new Date().toISOString();
 
-    if (!DRY_RUN) {
+    if (!args.dryRun) {
       const { error } = await supabase.from('document_index').update(updates).eq('id', id);
-      if (error) console.error(`  Supabase update error: ${error.message}`);
+      if (error) log.error(`  Supabase update error: ${error.message}`);
     } else {
-      console.log(`  [DRY-RUN] Would update:`, JSON.stringify(updates).slice(0, 200));
+      log.info(`  [dry-run] Would update: ${JSON.stringify(updates).slice(0, 200)}`);
     }
 
     return { id, success: true, metadata };
   } catch (e) {
-    console.error(`  Error processing ${filename}: ${e.message?.slice(0, 120)}`);
+    log.error(`  Error processing ${filename}: ${e.message?.slice(0, 120)}`);
     return { id, error: e.message?.slice(0, 80) || 'unknown error' };
   } finally {
-    // Cleanup temp file
-    if (tmpPath) try { unlinkSync(tmpPath); } catch {}
+    if (tmpPath) try { unlinkSync(tmpPath); } catch { /* ignore cleanup failures */ }
   }
 }
 
 async function main() {
-  console.log(`[START] Claude CLI Headless Metadata Extraction`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Category: ${CATEGORY_FILTER || 'all'}\n`);
+  log.info('[START] Claude CLI Headless Metadata Extraction');
+  log.info(`Mode: ${args.dryRun ? 'dry-run' : 'live'} | Limit: ${args.limit} | Category: ${args.category || 'all'}`);
 
-  // Verify Claude CLI is available
   try {
-    const { stdout } = await execAsync('claude --version', { timeout: 10000 });
-    console.log(`Claude CLI: ${stdout.trim()}`);
+    const { stdout } = await execAsync('claude --version', { timeout: 10_000 });
+    log.info(`Claude CLI: ${stdout.trim()}`);
   } catch {
-    console.error('ERROR: Claude CLI not found. Install with: npm install -g @anthropic-ai/claude-code');
-    process.exit(1);
+    throw new FatalError(
+      'Claude CLI not found. Install with: npm install -g @anthropic-ai/claude-code',
+    );
   }
 
-  // Query documents missing enriched metadata
   let query = supabase
     .from('document_index')
     .select('*')
     .is('ai_metadata', null)
     .order('created_at', { ascending: false })
-    .limit(LIMIT);
+    .limit(args.limit);
 
-  if (CATEGORY_FILTER) {
-    query = query.eq('category', CATEGORY_FILTER);
+  if (args.category) {
+    query = query.eq('category', args.category);
   }
 
-  // Filter to new categories only
+  // Filter to enriched-metadata categories only
   query = query.in('category', ['legal', 'tax-personal', 'investment', 'other']);
 
   const { data: docs, error } = await query;
-  if (error) {
-    console.error(`Query error: ${error.message}`);
-    process.exit(1);
-  }
+  if (error) throw new FatalError(`Query error: ${error.message}`, { cause: error });
 
-  console.log(`Found ${docs.length} documents to process\n`);
+  log.info(`Found ${docs.length} documents to process`);
 
   let success = 0, failed = 0, skipped = 0;
 
-  // Process in batches of PARALLEL
   for (let i = 0; i < docs.length; i += PARALLEL) {
     const batch = docs.slice(i, i + PARALLEL);
-    const results = await Promise.all(batch.map(d => processDocument(d)));
+    const results = await Promise.all(batch.map((d) => processDocument(d)));
 
     for (const r of results) {
       if (r.skipped) skipped++;
@@ -276,17 +280,16 @@ async function main() {
       else failed++;
     }
 
-    // Rate limit pause between batches
     if (i + PARALLEL < docs.length) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
 
-  console.log(`\n=== COMPLETE ===`);
-  console.log(`Extracted: ${success}`);
-  console.log(`Failed:    ${failed}`);
-  console.log(`Skipped:   ${skipped}`);
-  console.log(`Total:     ${docs.length}`);
+  log.info('=== COMPLETE ===');
+  log.info(`Extracted: ${success}`);
+  log.info(`Failed:    ${failed}`);
+  log.info(`Skipped:   ${skipped}`);
+  log.info(`Total:     ${docs.length}`);
 }
 
-main().catch(console.error);
+run(main);

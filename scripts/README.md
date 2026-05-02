@@ -81,7 +81,7 @@ still work — the lib is opt-in.
 
 Currently migrated: `process-inbox.mjs`, `process-tax-returns.mjs`,
 `ingest-statements.mjs`, `ai-categorize-batch.mjs`, `ocr-gemini-flash.mjs`,
-`extract-doc-text.mjs`, `compute-ai-metrics.mjs`,
+`extract-doc-text.mjs`, `extract-doc-metadata.mjs`, `compute-ai-metrics.mjs`,
 `sync-investment-balances-to-qb.mjs`, `seed-category-rules.mjs`. Migration of
 the remaining scripts is mechanical and can happen incrementally.
 
@@ -175,11 +175,11 @@ statement tables.
 - **External:** Supabase, R2 (via `aws` / `wrangler` — see script), Claude CLI.
 - **See:** [docs/STATEMENT-INGESTION.md](../docs/STATEMENT-INGESTION.md).
 
-### `extract-doc-metadata.mjs`
+### `extract-doc-metadata.mjs` *(harness-migrated)*
 Extract rich metadata (document_type, parties, dates, institution, tags) from
 documents missing `ai_metadata`, via Claude CLI headless.
 
-- **Invocation:** Hostinger. `node scripts/extract-doc-metadata.mjs [--dry-run] [--limit=N] [--category=legal]`. Categories processed: `legal`, `tax-personal`, `investment`, `other`.
+- **Invocation:** Hostinger. `node scripts/extract-doc-metadata.mjs [--dry-run] [--limit N] [--category legal] [--verbose]`. Categories processed: `legal`, `tax-personal`, `investment`, `other`.
 - **Env:** `SUPABASE_SERVICE_ROLE_KEY`, `R2_*`.
 - **External:** Supabase, R2 (S3 client), Claude CLI (`--model sonnet`, `--allowedTools Read` for PDFs/images).
 - **Concurrency:** 2 parallel Claude calls; 2s pause between batches.
