@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthGuard } from "@/components/auth-guard";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { SectionTabs } from "@/components/intranet/section-tabs";
 import { SubTabs } from "@/components/intranet/sub-tabs";
 import { UpdateBanner } from "@/components/intranet/update-banner";
@@ -14,7 +15,7 @@ export default function IntranetLayout({ children }: { children: ReactNode }) {
         <SubTabs />
         <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
           <UpdateBanner />
-          {children}
+          <ErrorBoundary label="Intranet">{children}</ErrorBoundary>
         </div>
       </div>
     </AuthGuard>
