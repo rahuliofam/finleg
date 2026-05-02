@@ -203,6 +203,14 @@ const TOOLS = [
   },
 ];
 
+/**
+ * MCP (Model Context Protocol) server exposing the Open Brain thought store
+ * via JSON-RPC over HTTP POST. Supports `initialize`, `tools/list`,
+ * `tools/call` (search_thoughts, browse_recent, stats, capture_thought), and
+ * swallows `notifications/initialized` with 204. GET returns a health check.
+ * All methods require auth via `x-brain-key` or Bearer `MCP_ACCESS_KEY` —
+ * never accept the key from query strings (would leak to access logs).
+ */
 Deno.serve(async (req) => {
   if (!authenticate(req)) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {

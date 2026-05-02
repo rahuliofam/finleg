@@ -4,6 +4,12 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
+/**
+ * Gates child content behind Supabase auth. Unauthenticated users are
+ * redirected to `/signin` with the current path preserved in `?redirect=`.
+ * Renders a spinner while the auth context is resolving and `null` during
+ * redirect to avoid flashing protected content.
+ */
 export function AuthGuard({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();

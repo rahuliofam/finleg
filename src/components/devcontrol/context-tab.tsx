@@ -162,6 +162,11 @@ const CATEGORY_LABELS: Record<string, { label: string; bg: string; text: string;
   system: { label: "System", bg: "bg-slate-100", text: "text-slate-600", bar: "bg-slate-400" },
 };
 
+/**
+ * Renders context-window usage for Claude dev sessions. Side effect: on mount
+ * upserts today's row into `context_snapshots` (keyed by snapshot_date) so the
+ * 90-day trend chart gains a data point per day the page is opened.
+ */
 export function ContextTab() {
   const [items, setItems] = useState<ContextItem[]>([]);
   const [loading, setLoading] = useState(true);

@@ -9,6 +9,17 @@ const SCHWAB_TOKEN_URL = 'https://api.schwabapi.com/v1/oauth/token';
 const GITHUB_PAGES_ORIGIN = 'https://finleg.net';
 const SCHWAB_INSTITUTION_NAME = 'Charles Schwab';
 
+/**
+ * Routes (no bearer auth):
+ *   GET /schwab/auth        — kicks off OAuth authorize redirect
+ *   GET /schwab/callback    — exchanges `code` for tokens, encrypts, upserts
+ * Routes (require `Authorization: Bearer AUTH_TOKEN`):
+ *   GET  /schwab/status     — connection + expiry info
+ *   POST /schwab/refresh    — manual refresh (delegates to doTokenRefresh)
+ *   POST /schwab/disconnect — marks token `revoked`
+ *   GET  /schwab/api/*      — temporary authenticated proxy to Schwab API
+ * `scheduled()` cron auto-refreshes the token every 3 days.
+ */
 export default {
   // Cron trigger — auto-refresh token every 3 days to prevent expiry
   async scheduled(event, env, ctx) {
@@ -205,7 +216,14 @@ async function handleStatus(env) {
   });
 }
 
-// Shared token refresh logic — used by both /schwab/refresh endpoint and cron trigger
+/**
+ * Shared refresh logic for both the /schwab/refresh route and the cron job.
+ * Returns `{ ok: false, error: 'refresh_token_expired' }` without calling
+ * Schwab when the stored refresh token is past its 7-day lifetime. On 400/401
+ * from Schwab, marks the row `status='expired'` with the error body so the UI
+ * can prompt the user to reconnect. Always re-encrypts and persists fresh
+ * tokens on success.
+ */
 async function doTokenRefresh(env) {
   const institutionId = await getSchwabInstitutionId(env);
   const res = await supabaseRequest(env,
