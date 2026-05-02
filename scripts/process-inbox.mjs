@@ -12,35 +12,48 @@
  *   node scripts/process-inbox.mjs --id <uuid>        # Process specific inbox item
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { exec } from 'child_process';
 import { unlinkSync, writeFileSync } from 'fs';
 import { promisify } from 'util';
-import { config } from 'dotenv';
 
-config(); // Load .env
+import {
+  loadSupabaseEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  retry,
+  run,
+  FatalError,
+} from './lib/index.mjs';
 
 const execAsync = promisify(exec);
 
-// ── Config ──────────────────────────────────────────────────────────────────
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!SUPABASE_SERVICE_KEY) { console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env'); process.exit(1); }
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const env = loadSupabaseEnv();
+const supabase = createSupabaseClient({ env });
 
 // ── CLI args ────────────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const DRY_RUN = args.includes('--dry-run');
-const LIMIT = parseInt(getArg('--limit') || '50');
-const SPECIFIC_ID = getArg('--id');
+const cliArgs = parseArgs(process.argv.slice(2), {
+  numbers: { limit: 50 },
+  strings: ['id'],
+  help: `Process Statement Inbox — Hostinger cron script.
+
+Usage: node scripts/process-inbox.mjs [options]
+
+Options:
+  --dry-run        parse but don't insert
+  --limit N        max items to process (default 50)
+  --id UUID        process specific inbox item
+  --verbose        show debug logs
+  --help           this text
+`,
+});
+
+const DRY_RUN = cliArgs.dryRun;
+const LIMIT = cliArgs.limit;
+const SPECIFIC_ID = cliArgs.id;
 const MODEL = 'sonnet';
 
-function getArg(flag) {
-  const idx = args.indexOf(flag);
-  return idx >= 0 && idx + 1 < args.length ? args[idx + 1] : null;
-}
+const log = createLogger({ verbose: cliArgs.verbose });
 
 // ── Shell escape ────────────────────────────────────────────────────────────
 function shellEsc(s) {
@@ -99,7 +112,7 @@ const NOTIFY_TO = 'rahchak@gmail.com';
  */
 async function sendProcessedEmail(item, parsed, txnCount, r2Key) {
   if (!RESEND_API_KEY) {
-    console.log('    (No RESEND_API_KEY — skipping email notification)');
+    log.info('    (No RESEND_API_KEY — skipping email notification)');
     return;
   }
 
@@ -214,13 +227,13 @@ async function sendProcessedEmail(item, parsed, txnCount, r2Key) {
 
     if (!res.ok) {
       const text = await res.text();
-      console.error(`    ✗ Email send failed: ${res.status} ${text}`);
+      log.error(`    ✗ Email send failed: ${res.status} ${text}`);
     } else {
       const result = await res.json();
-      console.log(`    ✉ Summary email sent (Resend ID: ${result.id})`);
+      log.info(`    ✉ Summary email sent (Resend ID: ${result.id})`);
     }
   } catch (emailErr) {
-    console.error(`    ✗ Email error: ${emailErr.message}`);
+    log.error(`    ✗ Email error: ${emailErr.message}`);
   }
 }
 
@@ -266,11 +279,18 @@ function buildR2Key(item) {
 
 // ── Download file from URL to temp path ─────────────────────────────────────
 async function downloadToFile(url, destPath) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
-  const buffer = Buffer.from(await res.arrayBuffer());
-  writeFileSync(destPath, buffer);
-  return buffer.length;
+  // retry() handles transient 5xx / network hiccups on Supabase storage fetch.
+  return retry(async () => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      const e = new Error(`Download failed: ${res.status} ${res.statusText}`);
+      e.status = res.status;
+      throw e;
+    }
+    const buffer = Buffer.from(await res.arrayBuffer());
+    writeFileSync(destPath, buffer);
+    return buffer.length;
+  }, { maxAttempts: 3, baseDelayMs: 1000, maxDelayMs: 5000 });
 }
 
 // ── Upload PDF to R2 via S3-compatible API ──────────────────────────────────
@@ -588,15 +608,15 @@ async function parsePdfWithClaude(pdfPath, accountType) {
       try {
         return JSON.parse(cleaned);
       } catch (e) {
-        console.error(`  ✗ JSON parse error: ${e.message}`);
+        log.error(`  ✗ JSON parse error: ${e.message}`);
         return null;
       }
     }
 
-    console.error(`  ✗ No JSON found in response (first 200 chars): ${text.slice(0, 200)}`);
+    log.error(`  ✗ No JSON found in response (first 200 chars): ${text.slice(0, 200)}`);
     return null;
   } catch (e) {
-    console.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 100)}`);
+    log.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 100)}`);
     return null;
   } finally {
     try { unlinkSync(promptPath); } catch { /* ignore */ }
@@ -635,7 +655,7 @@ async function insertCcStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -665,7 +685,7 @@ async function insertCcStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error: txnErr } = await supabase.from('cc_transactions').insert(batch);
       if (txnErr) {
-        console.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
+        log.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
         return false;
       }
     }
@@ -701,7 +721,7 @@ async function insertCheckingStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -729,7 +749,7 @@ async function insertCheckingStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error: txnErr } = await supabase.from('checking_transactions').insert(batch);
       if (txnErr) {
-        console.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
+        log.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
         return false;
       }
     }
@@ -781,7 +801,7 @@ async function insertInvestmentStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -813,7 +833,7 @@ async function insertInvestmentStatement(doc, parsed) {
       const batch = holdings.slice(i, i + 200);
       const { error } = await supabase.from('holdings_snapshots').insert(batch);
       if (error) {
-        console.error(`  ✗ Holdings insert error: ${error.message}`);
+        log.error(`  ✗ Holdings insert error: ${error.message}`);
         return false;
       }
     }
@@ -846,7 +866,7 @@ async function insertInvestmentStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error } = await supabase.from('investment_transactions').insert(batch);
       if (error) {
-        console.error(`  ✗ Transaction insert error: ${error.message}`);
+        log.error(`  ✗ Transaction insert error: ${error.message}`);
         return false;
       }
     }
@@ -876,7 +896,7 @@ async function insertInvestmentStatement(doc, parsed) {
       const batch = gains.slice(i, i + 200);
       const { error } = await supabase.from('realized_gain_loss').insert(batch);
       if (error) {
-        console.error(`  ✗ Realized gains insert error: ${error.message}`);
+        log.error(`  ✗ Realized gains insert error: ${error.message}`);
         return false;
       }
     }
@@ -932,7 +952,7 @@ async function insertLoanStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -958,7 +978,7 @@ async function insertLoanStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error } = await supabase.from('loan_transactions').insert(batch);
       if (error) {
-        console.error(`  ✗ Loan txn insert error: ${error.message}`);
+        log.error(`  ✗ Loan txn insert error: ${error.message}`);
         return false;
       }
     }
@@ -970,7 +990,7 @@ async function insertLoanStatement(doc, parsed) {
 // ── Process a single inbox item ─────────────────────────────────────────────
 async function processItem(item) {
   const label = `${item.institution || '?'}/${item.account_type || '?'} ${item.statement_date || '?'}`;
-  console.log(`\n  → Processing: ${label} (${item.attachment_filename})`);
+  log.info(`\n  → Processing: ${label} (${item.attachment_filename})`);
 
   // Mark as processing
   await supabase
@@ -982,23 +1002,23 @@ async function processItem(item) {
 
   try {
     // 1. Download PDF from Supabase Storage
-    console.log(`    Downloading from storage...`);
+    log.info(`    Downloading from storage...`);
     const fileSize = await downloadToFile(item.attachment_url, tmpPath);
-    console.log(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
+    log.info(`    Downloaded ${(fileSize / 1024).toFixed(0)} KB`);
 
     // 2. Build R2 key and upload
     const r2Key = buildR2Key(item);
-    console.log(`    R2 key: ${r2Key}`);
+    log.info(`    R2 key: ${r2Key}`);
 
     if (!DRY_RUN) {
-      console.log(`    Uploading to R2...`);
+      log.info(`    Uploading to R2...`);
       await uploadToR2(tmpPath, r2Key);
     }
 
     // 3. Upsert document_index
     let documentId = null;
     if (!DRY_RUN) {
-      console.log(`    Indexing in document_index...`);
+      log.info(`    Indexing in document_index...`);
       documentId = await upsertDocumentIndex(item, r2Key, fileSize);
 
       await supabase
@@ -1008,7 +1028,7 @@ async function processItem(item) {
     }
 
     // 4. Parse with Claude CLI
-    console.log(`    Parsing with Claude (${MODEL})...`);
+    log.info(`    Parsing with Claude (${MODEL})...`);
     const parsed = await parsePdfWithClaude(tmpPath, item.account_type);
 
     if (!parsed) {
@@ -1016,7 +1036,7 @@ async function processItem(item) {
     }
 
     if (parsed.is_statement === false) {
-      console.log(`    SKIPPED — not a statement`);
+      log.info(`    SKIPPED — not a statement`);
       await supabase
         .from('statement_inbox')
         .update({ status: 'error', error_message: 'Not a statement (Claude)', updated_at: new Date().toISOString() })
@@ -1027,7 +1047,7 @@ async function processItem(item) {
     const txnCount = (parsed.transactions || []).length + (parsed.holdings || []).length;
 
     if (DRY_RUN) {
-      console.log(`    ✓ Parsed: ${txnCount} items (dry-run, not inserting)`);
+      log.info(`    ✓ Parsed: ${txnCount} items (dry-run, not inserting)`);
       return { status: 'dry_run', txnCount };
     }
 
@@ -1043,12 +1063,12 @@ async function processItem(item) {
     else if (tableType === 'investment') ok = await insertInvestmentStatement(doc, parsed);
     else if (tableType === 'loan') ok = await insertLoanStatement(doc, parsed);
     else {
-      console.log(`    SKIPPED — unsupported account type: ${item.account_type}`);
+      log.info(`    SKIPPED — unsupported account type: ${item.account_type}`);
       return { status: 'unsupported_type' };
     }
 
     if (ok) {
-      console.log(`    ✓ Inserted: ${txnCount} items`);
+      log.info(`    ✓ Inserted: ${txnCount} items`);
       await supabase
         .from('statement_inbox')
         .update({ status: 'parsed', processed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
@@ -1062,7 +1082,7 @@ async function processItem(item) {
       throw new Error('Insert failed');
     }
   } catch (err) {
-    console.error(`    ✗ Error: ${err.message}`);
+    log.error(`    ✗ Error: ${err.message}`);
     await supabase
       .from('statement_inbox')
       .update({ status: 'error', error_message: err.message?.slice(0, 500), updated_at: new Date().toISOString() })
@@ -1075,10 +1095,10 @@ async function processItem(item) {
 
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
-  console.log(`\n╔══════════════════════════════════════════╗`);
-  console.log(`║  Statement Inbox Processor               ║`);
-  console.log(`╚══════════════════════════════════════════╝`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Model: ${MODEL}\n`);
+  log.info(`\n╔══════════════════════════════════════════╗`);
+  log.info(`║  Statement Inbox Processor               ║`);
+  log.info(`╚══════════════════════════════════════════╝`);
+  log.info(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Limit: ${LIMIT} | Model: ${MODEL}\n`);
 
   // Fetch pending items
   let query = supabase
@@ -1096,9 +1116,9 @@ async function main() {
   }
 
   const { data: items, error } = await query;
-  if (error) throw new Error(`Query error: ${error.message}`);
+  if (error) throw new FatalError(`Query error: ${error.message}`, { cause: error });
 
-  console.log(`Found ${items?.length || 0} pending statement(s)\n`);
+  log.info(`Found ${items?.length || 0} pending statement(s)\n`);
   if (!items?.length) return;
 
   const stats = { success: 0, dry_run: 0, error: 0, not_statement: 0, unsupported_type: 0, totalTxns: 0 };
@@ -1112,17 +1132,14 @@ async function main() {
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`\n══════════════════════════════════════════`);
-  console.log(`COMPLETE in ${elapsed}s`);
-  console.log(`  Successful: ${stats.success + stats.dry_run}`);
-  console.log(`  Items extracted: ${stats.totalTxns}`);
-  console.log(`  Errors: ${stats.error}`);
-  console.log(`  Not statements: ${stats.not_statement}`);
-  console.log(`  Unsupported type: ${stats.unsupported_type}`);
-  console.log(`══════════════════════════════════════════\n`);
+  log.info(`\n══════════════════════════════════════════`);
+  log.info(`COMPLETE in ${elapsed}s`);
+  log.info(`  Successful: ${stats.success + stats.dry_run}`);
+  log.info(`  Items extracted: ${stats.totalTxns}`);
+  log.info(`  Errors: ${stats.error}`);
+  log.info(`  Not statements: ${stats.not_statement}`);
+  log.info(`  Unsupported type: ${stats.unsupported_type}`);
+  log.info(`══════════════════════════════════════════\n`);
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+run(main);

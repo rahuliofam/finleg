@@ -13,39 +13,56 @@
  *   node scripts/ingest-statements.mjs --concurrency 3          # Process 3 PDFs at a time
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { exec } from 'child_process';
 import { unlinkSync, writeFileSync } from 'fs';
 import { promisify } from 'util';
-import { config } from 'dotenv';
 
-config(); // Load .env
+import {
+  loadSupabaseEnv,
+  createSupabaseClient,
+  createLogger,
+  parseArgs,
+  retry,
+  run,
+  fetchAllPages,
+  FatalError,
+} from './lib/index.mjs';
 
 const execAsync = promisify(exec);
 
-// ── Config ──────────────────────────────────────────────────────────────────
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gjdvzzxsrzuorguwkaih.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!SUPABASE_SERVICE_KEY) { console.error('Missing SUPABASE_SERVICE_ROLE_KEY in .env'); process.exit(1); }
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const env = loadSupabaseEnv();
+const supabase = createSupabaseClient({ env });
 
 // ── CLI args ────────────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const DRY_RUN = args.includes('--dry-run');
-const SAMPLE = args.includes('--sample');
-const ACCOUNT_TYPE = getArg('--account-type');
-const INSTITUTION_FILTER = getArg('--institution');
-const CONCURRENCY = parseInt(getArg('--concurrency') || '2');
+const cliArgs = parseArgs(process.argv.slice(2), {
+  booleans: ['sample'],
+  numbers: { concurrency: 2 },
+  strings: ['account-type', 'institution'],
+  help: `Ingest statement PDFs from R2 into Supabase.
+
+Usage: node scripts/ingest-statements.mjs [options]
+
+Options:
+  --account-type TYPE    filter to one account type
+  --institution NAME     filter by institution (e.g. amex)
+  --concurrency N        concurrent PDFs to parse (default 2)
+  --sample               1 PDF per account, for smoke testing
+  --dry-run              parse but don't insert
+  --verbose              show debug logs
+  --help                 this text
+`,
+});
+
+const DRY_RUN = cliArgs.dryRun;
+const SAMPLE = cliArgs.sample;
+const ACCOUNT_TYPE = cliArgs.accountType;
+const INSTITUTION_FILTER = cliArgs.institution;
+const CONCURRENCY = cliArgs.concurrency;
 const MODEL = 'sonnet';
 
-const ALL_TYPES = ['credit-card', 'checking', 'credit-line', 'brokerage', 'ira', 'crypto', 'heloc', 'auto-loan', 'mortgage', 'closed'];
+const log = createLogger({ verbose: cliArgs.verbose });
 
-function getArg(flag) {
-  const idx = args.indexOf(flag);
-  return idx >= 0 && idx + 1 < args.length ? args[idx + 1] : null;
-}
+const ALL_TYPES = ['credit-card', 'checking', 'credit-line', 'brokerage', 'ira', 'crypto', 'heloc', 'auto-loan', 'mortgage', 'closed'];
 
 // ── Account type → table mapping ────────────────────────────────────────────
 // credit-line uses same tables as credit-card
@@ -327,7 +344,7 @@ async function fetchStatements() {
   if (INSTITUTION_FILTER) q = q.eq('institution', INSTITUTION_FILTER);
 
   const { data, error } = await q;
-  if (error) throw new Error(`Supabase query error: ${error.message}`);
+  if (error) throw new FatalError(`Supabase query error: ${error.message}`, { cause: error });
   return data || [];
 }
 
@@ -342,13 +359,10 @@ async function getIngestedDocIds() {
   ];
 
   for (const table of tables) {
-    let offset = 0;
-    while (true) {
-      const { data } = await supabase.from(table).select('document_id').range(offset, offset + 999);
-      if (!data || data.length === 0) break;
-      data.forEach(d => ids.add(d.document_id));
-      offset += 1000;
-    }
+    const rows = await fetchAllPages((offset, limit) =>
+      supabase.from(table).select('document_id').range(offset, offset + limit - 1)
+    );
+    rows.forEach(d => ids.add(d.document_id));
   }
 
   return ids;
@@ -359,10 +373,15 @@ async function downloadPdf(bucket, r2Key) {
   const tmpPath = `/tmp/stmt-${Date.now()}-${Math.random().toString(36).slice(2)}.pdf`;
   const cmd = `wrangler r2 object get ${shellEsc(bucket + '/' + r2Key)} --file=${shellEsc(tmpPath)} --remote`;
   try {
-    await execAsync(cmd, { timeout: 60000, cwd: '/Users/rahulio/Documents/CodingProjects/finleg' });
+    // retry() gives us exponential backoff on transient wrangler / network failures.
+    await retry(
+      () => execAsync(cmd, { timeout: 60000, cwd: '/Users/rahulio/Documents/CodingProjects/finleg' }),
+      { maxAttempts: 3, baseDelayMs: 2000, maxDelayMs: 10000,
+        onRetry: (err, attempt) => log.warn(`  ⟳ R2 download retry ${attempt} for ${r2Key}: ${err.message?.slice(0, 80)}`) }
+    );
     return tmpPath;
   } catch (e) {
-    console.error(`  ✗ Download failed: ${r2Key}: ${e.message?.slice(0, 80)}`);
+    log.error(`  ✗ Download failed: ${r2Key}: ${e.message?.slice(0, 80)}`);
     return null;
   }
 }
@@ -392,16 +411,16 @@ async function parsePdfWithClaude(pdfPath, accountType) {
       try {
         return JSON.parse(cleaned);
       } catch (e) {
-        console.error(`  ✗ JSON parse error: ${e.message}`);
-        console.error(`  Raw (first 300 chars): ${text.slice(0, 300)}`);
+        log.error(`  ✗ JSON parse error: ${e.message}`);
+        log.error(`  Raw (first 300 chars): ${text.slice(0, 300)}`);
         return null;
       }
     }
 
-    console.error(`  ✗ No JSON found in response (first 200 chars): ${text.slice(0, 200)}`);
+    log.error(`  ✗ No JSON found in response (first 200 chars): ${text.slice(0, 200)}`);
     return null;
   } catch (e) {
-    console.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 100)}`);
+    log.error(`  ✗ Claude CLI error: ${e.message?.slice(0, 100)}`);
     return null;
   } finally {
     try { unlinkSync(promptPath); } catch (e) { /* ignore */ }
@@ -440,7 +459,7 @@ async function insertCcStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -470,7 +489,7 @@ async function insertCcStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error: txnErr } = await supabase.from('cc_transactions').insert(batch);
       if (txnErr) {
-        console.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
+        log.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
         return false;
       }
     }
@@ -507,7 +526,7 @@ async function insertCheckingStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -535,7 +554,7 @@ async function insertCheckingStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error: txnErr } = await supabase.from('checking_transactions').insert(batch);
       if (txnErr) {
-        console.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
+        log.error(`  ✗ Transaction insert error (batch ${i}): ${txnErr.message}`);
         return false;
       }
     }
@@ -588,7 +607,7 @@ async function insertInvestmentStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -621,7 +640,7 @@ async function insertInvestmentStatement(doc, parsed) {
       const batch = holdings.slice(i, i + 200);
       const { error } = await supabase.from('holdings_snapshots').insert(batch);
       if (error) {
-        console.error(`  ✗ Holdings insert error: ${error.message}`);
+        log.error(`  ✗ Holdings insert error: ${error.message}`);
         return false;
       }
     }
@@ -655,7 +674,7 @@ async function insertInvestmentStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error } = await supabase.from('investment_transactions').insert(batch);
       if (error) {
-        console.error(`  ✗ Transaction insert error: ${error.message}`);
+        log.error(`  ✗ Transaction insert error: ${error.message}`);
         return false;
       }
     }
@@ -686,7 +705,7 @@ async function insertInvestmentStatement(doc, parsed) {
       const batch = gains.slice(i, i + 200);
       const { error } = await supabase.from('realized_gain_loss').insert(batch);
       if (error) {
-        console.error(`  ✗ Realized gains insert error: ${error.message}`);
+        log.error(`  ✗ Realized gains insert error: ${error.message}`);
         return false;
       }
     }
@@ -743,7 +762,7 @@ async function insertLoanStatement(doc, parsed) {
     .single();
 
   if (sumErr) {
-    console.error(`  ✗ Summary insert error: ${sumErr.message}`);
+    log.error(`  ✗ Summary insert error: ${sumErr.message}`);
     return false;
   }
 
@@ -769,7 +788,7 @@ async function insertLoanStatement(doc, parsed) {
       const batch = txns.slice(i, i + 200);
       const { error } = await supabase.from('loan_transactions').insert(batch);
       if (error) {
-        console.error(`  ✗ Loan txn insert error: ${error.message}`);
+        log.error(`  ✗ Loan txn insert error: ${error.message}`);
         return false;
       }
     }
@@ -793,14 +812,14 @@ async function processStatement(doc) {
     if (!parsed) return { status: 'parse_failed' };
 
     if (parsed.is_statement === false) {
-      console.log(' SKIPPED (not a statement)');
+      log.info(' SKIPPED (not a statement)');
       return { status: 'not_statement' };
     }
 
     const txnCount = (parsed.transactions || []).length + (parsed.holdings || []).length;
 
     if (DRY_RUN) {
-      console.log(` ✓ ${txnCount} items (dry-run)`);
+      log.info(` ✓ ${txnCount} items (dry-run)`);
       return { status: 'dry_run', txnCount };
     }
 
@@ -822,12 +841,12 @@ async function processStatement(doc) {
     } else if (tableType === 'loan') {
       ok = await insertLoanStatement(doc, parsed);
     } else {
-      console.log(` SKIPPED (unknown type: ${doc.account_type})`);
+      log.info(` SKIPPED (unknown type: ${doc.account_type})`);
       return { status: 'not_statement' };
     }
 
     if (ok) {
-      console.log(` ✓ ${txnCount} items`);
+      log.info(` ✓ ${txnCount} items`);
       return { status: 'success', txnCount };
     } else {
       return { status: 'insert_failed' };
@@ -839,21 +858,21 @@ async function processStatement(doc) {
 
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
-  console.log(`\n╔══════════════════════════════════════════╗`);
-  console.log(`║  Statement Ingestion Pipeline v2         ║`);
-  console.log(`╚══════════════════════════════════════════╝`);
-  console.log(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Sample: ${SAMPLE} | Model: ${MODEL}`);
-  console.log(`Account type: ${ACCOUNT_TYPE || 'all'}`);
-  console.log(`Concurrency: ${CONCURRENCY}\n`);
+  log.info(`\n╔══════════════════════════════════════════╗`);
+  log.info(`║  Statement Ingestion Pipeline v2         ║`);
+  log.info(`╚══════════════════════════════════════════╝`);
+  log.info(`Mode: ${DRY_RUN ? 'DRY-RUN' : 'LIVE'} | Sample: ${SAMPLE} | Model: ${MODEL}`);
+  log.info(`Account type: ${ACCOUNT_TYPE || 'all'}`);
+  log.info(`Concurrency: ${CONCURRENCY}\n`);
 
   const allDocs = await fetchStatements();
-  console.log(`Found ${allDocs.length} PDF statements in document_index\n`);
+  log.info(`Found ${allDocs.length} PDF statements in document_index\n`);
 
   if (allDocs.length === 0) return;
 
   const ingestedIds = await getIngestedDocIds();
   const pending = allDocs.filter(d => !ingestedIds.has(d.id));
-  console.log(`Already ingested: ${ingestedIds.size} | Pending: ${pending.length}\n`);
+  log.info(`Already ingested: ${ingestedIds.size} | Pending: ${pending.length}\n`);
 
   let toProcess;
   if (SAMPLE) {
@@ -866,7 +885,7 @@ async function main() {
         toProcess.push(doc);
       }
     }
-    console.log(`Sample mode: processing ${toProcess.length} PDFs (1 per account)\n`);
+    log.info(`Sample mode: processing ${toProcess.length} PDFs (1 per account)\n`);
   } else {
     toProcess = pending;
   }
@@ -886,23 +905,20 @@ async function main() {
     const done = Math.min(i + CONCURRENCY, toProcess.length);
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
     if (done % 10 === 0 || done === toProcess.length) {
-      console.log(`\n[${elapsed}s] Progress: ${done}/${toProcess.length} | Success: ${stats.success + stats.dry_run} | Failed: ${stats.download_failed + stats.parse_failed + stats.insert_failed}\n`);
+      log.info(`\n[${elapsed}s] Progress: ${done}/${toProcess.length} | Success: ${stats.success + stats.dry_run} | Failed: ${stats.download_failed + stats.parse_failed + stats.insert_failed}\n`);
     }
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`\n══════════════════════════════════════════`);
-  console.log(`COMPLETE in ${elapsed}s`);
-  console.log(`  Successful: ${stats.success + stats.dry_run}`);
-  console.log(`  Items extracted: ${stats.totalTxns}`);
-  console.log(`  Not statements: ${stats.not_statement}`);
-  console.log(`  Download failed: ${stats.download_failed}`);
-  console.log(`  Parse failed: ${stats.parse_failed}`);
-  console.log(`  Insert failed: ${stats.insert_failed}`);
-  console.log(`══════════════════════════════════════════\n`);
+  log.info(`\n══════════════════════════════════════════`);
+  log.info(`COMPLETE in ${elapsed}s`);
+  log.info(`  Successful: ${stats.success + stats.dry_run}`);
+  log.info(`  Items extracted: ${stats.totalTxns}`);
+  log.info(`  Not statements: ${stats.not_statement}`);
+  log.info(`  Download failed: ${stats.download_failed}`);
+  log.info(`  Parse failed: ${stats.parse_failed}`);
+  log.info(`  Insert failed: ${stats.insert_failed}`);
+  log.info(`══════════════════════════════════════════\n`);
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+run(main);
